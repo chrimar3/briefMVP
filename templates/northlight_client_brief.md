@@ -8,7 +8,7 @@
 **Sources used:** {source list with dates} · **Generated:** {ts} · **Pipeline:** {version}
 
 ## 1. Objectives
-{entries — each line ends with its citation tag, e.g. [T1 00:14:32] [RFP §3]}
+{entries — each line ends with its citation tag, source_id exactly as in meta.sources, e.g. [transcript_kickoff 00:14:32] [rfp_meltemi §3]}
 
 ## 2. Audiences
 {entries + citations}

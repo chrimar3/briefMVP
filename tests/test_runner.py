@@ -28,6 +28,7 @@ def test_step_sequence_matches_prd_section_5():
 
 
 def test_run_stops_at_the_first_unbuilt_stage(fixture_project, tmp_path):
+    """The full sequence still stops at classification — Tier 1 did not build step 2."""
     code = runner.main(["--project", str(fixture_project), "--out", str(tmp_path), "--run-id", "testrun"])
     assert code == runner.EXIT_PENDING_STAGE
 
@@ -76,6 +77,11 @@ def test_run_reports_an_undeclared_input_folder(tmp_path):
     assert _manifest(tmp_path / "runs")["outcome"] == "input_contract_error"
 
 
-def test_no_model_handlers_are_registered_at_tier_0():
-    """Tier 0 ships the sequence, not the stages. If this fails, a tier boundary moved."""
-    assert runner.AGENT_HANDLERS == {}
+def test_only_the_extraction_handler_is_registered_at_tier_1():
+    """Tier 1 builds the extraction leg and nothing else. If this fails, a tier boundary moved."""
+    assert sorted(runner.AGENT_HANDLERS) == ["extract"]
+
+
+def test_extraction_stage_selects_only_the_gate_and_step_4():
+    """`--stage extraction` is the Tier-1 path: prove one leg without faking the rest."""
+    assert runner.STAGE_SELECTIONS["extraction"] == ("readiness_gate", "extraction")

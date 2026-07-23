@@ -124,6 +124,8 @@ Authority ordering across sources is applied **downstream** — your job is only
 4. Any translated or "cleaned-up" values? Revert to source language/wording.
 5. Any resolved contradiction, computed number, or normalized deliverable? Undo it.
 6. Are `suggested_question_for_client` entries phrased so an account lead could read them aloud to a client without editing?
+7. **Glossary scan.** Walk the glossary term by term and check how the source renders each one. Where the source has collapsed a term into Greek script, your `value` keeps the source's characters — never the glossary's — plus an `extraction_note` proposing the match, confidence `low` (rule G). A glossary term standing in Latin script in your output where the source does not have it in Latin is a silent repair: undo it.
+8. **Locations are copied, never constructed.** Every `location` and every `anchor` must occur verbatim in the source document. If you cannot find the exact string you wrote, you invented it — a citation that does not resolve is worse than no citation, because it survives review by looking verified.
 
 ## 9. Worked example (transcript, budget)
 

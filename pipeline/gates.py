@@ -363,6 +363,67 @@ def validate_brief(instance: dict) -> None:
     _validate(instance, "brief_schema")
 
 
+def _normalise(text: str) -> str:
+    """Collapse whitespace so a citation is not rejected over a line wrap."""
+    return " ".join(text.split())
+
+
+def verify_citations(extract: dict, source_text: str) -> list[str]:
+    """Every `location` and `anchor` must occur verbatim in the source document.
+
+    SOURCES.md rule 2 says a value without a citation does not exist. This is the other half
+    of that rule: a citation that cannot be found in the source is worse than a missing one,
+    because it survives review by *looking* verified. PRD R2 names this exact failure — "a
+    confident citation to garbage" — as the dangerous one, so it is checked in code rather
+    than left to the agent's self-check.
+    """
+    haystack = _normalise(source_text)
+    violations: list[str] = []
+    for fieldname in BRIEF_FIELDS:
+        for idx, item in enumerate(extract.get(fieldname, []) or []):
+            for key in ("location", "anchor"):
+                needle = _normalise(item.get(key) or "")
+                if needle and needle not in haystack:
+                    violations.append(
+                        f"{fieldname}[{idx}]: {key} {needle!r} does not occur in the source — "
+                        f"citations are copied from the document, never constructed"
+                    )
+    return violations
+
+
+def find_unsourced_glossary_terms(extract: dict, source_text: str, glossary: dict) -> list[str]:
+    """Catch silent repair and silent translation of protected terms.
+
+    Glossary terms are `keep_latin`: they survive character-exact wherever they genuinely
+    appear. So a glossary term sitting in Latin script inside an extracted `value` while the
+    source never writes it in Latin means the agent produced it — by "fixing" a script-collapsed
+    token (SOURCES.md rule G) or by translating (rule 5). Both are forbidden, and both are
+    invisible to a schema check, because the output is perfectly well-formed.
+
+    Driven entirely by the client's own glossary, so it generalises to any client without the
+    pipeline knowing anything about a particular document.
+    """
+    haystack = source_text.lower()
+    terms = [
+        t["term"]
+        for t in (glossary.get("terms") or [])
+        if t.get("rule") == "keep_latin" and t.get("term")
+    ]
+    violations: list[str] = []
+    for fieldname in BRIEF_FIELDS:
+        for idx, item in enumerate(extract.get(fieldname, []) or []):
+            value = (item.get("value") or "").lower()
+            for term in terms:
+                if term.lower() in value and term.lower() not in haystack:
+                    violations.append(
+                        f"{fieldname}[{idx}]: value contains glossary term {term!r}, which never "
+                        f"appears in Latin script in the source. If the source renders it collapsed "
+                        f"into Greek script, keep the source's characters and add an extraction_note "
+                        f"proposing the glossary match (SOURCES.md rule G); never repair in place."
+                    )
+    return violations
+
+
 def find_uncited_items(extract: dict) -> list[str]:
     """Every evidence item must carry a non-empty `location` and `anchor` (SOURCES.md rule 2).
 
