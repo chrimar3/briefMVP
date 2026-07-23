@@ -22,6 +22,7 @@ A folder, an input, an output, and four instruction files. The skeleton is the p
 |---|---|---|
 | `skills/*.md` (×4) | The four runtime instruction files (product) | Yes |
 | `schema/`, `templates/`, `glossary/` | The executable form the 4 files depend on (product) | Yes |
+| `config/` | Agency policy the gates read — readiness thresholds (product) | Yes |
 | `pipeline/` | Deterministic gates + runner — "the steps that ensure quality" (product) | Yes |
 | `fixtures/` incl. `answer_key.json` | Synthetic exam project with seeded conflicts/gaps/garbling | **No — test apparatus** |
 | `eval/` | Harness that grades runs against the answer key | **No — test apparatus** |

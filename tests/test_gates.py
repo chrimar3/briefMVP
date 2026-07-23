@@ -57,15 +57,50 @@ def test_readiness_gate_passes_on_the_full_fixture(fixture_project):
     assert verdict.missing_required == [] and verdict.missing_signals == []
 
 
-def test_readiness_gate_refuses_without_a_corroborating_source(tmp_path):
-    (tmp_path / "rfp.md").write_text(
-        "# RFP\nsource_id: r · source_type: rfp · source_date: 2026-01-01\n"
-        "Budget €50.000. Launch October 2026.\n",
+def _write(path, source_id, source_type, body="Budget €50.000. Launch October 2026.\n"):
+    path.write_text(
+        f"# {source_id}\nsource_id: {source_id} · source_type: {source_type} · "
+        f"source_date: 2026-01-01\n{body}",
         encoding="utf-8",
     )
+
+
+def test_readiness_gate_needs_two_substantive_sources(tmp_path):
+    """Minimum input set is 2 — no brief rests on a single source."""
+    _write(tmp_path / "rfp.md", "r", "rfp")
     verdict = gates.readiness_gate(gates.discover_sources(tmp_path))
     assert not verdict.ok
+    assert verdict.substantive_count == 1
     assert "insufficient input" in verdict.message
+    assert "need 2" in verdict.message
+
+
+def test_background_does_not_count_toward_the_minimum(tmp_path):
+    """Context creates no commitments (SOURCES.md §5), so it cannot be one of the two."""
+    _write(tmp_path / "rfp.md", "r", "rfp")
+    _write(tmp_path / "bg.md", "b", "background")
+    verdict = gates.readiness_gate(gates.discover_sources(tmp_path))
+    assert not verdict.ok
+    assert verdict.substantive_count == 1
+    assert "background does not count" in verdict.message
+
+
+def test_two_substantive_sources_with_the_rfp_pass(tmp_path):
+    _write(tmp_path / "rfp.md", "r", "rfp")
+    _write(tmp_path / "emails.md", "e", "email_thread")
+    verdict = gates.readiness_gate(gates.discover_sources(tmp_path))
+    assert verdict.ok, verdict.message
+    assert verdict.substantive_count == 2
+
+
+def test_two_substantive_sources_without_the_rfp_are_refused(tmp_path):
+    """The RFP states what the client believes they are buying; the count does not replace it."""
+    _write(tmp_path / "t.md", "t", "transcript")
+    _write(tmp_path / "emails.md", "e", "email_thread")
+    verdict = gates.readiness_gate(gates.discover_sources(tmp_path))
+    assert not verdict.ok
+    assert verdict.missing_required == ["rfp"]
+    assert verdict.substantive_count == 2
 
 
 def test_readiness_gate_refuses_without_budget_or_timeline_signal(tmp_path):
@@ -218,6 +253,57 @@ def _brief(**overrides):
 
 def test_valid_brief_passes():
     gates.validate_brief(_brief())
+
+
+# --------------------------------------------------------------------------------------
+# Readiness policy config
+# --------------------------------------------------------------------------------------
+
+
+def test_shipped_policy_loads_and_is_in_range():
+    policy = gates.load_readiness_policy()
+    assert 0 <= policy["min_fields_with_evidence"] <= len(gates.BRIEF_FIELDS)
+    assert 0.0 <= policy["max_low_confidence_share"] <= 1.0
+
+
+def test_policy_file_is_documented_for_whoever_edits_it(repo_root):
+    """It ships to the client alongside the glossary — it has to explain itself."""
+    import json as _json
+
+    raw = _json.loads((repo_root / "config" / "readiness_policy.json").read_text(encoding="utf-8"))
+    assert "answer_key" in raw["_calibration_rule"], "the do-not-tune-against-the-exam rule must be stated in the file"
+    assert {"_min_fields_with_evidence", "_max_low_confidence_share"} <= set(raw)
+
+
+def test_missing_policy_is_fatal_not_defaulted(tmp_path):
+    """A silent default would let the runner and the harness disagree about 'ready'."""
+    with pytest.raises(gates.ConfigError, match="not found"):
+        gates.load_readiness_policy(tmp_path / "nope.json")
+
+
+@pytest.mark.parametrize(
+    "payload, match",
+    [
+        ('{"min_fields_with_evidence": 9, "max_low_confidence_share": 0.4}', "min_fields_with_evidence"),
+        ('{"min_fields_with_evidence": 5, "max_low_confidence_share": 1.5}', "max_low_confidence_share"),
+        ('{"min_fields_with_evidence": "5", "max_low_confidence_share": 0.4}', "min_fields_with_evidence"),
+        ("{not json}", "not valid JSON"),
+    ],
+)
+def test_malformed_policy_is_refused(tmp_path, payload, match):
+    path = tmp_path / "policy.json"
+    path.write_text(payload, encoding="utf-8")
+    with pytest.raises(gates.ConfigError, match=match):
+        gates.load_readiness_policy(path)
+
+
+def test_policy_actually_drives_the_verdict():
+    """The config is load-bearing, not decorative."""
+    brief = _brief(**{f: [_entry()] for f in gates.BRIEF_FIELDS[:4]})
+    strict = gates.compute_readiness_block(brief, {"min_fields_with_evidence": 5, "max_low_confidence_share": 0.4})
+    loose = gates.compute_readiness_block(brief, {"min_fields_with_evidence": 4, "max_low_confidence_share": 0.4})
+    assert strict["verdict"] == "thin_input_return_to_client"
+    assert loose["verdict"] == "ready_for_review"
 
 
 # --------------------------------------------------------------------------------------

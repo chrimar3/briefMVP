@@ -37,6 +37,7 @@ python3 pipeline/runner.py --project fixtures/northlight_01
 pipeline/gates.py   input contract · readiness gate · scope enforcement ·
                     schema validation · citation completeness · readiness block
 pipeline/runner.py  PRD §5 step sequence · run dirs · manifest · runs/latest
+config/             readiness_policy.json — agency thresholds (ships with the skeleton)
 tests/              test_schemas · test_agents · test_gates · test_runner (+ conftest)
 pytest.ini · requirements.txt · .gitignore
 ```
@@ -77,7 +78,7 @@ boundary moves without anyone noticing.
 asserting the file exists on disk yet never appears in a run's source list. CLAUDE.md rule 2
 enforced by topology, not by discipline.
 
-## 4. ⚠ Two policy blocks needing your sign-off
+## 4. ✅ Two policy blocks — reviewed and resolved (see §9)
 
 Both are judgment calls I had to make to produce a working gate. Both are isolated in one
 readable block at the top of `pipeline/gates.py`, and neither was tuned against the answer key.
@@ -106,9 +107,10 @@ synthesis, no renders.
 
 ## 6. Deferred
 
-- **Agent-loading verification.** Frontmatter uses documented fields only (`name`,
-  `description`, `tools`, `model`, `color`), but nothing here proves Claude Code loads the six
-  definitions — that requires an actual subagent invocation. **Tier 1 confirms it on first use.**
+- ~~**Agent-loading verification.**~~ **RESOLVED during review** — Claude Code registered all
+  six definitions (`extract`, `classify`, `fidelity-check`, `synthesize`, `render`,
+  `creative-shadow`), each with `Tools: Read, Write` exactly as declared. The frontmatter parses
+  and the least-privilege tool restriction is live. Resolved model IDs still await Tier 1.
 - **Resolved subagent model IDs.** Aliases resolve at invocation time; Tier 0 invokes nothing.
   The table below is the registry mapping, not an observation. **Tier 1 logs observed IDs.**
 - **Skill re-sync helper.** Drift is *detected* by test but must be fixed by hand. A
@@ -138,6 +140,42 @@ was this orchestrator session on the Max subscription (file reads, authoring, on
 0.1 s). Per TIERS.md §Session-plan, that substrate separation is deliberate: the demo runs on a
 developer subscription, any client deployment runs on enterprise API terms (PRD §9 R1).
 
+## 9. Post-review amendments (2026-07-24, same session)
+
+Both §4 policy blocks were reviewed and decided by the account owner. Tests: **87 passed,
+6 skipped**, exit 0.
+
+**A9-1 — Minimum input set is now an explicit count of 2, RFP still required.**
+`MIN_SUBSTANTIVE_SOURCES = 2` over `SUBSTANTIVE_SOURCE_TYPES = (rfp, transcript, email_thread)`,
+with `REQUIRED_SOURCE_TYPES = ("rfp",)` unchanged. `background` cannot fill a slot — context
+creates no commitments (SOURCES.md §5), so an RFP plus a brand-guidelines PDF is still a refusal.
+
+| Input | Verdict |
+|---|---|
+| fixture (4 sources, 3 substantive) | pass |
+| fixture − RFP (transcript + emails) | **refuse** — Tier-2 DoD holds ✅ |
+| RFP + background only | refuse — 1 substantive |
+| transcript + emails, no RFP | refuse — missing rfp |
+
+The alternative reading ("any two of the three") was declined at review because it would have
+made Tier-2's negative DoD test unreachable and required amending `docs/TIERS.md:30`.
+
+**A9-2 — Readiness thresholds moved to `config/readiness_policy.json`.**
+Values unchanged (5 of 7 fields, ≤0.4 low-confidence share) — this is a relocation, not a
+retuning. They now sit with the glossary and template as agency config that ships with the
+skeleton, so a partner can change policy without a code diff. Three properties the move buys:
+
+- **Missing or malformed config is fatal** (`ConfigError`), never silently defaulted. The runner
+  and the harness both compute this block; a hidden fallback would let them disagree about what
+  "ready" means with nothing failing.
+- **The do-not-tune rule is written in the file the tuner opens** — calibrate against account-lead
+  judgment in the pilot, never against `answer_key.json`. Tuning against the exam would make the
+  Tier-3 score meaningless. A test asserts that sentence is still there.
+- **`READINESS_SHARE_PRECISION` deliberately stayed in code.** Rounding is contract, not policy:
+  the harness compares this value exactly, so it must not be independently editable.
+
+Still unmeasured. Pilot weeks 2–4 are the calibration, per PRD §7.
+
 ---
 
-**Tier 0 DoD: 4/4 green. Stopping for human review. Tier 1 not started.**
+**Tier 0 DoD: 4/4 green (87 passed, 6 skipped). Both review items resolved. Tier 1 not started.**

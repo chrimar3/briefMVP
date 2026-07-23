@@ -39,9 +39,13 @@ SCHEMA_DIR = REPO_ROOT / "schema"
 #: without it there is no claim to check the conversation against.
 REQUIRED_SOURCE_TYPES = ("rfp",)
 
-#: ...and at least one of these, so no brief ever rests on a single source.
-#: `background` is deliberately excluded: context creates no commitments (SOURCES.md §5).
-CORROBORATING_SOURCE_TYPES = ("transcript", "email_thread")
+#: Source types that can carry a commitment. `background` is deliberately excluded:
+#: context creates no deliverable, budget or deadline on its own (SOURCES.md §5), so a
+#: brand-guidelines PDF can never be one of the sources a brief rests on.
+SUBSTANTIVE_SOURCE_TYPES = ("rfp", "transcript", "email_thread")
+
+#: Minimum input set: no brief ever rests on a single source.
+MIN_SUBSTANTIVE_SOURCES = 2
 
 #: A briefable project has *some* budget and *some* timeline signal somewhere.
 #: Generic domain vocabulary, GR + EN — never fixture strings.
@@ -75,14 +79,15 @@ BRIEF_FIELDS = (
     "mandatories",
 )
 
-#: A draft with fewer evidenced fields than this is thin input, not a brief.
-READINESS_MIN_FIELDS_WITH_EVIDENCE = 5
+#: Readiness thresholds live in `config/readiness_policy.json`, not here — they are agency
+#: policy (like the glossary), and a partner changing "5 of 7" should not need a code diff.
+#: See `load_readiness_policy`.
+CONFIG_DIR = REPO_ROOT / "config"
+READINESS_POLICY_PATH = CONFIG_DIR / "readiness_policy.json"
 
-#: ...and a draft where more than this share of entries rest on implication is thin too.
-READINESS_MAX_LOW_CONFIDENCE_SHARE = 0.4
-
-#: Decimal places for `low_confidence_share`. The harness recomputes this block and
-#: compares values, so the rounding rule has to be part of the contract, not incidental.
+#: Decimal places for `low_confidence_share`. This one stays in code: it is not policy but
+#: contract — the harness recomputes the block and compares values, so the rounding rule
+#: must be identical on both sides and must not be editable independently.
 READINESS_SHARE_PRECISION = 4
 
 #: v1 serves S0–S1 only (PRD §3, DR-11).
@@ -119,6 +124,15 @@ class SchemaValidationError(GateError):
 
 class ScopeError(GateError):
     """The project falls outside the MVP's declared scope (sensitivity tier)."""
+
+
+class ConfigError(GateError):
+    """Agency policy config is missing or malformed.
+
+    Deliberately fatal rather than falling back to built-in defaults: the runner and the
+    harness both compute the readiness block, and a silent default would let them disagree
+    about what "ready" means without anyone noticing.
+    """
 
 
 # --------------------------------------------------------------------------------------
@@ -222,6 +236,7 @@ class ReadinessGateResult:
 
     ok: bool
     present_types: list[str] = field(default_factory=list)
+    substantive_count: int = 0
     missing_required: list[str] = field(default_factory=list)
     missing_signals: list[str] = field(default_factory=list)
     message: str = ""
@@ -230,6 +245,7 @@ class ReadinessGateResult:
         return {
             "ok": self.ok,
             "present_types": self.present_types,
+            "substantive_count": self.substantive_count,
             "missing_required": self.missing_required,
             "missing_signals": self.missing_signals,
             "message": self.message,
@@ -246,11 +262,15 @@ def readiness_gate(sources: Sequence[SourceDoc]) -> ReadinessGateResult:
     Refusal is the product working. A brief drafted from a folder that never mentioned a
     budget is a confident-looking guess, which is the failure mode the whole system exists
     to avoid, so the gate names what is missing and hands the ask back to the account lead.
+
+    Two conditions on sources, plus two on signal:
+      * the RFP is present (what the client believes they are buying), and
+      * at least MIN_SUBSTANTIVE_SOURCES substantive sources exist, so nothing rests on one.
     """
     present_types = sorted({s.source_type for s in sources})
+    substantive = [s for s in sources if s.source_type in SUBSTANTIVE_SOURCE_TYPES]
     missing_required = [t for t in REQUIRED_SOURCE_TYPES if t not in present_types]
-    if not any(t in present_types for t in CORROBORATING_SOURCE_TYPES):
-        missing_required.append(f"one of {list(CORROBORATING_SOURCE_TYPES)}")
+    too_few = len(substantive) < MIN_SUBSTANTIVE_SOURCES
 
     corpus = "\n".join(s.text for s in sources)
     missing_signals = []
@@ -259,21 +279,31 @@ def readiness_gate(sources: Sequence[SourceDoc]) -> ReadinessGateResult:
     if not _has_signal(TIMELINE_SIGNAL_PATTERNS, corpus):
         missing_signals.append("timeline")
 
-    if not missing_required and not missing_signals:
+    if not missing_required and not too_few and not missing_signals:
         return ReadinessGateResult(
             ok=True,
             present_types=present_types,
-            message=f"input sufficient — {len(sources)} source(s): {', '.join(present_types)}",
+            substantive_count=len(substantive),
+            message=(
+                f"input sufficient — {len(sources)} source(s), {len(substantive)} substantive: "
+                f"{', '.join(present_types)}"
+            ),
         )
 
     asks = []
     if missing_required:
         asks.append("missing source(s): " + ", ".join(missing_required))
+    if too_few:
+        asks.append(
+            f"only {len(substantive)} substantive source(s) — need {MIN_SUBSTANTIVE_SOURCES} "
+            f"from {list(SUBSTANTIVE_SOURCE_TYPES)} (background does not count)"
+        )
     if missing_signals:
         asks.append("no " + " or ".join(missing_signals) + " signal in any source")
     return ReadinessGateResult(
         ok=False,
         present_types=present_types,
+        substantive_count=len(substantive),
         missing_required=missing_required,
         missing_signals=missing_signals,
         message=(
@@ -353,14 +383,42 @@ def find_uncited_items(extract: dict) -> list[str]:
 # --------------------------------------------------------------------------------------
 
 
-def compute_readiness_block(brief: dict) -> dict:
+def load_readiness_policy(path: Optional[Path] = None) -> dict:
+    """Load the agency readiness thresholds, validating them properly.
+
+    Keys prefixed with `_` are documentation for whoever edits the file and are ignored.
+    A missing or out-of-range value raises rather than defaulting — see `ConfigError`.
+    """
+    path = Path(path) if path else READINESS_POLICY_PATH
+    if not path.is_file():
+        raise ConfigError(f"readiness policy not found at {path}. The pipeline will not guess thresholds.")
+    try:
+        policy = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ConfigError(f"{path}: not valid JSON — {exc}") from exc
+
+    min_fields = policy.get("min_fields_with_evidence")
+    max_share = policy.get("max_low_confidence_share")
+    if not isinstance(min_fields, int) or isinstance(min_fields, bool) or not 0 <= min_fields <= len(BRIEF_FIELDS):
+        raise ConfigError(
+            f"{path}: min_fields_with_evidence must be an integer 0–{len(BRIEF_FIELDS)}, got {min_fields!r}"
+        )
+    if not isinstance(max_share, (int, float)) or isinstance(max_share, bool) or not 0 <= max_share <= 1:
+        raise ConfigError(f"{path}: max_low_confidence_share must be a number 0–1, got {max_share!r}")
+
+    return {"min_fields_with_evidence": min_fields, "max_low_confidence_share": float(max_share)}
+
+
+def compute_readiness_block(brief: dict, policy: Optional[dict] = None) -> dict:
     """Compute `brief.readiness` deterministically from the brief's own contents.
 
     SYNTHESIS.md rule 8 forbids the model from populating this block, and the Tier-2 DoD
     has the harness recompute it and compare. So this function is the single definition of
     the value, called once by the runner and once by the harness — same input, same output,
-    no model in the path.
+    no model in the path. Thresholds come from `config/readiness_policy.json` so both callers
+    read the same agency policy.
     """
+    policy = policy or load_readiness_policy()
     entries = [e for f in BRIEF_FIELDS for e in (brief.get(f) or [])]
     evidenced_fields = sum(
         1
@@ -371,8 +429,8 @@ def compute_readiness_block(brief: dict) -> dict:
     share = round(low / len(entries), READINESS_SHARE_PRECISION) if entries else 0.0
 
     ready = (
-        evidenced_fields >= READINESS_MIN_FIELDS_WITH_EVIDENCE
-        and share <= READINESS_MAX_LOW_CONFIDENCE_SHARE
+        evidenced_fields >= policy["min_fields_with_evidence"]
+        and share <= policy["max_low_confidence_share"]
     )
     return {
         "fields_with_evidence": evidenced_fields,
