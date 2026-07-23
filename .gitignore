@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Run outputs are artifacts, not source. Tier reports and blockers are the exception:
+# they are the record of the build and must survive in git.
+runs/*
+!runs/tier_*_report.md
+!runs/BLOCKED.md

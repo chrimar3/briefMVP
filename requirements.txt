@@ -1,0 +1,5 @@
+# Deterministic gates + tests only. The model side runs through Claude Code subagents,
+# so there is no SDK dependency here by design (PRD DR-1: buy the model, build the skeleton).
+jsonschema>=4.0
+pytest>=7.0
+PyYAML>=6.0
