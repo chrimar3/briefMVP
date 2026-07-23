@@ -1,0 +1,47 @@
+{
+  "fixture": "northlight_01",
+  "read_only_notice": "This file is the exam. The build agent must never read it during pipeline runs, never edit it, and never tune prompts against its specifics. Harness-only input. (CLAUDE.md rule 2.)",
+  "expected_classification": { "project_type": "advertising_creative", "sensitivity_tier": "S1" },
+  "seeded_conflicts": [
+    {
+      "id": "C1", "field": "budget",
+      "position_a": { "source_id": "rfp_meltemi", "signal": "90.000" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "ογδόντα" },
+      "note": "€90k including media (RFP) vs 80–85 excluding media spend (CFO, 00:14:32). Must surface as conflict with both citations; must NOT be merged or totalled."
+    },
+    {
+      "id": "C2", "field": "timeline",
+      "position_a": { "source_id": "rfp_meltemi", "signal": "Οκτωβρίου" },
+      "position_b": { "source_id": "emails_thread", "signal": "15 Σεπτεμβρίου" },
+      "note": "RFP: first week of October; email 2026-07-14 (most recent state): board moved launch to Sept 15. Conflict must cite both; recency may be noted but resolution is human-only."
+    },
+    {
+      "id": "C3", "field": "audiences",
+      "position_a": { "source_id": "rfp_meltemi", "signal": "18–24" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "25 to 40" },
+      "note": "RFP Gen Z 18–24 vs CMO's explicit correction to 25–40 urban professionals (00:03:41)."
+    }
+  ],
+  "seeded_gaps": [
+    { "id": "G1", "field_any_of": ["objectives", "measurement"], "keyword_any_of": ["KPI", "success metric", "μέτρηση", "στόχος επιτυχίας"], "note": "No success metric exists anywhere; CMO admits it at 00:18:52. Open question required." },
+    { "id": "G2", "field_any_of": ["budget"], "keyword_any_of": ["media spend", "media budget"], "note": "Media budget range unknown (CFO defers to media shop). Open question required." },
+    { "id": "G3", "field_any_of": ["process", "mandatories", "signoff"], "keyword_any_of": ["approval", "sign-off", "έγκριση"], "note": "Final approver undecided (email M2: 'θα επανέλθω'). Open question required." },
+    { "id": "G4", "field_any_of": ["deliverables"], "keyword_any_of": ["format", "spec", "διάρκεια", "ratio"], "note": "'Some videos and social stuff' — no formats/specs. Open question required." }
+  ],
+  "seeded_garbling": [
+    { "id": "T1", "source_id": "transcript_kickoff", "corrupted": "μπραντ αγουέρνες", "intended": "brand awareness" },
+    { "id": "T2", "source_id": "transcript_kickoff", "corrupted": "κι βίζουαλ", "intended": "key visual" }
+  ],
+  "traps": [
+    { "id": "X1", "type": "retraction", "check": "The OOH/metro idea (proposed 00:08:15, retracted 00:08:34) must NOT appear as a committed deliverable in the draft or renders. Acceptable: absent, or recorded as retracted/conditional.", "forbidden_as_committed_keywords": ["OOH", "μετρό", "metro"] },
+    { "id": "X2", "type": "speculation", "check": "The TikTok-dance remark (00:11:47, 'don't hold me to it') must carry qualifier=conditional wherever it appears. Note: distinct from the RFP's TikTok-first mandate, which is a stated requirement.", "keywords": ["TikTok dance"] },
+    { "id": "X3", "type": "no_invention", "check": "No resolved numeric budget total may appear anywhere in the draft or renders (no '€80,000', no '80.000', no €85k, no summed figure). Verbatim quoted signals inside conflict positions are allowed.", "forbidden_patterns": ["€80", "80.000", "€85", "85.000", "€90.000 total confirmed"] }
+  ],
+  "scoring": {
+    "conflicts_required": 3,
+    "gaps_required_min": 3,
+    "garbling_required_flagged_not_fixed": 2,
+    "uncited_values_allowed": 0,
+    "traps_required_pass": ["X1", "X2", "X3"]
+  }
+}

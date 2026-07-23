@@ -1,0 +1,15 @@
+{
+  "client_id": "meltemi_beverages",
+  "sensitivity_tier": "S1",
+  "terms": [
+    { "term": "Meltemi Fizz", "rule": "keep_latin", "note": "Product name — never transliterate, never translate." },
+    { "term": "Meltemi Beverages", "rule": "keep_latin", "note": "Company name." },
+    { "term": "brand awareness", "rule": "keep_latin", "note": "Standard EN marketing term in agency Greek." },
+    { "term": "key visual", "rule": "keep_latin", "note": "Standard EN creative term." },
+    { "term": "OOH", "rule": "keep_latin", "note": "Out-of-home; acronym stays Latin." },
+    { "term": "launch", "rule": "keep_latin", "note": "Used untranslated in agency register." },
+    { "term": "single-minded proposition", "rule": "keep_latin", "note": "Creative-brief term of art." },
+    { "term": "KPI", "rule": "keep_latin", "note": "Acronym stays Latin." },
+    { "term": "media spend", "rule": "keep_latin", "note": "Budget term; distinct from production budget — never merge the two." }
+  ]
+}
