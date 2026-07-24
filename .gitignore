@@ -8,3 +8,6 @@ __pycache__/
 runs/*
 !runs/tier_*_report.md
 !runs/BLOCKED.md
+
+# macOS
+.DS_Store
