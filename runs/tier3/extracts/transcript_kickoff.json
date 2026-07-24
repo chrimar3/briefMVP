@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "transcript_kickoff",
+    "source_type": "transcript",
+    "source_date": "2026-07-10",
+    "extraction_ts": "2026-07-24T12:54:20",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Το βασικό για μας είναι το μπραντ αγουέρνες — είναι καινούργια κατηγορία για εμάς, sparkling tea. Θέλουμε να μπούμε δυνατά.",
+      "lang": "mixed",
+      "location": "[00:02:05]",
+      "anchor": "Το βασικό για μας είναι το μπραντ αγουέρνες",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "25 to 40, urban professionals",
+      "lang": "en",
+      "location": "[00:03:41]",
+      "anchor": "our buyer is 25 to 40, urban professionals",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "Refreshment without the sugar guilt — zero sugar, natural ingredients",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Greek brand that owns the modern category (sparkling tea)",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Some videos and social content (formats not yet decided)",
+      "lang": "mixed",
+      "location": "[00:10:22]",
+      "anchor": "Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "TikTok dance (speculative: 'just thinking out loud, don't hold me to it')",
+      "lang": "mixed",
+      "location": "[00:11:47]",
+      "anchor": "Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "conditional",
+      "confidence": "low"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "October (per RFP)",
+      "lang": "en",
+      "location": "[00:16:40]",
+      "anchor": "Το RFP έλεγε Οκτώβριο",
+      "speaker_or_author": "ELENI",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Autumn ('κάπου εκεί'), to be finalized by board meeting end of month",
+      "lang": "mixed",
+      "location": "[00:17:03]",
+      "anchor": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο. Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα",
+      "speaker_or_author": "DIMITRIS",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε — χωρίς το media spend",
+      "lang": "el",
+      "location": "[00:14:32]",
+      "anchor": "είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend",
+      "speaker_or_author": "ANNA",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [],
+  "open_questions": [
+    {
+      "field": "deliverables",
+      "gap": "DIMITRIS states 'some videos and social content' but explicitly says formats have not been decided ('Δεν έχω καταλήξει σε formats').",
+      "why_it_matters": "Format decisions (short-form, long-form, reels, etc.) drive production timeline, budget scope, and platform strategy.",
+      "suggested_question_for_client": "Πόσα videos και σε ποιες μορφές (π.χ. 15s reels, TikTok, YouTube shorts, long-form)? Και ποια είναι τα social channels προτεραιότητα;",
+      "linked_items": []
+    },
+    {
+      "field": "budget",
+      "gap": "Figure stated as 'κάπου στα ογδόντα, μπορεί ογδόντα πέντε' (80–85) with no unit, currency, or scope clarification. ANNA explicitly states this excludes media spend.",
+      "why_it_matters": "Budget amount in euros, thousands, or other unit; and separation of production vs. media spend determines feasibility of deliverables and platform investment.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: τα 80–85 είναι σε χιλιάδες ευρώ για production μόνο; Υπάρχει ξεχωριστό media budget και ποιο είναι το εύρος του;",
+      "linked_items": []
+    },
+    {
+      "field": "timeline",
+      "gap": "Launch date hedged as 'κάπου εκεί' (around there) referring to October/autumn, pending board meeting approval end of month. No firm date.",
+      "why_it_matters": "Production timeline, vendor booking, and campaign phasing depend on a confirmed launch date.",
+      "suggested_question_for_client": "Πότε ακριβώς λαμβάνει απόφαση το board; Και ποια είναι η confirmed launch date ή το latest possible deadline;",
+      "linked_items": []
+    },
+    {
+      "field": "objectives",
+      "gap": "DIMITRIS defines brand awareness as the main objective, but ELENI asks (18:30) about success metrics — sales or awareness KPI — and DIMITRIS replies there is nothing written yet.",
+      "why_it_matters": "Without defined KPIs or success metrics, campaign effectiveness cannot be measured, and investment return cannot be validated.",
+      "suggested_question_for_client": "Ποια είναι τα success metrics για αυτό το campaign; Πώς θα μετράμε το brand awareness — reach, recall, social engagement; Υπάρχει sales target ή volume goal;",
+      "linked_items": []
+    },
+    {
+      "field": "audiences",
+      "gap": "Source mentions Gen Z only via RFP reference (unverifiable in this transcript). Client explicitly states actual buyer is 25–40 urban professionals. Audience targeting basis unclear.",
+      "why_it_matters": "Audience definition drives channel mix, creative tone, and media strategy. Must confirm which definition the campaign targets.",
+      "suggested_question_for_client": "Στο RFP ήταν Gen Z, αλλά σήμερα ειπώθηκε ότι ο πραγματικός buyer είναι 25–40 χρονών urban professionals. Ποια ακριβώς είναι η target audience για το campaign;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "[00:02:05] Token 'μπραντ αγουέρνες' (Greek-script rendering) flagged by fidelity gate with glossary-match proposal 'brand awareness' (confidence high). Extracted as-is per rule G; glossary match noted for downstream translation stage.",
+    "[00:06:02] Token 'κι βίζουαλ' (Greek-script rendering) — glossary term 'key visual' rendered in Greek as-is per rule G. Value preserves source language; anchor updated to be verbatim.",
+    "[REPAIR: audiences[0] with anchor 'Το RFP που σας στείλαμε λέει Gen Z' removed — anchor not found verbatim in source per validator (SOURCES.md rule 2).]",
+    "[REPAIR: deliverables[2] with anchor containing combined metro proposal + retraction removed — combined anchor not found verbatim in source per validator (SOURCES.md rule 2). Metro retraction documented only via internal_conflict; both removed together.]"
+  ]
+}

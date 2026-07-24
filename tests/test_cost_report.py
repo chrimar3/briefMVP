@@ -50,6 +50,20 @@ def test_a_repair_round_marks_a_run_not_clean():
     assert result["stage1"][0]["clean"] is False
 
 
+def test_an_extraction_repair_marks_not_clean():
+    run_id, m = _full_run("r1", 0.70)
+    m["steps"][2]["extracts"][0]["attempts"].append(_sub(0.10))  # one source needed a repair
+    assert cost.analyse([(run_id, m)])["stage1"][0]["clean"] is False
+
+
+def test_clean_is_per_source_not_a_hardcoded_count():
+    """A 6-source project with every source clean on attempt 1 is a clean run — the threshold
+    derives from the manifest, never from the fixture's 4 sources."""
+    run_id, m = _full_run("r1", 0.70)
+    m["steps"][2]["extracts"] = [{"attempts": [_sub(0.10)]} for _ in range(6)]
+    assert cost.analyse([(run_id, m)])["stage1"][0]["clean"] is True
+
+
 def test_incomplete_run_is_not_counted_as_stage1():
     """A run that failed before render is not a per-brief cost sample."""
     run_id, m = _full_run("r1", 0.70)

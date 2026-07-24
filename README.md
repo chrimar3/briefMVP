@@ -33,6 +33,24 @@ A folder, an input, an output, and four instruction files. The skeleton is the p
 
 Demo naming: `fixtures/northlight_01/` plays the role of `Input/`; `runs/<timestamp>/` plays the role of `Output/`.
 
+## Run it
+
+```bash
+pip install -r requirements.txt        # jsonschema, pytest, PyYAML — nothing else
+python -m pytest -q                    # 224 tests, no model calls, no cost, ~0.3s
+
+# The model stages run as Claude Code subagents: install the `claude` CLI and be
+# authenticated. A full Stage-1 run makes 6 model calls (~$2.25, see docs/COST_MODEL.md).
+python pipeline/runner.py --project fixtures/northlight_01   # full Stage-1 run → runs/<ts>/
+python eval/harness.py runs/latest                           # grade it against the answer key
+python eval/cost_report.py                                   # what your runs actually cost
+```
+
+No CLI, no API budget? The graded run is committed as an evidence pack at **`runs/tier3/`** —
+the signed `brief.json`, both renders, all four extracts, the fidelity report, the harness
+verdict (`harness_report.json`, 17/17), and both shadow creative drafts. Every claim in the
+tier reports is inspectable there without running anything.
+
 ## Two stages, one gate between them
 
 Stage 1 (client brief) is the default flow: `python pipeline/runner.py --project <folder>` runs

@@ -77,9 +77,17 @@ def analyse(runs: list) -> dict:
             if n:
                 by_stage[s["name"]] = {"cost": cost, "attempts": n, "models": models}
         # A complete Stage-1 brief: all five model stages present and each ran once (no repair).
+        # "Clean" for extraction means one attempt PER SOURCE — derived from the step itself,
+        # never a hardcoded source count (the runner works on any folder; so does this).
+        extraction_clean = all(
+            len(e.get("attempts") or []) == 1
+            for s in (m.get("steps") or []) if s.get("name") == "extraction"
+            for e in s.get("extracts") or []
+        )
         if all(k in by_stage for k in ("classification", "fidelity_check", "extraction", "synthesis", "render")):
-            clean = all(by_stage[k]["attempts"] <= (4 if k == "extraction" else 1)
-                        for k in ("classification", "fidelity_check", "extraction", "synthesis", "render"))
+            clean = extraction_clean and all(
+                by_stage[k]["attempts"] == 1
+                for k in ("classification", "fidelity_check", "synthesis", "render"))
             stage1_runs.append({"run": run_id, "by_stage": by_stage,
                                 "total": sum(v["cost"] for k, v in by_stage.items() if k in STAGE1),
                                 "clean": clean})

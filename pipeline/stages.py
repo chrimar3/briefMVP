@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, conflicts, diagnostics, gates
+from pipeline import PIPELINE_VERSION, agents, conflicts, diagnostics, gates
 
 #: Single source of truth in agents.py — shared so the two repair loops cannot diverge.
 MAX_ATTEMPTS = agents.MAX_ATTEMPTS
@@ -308,7 +308,7 @@ OUTPUT
     classification_confidence = {classification['classification_confidence']}
     sensitivity_tier          = {classification['sensitivity_tier']}
     created_ts                = {datetime.now().isoformat(timespec='seconds')}
-    pipeline_version          = {gates.REPO_ROOT.name}-stage1
+    pipeline_version          = {PIPELINE_VERSION}
     sources                   = one entry per source above
 
   OMIT the `readiness` key entirely. The runner computes it deterministically and injects it;

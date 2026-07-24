@@ -1,0 +1,39 @@
+# Kickoff Call — Meltemi Fizz Launch
+source_id: transcript_kickoff · source_type: transcript · source_date: 2026-07-10
+Participants: ELENI (Northlight, account lead) · DIMITRIS (Meltemi, CMO) · ANNA (Meltemi, CFO)
+
+[00:01:12] ELENI: Καλημέρα σε όλους. Σκοπός σήμερα είναι να καταλάβουμε τι θέλετε να πετύχει το launch του Meltemi Fizz.
+
+[00:02:05] DIMITRIS: Ωραία. Το βασικό για μας είναι το μπραντ αγουέρνες [FIDELITY: glossary-match "brand awareness", confidence high] — είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί. Θέλουμε να μπούμε δυνατά.
+
+[00:03:41] DIMITRIS: Και να το πω καθαρά: το RFP που σας στείλαμε λέει Gen Z, αλλά honestly, our buyer is 25 to 40, urban professionals. Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea. Το Gen Z το έγραψε το προηγούμενο agency στο positioning και έμεινε.
+
+[00:05:20] ELENI: Κρατάω τη διόρθωση — σημαντικό. Μηνύματα; Τι θέλουμε να πει η καμπάνια;
+
+[00:06:02] DIMITRIS: Δύο πράγματα. Ένα: refreshment without the sugar guilt — zero sugar, φυσικά υλικά. Δύο: ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του. Το κι βίζουαλ [FIDELITY: glossary-match "key visual", confidence high] πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι.
+
+[00:08:15] DIMITRIS: Α, και σκεφτόμουν — ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές… [00:08:34] …actually scratch that, το μετρό είναι πανάκριβο φέτος, το κοίταξα τον Μάιο. Ξεχάστε το.
+
+[00:09:50] ELENI: ΟΚ. Παραδοτέα — τι φαντάζεστε;
+
+[00:10:22] DIMITRIS: Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς.
+
+[00:11:47] DIMITRIS: Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.
+
+[00:13:05] ELENI: Καταγράφηκε ως ιδέα, όχι ως απόφαση. Πάμε στο budget;
+
+[00:14:32] ANNA: Κοιτάξτε, είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend. Το media το βλέπουμε ξεχωριστά με τον media shop μας.
+
+[00:15:10] ELENI: Άρα production. Και το media range θα το μάθουμε από εκείνους;
+
+[00:15:26] ANNA: Ναι, δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα.
+
+[00:16:40] ELENI: Χρονικά; Το RFP έλεγε Οκτώβριο.
+
+[00:17:03] DIMITRIS: Κάπου εκεί κινούμαστε, ναι — φθινόπωρο. Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα.
+
+[00:18:30] ELENI: Τελευταίο από εμένα: πώς θα ξέρουμε ότι πέτυχε; Έχετε κάποιο συγκεκριμένο στόχο, sales ή awareness metric;
+
+[00:18:52] DIMITRIS: …Καλή ερώτηση. Όχι ακόμα κάτι γραμμένο. Ας το δούμε μαζί.
+
+[00:19:40] ELENI: Θα το σημειώσω ως ανοιχτό. Ευχαριστώ πολύ και τους δύο — στέλνω recap μέσα στη μέρα.

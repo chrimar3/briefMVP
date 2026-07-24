@@ -20,11 +20,12 @@ Two-stage AI briefing pipeline (extraction → synthesis → bilingual render �
 
 - `schema/brief_schema.json` — the data model. One-way door: renders, metrics, and creative stage all hang off it.
 - `skills/SOURCES.md` · `SYNTHESIS.md` · `TRANSLATION.md` · `TRANSCRIPTS.md` — the four runtime instruction files, injected into subagent prompts verbatim (extract←SOURCES, synthesize←SYNTHESIS, render←TRANSLATION, fidelity-check←TRANSCRIPTS; classify and creative-shadow carry inline instructions). Treat as spec, not suggestions.
-- `.claude/agents/` — `extract` (haiku) · `classify` (haiku) · `fidelity-check` (haiku) · `synthesize` (sonnet) · `render` (sonnet) · `creative-shadow` (sonnet)
-- `pipeline/` — deterministic orchestration: `gates.py` (readiness, validation), `runner.py` (step sequence per PRD §5)
+- `.claude/agents/` — `extract` (haiku) · `classify` (haiku) · `fidelity-check` (haiku) · `synthesize` (sonnet) · `render` (sonnet) · `creative-shadow` (sonnet). Invoked with the definition passed inline (`--agents`) from a neutral cwd, so this CLAUDE.md never loads into a runtime agent.
+- `pipeline/` — deterministic orchestration: `gates.py` (input contract, readiness, schema validation, citation verification, readiness block) · `runner.py` (step sequence per PRD §5, stage selections, resume) · `stages.py` (classify/fidelity/synthesize/render work orders + gates) · `extraction.py` (per-source extraction + repair loop) · `conflicts.py` (deterministic cross-source candidate pass) · `creative.py` (Stage-2 sign-off gate + spec-match gate + sonnet/opus A/B) · `agents.py` (clean-substrate subagent invocation seam) · `diagnostics.py` (durable per-attempt repair log)
+- `config/` — `readiness_policy.json` (agency readiness thresholds) · `channel_specs.json` (deterministic channel spec table, DR-7 — creative selects rows, never generates values)
 - `fixtures/northlight_01/` — synthetic transcript, RFP, email thread, background doc + `answer_key.json` (seeded conflicts, gaps, garbled terms)
-- `eval/harness.py` — machine-checkable DoD for Tiers 1–3
-- `runs/` — timestamped outputs; `runs/latest` symlink; one `tier_N_report.md` per tier
+- `eval/harness.py` — machine-checkable DoD for Tiers 1–3 (**frozen**; the only code allowed to read the answer key). Dev tooling beside it, never frozen: `repair_analysis.py` (recurring gate violations across runs) · `cost_report.py` (measured per-brief cost; feeds `docs/COST_MODEL.md`)
+- `runs/` — timestamped outputs; `runs/latest` symlink; one `tier_N_report.md` per tier; `runs/tier3/` is the committed evidence pack for the graded run
 
 ## Model routing
 

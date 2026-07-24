@@ -1,0 +1,481 @@
+{
+  "run_id": "tier3",
+  "pipeline_version": "0.1.0-tier0",
+  "project_dir": "/Users/chrism/atcom-run/brief-builder/fixtures/northlight_01",
+  "started_ts": "2026-07-24T16:38:34",
+  "finished_ts": "2026-07-24T16:41:56",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "creative",
+  "sources": [
+    {
+      "source_id": "background_brand_guidelines",
+      "source_type": "background",
+      "source_date": "2026-03-02"
+    },
+    {
+      "source_id": "emails_thread",
+      "source_type": "email_thread",
+      "source_date": "2026-07-15 (latest message)"
+    },
+    {
+      "source_id": "rfp_meltemi",
+      "source_type": "rfp",
+      "source_date": "2026-06-28"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "source_type": "transcript",
+      "source_date": "2026-07-10"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "background",
+          "email_thread",
+          "rfp",
+          "transcript"
+        ],
+        "substantive_count": 3,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript"
+      },
+      "from_earlier_run": true
+    },
+    {
+      "number": 2,
+      "name": "classification",
+      "kind": "model",
+      "agent": "classify",
+      "description": "Project type + onboarding sensitivity tier",
+      "status": "pass",
+      "classification": {
+        "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/classification.json",
+        "project_type": "advertising_creative",
+        "classification_confidence": "high",
+        "sensitivity_tier": "S1",
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "classify",
+              "ok": true,
+              "session_id": "3b2f8338-41c4-4fd4-be0c-ca3c4069da28",
+              "model_ids": [
+                "claude-haiku-4-5-20251001"
+              ],
+              "cost_usd": 0.0372222,
+              "duration_ms": 34103,
+              "num_turns": 7,
+              "usage": {
+                "input_tokens": 25,
+                "output_tokens": 2571,
+                "cache_read_input_tokens": 14642,
+                "cache_creation_input_tokens": 11439
+              }
+            },
+            "violations": []
+          }
+        ]
+      },
+      "from_earlier_run": true
+    },
+    {
+      "number": 3,
+      "name": "fidelity_check",
+      "kind": "model",
+      "agent": "fidelity-check",
+      "description": "Transcript fidelity gate + annotation",
+      "status": "pass",
+      "fidelity": [
+        {
+          "source_id": "transcript_kickoff",
+          "report_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/fidelity/transcript_kickoff.report.json",
+          "annotated_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/fidelity/transcript_kickoff.annotated.md",
+          "verdict": "pass_with_flags",
+          "fidelity_score": "high",
+          "tokens_flagged": 2,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "fidelity-check",
+                "ok": true,
+                "session_id": "fb80b628-f1f2-4c62-816c-dc155828cf4a",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.0421819,
+                "duration_ms": 51911,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 3943,
+                  "cache_read_input_tokens": 12339,
+                  "cache_creation_input_tokens": 10604
+                }
+              },
+              "violations": []
+            }
+          ]
+        }
+      ],
+      "from_earlier_run": true
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "background_brand_guidelines",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/background_brand_guidelines.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "6a54a27c-947e-4173-aa29-d6923d57cc09",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.10872419999999998,
+                "duration_ms": 135942,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 13665,
+                  "cache_read_input_tokens": 22982,
+                  "cache_creation_input_tokens": 19038
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 8,
+          "open_question_count": 0,
+          "extraction_note_count": 1
+        },
+        {
+          "source_id": "emails_thread",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/emails_thread.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "169a4f3e-371c-48fa-bc4b-85a34625bd7f",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.11348069999999999,
+                "duration_ms": 152547,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 14283,
+                  "cache_read_input_tokens": 23127,
+                  "cache_creation_input_tokens": 19864
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 7,
+          "open_question_count": 5,
+          "extraction_note_count": 3
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/rfp_meltemi.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "46ddf42f-5dc7-423b-97c8-cc28056abdbb",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1554605,
+                "duration_ms": 219085,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 20307,
+                  "cache_read_input_tokens": 23145,
+                  "cache_creation_input_tokens": 25793
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 8,
+          "open_question_count": 8,
+          "extraction_note_count": 2
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/transcript_kickoff.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "331f54d0-6ee7-4498-8460-18d90e736ec6",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.08704790000000001,
+                "duration_ms": 113620,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 2233,
+                  "output_tokens": 9980,
+                  "cache_read_input_tokens": 21989,
+                  "cache_creation_input_tokens": 16358
+                }
+              },
+              "violations": [
+                "audiences[0]: anchor 'Το RFP που σας στείλαμε λέει Gen Z' does not occur in the source — citations are copied from the document, never constructed",
+                "deliverables[2]: anchor 'ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές… actually scratch that, το μετρό είναι πανάκριβο φέτος' does not occur in the source — citations are copied from the document, never constructed",
+                "key_messages[2]: value contains glossary term 'key visual', which never appears in Latin script in the source. If the source renders it collapsed into Greek script, keep the source's characters and add an extraction_note proposing the glossary match (SOURCES.md rule G); never repair in place."
+              ]
+            },
+            {
+              "attempt": 2,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "cd4c2fdb-575c-4e89-a9fc-c0bf272d393c",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1439522,
+                "duration_ms": 191790,
+                "num_turns": 16,
+                "usage": {
+                  "input_tokens": 121,
+                  "output_tokens": 14516,
+                  "cache_read_input_tokens": 205212,
+                  "cache_creation_input_tokens": 25365
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 10,
+          "open_question_count": 5,
+          "extraction_note_count": 4
+        }
+      ],
+      "from_earlier_run": true
+    },
+    {
+      "number": 5,
+      "name": "conflict_pass",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Cross-source contradictions — surfaced, never resolved",
+      "status": "pass",
+      "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/conflict_candidates.json",
+      "candidate_count": 7,
+      "candidate_fields": [
+        "objectives",
+        "audiences",
+        "key_messages",
+        "deliverables",
+        "timeline",
+        "budget",
+        "mandatories"
+      ],
+      "internal_conflict_count": 0,
+      "from_earlier_run": true
+    },
+    {
+      "number": 6,
+      "name": "synthesis",
+      "kind": "model",
+      "agent": "synthesize",
+      "description": "Assemble the canonical brief object",
+      "status": "pass",
+      "synthesis": {
+        "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief.json",
+        "entry_count": 25,
+        "conflict_count": 3,
+        "open_question_count": 10,
+        "readiness": {
+          "fields_with_evidence": 5,
+          "low_confidence_share": 0.04,
+          "open_question_count": 10,
+          "verdict": "ready_for_review"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "synthesize",
+              "ok": true,
+              "session_id": "470965a1-770a-43d2-8b21-87c80b1e5572",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.8488542,
+              "duration_ms": 305128,
+              "num_turns": 10,
+              "usage": {
+                "input_tokens": 10,
+                "output_tokens": 30871,
+                "cache_read_input_tokens": 74364,
+                "cache_creation_input_tokens": 60575
+              }
+            },
+            "violations": []
+          }
+        ]
+      },
+      "from_earlier_run": true
+    },
+    {
+      "number": 7,
+      "name": "render",
+      "kind": "model",
+      "agent": "render",
+      "description": "GR + EN documents from the same object",
+      "status": "pass",
+      "render": {
+        "el_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief_el.md",
+        "en_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief_en.md",
+        "el_chars": 13970,
+        "en_chars": 12643,
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "render",
+              "ok": true,
+              "session_id": "29137336-9f81-4a26-aac6-df7707438674",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 1.2748793999999999,
+              "duration_ms": 553923,
+              "num_turns": 9,
+              "usage": {
+                "input_tokens": 10,
+                "output_tokens": 49760,
+                "cache_read_input_tokens": 155278,
+                "cache_creation_input_tokens": 80311
+              }
+            },
+            "violations": []
+          }
+        ]
+      },
+      "from_earlier_run": true
+    },
+    {
+      "number": 9,
+      "name": "creative_shadow",
+      "kind": "model",
+      "agent": "creative-shadow",
+      "description": "Shadow creative brief A/B (sonnet vs opus)",
+      "status": "pass",
+      "creative": [
+        {
+          "model_alias": "sonnet",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/creative/creative_brief_sonnet.md",
+          "model_ids": [
+            "claude-sonnet-5"
+          ],
+          "cost_usd": 0.267801,
+          "usage": {
+            "input_tokens": 1356,
+            "output_tokens": 7800,
+            "cache_read_input_tokens": 55610,
+            "cache_creation_input_tokens": 21675
+          },
+          "chars": 6994,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "creative-shadow",
+                "ok": true,
+                "session_id": "1e835468-9283-4c4a-85c3-c197b39cfb9d",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.267801,
+                "duration_ms": 90446,
+                "num_turns": 6,
+                "usage": {
+                  "input_tokens": 1356,
+                  "output_tokens": 7800,
+                  "cache_read_input_tokens": 55610,
+                  "cache_creation_input_tokens": 21675
+                }
+              },
+              "violations": []
+            }
+          ]
+        },
+        {
+          "model_alias": "opus",
+          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/creative/creative_brief_opus.md",
+          "model_ids": [
+            "claude-opus-4-8"
+          ],
+          "cost_usd": 0.4699445,
+          "usage": {
+            "input_tokens": 1354,
+            "output_tokens": 7724,
+            "cache_read_input_tokens": 28829,
+            "cache_creation_input_tokens": 25566
+          },
+          "chars": 8525,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "creative-shadow",
+                "ok": true,
+                "session_id": "ebac80c6-87d6-48b1-9090-d0b6f4be84f2",
+                "model_ids": [
+                  "claude-opus-4-8"
+                ],
+                "cost_usd": 0.4699445,
+                "duration_ms": 109801,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 1354,
+                  "output_tokens": 7724,
+                  "cache_read_input_tokens": 28829,
+                  "cache_creation_input_tokens": 25566
+                }
+              },
+              "violations": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

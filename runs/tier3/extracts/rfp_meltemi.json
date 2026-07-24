@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "rfp_meltemi",
+    "source_type": "rfp",
+    "source_date": "2026-06-28",
+    "extraction_ts": "2026-07-24T12:50:40",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+      "lang": "el",
+      "location": "## 2. Στόχος",
+      "anchor": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα",
+      "lang": "mixed",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [],
+  "deliverables": [
+    {
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Launch την πρώτη εβδομάδα του Οκτωβρίου 2026",
+      "lang": "mixed",
+      "location": "## 5. Χρονοδιάγραμμα",
+      "anchor": "Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [
+    {
+      "value": "Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media",
+      "lang": "mixed",
+      "location": "## 6. Προϋπολογισμός",
+      "anchor": "**€90.000, συμπεριλαμβανομένου του media**",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "lang": "el",
+      "location": "## 7. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "speaker_or_author": "Meltemi Beverages",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "key_messages",
+      "gap": "No specific campaign messaging, brand positioning, or 'single-minded proposition' stated",
+      "why_it_matters": "Creative development requires clear messaging pillars to ensure consistency across channels and resonance with target audience",
+      "suggested_question_for_client": "Ποια είναι τα κύρια μηνύματα ή η 'single-minded proposition' που πρέπει να κεντρικά η καμπάνια για το Meltemi Fizz;"
+    },
+    {
+      "field": "deliverables",
+      "gap": "Video deliverables lack technical specification: quantity, duration, format, and intended distribution method not stated",
+      "why_it_matters": "Production planning and budget allocation require clear technical specifications to scope work appropriately",
+      "suggested_question_for_client": "Πόσα βίντεο αναμένετε και ποια θα ήταν η ιδανική διάρκειά τους (π.χ., τυπικό μήκος TikTok vs Instagram Reels vs YouTube);"
+    },
+    {
+      "field": "deliverables",
+      "gap": "Key visuals specification undefined: quantity, format, use cases, and application contexts not specified",
+      "why_it_matters": "Creative scope and production planning depend on understanding total deliverable volume and intended formats",
+      "suggested_question_for_client": "Πόσα key visuals θα χρειάζονται και που ακριβώς θα χρησιμοποιηθούν (social media, retail, OOH, packaging);"
+    },
+    {
+      "field": "budget",
+      "gap": "Budget breakdown unclear: €90,000 total includes media spend but allocation between production and paid media not specified",
+      "why_it_matters": "Agency resource planning and channel strategy depend on understanding how much budget is available for creative production versus paid media placement",
+      "suggested_question_for_client": "Πώς διαμερίζεται ο προϋπολογισμός των €90.000 μεταξύ δημιουργικής παραγωγής και media spend; Υπάρχει κονδύλιο για influencer partnerships ή seeding;"
+    },
+    {
+      "field": "deliverables",
+      "gap": "'TikTok-first' strategy is stated but relationship to other required platforms unclear; prioritization ambiguous",
+      "why_it_matters": "Creative resource prioritization and channel budget allocation depend on whether TikTok dominates production, distribution, or both",
+      "suggested_question_for_client": "Όταν λέτε 'TikTok-first', αναφέρεστε σε προτεραιότητα κατανομής budget, παραγωγής creative, ή και των δύο; Πώς θα πρέπει τα creative assets να προσαρμοστούν για άλλα κανάλια;"
+    },
+    {
+      "field": "timeline",
+      "gap": "Launch date stated but production timeline undefined: no milestones for concept approval, first draft review, or final delivery before launch date",
+      "why_it_matters": "Project scheduling and resource allocation require clear production milestones to ensure on-time delivery",
+      "suggested_question_for_client": "Ποιες είναι οι βασικές ημερομηνίες για υποβολή της πρότασης, την πρώτη έκδοση (concepto), τη τελική έγκριση και την παράδοση των deliverables πριν από το launch;"
+    },
+    {
+      "field": "mandatories",
+      "gap": "Brand guidelines referenced as 'συνημμένα' but not provided or accessed; guidelines appear incomplete or unavailable",
+      "why_it_matters": "Creative execution requires specific brand rules, visual standards, tone, and restrictions to ensure compliance",
+      "suggested_question_for_client": "Μπορείτε να μας υποβάλετε ή να μας δώσετε πρόσβαση στις ολοκληρωμένες brand guidelines (χρώματα, τυπογραφία, ήχος, περιορισμοί); Υπάρχουν προηγούμενα creative assets του Meltemi Fizz που θα πρέπει να ακολουθήσουμε;"
+    },
+    {
+      "field": "objectives",
+      "gap": "Campaign success metrics and KPIs not stated; no measurable success criteria provided",
+      "why_it_matters": "Measurement strategy and success evaluation require pre-agreed KPIs aligned with business objectives",
+      "suggested_question_for_client": "Ποιοι είναι οι κύριοι KPI για το launch; Ποιό είναι το target reach, impressions, engagement rate ή conversion target; Υπάρχουν στόχοι πωλήσεων ή brand awareness shift που αναμένετε;"
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Budget figure stated with Greek decimal notation (€90.000) representing 90,000 euros; no currency conversion applied.",
+    "RFP references 'συνημμένα guidelines' (attached guidelines) but attachment is not provided in source; recorded as stated without verification."
+  ]
+}

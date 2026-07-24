@@ -11,3 +11,8 @@ runs/*
 
 # macOS
 .DS_Store
+
+# Evidence pack: the graded Tier-3/4 run, committed so every claim in the tier
+# reports is inspectable without re-running the pipeline (signed brief, renders,
+# extracts, fidelity, harness verdict, creative A/B drafts).
+!runs/tier3

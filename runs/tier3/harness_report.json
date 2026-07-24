@@ -1,0 +1,152 @@
+{
+  "run_id": "tier3",
+  "run_dir": "/Users/chrism/atcom-run/brief-builder/runs/tier3",
+  "fixture": "northlight_01",
+  "summary": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0
+  },
+  "verdict": "PASS",
+  "checks": [
+    {
+      "check_id": "T1.1",
+      "tier": 1,
+      "title": "Every extract validates against extract_schema.json",
+      "status": "pass",
+      "detail": "4 extract(s) valid",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.2",
+      "tier": 1,
+      "title": "Zero items with empty location or anchor",
+      "status": "pass",
+      "detail": "33 item(s), all cited",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.3",
+      "tier": 1,
+      "title": "Every location and anchor occurs verbatim in its source",
+      "status": "pass",
+      "detail": "all citations resolve",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.4",
+      "tier": 1,
+      "title": "Seeded garbled terms present as-is with glossary-match proposals",
+      "status": "pass",
+      "detail": "2/2 flagged, none fixed",
+      "evidence": [
+        "T1: 'μπραντ αγουέρνες' as-is + proposal 'brand awareness'",
+        "T2: 'κι βίζουαλ' as-is + proposal 'key visual'"
+      ]
+    },
+    {
+      "check_id": "T2.1",
+      "tier": 2,
+      "title": "Draft validates against brief_schema.json",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.2",
+      "tier": 2,
+      "title": "sensitivity_tier is within S0–S1",
+      "status": "pass",
+      "detail": "tier S1",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.3",
+      "tier": 2,
+      "title": "Both GR and EN renders exist",
+      "status": "pass",
+      "detail": "el=13970 chars · en=12643 chars",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.4",
+      "tier": 2,
+      "title": "Every rendered claim carries a resolvable citation tag",
+      "status": "pass",
+      "detail": "all claim lines cited",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.5",
+      "tier": 2,
+      "title": "Glossary terms character-exact in both renders",
+      "status": "pass",
+      "detail": "protected terms intact in both renders",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.6",
+      "tier": 2,
+      "title": "Readiness block recomputes deterministically to the same values",
+      "status": "pass",
+      "detail": "{\"fields_with_evidence\": 5, \"low_confidence_share\": 0.04, \"open_question_count\": 10, \"verdict\": \"ready_for_review\"}",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.1",
+      "tier": 3,
+      "title": "Seeded conflicts detected with citations to both sources",
+      "status": "pass",
+      "detail": "3/3 required (C1, C2, C3)",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.2",
+      "tier": 3,
+      "title": "Seeded gaps present as open questions",
+      "status": "pass",
+      "detail": "4/4 found, 3 required (G1, G2, G3, G4)",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.3",
+      "tier": 3,
+      "title": "Garbled terms still flagged (not fixed) in the brief and renders",
+      "status": "pass",
+      "detail": "2/2 carried through",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.4",
+      "tier": 3,
+      "title": "Zero uncited values anywhere in the draft",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "X1",
+      "tier": 3,
+      "title": "Retracted idea is not a committed deliverable",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "X2",
+      "tier": 3,
+      "title": "Speculative remark carries the conditional qualifier",
+      "status": "pass",
+      "detail": "1 matching entr(ies), all conditional",
+      "evidence": []
+    },
+    {
+      "check_id": "X3",
+      "tier": 3,
+      "title": "No resolved numeric budget total in the draft or renders",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    }
+  ]
+}
