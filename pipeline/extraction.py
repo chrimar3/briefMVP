@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, gates
+from pipeline import agents, diagnostics, gates
 
 #: One repair attempt. If a schema-valid extract does not arrive in two tries, that is a
 #: finding about the stage, not something to paper over with a retry loop.
@@ -223,6 +223,8 @@ def extract_source(
                 "violations": violations,
             }
         )
+        diagnostics.record_attempt(run_dir, "extraction", source.source_id, attempt,
+                                   violations, result.as_dict())
         if not violations:
             extract = json.loads(output_file.read_text(encoding="utf-8"))
             return {

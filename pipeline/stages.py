@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, conflicts, gates
+from pipeline import agents, conflicts, diagnostics, gates
 
 MAX_ATTEMPTS = 2
 
@@ -40,13 +40,20 @@ class HaltForHuman(gates.GateError):
     """
 
 
-def _run_with_repair(agent: str, order: str, check, repair_prompt, cwd: Path) -> tuple:
-    """Invoke a subagent, gate its artifact, allow exactly one repair round."""
+def _run_with_repair(agent: str, order: str, check, repair_prompt, cwd: Path,
+                     run_dir: Optional[Path] = None) -> tuple:
+    """Invoke a subagent, gate its artifact, allow exactly one repair round.
+
+    Each attempt is logged to the durable repair sink before the loop can raise, so a stage that
+    gives up still leaves a full record of why (see pipeline/diagnostics.py).
+    """
     attempts = []
     for attempt in range(1, MAX_ATTEMPTS + 1):
         result = agents.invoke(agent, order, cwd=cwd)
         violations = check()
         attempts.append({"attempt": attempt, "subagent": result.as_dict(), "violations": violations})
+        if run_dir is not None:
+            diagnostics.record_attempt(run_dir, agent, agent, attempt, violations, result.as_dict())
         if not violations:
             return attempts, None
         order = repair_prompt(violations)
@@ -136,7 +143,7 @@ def classify(sources, run_dir: Path, project_id: str, client_config: dict, gloss
         lambda: check_classification(output_file, client_config),
         lambda v: f"REPAIR ORDER — your classification failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + f"\n\nFix exactly these and rewrite {output_file}.",
-        cwd,
+        cwd, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("classify", failed)
@@ -242,7 +249,7 @@ def fidelity_check(source, run_dir: Path, glossary_path: Path, cwd: Path) -> dic
         lambda v: "REPAIR ORDER — your fidelity output failed the gate:\n"
                   + "\n".join(f"  - {x}" for x in v)
                   + "\n\nFix exactly these and rewrite both files.",
-        cwd,
+        cwd, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("fidelity-check", failed)
@@ -392,7 +399,7 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
         lambda v: "REPAIR ORDER — your brief failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + f"\n\nFix exactly these and rewrite {output_file}. Do not drop entries to make "
                     f"errors go away, and do not invent evidence to satisfy a check.",
-        cwd,
+        cwd, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("synthesize", failed)
@@ -533,7 +540,7 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, cwd: Path) -> dict:
         lambda v: "REPAIR ORDER — your renders failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + "\n\nFix exactly these. Do not delete content to silence a check: a missing "
                     "entry is a worse failure than an uncited one.",
-        cwd,
+        cwd, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("render", failed)
