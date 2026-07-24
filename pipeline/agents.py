@@ -82,12 +82,16 @@ def _parse_frontmatter(text: str) -> tuple:
     return fields, match.group(2)
 
 
-def build_inline_agent(name: str) -> dict:
+def build_inline_agent(name: str, model_override: Optional[str] = None) -> dict:
     """Turn `.claude/agents/<name>.md` into the `--agents` inline payload {name: {...}}.
 
     Passing the definition inline is what lets the subagent run from a neutral cwd — the CLI
     never has to discover `.claude/agents/`, so it never has to sit in the repo where CLAUDE.md
     would be auto-loaded. The body is the system prompt verbatim (injected skill and all).
+
+    `model_override` swaps the alias for one call without editing the agent file — used by the
+    Tier-4 A/B, which runs the *same* creative-shadow definition on sonnet and on opus. Model
+    routing is otherwise a human decision (CLAUDE.md), so this is deliberately explicit.
     """
     path = AGENTS_DIR / f"{name}.md"
     if not path.is_file():
@@ -97,8 +101,9 @@ def build_inline_agent(name: str) -> dict:
     tools = [t.strip() for t in fields.get("tools", "").split(",") if t.strip()]
     if tools:
         spec["tools"] = tools
-    if fields.get("model"):
-        spec["model"] = fields["model"]
+    model = model_override or fields.get("model")
+    if model:
+        spec["model"] = model
     return {name: spec}
 
 
@@ -153,13 +158,15 @@ def invoke(
     prompt: str,
     access_dirs,
     timeout_s: int = DEFAULT_TIMEOUT_S,
+    model_override: Optional[str] = None,
 ) -> SubagentResult:
     """Run one Claude Code subagent non-interactively, on a clean substrate, and report cost.
 
     `access_dirs` are the only directories the agent may read or write — the project sources,
     the schema, the glossary, the templates and the run output. The agent definition is passed
     inline and the process runs from a neutral cwd, so the repo's build-time CLAUDE.md is never
-    auto-loaded into a runtime agent (see the module docstring).
+    auto-loaded into a runtime agent (see the module docstring). `model_override` swaps the
+    model alias for this one call (the Tier-4 A/B runs the same agent on sonnet and opus).
 
     Raises SubagentError on infrastructure failure. A subagent that *ran* but produced bad
     output is not this function's problem — the caller validates artifacts against the schema,
@@ -171,7 +178,7 @@ def invoke(
             f"set BRIEF_BUILDER_CLAUDE_BIN if the CLI lives elsewhere."
         )
 
-    inline_agents = build_inline_agent(agent)
+    inline_agents = build_inline_agent(agent, model_override=model_override)
     cmd = [
         CLAUDE_BIN,
         "-p", prompt,

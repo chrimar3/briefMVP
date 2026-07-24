@@ -29,7 +29,7 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, extraction, gates, stages
+from pipeline import agents, conflicts, creative, extraction, gates, stages
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -60,6 +60,9 @@ STEP_SEQUENCE = (
     Step(5, "conflict_pass", DETERMINISTIC, None, "Cross-source contradictions — surfaced, never resolved"),
     Step(6, "synthesis", MODEL, "synthesize", "Assemble the canonical brief object"),
     Step(7, "render", MODEL, "render", "GR + EN documents from the same object"),
+    # Step 8 (PRD §5) is human sign-off — not a runner step. Step 9 is Stage 2, and it runs
+    # ONLY on a signed-off brief, never as part of the default Stage-1 flow (DR-8).
+    Step(9, "creative_shadow", MODEL, "creative-shadow", "Shadow creative brief A/B (sonnet vs opus)"),
 )
 
 #: Which steps each stage selection runs. `extraction` is the Tier-1 path: prove the
@@ -71,6 +74,9 @@ STAGE_SELECTIONS = {
     # resumable state: re-rendering a brief should not mean re-extracting four sources.
     "synthesis": ("conflict_pass", "synthesis", "render"),
     "render": ("render",),
+    # Stage 2. Deliberately its own selection — never bundled into "full", because it requires
+    # the human sign-off that stands between the stages (DR-8).
+    "creative": ("creative_shadow",),
 }
 
 
@@ -81,6 +87,7 @@ STEP_PREREQUISITES = {
     "conflict_pass": ("extracts",),
     "synthesis": ("classification", "extracts"),
     "render": ("brief",),
+    "creative_shadow": ("brief",),
 }
 
 ARTIFACT_FILES = {
@@ -128,6 +135,7 @@ def _access_dirs(ctx: "RunContext") -> list:
         str(gates.SCHEMA_DIR),
         str(Path(ctx.glossary_path).parent),
         str(gates.REPO_ROOT / "templates"),
+        str(gates.CONFIG_DIR),  # channel_specs.json for the creative stage (DR-7 spec table)
     ]
 
 
@@ -235,6 +243,20 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
     return {"render": outcome}
 
 
+def _creative_handler(ctx: "RunContext", step: Step) -> dict:
+    """Step 9 (Tier 4) — shadow creative brief A/B, sonnet vs opus, on the signed brief (DR-8)."""
+    brief = ctx.artifacts["brief"]
+    results = creative.run_ab(ctx.run_dir, brief, ctx.glossary_path, _access_dirs(ctx))
+    for outcome in results:
+        print(
+            f"      · {outcome['model_alias']:<7} → {Path(outcome['output_file']).name}"
+            f" · {outcome['chars']} chars · {len(outcome['attempts'])} attempt(s)"
+            f" · ${outcome['cost_usd'] or 0:.4f} · {', '.join(outcome['model_ids']) or 'model unreported'}"
+        )
+    ctx.artifacts["creative"] = results
+    return {"creative": results}
+
+
 #: Model-step handlers, registered per tier as each stage is built.
 #: Signature: handler(ctx: RunContext, step: Step) -> dict  (the step's manifest payload)
 AGENT_HANDLERS: dict[str, Callable[["RunContext", Step], dict]] = {
@@ -243,6 +265,7 @@ AGENT_HANDLERS: dict[str, Callable[["RunContext", Step], dict]] = {
     "extract": _extraction_handler,
     "synthesize": _synthesis_handler,
     "render": _render_handler,
+    "creative-shadow": _creative_handler,
 }
 
 

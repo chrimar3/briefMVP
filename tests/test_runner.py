@@ -14,8 +14,9 @@ def _manifest(out_dir, run_id="testrun"):
 
 
 def test_step_sequence_matches_prd_section_5():
-    """Sequence is spec, not implementation detail. Human sign-off is deliberately absent:
-    it is the gate the runner stops at, not a step the runner executes (PRD DR-8)."""
+    """Sequence is spec, not implementation detail. Human sign-off (PRD step 8) is deliberately
+    absent: it is the gate the runner stops at, not a step it executes (DR-8). Step 9 (creative)
+    is present but never runs in the default 'full' flow — only on a signed brief."""
     assert [s.name for s in runner.STEP_SEQUENCE] == [
         "readiness_gate",
         "classification",
@@ -24,8 +25,10 @@ def test_step_sequence_matches_prd_section_5():
         "conflict_pass",
         "synthesis",
         "render",
+        "creative_shadow",
     ]
-    assert [s.number for s in runner.STEP_SEQUENCE] == list(range(1, 8))
+    assert [s.number for s in runner.STEP_SEQUENCE] == [1, 2, 3, 4, 5, 6, 7, 9]
+    assert "creative_shadow" not in runner.STAGE_SELECTIONS["full"]
 
 
 def test_run_clears_the_gate_then_stops_cleanly_without_a_model(fixture_project, tmp_path):
@@ -109,9 +112,11 @@ def test_access_dirs_never_include_the_repo_root(fixture_project, tmp_path):
     assert all(not (d / "CLAUDE.md").is_file() for d in dirs)
 
 
-def test_every_stage_has_a_handler_at_tier_2():
-    """Full Stage 1 — all four model stages built. If this fails, a tier boundary moved."""
-    assert sorted(runner.AGENT_HANDLERS) == ["classify", "extract", "fidelity-check", "render", "synthesize"]
+def test_every_model_step_has_a_handler():
+    """All six model stages built (Stage 1 + Tier-4 creative). If this fails, a tier boundary moved."""
+    assert sorted(runner.AGENT_HANDLERS) == [
+        "classify", "creative-shadow", "extract", "fidelity-check", "render", "synthesize",
+    ]
     model_steps = {s.agent for s in runner.STEP_SEQUENCE if s.kind == runner.MODEL}
     assert model_steps == set(runner.AGENT_HANDLERS)
 
