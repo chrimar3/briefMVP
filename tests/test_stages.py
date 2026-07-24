@@ -247,6 +247,27 @@ def test_altered_anchor_is_caught(tmp_path):
     assert any("copied verbatim" in v for v in violations)
 
 
+def test_anchor_from_internal_conflicts_is_accepted(tmp_path):
+    """Regression (Tier-3 confirmatory run): a retracted item lives in the extract's
+    internal_conflicts, and synthesis may surface it as a conditional entry citing that anchor
+    byte-exact. The gate must recognise internal_conflicts anchors, not only the 7 brief fields."""
+    extract_with_retraction = _extract(internal_conflicts=[{
+        "field": "deliverables",
+        "value_a": {"value": "OOH at metro", "lang": "el", "location": "[00:08:15]",
+                    "anchor": "ίσως κάνουμε OOH στις στάσεις του μετρό", "speaker_or_author": "CMO",
+                    "qualifier": "stated", "confidence": "medium"},
+        "value_b": {"value": "scratch that", "lang": "mixed", "location": "[00:08:34]",
+                    "anchor": "actually scratch that, το μετρό είναι πανάκριβο", "speaker_or_author": "CMO",
+                    "qualifier": "stated", "confidence": "high"},
+        "note": "proposed then retracted",
+    }])
+    ic_ref = {"source_id": "talk", "location": "[00:08:15]",
+              "anchor": "ίσως κάνουμε OOH στις στάσεις του μετρό", "speaker_or_author": "CMO"}
+    brief = _brief(budget=[], deliverables=[_entry(content="OOH proposed then retracted",
+                                                   qualifier="conditional", evidence=[ic_ref])])
+    assert stages.check_synthesis(_brief_file(tmp_path, brief), {"talk": extract_with_retraction}) == []
+
+
 # ======================================================================================
 # Step 7 — render
 # ======================================================================================

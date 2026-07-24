@@ -369,12 +369,25 @@ def check_synthesis(path: Path, extracts: dict) -> list:
             )
 
     # Anchors must survive assembly untouched: they are what the Greek render re-anchors on.
+    # The set of legitimate source anchors spans the 7 brief fields AND each extract's
+    # internal_conflicts — a within-source contradiction the extractor recorded there (the
+    # retracted OOH/metro item is the canonical case) is evidence synthesis may surface as a
+    # conditional entry or a conflict. Omitting internal_conflicts anchors here falsely flags a
+    # byte-exact copy as "altered", which non-deterministically fails synthesis whenever the
+    # model chooses to carry a retracted/conflicting item forward.
     known_anchors = {
         (item.get("anchor") or "").strip()
         for extract in extracts.values()
         for f in gates.BRIEF_FIELDS
         for item in (extract.get(f) or [])
     }
+    for extract in extracts.values():
+        for conflict in extract.get("internal_conflicts") or []:
+            for side in ("value_a", "value_b"):
+                item = conflict.get(side) or {}
+                anchor = (item.get("anchor") or "").strip()
+                if anchor:
+                    known_anchors.add(anchor)
     if known_anchors:
         for fieldname in gates.BRIEF_FIELDS:
             for idx, entry in enumerate(brief.get(fieldname) or []):
