@@ -132,10 +132,43 @@ absolute.
 | `synthesize` · `render` | `sonnet` | `claude-sonnet-5` |
 | Orchestrator | `opus[1m]` | `claude-opus-4-8[1m]` |
 
-## 7. Deferred / notes
+## 7. Confirmatory runs — and a second gate false-positive they caught
 
-- **Second confirmatory run not spent** (§4). The fix is structural, but a single graded run is
-  one data point; a re-run is cheap insurance if you want it before the defense.
+The graded run (§1) passed 17/17 honestly and stands. But a single run is one data point, so two
+further independent full runs were made. They earned their cost: the first **failed at synthesis**,
+exposing a *second* gate false-positive the graded run never triggered.
+
+| Run | Extraction | Synthesis | Harness | Note |
+|---|---|---|---|---|
+| `tier3` (graded) | pass | pass | **17/17** | the DoD run |
+| `tier3-confirm` (pre-fix) | pass | **FAIL** | — | synthesis anchor false-positive |
+| `tier3-confirm` (post-fix) | pass | pass | **17/17** | 8/8 clean first attempt, 0 repairs |
+| `tier3-confirm2` (post-fix) | pass | pass | **17/17** | 8/8 clean first attempt, 0 repairs |
+
+**The synthesis false-positive.** The retracted OOH/metro item lives in the extract's
+`internal_conflicts` (correctly — it is a within-source retraction). Synthesis surfaced it as a
+conditional deliverable, copying its anchor **byte-exact**. But `check_synthesis` built its set of
+legitimate anchors from the 7 brief fields only, omitting `internal_conflicts` — so a correct copy
+was flagged as "altered" and synthesis failed both attempts. Non-deterministic: it fires only when
+the model chooses to carry a retracted/conflicting item forward as an entry, which the graded run
+did not do.
+
+**Fix** (commit after `81e201c`): include `internal_conflicts` anchors in the known-anchor set.
+This is a runner-side gate; the frozen harness does no anchor-vs-extract checking, so `harness.py`
+is untouched (rule 2 not in play). A genuinely altered anchor still fails
+(`test_altered_anchor_is_caught` green). Verified by the two post-fix runs above: **8/8 gated
+attempts clean on the first try, zero repair rounds, both 17/17.**
+
+**Honest confidence statement.** Two gate false-positives surfaced across three runs (markdown
+boundaries in §4, `internal_conflicts` here) — both were blind spots in my *deterministic gates*,
+not model errors, and both are fixed with regression tests. Post-fix stability now rests on two
+independent clean passes rather than one. The pattern worth naming for the defense: these gates
+encode "the model must copy X verbatim," and each blind spot was a *valid* model output my gate
+failed to recognise. I cannot prove none remain, but the two most likely (emphasis markup, conflict
+provenance) are closed.
+
+## 8. Deferred / notes
+
 - **Tier 4 (stretch)** is unstarted and gated on Tiers 0–3 being green before Saturday noon
   (TIERS.md). It needs a human to set `signoff.status = "signed_off"` in a fixture draft — the
   agent never signs off — then the creative-shadow A/B. `creative-shadow` already refuses
