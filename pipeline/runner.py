@@ -4,13 +4,14 @@ The runner owns *sequence and refusal*; the subagents own judgment. Every step i
 declared below with the kind of thing it is — `deterministic` steps execute here,
 `model` steps dispatch to a Claude Code subagent through `AGENT_HANDLERS`.
 
-Tier 0 ships the sequence and the deterministic half. No model handler is registered
-yet, so a run executes the readiness gate, records the sequence, writes a manifest, and
-stops at the first unimplemented stage with exit code EXIT_PENDING_STAGE. That is the
-honest state of the scaffold: it does not pretend to have drafted anything.
+All seven Stage-1 steps are built. A run either completes, refuses (insufficient input),
+halts for a human (low classification confidence, or a transcript the fidelity gate will not
+vouch for), or fails a gate — and the exit code says which. Human sign-off is PRD step 8 and
+deliberately absent: it is not a step the system executes, it is the gate it stops at.
 
 Usage:
     python pipeline/runner.py --project fixtures/northlight_01
+    python pipeline/runner.py --project fixtures/northlight_01 --stage extraction
     python pipeline/runner.py --project fixtures/northlight_01 --out /tmp/runs
 """
 
@@ -19,7 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
@@ -28,12 +29,13 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, extraction, gates
+from pipeline import agents, conflicts, extraction, gates, stages
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
 EXIT_PENDING_STAGE = 3
 EXIT_GATE_ERROR = 4
+EXIT_HALTED_FOR_HUMAN = 5
 
 DETERMINISTIC = "deterministic"
 MODEL = "model"
@@ -65,6 +67,26 @@ STEP_SEQUENCE = (
 STAGE_SELECTIONS = {
     "full": ("readiness_gate", "classification", "fidelity_check", "extraction", "conflict_pass", "synthesis", "render"),
     "extraction": ("readiness_gate", "extraction"),
+    # Re-run one leg against an existing run directory (`--run-id <existing>`). A run dir is
+    # resumable state: re-rendering a brief should not mean re-extracting four sources.
+    "synthesis": ("conflict_pass", "synthesis", "render"),
+    "render": ("render",),
+}
+
+
+#: What each step needs already in hand. A resumed leg whose inputs are not on disk must say
+#: so plainly — the first version raised a bare `KeyError: 'brief'` from inside a handler,
+#: which tells an account lead nothing about what to do next.
+STEP_PREREQUISITES = {
+    "conflict_pass": ("extracts",),
+    "synthesis": ("classification", "extracts"),
+    "render": ("brief",),
+}
+
+ARTIFACT_FILES = {
+    "classification": "classification.json",
+    "extracts": "extracts/*.json",
+    "brief": "brief.json",
 }
 
 
@@ -79,6 +101,7 @@ class RunContext:
     started_ts: str
     project_id: str = ""
     client_config: dict = None
+    artifacts: dict = field(default_factory=dict)
     glossary_path: Optional[Path] = None
     source_filter: Optional[str] = None
 
@@ -95,11 +118,53 @@ class RunContext:
         return chosen
 
 
+def _summarise(attempts: list) -> str:
+    cost = sum(a["subagent"].get("cost_usd") or 0.0 for a in attempts)
+    models = sorted({m for a in attempts for m in a["subagent"].get("model_ids") or []})
+    return f"{len(attempts)} attempt(s) · ${cost:.4f} · {', '.join(models) or 'model unreported'}"
+
+
+def _classification_handler(ctx: "RunContext", step: Step) -> dict:
+    """Step 2 — project type, plus the onboarding tier read from client config (DR-11)."""
+    outcome = stages.classify(
+        sources=ctx.sources, run_dir=ctx.run_dir, project_id=ctx.project_id,
+        client_config=ctx.client_config, glossary_path=ctx.glossary_path, cwd=gates.REPO_ROOT,
+    )
+    ctx.artifacts["classification"] = outcome
+    print(
+        f"        {outcome['project_type']} ({outcome['classification_confidence']} confidence)"
+        f" · tier {outcome['sensitivity_tier']} · {_summarise(outcome['attempts'])}"
+    )
+    return {"classification": outcome}
+
+
+def _fidelity_handler(ctx: "RunContext", step: Step) -> dict:
+    """Step 3 — every transcript is scored and annotated before extraction may read it."""
+    transcripts = [s for s in ctx.selected_sources() if s.source_type == "transcript"]
+    if not transcripts:
+        print("        no transcripts in this project — nothing to score")
+        return {"fidelity": [], "note": "no transcripts"}
+
+    results = []
+    for source in transcripts:
+        print(f"      · scoring {source.source_id}…")
+        outcome = stages.fidelity_check(source, ctx.run_dir, ctx.glossary_path, gates.REPO_ROOT)
+        ctx.artifacts.setdefault("annotated", {})[source.source_id] = Path(outcome["annotated_file"])
+        print(
+            f"        verdict={outcome['verdict']} · score={outcome['fidelity_score']}"
+            f" · {outcome['tokens_flagged']} token(s) flagged · {_summarise(outcome['attempts'])}"
+        )
+        results.append(outcome)
+    return {"fidelity": results}
+
+
 def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
     """Step 4 — one `extract` subagent invocation per source, each gated on its artifact."""
     results = []
     for source in ctx.selected_sources():
-        print(f"      · extracting {source.source_id} ({source.source_type})…")
+        annotated = (ctx.artifacts.get("annotated") or {}).get(source.source_id)
+        via = " (fidelity-annotated)" if annotated else ""
+        print(f"      · extracting {source.source_id} ({source.source_type}){via}…")
         outcome = extraction.extract_source(
             source=source,
             run_dir=ctx.run_dir,
@@ -107,6 +172,10 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
             client_config=ctx.client_config,
             glossary_path=ctx.glossary_path,
             cwd=gates.REPO_ROOT,
+            read_path=annotated,
+        )
+        ctx.artifacts.setdefault("extracts", {})[source.source_id] = json.loads(
+            Path(outcome["output_file"]).read_text(encoding="utf-8")
         )
         attempts = outcome["attempts"]
         cost = sum(a["subagent"].get("cost_usd") or 0.0 for a in attempts)
@@ -119,10 +188,48 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
     return {"extracts": results}
 
 
+def _synthesis_handler(ctx: "RunContext", step: Step) -> dict:
+    """Step 6 — assemble the canonical brief, then inject the readiness block the model may not write."""
+    outcome = stages.synthesize(
+        run_dir=ctx.run_dir, project_id=ctx.project_id, client_config=ctx.client_config,
+        classification=ctx.artifacts["classification"], sources=ctx.selected_sources(),
+        extracts=ctx.artifacts.get("extracts") or {}, glossary_path=ctx.glossary_path,
+        cwd=gates.REPO_ROOT,
+    )
+    ctx.artifacts["brief"] = json.loads(Path(outcome["output_file"]).read_text(encoding="utf-8"))
+    readiness = outcome["readiness"]
+    print(
+        f"        {outcome['entry_count']} entries · {outcome['conflict_count']} conflicts"
+        f" · {outcome['open_question_count']} open questions · {_summarise(outcome['attempts'])}"
+    )
+    print(
+        f"        readiness: {readiness['fields_with_evidence']}/7 fields evidenced"
+        f" · {readiness['low_confidence_share']} low-confidence share → {readiness['verdict']}"
+    )
+    return {"synthesis": outcome}
+
+
+def _render_handler(ctx: "RunContext", step: Step) -> dict:
+    """Step 7 — both documents from the same object (DR-6)."""
+    outcome = stages.render(
+        run_dir=ctx.run_dir, brief=ctx.artifacts["brief"],
+        glossary_path=ctx.glossary_path, cwd=gates.REPO_ROOT,
+    )
+    print(
+        f"        el={outcome['el_chars']} chars · en={outcome['en_chars']} chars"
+        f" · {_summarise(outcome['attempts'])}"
+    )
+    return {"render": outcome}
+
+
 #: Model-step handlers, registered per tier as each stage is built.
 #: Signature: handler(ctx: RunContext, step: Step) -> dict  (the step's manifest payload)
 AGENT_HANDLERS: dict[str, Callable[["RunContext", Step], dict]] = {
+    "classify": _classification_handler,
+    "fidelity-check": _fidelity_handler,
     "extract": _extraction_handler,
+    "synthesize": _synthesis_handler,
+    "render": _render_handler,
 }
 
 
@@ -168,6 +275,49 @@ class Runner:
         path = self.run_dir / "run_manifest.json"
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return path
+
+    def _hydrate(self, ctx: RunContext) -> None:
+        """Load artifacts an earlier run already produced in this directory.
+
+        Makes a run directory resumable, so re-running one leg (`--stage render --run-id <id>`)
+        costs one model call instead of re-extracting every source. Only reads what is there;
+        a fresh run hydrates nothing.
+        """
+        # Carry forward the record of steps this directory already ran. Without this, resuming
+        # one leg rewrites run_manifest.json with only that leg and the run reads as a complete
+        # pipeline that executed a single step — an audit trail that lies by omission.
+        prior_manifest = self.run_dir / "run_manifest.json"
+        if prior_manifest.is_file():
+            previous = json.loads(prior_manifest.read_text(encoding="utf-8")).get("steps") or []
+            rerunning = set(STAGE_SELECTIONS[self.stage])
+            self.steps = [
+                {**step, "from_earlier_run": True}
+                for step in previous
+                if step.get("name") not in rerunning
+            ]
+
+        loaded = []
+        classification = self.run_dir / "classification.json"
+        if classification.is_file():
+            ctx.artifacts["classification"] = json.loads(classification.read_text(encoding="utf-8"))
+            loaded.append("classification")
+
+        extracts_dir = self.run_dir / "extracts"
+        if extracts_dir.is_dir():
+            for path in sorted(extracts_dir.glob("*.json")):
+                ctx.artifacts.setdefault("extracts", {})[path.stem] = json.loads(
+                    path.read_text(encoding="utf-8")
+                )
+            if ctx.artifacts.get("extracts"):
+                loaded.append(f"{len(ctx.artifacts['extracts'])} extract(s)")
+
+        brief_path = self.run_dir / "brief.json"
+        if brief_path.is_file():
+            ctx.artifacts["brief"] = json.loads(brief_path.read_text(encoding="utf-8"))
+            loaded.append("brief")
+
+        if loaded:
+            print(f"  resuming with: {', '.join(loaded)}\n")
 
     def _update_latest_symlink(self) -> None:
         """`runs/latest` — what `eval/harness.py runs/latest` grades."""
@@ -222,6 +372,8 @@ class Runner:
             source_filter=self.source,
         )
 
+        self._hydrate(ctx)
+
         selected = STAGE_SELECTIONS[self.stage]
         for step in (s for s in STEP_SEQUENCE if s.name in selected):
             outcome, exit_code = self._execute(ctx, step)
@@ -238,6 +390,17 @@ class Runner:
         """Run one step. Returns (terminal_outcome, exit_code); (None, 0) to continue."""
         label = f"[{step.number}] {step.name}"
 
+        missing = [k for k in STEP_PREREQUISITES.get(step.name, ()) if not ctx.artifacts.get(k)]
+        if missing:
+            needed = ", ".join(f"{k} ({ARTIFACT_FILES[k]})" for k in missing)
+            message = (
+                f"step '{step.name}' needs {needed} in the run directory, and it is not there. "
+                f"Run an earlier stage first, or use --stage full."
+            )
+            self._record(step, "failed", agent=step.agent, error=message)
+            print(f"{label}: FAILED — {message}", file=sys.stderr)
+            return "missing_prerequisite", EXIT_GATE_ERROR
+
         if step.name == "readiness_gate":
             verdict = gates.readiness_gate(ctx.sources)
             self._record(step, "pass" if verdict.ok else "refused", verdict=verdict.as_dict())
@@ -247,11 +410,13 @@ class Runner:
             return None, EXIT_OK
 
         if step.name == "conflict_pass":
-            # Deterministic cross-source pass, built in Tier 2. It reads the extracts
-            # produced by step 4, so it cannot run before that stage exists.
-            self._record(step, "pending", pending_since_tier=2)
-            print(f"{label}: not implemented until Tier 2 — stopping.")
-            return "pending_stage", EXIT_PENDING_STAGE
+            outcome = conflicts.run_conflict_pass(ctx.artifacts.get("extracts") or {}, ctx.run_dir)
+            self._record(step, "pass", **outcome)
+            print(
+                f"{label}: {outcome['candidate_count']} candidate field(s)"
+                f" {outcome['candidate_fields']} · {outcome['internal_conflict_count']} internal"
+            )
+            return None, EXIT_OK
 
         handler = AGENT_HANDLERS.get(step.agent or "")
         if handler is None:
@@ -262,6 +427,11 @@ class Runner:
         print(f"{label}: dispatching '{step.agent}'…")
         try:
             payload = handler(ctx, step)
+        except stages.HaltForHuman as exc:
+            # Not a failure: the system asked instead of guessing (DR-9, DR-12).
+            self._record(step, "halted_for_human", agent=step.agent, question=str(exc))
+            print(f"{label}: HALTED FOR HUMAN — {exc}")
+            return "halted_for_human", EXIT_HALTED_FOR_HUMAN
         except (gates.GateError, agents.SubagentError) as exc:
             self._record(step, "failed", agent=step.agent, error=str(exc))
             print(f"{label}: FAILED — {exc}", file=sys.stderr)

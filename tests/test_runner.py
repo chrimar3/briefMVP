@@ -27,16 +27,21 @@ def test_step_sequence_matches_prd_section_5():
     assert [s.number for s in runner.STEP_SEQUENCE] == list(range(1, 8))
 
 
-def test_run_stops_at_the_first_unbuilt_stage(fixture_project, tmp_path):
-    """The full sequence still stops at classification — Tier 1 did not build step 2."""
+def test_run_clears_the_gate_then_stops_cleanly_without_a_model(fixture_project, tmp_path):
+    """With no model reachable, the deterministic half still runs and the failure is legible.
+
+    Step 1 passes on real fixture input; step 2 fails with an infrastructure error rather than
+    a mysterious hang, and the manifest records which stage stopped and why.
+    """
     code = runner.main(["--project", str(fixture_project), "--out", str(tmp_path), "--run-id", "testrun"])
-    assert code == runner.EXIT_PENDING_STAGE
+    assert code == runner.EXIT_GATE_ERROR
 
     manifest = _manifest(tmp_path)
-    assert manifest["outcome"] == "pending_stage"
-    assert [s["status"] for s in manifest["steps"]] == ["pass", "pending"]
+    assert manifest["outcome"] == "stage_failed"
+    assert [s["status"] for s in manifest["steps"]] == ["pass", "failed"]
     assert manifest["steps"][0]["name"] == "readiness_gate"
     assert manifest["steps"][1]["agent"] == "classify"
+    assert "not found on PATH" in manifest["steps"][1]["error"]
     assert len(manifest["sources"]) == 4
 
 
@@ -44,6 +49,55 @@ def test_run_writes_the_latest_symlink(fixture_project, tmp_path):
     runner.main(["--project", str(fixture_project), "--out", str(tmp_path), "--run-id", "testrun"])
     latest = tmp_path / "latest"
     assert latest.is_symlink() and latest.resolve().name == "testrun"
+
+
+def test_resuming_a_leg_preserves_the_earlier_run_record(fixture_project, tmp_path):
+    """A resume must not rewrite the manifest with only the leg it re-ran.
+
+    Regression: re-rendering an existing run left a manifest reading `outcome: complete` with a
+    single step in it — a run record that lies by omission about what produced the artifacts.
+    """
+    run_dir = tmp_path / "testrun"
+    run_dir.mkdir(parents=True)
+    (run_dir / "brief.json").write_text(json.dumps({"meta": {}, "open_questions": []}), encoding="utf-8")
+    (run_dir / "run_manifest.json").write_text(
+        json.dumps({
+            "run_id": "testrun",
+            "steps": [
+                {"name": "readiness_gate", "number": 1, "status": "pass"},
+                {"name": "extraction", "number": 4, "status": "pass"},
+                {"name": "render", "number": 7, "status": "failed"},
+            ],
+        }),
+        encoding="utf-8",
+    )
+
+    runner.main(["--project", str(fixture_project), "--out", str(tmp_path),
+                 "--run-id", "testrun", "--stage", "render"])
+
+    steps = {s["name"]: s for s in _manifest(tmp_path)["steps"]}
+    assert steps["readiness_gate"]["from_earlier_run"] is True
+    assert steps["extraction"]["from_earlier_run"] is True
+    # The re-run leg is replaced by this run's attempt, not duplicated from the old record.
+    assert steps["render"].get("from_earlier_run") is None
+
+
+def test_resuming_without_prerequisites_refuses_legibly(fixture_project, tmp_path):
+    """`--stage render` on an empty run dir used to raise a bare KeyError from inside a handler."""
+    code = runner.main(["--project", str(fixture_project), "--out", str(tmp_path),
+                        "--run-id", "testrun", "--stage", "render"])
+    assert code == runner.EXIT_GATE_ERROR
+
+    manifest = _manifest(tmp_path)
+    assert manifest["outcome"] == "missing_prerequisite"
+    assert "brief.json" in manifest["steps"][0]["error"]
+
+
+def test_every_stage_has_a_handler_at_tier_2():
+    """Full Stage 1 — all four model stages built. If this fails, a tier boundary moved."""
+    assert sorted(runner.AGENT_HANDLERS) == ["classify", "extract", "fidelity-check", "render", "synthesize"]
+    model_steps = {s.agent for s in runner.STEP_SEQUENCE if s.kind == runner.MODEL}
+    assert model_steps == set(runner.AGENT_HANDLERS)
 
 
 def test_run_refuses_when_the_rfp_is_removed(fixture_project, tmp_path):
@@ -75,11 +129,6 @@ def test_run_reports_an_undeclared_input_folder(tmp_path):
     code = runner.main(["--project", str(project), "--out", str(tmp_path / "runs"), "--run-id", "testrun"])
     assert code == runner.EXIT_GATE_ERROR
     assert _manifest(tmp_path / "runs")["outcome"] == "input_contract_error"
-
-
-def test_only_the_extraction_handler_is_registered_at_tier_1():
-    """Tier 1 builds the extraction leg and nothing else. If this fails, a tier boundary moved."""
-    assert sorted(runner.AGENT_HANDLERS) == ["extract"]
 
 
 def test_extraction_stage_selects_only_the_gate_and_step_4():

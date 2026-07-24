@@ -13,6 +13,20 @@ sys.path.insert(0, str(REPO_ROOT))
 _FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.DOTALL)
 
 
+@pytest.fixture(autouse=True)
+def _never_call_a_real_model(monkeypatch):
+    """Hard stop on model calls from the test suite.
+
+    Registering a stage handler made a previously-safe runner test start shelling out to
+    `claude -p`, which hung the suite and would have spent real money. Tests exercise the gates
+    around the models, never the models — so the binary is pointed at a name that cannot exist
+    and any accidental invocation fails instantly and loudly.
+    """
+    from pipeline import agents
+
+    monkeypatch.setattr(agents, "CLAUDE_BIN", "brief-builder-tests-must-not-call-a-model")
+
+
 @pytest.fixture(scope="session")
 def repo_root() -> Path:
     return REPO_ROOT

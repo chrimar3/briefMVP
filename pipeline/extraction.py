@@ -65,6 +65,7 @@ def build_work_order(
     client_config: dict,
     glossary_path: Path,
     fidelity_annotated: bool = False,
+    read_path: Optional[Path] = None,
 ) -> str:
     """The prompt handed to the `extract` subagent.
 
@@ -87,6 +88,16 @@ def build_work_order(
             "  like a glossary term collapsed into Greek script stays exactly as the source wrote\n"
             "  it, with an extraction_note proposing the match and confidence low.\n"
         )
+    elif source.source_type == "transcript" and fidelity_annotated:
+        precondition = (
+            "\nPRECONDITION\n"
+            "  This transcript HAS passed the fidelity gate and carries inline `[FIDELITY: ...]`\n"
+            "  annotations. Carry each flagged token per rule G: the token itself stays exactly as\n"
+            "  written, and the annotation's proposal goes into an extraction_note.\n"
+            "  The annotations are NOT part of the transcript. Never quote one inside an `anchor`\n"
+            "  and never treat one as something a speaker said — anchors are copied from the\n"
+            "  spoken text alone, and are verified against the unannotated original.\n"
+        )
 
     return f"""EXTRACTION WORK ORDER — Brief Builder pipeline step 4.
 
@@ -94,7 +105,7 @@ Extract ONE source into ONE JSON file. Your governing rules are the SOURCES.md c
 your agent definition; this order supplies only the parameters.
 
 INPUT
-  source_file      : {source.path}
+  source_file      : {read_path or source.path}
   source_type      : {source.source_type}
   source_date      : {source.source_date}
   project_id       : {project_id}
@@ -185,12 +196,21 @@ def extract_source(
     client_config: dict,
     glossary_path: Path,
     cwd: Path,
+    read_path: Optional[Path] = None,
 ) -> dict:
-    """Run the `extract` subagent on one source until the artifact passes, or give up loudly."""
+    """Run the `extract` subagent on one source until the artifact passes, or give up loudly.
+
+    `read_path` lets a transcript be read in its fidelity-annotated form while every citation is
+    still verified against the *original* text. The annotations are a reading aid for the agent;
+    they are not part of the evidence, and an anchor that quotes one is a fabricated citation.
+    """
     output_file = run_dir / "extracts" / f"{source.source_id}.json"
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    order = build_work_order(source, output_file, project_id, client_config, glossary_path)
+    order = build_work_order(
+        source, output_file, project_id, client_config, glossary_path,
+        fidelity_annotated=read_path is not None, read_path=read_path,
+    )
     attempts = []
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
