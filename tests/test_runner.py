@@ -4,6 +4,7 @@ and does it stop honestly at the first stage that does not exist yet?
 
 import json
 import shutil
+from pathlib import Path
 
 from pipeline import runner
 
@@ -91,6 +92,21 @@ def test_resuming_without_prerequisites_refuses_legibly(fixture_project, tmp_pat
     manifest = _manifest(tmp_path)
     assert manifest["outcome"] == "missing_prerequisite"
     assert "brief.json" in manifest["steps"][0]["error"]
+
+
+def test_access_dirs_never_include_the_repo_root(fixture_project, tmp_path):
+    """The substrate guard: a subagent may touch project/run/schema/glossary/templates —
+    never the repo root, where CLAUDE.md would be auto-loaded into a runtime agent."""
+    from pipeline import gates
+
+    ctx = runner.RunContext(
+        project_dir=fixture_project, run_dir=tmp_path / "run", run_id="r", sources=[],
+        started_ts="", glossary_path=gates.REPO_ROOT / "glossary" / "meltemi.json",
+    )
+    dirs = {Path(d).resolve() for d in runner._access_dirs(ctx)}
+    assert gates.REPO_ROOT.resolve() not in dirs
+    # ...and none of the granted dirs contains a CLAUDE.md.
+    assert all(not (d / "CLAUDE.md").is_file() for d in dirs)
 
 
 def test_every_stage_has_a_handler_at_tier_2():

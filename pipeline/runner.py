@@ -118,6 +118,19 @@ class RunContext:
         return chosen
 
 
+def _access_dirs(ctx: "RunContext") -> list:
+    """The only directories a subagent may touch: project sources, run output, and the three
+    read-only skeleton dirs. Deliberately NOT the repo root — that is where CLAUDE.md lives,
+    and a runtime agent has no business seeing build governance (see pipeline/agents.py)."""
+    return [
+        str(ctx.project_dir),
+        str(ctx.run_dir),
+        str(gates.SCHEMA_DIR),
+        str(Path(ctx.glossary_path).parent),
+        str(gates.REPO_ROOT / "templates"),
+    ]
+
+
 def _summarise(attempts: list) -> str:
     cost = sum(a["subagent"].get("cost_usd") or 0.0 for a in attempts)
     models = sorted({m for a in attempts for m in a["subagent"].get("model_ids") or []})
@@ -128,7 +141,7 @@ def _classification_handler(ctx: "RunContext", step: Step) -> dict:
     """Step 2 — project type, plus the onboarding tier read from client config (DR-11)."""
     outcome = stages.classify(
         sources=ctx.sources, run_dir=ctx.run_dir, project_id=ctx.project_id,
-        client_config=ctx.client_config, glossary_path=ctx.glossary_path, cwd=gates.REPO_ROOT,
+        client_config=ctx.client_config, glossary_path=ctx.glossary_path, access_dirs=_access_dirs(ctx),
     )
     ctx.artifacts["classification"] = outcome
     print(
@@ -148,7 +161,7 @@ def _fidelity_handler(ctx: "RunContext", step: Step) -> dict:
     results = []
     for source in transcripts:
         print(f"      · scoring {source.source_id}…")
-        outcome = stages.fidelity_check(source, ctx.run_dir, ctx.glossary_path, gates.REPO_ROOT)
+        outcome = stages.fidelity_check(source, ctx.run_dir, ctx.glossary_path, _access_dirs(ctx))
         ctx.artifacts.setdefault("annotated", {})[source.source_id] = Path(outcome["annotated_file"])
         print(
             f"        verdict={outcome['verdict']} · score={outcome['fidelity_score']}"
@@ -171,7 +184,7 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
             project_id=ctx.project_id,
             client_config=ctx.client_config,
             glossary_path=ctx.glossary_path,
-            cwd=gates.REPO_ROOT,
+            access_dirs=_access_dirs(ctx),
             read_path=annotated,
         )
         ctx.artifacts.setdefault("extracts", {})[source.source_id] = json.loads(
@@ -194,7 +207,7 @@ def _synthesis_handler(ctx: "RunContext", step: Step) -> dict:
         run_dir=ctx.run_dir, project_id=ctx.project_id, client_config=ctx.client_config,
         classification=ctx.artifacts["classification"], sources=ctx.selected_sources(),
         extracts=ctx.artifacts.get("extracts") or {}, glossary_path=ctx.glossary_path,
-        cwd=gates.REPO_ROOT,
+        access_dirs=_access_dirs(ctx),
     )
     ctx.artifacts["brief"] = json.loads(Path(outcome["output_file"]).read_text(encoding="utf-8"))
     readiness = outcome["readiness"]
@@ -213,7 +226,7 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
     """Step 7 — both documents from the same object (DR-6)."""
     outcome = stages.render(
         run_dir=ctx.run_dir, brief=ctx.artifacts["brief"],
-        glossary_path=ctx.glossary_path, cwd=gates.REPO_ROOT,
+        glossary_path=ctx.glossary_path, access_dirs=_access_dirs(ctx),
     )
     print(
         f"        el={outcome['el_chars']} chars · en={outcome['en_chars']} chars"

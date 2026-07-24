@@ -18,9 +18,9 @@ from typing import Optional
 
 from pipeline import agents, diagnostics, gates
 
-#: One repair attempt. If a schema-valid extract does not arrive in two tries, that is a
-#: finding about the stage, not something to paper over with a retry loop.
-MAX_ATTEMPTS = 2
+#: Single source of truth for the retry budget lives in agents.py; re-exported here for the
+#: repair loop below (one attempt + one repair). See the note there for why two.
+MAX_ATTEMPTS = agents.MAX_ATTEMPTS
 
 
 class ExtractionError(gates.GateError):
@@ -195,7 +195,7 @@ def extract_source(
     project_id: str,
     client_config: dict,
     glossary_path: Path,
-    cwd: Path,
+    access_dirs,
     read_path: Optional[Path] = None,
 ) -> dict:
     """Run the `extract` subagent on one source until the artifact passes, or give up loudly.
@@ -214,7 +214,7 @@ def extract_source(
     attempts = []
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = agents.invoke("extract", order, cwd=cwd)
+        result = agents.invoke("extract", order, access_dirs)
         violations = check_extract(output_file, source.text, client_config)
         attempts.append(
             {

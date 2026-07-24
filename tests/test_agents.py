@@ -115,3 +115,47 @@ def test_every_skill_file_is_injected_somewhere(repo_root):
     injected = {skill for _model, skill in AGENT_SPEC.values() if skill}
     on_disk = {f"skills/{p.name}" for p in (repo_root / "skills").glob("*.md")}
     assert on_disk == injected
+
+
+# --------------------------------------------------------------------------------------
+# Inline-agent payload for the clean-substrate invocation (pipeline/agents.py)
+# --------------------------------------------------------------------------------------
+
+
+def test_build_inline_agent_carries_prompt_model_and_tools():
+    """The --agents payload must reproduce the .md definition: system prompt, model, tools.
+
+    This is what lets a subagent run from a neutral cwd instead of the repo root, so the
+    build-time CLAUDE.md is never auto-loaded into a runtime agent (the substrate fix)."""
+    from pipeline import agents
+
+    payload = agents.build_inline_agent("extract")
+    assert set(payload) == {"extract"}
+    spec = payload["extract"]
+    assert spec["model"] == "haiku"
+    assert spec["tools"] == ["Read", "Write"]
+    # The body is the system prompt verbatim — injected skill and all.
+    assert "BEGIN INJECTED SKILL: skills/SOURCES.md" in spec["prompt"]
+    assert spec["description"]
+
+
+def test_build_inline_agent_routes_judgment_work_to_sonnet():
+    from pipeline import agents
+
+    assert agents.build_inline_agent("synthesize")["synthesize"]["model"] == "sonnet"
+
+
+def test_build_inline_agent_is_json_serialisable():
+    """It is passed to the CLI as one argv element via json.dumps — Greek, quotes and all."""
+    import json as _json
+    from pipeline import agents
+
+    for name in ("extract", "synthesize", "render", "fidelity-check"):
+        _json.dumps(agents.build_inline_agent(name), ensure_ascii=False)
+
+
+def test_build_inline_agent_rejects_an_unknown_agent():
+    from pipeline import agents
+
+    with pytest.raises(agents.SubagentError, match="no agent definition"):
+        agents.build_inline_agent("does-not-exist")

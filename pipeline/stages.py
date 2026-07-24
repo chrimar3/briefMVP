@@ -25,7 +25,8 @@ from typing import Optional
 
 from pipeline import agents, conflicts, diagnostics, gates
 
-MAX_ATTEMPTS = 2
+#: Single source of truth in agents.py — shared so the two repair loops cannot diverge.
+MAX_ATTEMPTS = agents.MAX_ATTEMPTS
 
 
 class StageError(gates.GateError):
@@ -40,7 +41,7 @@ class HaltForHuman(gates.GateError):
     """
 
 
-def _run_with_repair(agent: str, order: str, check, repair_prompt, cwd: Path,
+def _run_with_repair(agent: str, order: str, check, repair_prompt, access_dirs,
                      run_dir: Optional[Path] = None) -> tuple:
     """Invoke a subagent, gate its artifact, allow exactly one repair round.
 
@@ -49,7 +50,7 @@ def _run_with_repair(agent: str, order: str, check, repair_prompt, cwd: Path,
     """
     attempts = []
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = agents.invoke(agent, order, cwd=cwd)
+        result = agents.invoke(agent, order, access_dirs)
         violations = check()
         attempts.append({"attempt": attempt, "subagent": result.as_dict(), "violations": violations})
         if run_dir is not None:
@@ -134,7 +135,7 @@ def check_classification(path: Path, client_config: dict) -> list:
 
 
 def classify(sources, run_dir: Path, project_id: str, client_config: dict, glossary_path: Path,
-             cwd: Path) -> dict:
+             access_dirs) -> dict:
     output_file = Path(run_dir) / "classification.json"
     order = build_classification_order(sources, output_file, project_id, client_config, glossary_path)
 
@@ -143,7 +144,7 @@ def classify(sources, run_dir: Path, project_id: str, client_config: dict, gloss
         lambda: check_classification(output_file, client_config),
         lambda v: f"REPAIR ORDER — your classification failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + f"\n\nFix exactly these and rewrite {output_file}.",
-        cwd, run_dir=Path(run_dir),
+        access_dirs, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("classify", failed)
@@ -236,7 +237,7 @@ def check_fidelity(report_file: Path, annotated_file: Path, original: str) -> li
     return violations
 
 
-def fidelity_check(source, run_dir: Path, glossary_path: Path, cwd: Path) -> dict:
+def fidelity_check(source, run_dir: Path, glossary_path: Path, access_dirs) -> dict:
     out_dir = Path(run_dir) / "fidelity"
     out_dir.mkdir(parents=True, exist_ok=True)
     report_file = out_dir / f"{source.source_id}.report.json"
@@ -249,7 +250,7 @@ def fidelity_check(source, run_dir: Path, glossary_path: Path, cwd: Path) -> dic
         lambda v: "REPAIR ORDER — your fidelity output failed the gate:\n"
                   + "\n".join(f"  - {x}" for x in v)
                   + "\n\nFix exactly these and rewrite both files.",
-        cwd, run_dir=Path(run_dir),
+        access_dirs, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("fidelity-check", failed)
@@ -388,7 +389,7 @@ def check_synthesis(path: Path, extracts: dict) -> list:
 
 
 def synthesize(run_dir: Path, project_id: str, client_config: dict, classification: dict,
-               sources, extracts: dict, glossary_path: Path, cwd: Path) -> dict:
+               sources, extracts: dict, glossary_path: Path, access_dirs) -> dict:
     output_file = Path(run_dir) / "brief.json"
     order = build_synthesis_order(run_dir, output_file, project_id, client_config, classification,
                                   sources, glossary_path)
@@ -399,7 +400,7 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
         lambda v: "REPAIR ORDER — your brief failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + f"\n\nFix exactly these and rewrite {output_file}. Do not drop entries to make "
                     f"errors go away, and do not invent evidence to satisfy a check.",
-        cwd, run_dir=Path(run_dir),
+        access_dirs, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("synthesize", failed)
@@ -526,7 +527,7 @@ def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> lis
     return violations
 
 
-def render(run_dir: Path, brief: dict, glossary_path: Path, cwd: Path) -> dict:
+def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs) -> dict:
     out_el = Path(run_dir) / "brief_el.md"
     out_en = Path(run_dir) / "brief_en.md"
     brief_file = Path(run_dir) / "brief.json"
@@ -540,7 +541,7 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, cwd: Path) -> dict:
         lambda v: "REPAIR ORDER — your renders failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
                   + "\n\nFix exactly these. Do not delete content to silence a check: a missing "
                     "entry is a worse failure than an uncited one.",
-        cwd, run_dir=Path(run_dir),
+        access_dirs, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("render", failed)
