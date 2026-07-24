@@ -363,19 +363,33 @@ def validate_brief(instance: dict) -> None:
     _validate(instance, "brief_schema")
 
 
+#: Markdown emphasis / heading markers. They are formatting, not content: a citation to the
+#: bolded phrase `**πρώτη εβδομάδα**` quoted as `πρώτη εβδομάδα` is a *correct* citation, so the
+#: match must be on content, not markup. Stripping these from both sides removes that class of
+#: false positive while leaving fabrication detection intact — an invented span still fails to
+#: match after stripping, because stripping only removes markers, never content.
+_MARKDOWN_MARKERS = re.compile(r"(\*+|_+|`+|^#+\s*)", re.MULTILINE)
+
+
 def _normalise(text: str) -> str:
-    """Collapse whitespace so a citation is not rejected over a line wrap."""
-    return " ".join(text.split())
+    """Normalise for citation matching: drop markdown markers, then collapse whitespace.
+
+    Two independent sources of spurious mismatch are handled here: a line wrap inside the
+    source (whitespace), and markdown emphasis the model quotes without (bold/italic markers).
+    Both are formatting; neither changes what the citation points at.
+    """
+    return " ".join(_MARKDOWN_MARKERS.sub("", text).split())
 
 
 def verify_citations(extract: dict, source_text: str) -> list[str]:
-    """Every `location` and `anchor` must occur verbatim in the source document.
+    """Every `location` and `anchor` must occur in the source, matched on content not markup.
 
     SOURCES.md rule 2 says a value without a citation does not exist. This is the other half
     of that rule: a citation that cannot be found in the source is worse than a missing one,
     because it survives review by *looking* verified. PRD R2 names this exact failure — "a
     confident citation to garbage" — as the dangerous one, so it is checked in code rather
-    than left to the agent's self-check.
+    than left to the agent's self-check. Matching is markdown-insensitive (see `_normalise`):
+    quoting the bolded content of a source span is a real citation, not a fabricated one.
     """
     haystack = _normalise(source_text)
     violations: list[str] = []
