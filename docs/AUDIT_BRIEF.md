@@ -33,7 +33,27 @@
 tuning of agent instructions beyond what a specific finding requires · performance (the whole
 deterministic layer runs in ~0.3s; speed is not a problem worth one line of churn).
 
-## 3. What "optimise" means here, ranked
+## 3. Governing principle: elegance is simplicity
+
+The audit's design compass, set by the project owner: **a simpler system is a better system —
+fewer concepts, each doing more work.** Simplicity here means simplicity of *design*, not
+brevity of code: one mechanism reused beats three variants; a table beats scattered branches; a
+convention enforced once beats a rule restated per stage. Two hard boundaries:
+
+- Simplicity never crosses §1 (frozen files) or §4 (deliberate designs — including duplication
+  that exists *for* independence). "One less copy" is not elegance when the copy is the firewall.
+- Refusal semantics are load-bearing: the distinct exit codes, the halt-vs-fail distinction, and
+  the legible refusal messages are the product working. Simplification must not flatten them.
+
+Concrete seeds, found by inspection (verify before acting):
+- **The repair loop exists three times** — `extraction.extract_source`, `stages._run_with_repair`,
+  and inline in `creative.creative_shadow`. One invoke-gate-repair mechanism should serve all
+  model stages.
+- **Work-order builders repeat their skeleton** (READ ONLY / answer-key warning / OUTPUT / reply
+  contract) across five stages in `stages.py`, `extraction.py`, `creative.py`.
+- `runner.py` handlers restate per-attempt cost summarising that `_summarise` already owns.
+
+## 3b. What "optimise" means here, ranked
 
 1. **Robustness — hunt the remaining too-narrow gates.** Four false positives were found and
    fixed across Tiers 2–4, all the same shape — *a deterministic gate rejecting valid model
@@ -52,7 +72,10 @@ deterministic layer runs in ~0.3s; speed is not a problem worth one line of chur
    Known nits: `_parse_frontmatter` duplicated between `pipeline/agents.py` and
    `tests/conftest.py`; `conflicts.collect_internal_conflicts` spreads `**conflict` after
    `source_id` (silent key collision if a conflict ever carries `source_id`).
-4. **Simplification** — only where it removes real risk, and see §4.
+4. **Simplification per §3** — unify duplicated mechanisms, collapse restated conventions, move
+   policy out of logic. Every simplification must leave `pytest` green and `runs/tier3` grading
+   17/17 unchanged; a simplification that needs a test weakened is a redesign in disguise —
+   present it as a finding instead.
 
 ## 4. Deliberate design — do NOT "fix" these
 
