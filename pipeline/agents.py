@@ -49,6 +49,10 @@ ALLOWED_TOOLS = ("Read", "Write")
 #: slightly larger brief. 2× the observed maximum: an infrastructure ceiling, not a gate.
 DEFAULT_TIMEOUT_S = 1200
 
+#: Per-stage inference-depth policy (cost-audit C2). Levels the CLI accepts for --effort.
+ROUTING_POLICY_PATH = REPO_ROOT / "config" / "model_routing.json"
+EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
+
 #: Initial attempt + one repair round. Deliberately low, and shared by both repair loops so
 #: the budget cannot diverge between them. Two is not a compromise: a transient slip is fixed
 #: on the retry, while a *systematic* failure (the model making the same wrong choice every
@@ -114,6 +118,31 @@ def build_inline_agent(name: str, model_override: Optional[str] = None) -> dict:
 
 class SubagentError(Exception):
     """The subagent could not be run at all (binary missing, timeout, non-JSON output)."""
+
+
+def stage_effort(agent: str, path: Optional[Path] = None) -> Optional[str]:
+    """The --effort level for one stage, from config/model_routing.json; None = CLI default.
+
+    A missing file means no policy (every stage at default) — that is a valid state, not an
+    error. A malformed file or an invalid level fails loudly, mirroring
+    `gates.load_readiness_policy`: a silent fallback would let a measured cost number and the
+    config that supposedly produced it disagree without anyone noticing.
+    """
+    p = Path(path) if path else ROUTING_POLICY_PATH
+    if not p.is_file():
+        return None
+    try:
+        policy = json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SubagentError(f"{p}: not valid JSON — {exc}") from exc
+    level = (policy.get("effort") or {}).get(agent)
+    if level is None:
+        return None
+    if level not in EFFORT_LEVELS:
+        raise SubagentError(
+            f"{p}: effort[{agent!r}] must be one of {list(EFFORT_LEVELS)}, got {level!r}"
+        )
+    return level
 
 
 @dataclass
@@ -193,6 +222,9 @@ def invoke(
         "--output-format", "json",
         "--allowedTools", *ALLOWED_TOOLS,
     ]
+    effort = stage_effort(agent)
+    if effort:
+        cmd += ["--effort", effort]
     seen = set()
     for directory in access_dirs:
         d = str(directory)

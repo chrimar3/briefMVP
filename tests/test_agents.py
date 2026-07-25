@@ -229,3 +229,53 @@ def test_repair_order_carries_the_violations_verbatim():
     text = agents.repair_order("brief", ["v1", "v2"], "Fix exactly these.")
     assert text.startswith("REPAIR ORDER — your brief failed the gate:\n")
     assert "  - v1\n  - v2" in text and text.endswith("Fix exactly these.")
+
+
+# --------------------------------------------------------------------------------------
+# Per-stage effort policy (cost-audit C2)
+# --------------------------------------------------------------------------------------
+
+
+def test_stage_effort_missing_file_means_cli_default(tmp_path):
+    from pipeline import agents
+
+    assert agents.stage_effort("render", path=tmp_path / "absent.json") is None
+
+
+def test_stage_effort_reads_the_level(tmp_path):
+    import json as _json
+    from pipeline import agents
+
+    p = tmp_path / "routing.json"
+    p.write_text(_json.dumps({"effort": {"render": "low"}}), encoding="utf-8")
+    assert agents.stage_effort("render", path=p) == "low"
+    assert agents.stage_effort("synthesize", path=p) is None  # uncapped stage → default
+
+
+def test_stage_effort_rejects_an_invalid_level_loudly(tmp_path):
+    """A silent fallback would let a measured cost number and the config that produced it
+    disagree — malformed policy fails the run, mirroring gates.load_readiness_policy."""
+    import json as _json
+
+    import pytest as _pytest
+
+    from pipeline import agents
+
+    p = tmp_path / "routing.json"
+    p.write_text(_json.dumps({"effort": {"render": "turbo"}}), encoding="utf-8")
+    with _pytest.raises(agents.SubagentError, match="turbo"):
+        agents.stage_effort("render", path=p)
+
+
+def test_shipping_routing_policy_is_valid():
+    """Every configured stage is a real agent; every level is one the CLI accepts; and
+    synthesis — the judgment core — carries no cap (capping it is a human decision)."""
+    import json as _json
+
+    from pipeline import agents
+
+    policy = _json.loads(agents.ROUTING_POLICY_PATH.read_text(encoding="utf-8"))
+    for agent_name, level in (policy.get("effort") or {}).items():
+        assert agent_name in AGENT_SPEC, f"unknown agent {agent_name!r} in routing policy"
+        assert level in agents.EFFORT_LEVELS
+    assert "synthesize" not in (policy.get("effort") or {})

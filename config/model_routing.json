@@ -1,0 +1,10 @@
+{
+  "_what_this_is": "Per-stage inference-depth policy (cost-audit C2). `effort` maps an agent name to the Claude Code --effort level for that stage's subagent invocation; stages absent here run at the CLI default. Model TIER routing (haiku vs sonnet) stays in .claude/agents/*.md frontmatter and is a human decision (CLAUDE.md) — this file tunes only how hard the chosen model thinks.",
+  "_levels": "low | medium | high | xhigh | max",
+  "_calibration_rule": "Change a level only with a measured run behind it: fresh harness 17/17 plus the C0 token ruler (eval/cost_report.py --tokens). Never tune against fixtures/northlight_01/answer_key.json.",
+  "_provenance": "C2 experiment 2026-07-25: render capped at low. Rationale: C1 measured sonnet-stage spend as thinking-dominated (30-53k output tokens vs ~7k-token artifacts), and render is the mechanical end of the sonnet pair — template-driven, with citation/glossary/warning-coverage gates that are all deterministic. Synthesis deliberately carries NO cap: conflict adjudication is the judgment core of the product.",
+
+  "effort": {
+    "render": "low"
+  }
+}
