@@ -198,12 +198,9 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
         ctx.artifacts.setdefault("extracts", {})[source.source_id] = json.loads(
             Path(outcome["output_file"]).read_text(encoding="utf-8")
         )
-        attempts = outcome["attempts"]
-        cost = sum(a["subagent"].get("cost_usd") or 0.0 for a in attempts)
-        models = sorted({m for a in attempts for m in a["subagent"].get("model_ids") or []})
         print(
             f"        {outcome['item_count']} items · {outcome['open_question_count']} open questions"
-            f" · {len(attempts)} attempt(s) · ${cost:.4f} · {', '.join(models) or 'model unreported'}"
+            f" · {_summarise(outcome['attempts'])}"
         )
         results.append(outcome)
     return {"extracts": results}
@@ -250,8 +247,7 @@ def _creative_handler(ctx: "RunContext", step: Step) -> dict:
     for outcome in results:
         print(
             f"      · {outcome['model_alias']:<7} → {Path(outcome['output_file']).name}"
-            f" · {outcome['chars']} chars · {len(outcome['attempts'])} attempt(s)"
-            f" · ${outcome['cost_usd'] or 0:.4f} · {', '.join(outcome['model_ids']) or 'model unreported'}"
+            f" · {outcome['chars']} chars · {_summarise(outcome['attempts'])}"
         )
     ctx.artifacts["creative"] = results
     return {"creative": results}

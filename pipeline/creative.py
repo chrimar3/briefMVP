@@ -25,8 +25,6 @@ from pathlib import Path
 
 from pipeline import agents, gates
 
-MAX_ATTEMPTS = agents.MAX_ATTEMPTS
-
 #: The models the Tier-4 A/B compares, in order. Same input, same skeleton — only the model moves.
 AB_MODELS = ("sonnet", "opus")
 
@@ -97,11 +95,26 @@ def check_creative_brief(path: Path, spec_table: dict) -> list:
 
     allowed = _allowed_spec_values(spec_table)
     for match in _SPEC_TOKEN_RES.findall(text) + _SPEC_TOKEN_RATIO.findall(text):
-        if _norm_spec(match) not in allowed:
-            violations.append(
-                f"spec value {match!r} does not appear in the deterministic spec table — "
-                f"channel specs are looked up, never generated (PRD DR-7)"
-            )
+        norm = _norm_spec(match)
+        if norm in allowed:
+            continue
+        # m:ss durations written without a leading zero ("a 1:30 cut") are legitimate creative
+        # content, not table specs — the same false-positive family as the 00:06 timecodes
+        # (tier-4 report §5), one iteration deeper. A colon token whose right side reads as
+        # seconds (two digits, 10–59) is treated as a duration and tolerated; every common
+        # invented ratio (16:9, 4:3, 3:2, 21:9 — single-digit denominators) still fails, and
+        # table ratios like 9:16 are cleared against `allowed` above, before this exemption.
+        # The narrow cost: an invented ratio with a 10–59 denominator that is not in the table
+        # passes — accepted and documented (design audit F1) as the price of not corrupting
+        # valid durations through the repair loop.
+        if ":" in norm:
+            right = norm.split(":")[1]
+            if len(right) == 2 and 10 <= int(right) <= 59:
+                continue
+        violations.append(
+            f"spec value {match!r} does not appear in the deterministic spec table — "
+            f"channel specs are looked up, never generated (PRD DR-7)"
+        )
     return violations
 
 
@@ -155,31 +168,32 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
 
     order = build_creative_order(brief_file, output_file, template_dir, glossary_path,
                                  resolved_spec_path, model_alias)
-    attempts = []
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = agents.invoke("creative-shadow", order, access_dirs, model_override=model_alias)
-        violations = check_creative_brief(output_file, spec_table)
-        attempts.append({"attempt": attempt, "subagent": result.as_dict(), "violations": violations})
-        if not violations:
-            return {
-                "model_alias": model_alias,
-                "output_file": str(output_file),
-                "model_ids": result.model_ids,
-                "cost_usd": result.cost_usd,
-                "usage": result.usage,
-                "chars": len(output_file.read_text(encoding="utf-8")),
-                "attempts": attempts,
-            }
-        order = (
-            "REPAIR ORDER — your creative draft failed the gate:\n"
-            + "\n".join(f"  - {v}" for v in violations)
-            + f"\n\nFix exactly these and rewrite {output_file}. Spec values must be copied from "
-              f"the spec table byte-for-byte; do not invent them."
-        )
-    raise CreativeError(
-        f"creative-shadow[{model_alias}]: no acceptable draft after {MAX_ATTEMPTS} attempts:\n"
-        + "\n".join(f"  - {v}" for v in attempts[-1]["violations"])
+    attempts, failed = agents.run_gated(
+        "creative-shadow", order,
+        lambda: check_creative_brief(output_file, spec_table),
+        lambda v: agents.repair_order(
+            "creative draft", v,
+            f"Fix exactly these and rewrite {output_file}. Spec values must be copied from "
+            f"the spec table byte-for-byte; do not invent them."),
+        access_dirs, stage="creative-shadow", site=model_alias, run_dir=Path(run_dir),
+        model_override=model_alias,
     )
+    if failed:
+        raise CreativeError(
+            f"creative-shadow[{model_alias}]: no acceptable draft after {agents.MAX_ATTEMPTS} attempts:\n"
+            + "\n".join(f"  - {v}" for v in failed)
+        )
+
+    last = attempts[-1]["subagent"]
+    return {
+        "model_alias": model_alias,
+        "output_file": str(output_file),
+        "model_ids": last["model_ids"],
+        "cost_usd": last["cost_usd"],
+        "usage": last["usage"],
+        "chars": len(output_file.read_text(encoding="utf-8")),
+        "attempts": attempts,
+    }
 
 
 def run_ab(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,

@@ -38,6 +38,10 @@ SAMPLES = {
     "schema-additional-properties": "meta: Additional properties are not allowed ('foo' was unexpected)",
     "schema-invalid-enum": "meta/sensitivity_tier: 'S3' is not one of ['S0', 'S1']",
     "schema-wrong-type": "budget/0/confidence: 5 is not of type 'string'",
+    "spec-not-in-table": "spec value '16:9' does not appear in the deterministic spec table — channel specs are looked up, never generated (PRD DR-7)",
+    "creative-missing-banner": "missing the SHADOW MODE banner — every creative draft must declare it is not for delivery",
+    "render-question-dropped": "el: render numbers 3 item(s) in the ⚠ sections but the brief carries 10 open question(s) — every question reaches both renders",
+    "render-conflict-dropped": "el: conflicts[0] position 1 cites source 'paper' but that source never appears in the ⚠ region — both sides of a conflict render with their citations",
 }
 
 
@@ -101,6 +105,27 @@ def test_single_artifact_stage_attempts_are_read():
     m = _manifest([bad, []], stage="synthesis", as_extracts=False)
     result = ra.analyse([("run1", m)])
     assert result["rules"][0]["rule_id"] == "readiness-populated"
+
+
+def test_manifest_fallback_sees_every_step_shape():
+    """Design audit F5: the manifest fallback must read the shapes the runner actually writes —
+    fidelity/creative outcome lists and the named single-outcome keys — not only extracts[].
+    The Tier-4 spec-gate false positive was invisible to this tool for exactly this reason."""
+    manifest = {"steps": [
+        {"name": "fidelity_check", "status": "pass",
+         "fidelity": [{"source_id": "t", "attempts": [{"attempt": 1, "violations": []}]}]},
+        {"name": "creative_shadow", "status": "pass",
+         "creative": [{"model_alias": "sonnet",
+                       "attempts": [{"attempt": 1, "violations": ["spec value '16:9' does not appear in the deterministic spec table — never generated"]}]}]},
+        {"name": "synthesis", "status": "pass",
+         "synthesis": {"attempts": [{"attempt": 1, "violations": []}]}},
+    ]}
+    rows = list(ra._iter_attempts(manifest, []))
+    assert len(rows) == 3
+    sites = {site for _stage, site, _n, _v in rows}
+    assert {"t", "sonnet"} <= sites
+    result = ra.analyse([("run1", manifest)])
+    assert any(r["rule_id"] == "spec-not-in-table" for r in result["rules"])
 
 
 def test_load_manifests_reads_a_runs_parent(tmp_path):

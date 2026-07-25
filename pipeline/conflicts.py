@@ -69,7 +69,10 @@ def collect_internal_conflicts(extracts: dict) -> list:
     collected = []
     for source_id, extract in sorted(extracts.items()):
         for conflict in extract.get("internal_conflicts") or []:
-            collected.append({"source_id": source_id, **conflict})
+            # Provenance last so it wins: the extract schema forbids a `source_id` key inside a
+            # conflict today, but the pipeline's label must not be silently overridable if that
+            # ever changes.
+            collected.append({**conflict, "source_id": source_id})
     return collected
 
 

@@ -21,12 +21,8 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from pipeline import PIPELINE_VERSION, agents, conflicts, diagnostics, gates
-
-#: Single source of truth in agents.py — shared so the two repair loops cannot diverge.
-MAX_ATTEMPTS = agents.MAX_ATTEMPTS
+from pipeline import PIPELINE_VERSION, agents, gates
 
 
 class StageError(gates.GateError):
@@ -41,29 +37,9 @@ class HaltForHuman(gates.GateError):
     """
 
 
-def _run_with_repair(agent: str, order: str, check, repair_prompt, access_dirs,
-                     run_dir: Optional[Path] = None) -> tuple:
-    """Invoke a subagent, gate its artifact, allow exactly one repair round.
-
-    Each attempt is logged to the durable repair sink before the loop can raise, so a stage that
-    gives up still leaves a full record of why (see pipeline/diagnostics.py).
-    """
-    attempts = []
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = agents.invoke(agent, order, access_dirs)
-        violations = check()
-        attempts.append({"attempt": attempt, "subagent": result.as_dict(), "violations": violations})
-        if run_dir is not None:
-            diagnostics.record_attempt(run_dir, agent, agent, attempt, violations, result.as_dict())
-        if not violations:
-            return attempts, None
-        order = repair_prompt(violations)
-    return attempts, attempts[-1]["violations"]
-
-
 def _fail(agent: str, violations: list) -> StageError:
     listed = "\n".join(f"  - {v}" for v in violations)
-    return StageError(f"{agent}: no acceptable artifact after {MAX_ATTEMPTS} attempts:\n{listed}")
+    return StageError(f"{agent}: no acceptable artifact after {agents.MAX_ATTEMPTS} attempts:\n{listed}")
 
 
 # ======================================================================================
@@ -139,12 +115,11 @@ def classify(sources, run_dir: Path, project_id: str, client_config: dict, gloss
     output_file = Path(run_dir) / "classification.json"
     order = build_classification_order(sources, output_file, project_id, client_config, glossary_path)
 
-    attempts, failed = _run_with_repair(
+    attempts, failed = agents.run_gated(
         "classify", order,
         lambda: check_classification(output_file, client_config),
-        lambda v: f"REPAIR ORDER — your classification failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
-                  + f"\n\nFix exactly these and rewrite {output_file}.",
-        access_dirs, run_dir=Path(run_dir),
+        lambda v: agents.repair_order("classification", v, f"Fix exactly these and rewrite {output_file}."),
+        access_dirs, stage="classify", site="classify", run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("classify", failed)
@@ -175,9 +150,11 @@ def classify(sources, run_dir: Path, project_id: str, client_config: dict, gloss
 #: An annotation is inserted *with* its separating whitespace, so the whitespace is part of the
 #: insertion and comes out with it. Without the leading `\s*`, an annotation placed before
 #: punctuation ("ογδόντα πέντε [FIDELITY: ...], αλλά") strips back to "πέντε , αλλά" and a
-#: correctly-annotated transcript gets rejected for a stray space. The check this serves is
+#: correctly-annotated transcript gets rejected for a stray space. The body tolerates one level
+#: of nested brackets ("[FIDELITY: glossary-match [key visual]]") — an annotation quoting a
+#: bracketed term must strip whole, not leave its own residue. The check this serves is
 #: "no character of the transcript was altered", and that still holds exactly.
-FIDELITY_ANNOTATION_RE = re.compile(r"\s*\[FIDELITY:[^\]]*\]")
+FIDELITY_ANNOTATION_RE = re.compile(r"\s*\[FIDELITY:(?:[^\[\]]|\[[^\]]*\])*\]")
 FIDELITY_REPORT_KEYS = ("source_id", "tokens_flagged", "glossary_matches", "fidelity_score", "verdict")
 FIDELITY_VERDICTS = ("pass", "pass_with_flags", "escalate_to_human")
 
@@ -244,13 +221,11 @@ def fidelity_check(source, run_dir: Path, glossary_path: Path, access_dirs) -> d
     annotated_file = out_dir / f"{source.source_id}.annotated.md"
 
     order = build_fidelity_order(source, report_file, annotated_file, glossary_path)
-    attempts, failed = _run_with_repair(
+    attempts, failed = agents.run_gated(
         "fidelity-check", order,
         lambda: check_fidelity(report_file, annotated_file, source.text),
-        lambda v: "REPAIR ORDER — your fidelity output failed the gate:\n"
-                  + "\n".join(f"  - {x}" for x in v)
-                  + "\n\nFix exactly these and rewrite both files.",
-        access_dirs, run_dir=Path(run_dir),
+        lambda v: agents.repair_order("fidelity output", v, "Fix exactly these and rewrite both files."),
+        access_dirs, stage="fidelity-check", site=source.source_id, run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("fidelity-check", failed)
@@ -389,15 +364,38 @@ def check_synthesis(path: Path, extracts: dict) -> list:
                 if anchor:
                     known_anchors.add(anchor)
     if known_anchors:
+        def _sweep(refs: list, path: str) -> None:
+            for ref_idx, ref in enumerate(refs):
+                anchor = ((ref or {}).get("anchor") or "").strip()
+                if anchor and anchor not in known_anchors:
+                    violations.append(
+                        f"{path}[{ref_idx}]: anchor {anchor[:40]!r} does not "
+                        f"match any extract anchor — refs are copied verbatim (SYNTHESIS.md rule 1)"
+                    )
+
         for fieldname in gates.BRIEF_FIELDS:
             for idx, entry in enumerate(brief.get(fieldname) or []):
-                for ref_idx, ref in enumerate(entry.get("evidence") or []):
-                    anchor = (ref.get("anchor") or "").strip()
-                    if anchor and anchor not in known_anchors:
-                        violations.append(
-                            f"{fieldname}[{idx}].evidence[{ref_idx}]: anchor {anchor[:40]!r} does not "
-                            f"match any extract anchor — refs are copied verbatim (SYNTHESIS.md rule 1)"
-                        )
+                _sweep(entry.get("evidence") or [], f"{fieldname}[{idx}].evidence")
+        # Conflict positions and open-question links carry evidence refs too — and the Greek
+        # render re-anchors on all of them, so the sweep covers every ref the brief can hold.
+        for idx, conflict in enumerate(brief.get("conflicts") or []):
+            _sweep([p.get("evidence") for p in (conflict.get("positions") or [])],
+                   f"conflicts[{idx}].positions")
+        for idx, question in enumerate(brief.get("open_questions") or []):
+            _sweep(question.get("linked_evidence") or [], f"open_questions[{idx}].linked_evidence")
+
+    # Schema violations must be visible INSIDE the gate, where the repair loop can still act.
+    # The earlier design validated only after the loop had declared success, so a schema-invalid
+    # brief (a bad enum, a missing meta key) died with zero repair rounds and a repair log whose
+    # last attempt read "no violations". The readiness block is runner-owned and injected after
+    # the gate, so the probe carries the computed block; the real injection and the post-loop
+    # validation in `synthesize` are unchanged.
+    probe = dict(brief)
+    probe["readiness"] = gates.compute_readiness_block(brief)
+    try:
+        gates.validate_brief(probe)
+    except gates.SchemaValidationError as exc:
+        violations.extend(exc.errors)
     return violations
 
 
@@ -407,13 +405,14 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
     order = build_synthesis_order(run_dir, output_file, project_id, client_config, classification,
                                   sources, glossary_path)
 
-    attempts, failed = _run_with_repair(
+    attempts, failed = agents.run_gated(
         "synthesize", order,
         lambda: check_synthesis(output_file, extracts),
-        lambda v: "REPAIR ORDER — your brief failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
-                  + f"\n\nFix exactly these and rewrite {output_file}. Do not drop entries to make "
-                    f"errors go away, and do not invent evidence to satisfy a check.",
-        access_dirs, run_dir=Path(run_dir),
+        lambda v: agents.repair_order(
+            "brief", v,
+            f"Fix exactly these and rewrite {output_file}. Do not drop entries to make "
+            f"errors go away, and do not invent evidence to satisfy a check."),
+        access_dirs, stage="synthesize", site="synthesize", run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("synthesize", failed)
@@ -499,6 +498,18 @@ Reply with one line: the two paths written.
 """
 
 
+def _warning_region(render: str) -> str:
+    """The body of every ⚠ section — where open questions and conflicts must land."""
+    kept, in_warn = [], False
+    for line in render.splitlines():
+        if line.strip().startswith("##"):
+            in_warn = "⚠" in line
+            continue
+        if in_warn:
+            kept.append(line)
+    return "\n".join(kept)
+
+
 def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> list:
     violations = []
     for lang, path in (("el", out_el), ("en", out_en)):
@@ -530,13 +541,37 @@ def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> lis
         # failed a perfectly good Greek render, because Greek marks a question with ";".
         # The template gives both special sections a "⚠" heading, so that marker is the
         # signal — it survives translation, which is exactly what a bilingual gate needs.
-        if brief.get("open_questions") and not any(
-            line.startswith("##") and "⚠" in line for line in render.splitlines()
-        ):
-            violations.append(
-                f"{lang}: brief has open questions but the render has no '⚠' section heading — "
-                f"open questions and conflicts are the product, not an appendix"
-            )
+        # Coverage inside the region is checked the same way: open questions are numbered
+        # (template contract), so the numbered-item count is translation-invariant; conflict
+        # positions carry source_ids, which survive translation character-exact. Both checks
+        # are ≥-shaped — a render may elaborate, it may not omit.
+        open_qs = brief.get("open_questions") or []
+        brief_conflicts = brief.get("conflicts") or []
+        if open_qs or brief_conflicts:
+            if not any(line.startswith("##") and "⚠" in line for line in render.splitlines()):
+                violations.append(
+                    f"{lang}: brief has open questions or conflicts but the render has no '⚠' "
+                    f"section heading — open questions and conflicts are the product, not an appendix"
+                )
+            else:
+                region = _warning_region(render)
+                if open_qs:
+                    numbered = len(re.findall(r"^\s*\d{1,3}[.)]\s", region, re.MULTILINE))
+                    if numbered < len(open_qs):
+                        violations.append(
+                            f"{lang}: render numbers {numbered} item(s) in the ⚠ sections but the "
+                            f"brief carries {len(open_qs)} open question(s) — every question "
+                            f"reaches both renders"
+                        )
+                for idx, conflict in enumerate(brief_conflicts):
+                    for p_idx, position in enumerate(conflict.get("positions") or []):
+                        sid = ((position.get("evidence") or {}).get("source_id") or "")
+                        if sid and sid not in region:
+                            violations.append(
+                                f"{lang}: conflicts[{idx}] position {p_idx} cites source {sid!r} "
+                                f"but that source never appears in the ⚠ region — both sides of "
+                                f"a conflict render with their citations"
+                            )
     return violations
 
 
@@ -548,13 +583,14 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs) -> dict
     glossary = json.loads(Path(glossary_path).read_text(encoding="utf-8"))
 
     order = build_render_order(brief_file, out_el, out_en, template_path, glossary_path)
-    attempts, failed = _run_with_repair(
+    attempts, failed = agents.run_gated(
         "render", order,
         lambda: check_render(out_el, out_en, brief, glossary),
-        lambda v: "REPAIR ORDER — your renders failed the gate:\n" + "\n".join(f"  - {x}" for x in v)
-                  + "\n\nFix exactly these. Do not delete content to silence a check: a missing "
-                    "entry is a worse failure than an uncited one.",
-        access_dirs, run_dir=Path(run_dir),
+        lambda v: agents.repair_order(
+            "renders", v,
+            "Fix exactly these. Do not delete content to silence a check: a missing "
+            "entry is a worse failure than an uncited one."),
+        access_dirs, stage="render", site="render", run_dir=Path(run_dir),
     )
     if failed:
         raise _fail("render", failed)

@@ -103,6 +103,23 @@ def test_two_substantive_sources_without_the_rfp_are_refused(tmp_path):
     assert verdict.substantive_count == 2
 
 
+def test_spelled_out_greek_euro_counts_as_a_budget_signal(tmp_path):
+    """Design audit F6: a Greek-only project can state its whole budget as 'ενενήντα χιλιάδες
+    ευρώ' — no € sign, no 'προϋπολογισμ'. Refusing that folder is a readiness false positive."""
+    (tmp_path / "rfp.md").write_text(
+        "# RFP\nsource_id: r · source_type: rfp · source_date: 2026-01-01\n"
+        "Περίπου ενενήντα χιλιάδες ευρώ για την καμπάνια, launch τον Οκτώβριο.\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "t.md").write_text(
+        "# Kickoff\nsource_id: t · source_type: transcript · source_date: 2026-01-02\n"
+        "[00:01:00] A: Καλημέρα σε όλους.\n",
+        encoding="utf-8",
+    )
+    verdict = gates.readiness_gate(gates.discover_sources(tmp_path))
+    assert verdict.ok, verdict.message
+
+
 def test_readiness_gate_refuses_without_budget_or_timeline_signal(tmp_path):
     (tmp_path / "rfp.md").write_text(
         "# RFP\nsource_id: r · source_type: rfp · source_date: 2026-01-01\nΘέλουμε καμπάνια.\n",

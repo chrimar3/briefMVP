@@ -54,6 +54,7 @@ BUDGET_SIGNAL_PATTERNS = (
     r"προϋπολογισμ",
     r"€",
     r"\beur\b",
+    r"ευρώ",
     r"κόστο",
     r"media spend",
 )
@@ -405,6 +406,46 @@ def verify_citations(extract: dict, source_text: str) -> list[str]:
     return violations
 
 
+def _extract_items(extract: dict):
+    """(path, item) for every evidence-bearing item in an extract — the 7 brief fields plus
+    both sides of each internal conflict. Internal-conflict items matter because synthesis is
+    allowed to surface them (their anchors are in its known-anchor set), so every item-level
+    discipline that applies to a field item applies to them identically."""
+    for fieldname in BRIEF_FIELDS:
+        for idx, item in enumerate(extract.get(fieldname, []) or []):
+            yield f"{fieldname}[{idx}]", item
+    for idx, conflict in enumerate(extract.get("internal_conflicts") or []):
+        for side in ("value_a", "value_b"):
+            item = conflict.get(side)
+            if item:
+                yield f"internal_conflicts[{idx}].{side}", item
+
+
+def verify_internal_conflict_citations(extract: dict, source_text: str) -> list[str]:
+    """Citations inside `internal_conflicts` must resolve in the source too.
+
+    The shared `verify_citations` above covers the 7 brief fields and is imported by the frozen
+    harness (T1.3), so it stays untouched; this runner-side gate closes the side door. The door
+    exists because internal-conflict anchors were deliberately admitted into synthesis's
+    known-anchor set (the Tier-3 §7 fix) — widening what synthesis may cite without widening
+    what extraction verifies would let a fabricated anchor ride a conflict record straight into
+    the brief. The runner may be stricter than the grader; never the reverse.
+    """
+    haystack = _normalise(source_text)
+    violations: list[str] = []
+    for idx, conflict in enumerate(extract.get("internal_conflicts") or []):
+        for side in ("value_a", "value_b"):
+            item = conflict.get(side) or {}
+            for key in ("location", "anchor"):
+                needle = _normalise(item.get(key) or "")
+                if needle and needle not in haystack:
+                    violations.append(
+                        f"internal_conflicts[{idx}].{side}: {key} {needle!r} does not occur in the "
+                        f"source — citations are copied from the document, never constructed"
+                    )
+    return violations
+
+
 def find_unsourced_glossary_terms(extract: dict, source_text: str, glossary: dict) -> list[str]:
     """Catch silent repair and silent translation of protected terms.
 
@@ -414,8 +455,12 @@ def find_unsourced_glossary_terms(extract: dict, source_text: str, glossary: dic
     token (SOURCES.md rule G) or by translating (rule 5). Both are forbidden, and both are
     invisible to a schema check, because the output is perfectly well-formed.
 
-    Driven entirely by the client's own glossary, so it generalises to any client without the
-    pipeline knowing anything about a particular document.
+    Matching is word-bounded on the value side (short terms like "OOH" must not fire inside an
+    unrelated word) and substring on the source side (any genuine Latin occurrence, however
+    embedded, clears the term). Scope includes internal-conflict items — a repair is no more
+    acceptable for hiding inside a conflict record. Driven entirely by the client's own
+    glossary, so it generalises to any client without the pipeline knowing anything about a
+    particular document.
     """
     haystack = source_text.lower()
     terms = [
@@ -424,17 +469,18 @@ def find_unsourced_glossary_terms(extract: dict, source_text: str, glossary: dic
         if t.get("rule") == "keep_latin" and t.get("term")
     ]
     violations: list[str] = []
-    for fieldname in BRIEF_FIELDS:
-        for idx, item in enumerate(extract.get(fieldname, []) or []):
-            value = (item.get("value") or "").lower()
-            for term in terms:
-                if term.lower() in value and term.lower() not in haystack:
-                    violations.append(
-                        f"{fieldname}[{idx}]: value contains glossary term {term!r}, which never "
-                        f"appears in Latin script in the source. If the source renders it collapsed "
-                        f"into Greek script, keep the source's characters and add an extraction_note "
-                        f"proposing the glossary match (SOURCES.md rule G); never repair in place."
-                    )
+    for path, item in _extract_items(extract):
+        value = (item.get("value") or "").lower()
+        for term in terms:
+            lowered = term.lower()
+            in_value = re.search(rf"(?<!\w){re.escape(lowered)}(?!\w)", value)
+            if in_value and lowered not in haystack:
+                violations.append(
+                    f"{path}: value contains glossary term {term!r}, which never "
+                    f"appears in Latin script in the source. If the source renders it collapsed "
+                    f"into Greek script, keep the source's characters and add an extraction_note "
+                    f"proposing the glossary match (SOURCES.md rule G); never repair in place."
+                )
     return violations
 
 

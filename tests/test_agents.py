@@ -159,3 +159,73 @@ def test_build_inline_agent_rejects_an_unknown_agent():
 
     with pytest.raises(agents.SubagentError, match="no agent definition"):
         agents.build_inline_agent("does-not-exist")
+
+
+# --------------------------------------------------------------------------------------
+# The shared invoke-gate-repair loop (design audit F7)
+# --------------------------------------------------------------------------------------
+
+
+def _fake_invoke(calls):
+    from pipeline import agents
+
+    def fake(agent, prompt, access_dirs, timeout_s=agents.DEFAULT_TIMEOUT_S, model_override=None):
+        calls.append({"prompt": prompt, "model_override": model_override})
+        return agents.SubagentResult(agent=agent, ok=True)
+
+    return fake
+
+
+def test_run_gated_repairs_once_and_logs_every_attempt(tmp_path, monkeypatch):
+    """One loop serves every model stage: gate fails once, the repair prompt goes out, and
+    both attempts land in the durable repair log with the caller's stage/site labels."""
+    import json as _json
+    from pipeline import agents
+
+    calls = []
+    monkeypatch.setattr(agents, "invoke", _fake_invoke(calls))
+    verdicts = iter([["broken"], []])
+
+    attempts, failed = agents.run_gated(
+        "extract", "ORDER", lambda: next(verdicts), lambda v: f"REPAIR {v[0]}",
+        [], stage="extraction", site="src1", run_dir=tmp_path,
+    )
+    assert failed is None and len(attempts) == 2
+    assert [c["prompt"] for c in calls] == ["ORDER", "REPAIR broken"]
+
+    log = (tmp_path / "diagnostics" / "repair_log.jsonl").read_text(encoding="utf-8").splitlines()
+    records = [_json.loads(line) for line in log]
+    assert [(r["stage"], r["site"], r["attempt"]) for r in records] == [
+        ("extraction", "src1", 1), ("extraction", "src1", 2)]
+
+
+def test_run_gated_gives_up_after_the_attempt_budget(tmp_path, monkeypatch):
+    from pipeline import agents
+
+    calls = []
+    monkeypatch.setattr(agents, "invoke", _fake_invoke(calls))
+    attempts, failed = agents.run_gated(
+        "extract", "ORDER", lambda: ["still broken"], lambda v: "REPAIR",
+        [], stage="extraction", site="src1", run_dir=tmp_path,
+    )
+    assert failed == ["still broken"]
+    assert len(attempts) == agents.MAX_ATTEMPTS and len(calls) == agents.MAX_ATTEMPTS
+
+
+def test_run_gated_passes_the_model_override_through(monkeypatch):
+    """The Tier-4 A/B depends on this: same agent definition, only the model moves."""
+    from pipeline import agents
+
+    calls = []
+    monkeypatch.setattr(agents, "invoke", _fake_invoke(calls))
+    agents.run_gated("creative-shadow", "ORDER", lambda: [], lambda v: "",
+                     [], stage="creative-shadow", site="opus", model_override="opus")
+    assert calls[0]["model_override"] == "opus"
+
+
+def test_repair_order_carries_the_violations_verbatim():
+    from pipeline import agents
+
+    text = agents.repair_order("brief", ["v1", "v2"], "Fix exactly these.")
+    assert text.startswith("REPAIR ORDER — your brief failed the gate:\n")
+    assert "  - v1\n  - v2" in text and text.endswith("Fix exactly these.")

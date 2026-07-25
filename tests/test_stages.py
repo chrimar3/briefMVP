@@ -116,6 +116,17 @@ def test_invalid_verdict_is_caught(tmp_path):
     assert any("verdict" in v for v in stages.check_fidelity(report_file, annotated_file, TRANSCRIPT))
 
 
+def test_annotation_containing_brackets_is_stripped_cleanly(tmp_path):
+    """Design audit F6: an annotation may quote a bracketed term; the strip must own the whole
+    annotation, nested brackets included, or a correctly-annotated transcript is rejected for
+    the residue of its own annotation."""
+    annotated = TRANSCRIPT.replace(
+        "μπραντ αγουέρνες", "μπραντ αγουέρνες [FIDELITY: glossary-match [brand awareness]]"
+    )
+    report_file, annotated_file = _fidelity_files(tmp_path, annotated)
+    assert stages.check_fidelity(report_file, annotated_file, TRANSCRIPT) == []
+
+
 # ======================================================================================
 # Step 5 — conflict pass (deterministic)
 # ======================================================================================
@@ -165,6 +176,14 @@ def test_internal_conflicts_are_carried_forward_with_provenance():
     assert collected == [{"source_id": "talk", "field": "deliverables", "note": "retracted"}]
 
 
+def test_provenance_wins_if_a_conflict_ever_carries_a_source_id():
+    """Defensive (design audit F10): the schema forbids a `source_id` key inside an internal
+    conflict, but if one ever appears, the pipeline's provenance label must win — a spread
+    that lets payload override provenance is a silent-collision waiting for a schema change."""
+    extracts = {"talk": _extract(internal_conflicts=[{"field": "budget", "source_id": "spoofed"}])}
+    assert conflicts.collect_internal_conflicts(extracts)[0]["source_id"] == "talk"
+
+
 def test_conflict_pass_writes_its_artifact(tmp_path):
     outcome = conflicts.run_conflict_pass(
         {"talk": _extract(budget=[_item("eighty")]), "paper": _extract(budget=[_item("ninety", "§6", "€90.000")])},
@@ -192,9 +211,17 @@ def _entry(**over):
 
 
 def _brief(**over):
+    # Fully schema-valid apart from `readiness` (runner-injected) — the synthesis gate now
+    # validates a readiness-carrying probe copy, so the baseline fixture must be clean.
     brief = {f: [] for f in gates.BRIEF_FIELDS}
     brief.update({
-        "meta": {"sensitivity_tier": "S1"}, "budget": [_entry()],
+        "meta": {"project_id": "p", "client_id": "meltemi_beverages",
+                 "project_type": "advertising_creative", "classification_confidence": "high",
+                 "sensitivity_tier": "S1",
+                 "sources": [{"source_id": "talk", "source_type": "transcript",
+                              "source_date": "2026-01-01"}],
+                 "created_ts": "2026-01-02T00:00:00", "pipeline_version": "1.0.0"},
+        "budget": [_entry()],
         "open_questions": [], "conflicts": [], "signoff": {"status": "draft"},
     })
     brief.update(over)
@@ -245,6 +272,35 @@ def test_altered_anchor_is_caught(tmp_path):
     brief = _brief(budget=[_entry(evidence=[_ref(anchor="around eighty thousand euros")])])
     violations = stages.check_synthesis(_brief_file(tmp_path, brief), EXTRACTS)
     assert any("copied verbatim" in v for v in violations)
+
+
+def test_altered_anchor_in_a_conflict_position_is_caught(tmp_path):
+    """Design audit F2b: conflict positions carry evidence refs too, and the Greek render
+    re-anchors on them — an anchor translated during assembly breaks that round trip."""
+    brief = _brief(conflicts=[{"field": "budget", "status": "open",
+                               "positions": [{"statement": "a", "evidence": _ref()},
+                                             {"statement": "b",
+                                              "evidence": _ref(anchor="a translated anchor")}]}])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), EXTRACTS)
+    assert any("copied verbatim" in v and "conflicts[0]" in v for v in violations)
+
+
+def test_altered_anchor_in_an_open_question_link_is_caught(tmp_path):
+    brief = _brief(open_questions=[{"field": "budget", "gap": "g", "why_it_matters": "w",
+                                    "suggested_question_for_client": "q?",
+                                    "linked_evidence": [_ref(anchor="paraphrased evidence")]}])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), EXTRACTS)
+    assert any("copied verbatim" in v and "open_questions[0]" in v for v in violations)
+
+
+def test_schema_violation_is_visible_to_the_synthesis_repair_loop(tmp_path):
+    """Design audit F3: a schema-invalid brief must fail INSIDE the gate, where the repair
+    loop can see it — not after the loop has already recorded a clean attempt. The earlier
+    design validated only post-loop, so an invalid enum died with zero repair rounds and a
+    repair log that read 'no violations'."""
+    brief = _brief(budget=[_entry(qualifier="speculative")])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), EXTRACTS)
+    assert any("speculative" in v for v in violations)
 
 
 def test_anchor_from_internal_conflicts_is_accepted(tmp_path):
@@ -339,3 +395,72 @@ def test_claim_line_parsing_ignores_structure(tmp_path):
         "Grow the category. [talk 00:01:00]",
         "Around eighty, excluding media spend. [talk 00:02:00]",
     ]
+
+
+# -- ⚠ coverage (design audit F4) ------------------------------------------------------
+
+CONFLICT_TALK_VS_PAPER = {
+    "field": "budget", "status": "open",
+    "positions": [{"statement": "around eighty excl. media", "evidence": _ref()},
+                  {"statement": "ninety incl. media",
+                   "evidence": {**_ref(), "source_id": "paper"}}],
+}
+
+FULL_RENDER = """# Brief
+
+## 1. Objectives
+Grow the category. [talk 00:01:00]
+
+## 6. Budget
+Around eighty, excluding media spend. [talk 00:02:00]
+
+## ⚠ Open Questions for the Client
+1. What is the media budget?
+2. What is the launch date?
+
+## ⚠ Unresolved Conflicts (account lead must resolve before sign-off)
+**Field: Budget**
+- Position A: around eighty, excluding media spend [talk 00:02:00]
+- Position B: ninety thousand including media [paper §6]
+"""
+
+
+def test_render_covering_every_question_and_conflict_passes(tmp_path):
+    brief = {**BRIEF_FOR_RENDER,
+             "open_questions": BRIEF_FOR_RENDER["open_questions"] + [
+                 {"field": "timeline", "gap": "date unknown", "why_it_matters": "planning",
+                  "suggested_question_for_client": "What is the launch date?"}],
+             "conflicts": [CONFLICT_TALK_VS_PAPER]}
+    el, en = _renders(tmp_path, FULL_RENDER, FULL_RENDER)
+    assert stages.check_render(el, en, brief, CLIENT_CONFIG) == []
+
+
+def test_conflicts_only_brief_still_requires_the_warning_section(tmp_path):
+    """A brief with conflicts but zero open questions must still render the ⚠ section —
+    surfaced disagreement is the product, and dropping the section silently was legal."""
+    brief = {**BRIEF_FOR_RENDER, "open_questions": [], "conflicts": [CONFLICT_TALK_VS_PAPER]}
+    without_warn = GOOD_RENDER.split("## ⚠")[0]
+    el, en = _renders(tmp_path, without_warn, without_warn)
+    violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
+    assert any("⚠" in v for v in violations)
+
+
+def test_render_dropping_open_questions_is_caught(tmp_path):
+    """The ⚠ section existing is not the same as every question reaching it: the brief has
+    two open questions, the render numbers one."""
+    brief = {**BRIEF_FOR_RENDER,
+             "open_questions": BRIEF_FOR_RENDER["open_questions"] + [
+                 {"field": "timeline", "gap": "date unknown", "why_it_matters": "planning",
+                  "suggested_question_for_client": "What is the launch date?"}]}
+    el, en = _renders(tmp_path, GOOD_RENDER, GOOD_RENDER)
+    violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
+    assert any("open question" in v for v in violations)
+
+
+def test_conflict_position_sources_must_appear_in_the_warning_region(tmp_path):
+    """Both sides of a conflict render with their citations; a ⚠ region that never mentions
+    one position's source has dropped half the disagreement."""
+    brief = {**BRIEF_FOR_RENDER, "conflicts": [CONFLICT_TALK_VS_PAPER]}
+    el, en = _renders(tmp_path, GOOD_RENDER, GOOD_RENDER)
+    violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
+    assert any("conflicts[0]" in v and "paper" in v for v in violations)

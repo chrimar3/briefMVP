@@ -82,6 +82,22 @@ def test_invented_aspect_ratio_is_still_caught_after_the_timecode_fix(tmp_path):
     assert any("16:9" in v for v in creative.check_creative_brief(_draft(tmp_path, body), SPEC_TABLE))
 
 
+def test_duration_without_a_leading_zero_is_not_flagged_as_a_spec(tmp_path):
+    """Regression (design audit F1) — the fifth gate false positive, same family as the
+    timecodes: '1:30' is a ninety-second cut, not an aspect ratio. Flagging it forces the
+    model to strip legitimate durations, corrupting good content to satisfy the gate."""
+    body = SHADOW + "## Deliverables\nHero film: a 1:30 cut and a 1:15 cutdown, 9:16. [spec: tiktok_infeed_video]\n"
+    assert creative.check_creative_brief(_draft(tmp_path, body), SPEC_TABLE) == []
+
+
+def test_common_invented_aspect_ratios_are_still_caught_after_the_duration_fix(tmp_path):
+    """The narrowing must keep the useful catches: single-digit denominators (16:9, 4:3,
+    3:2, 21:9) are exactly the ratios a model would invent, and every one still fails."""
+    body = SHADOW + "## Deliverables\nHero 16:9, print 4:3, banner 3:2, cinema 21:9.\n"
+    violations = creative.check_creative_brief(_draft(tmp_path, body), SPEC_TABLE)
+    assert len(violations) == 4
+
+
 def test_missing_shadow_banner_is_caught(tmp_path):
     body = "## Deliverables\nTikTok video 9:16 1080x1920.\n"
     violations = creative.check_creative_brief(_draft(tmp_path, body), SPEC_TABLE)

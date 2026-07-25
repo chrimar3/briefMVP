@@ -1,4 +1,3 @@
-import re
 import sys
 from pathlib import Path
 
@@ -8,9 +7,11 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-#: Frontmatter is the FIRST `---` block only. Agent bodies legitimately contain `---`
-#: lines (the injected skills use them as rules), so anchor the match at the start.
-_FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.DOTALL)
+#: One definition of "frontmatter is the FIRST `---` block only" (agent bodies legitimately
+#: contain `---` lines). The *parse* below stays independent on purpose: yaml.safe_load
+#: verifies the frontmatter is real YAML, which the runtime's deliberately naive key:value
+#: parser never checks.
+from pipeline.agents import _FRONTMATTER_RE  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

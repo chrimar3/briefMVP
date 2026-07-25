@@ -63,6 +63,15 @@ _SIGNATURES = (
      "Glossary term in the brief not character-exact in a render"),
     ("section heading", "render-missing-section",
      "Open questions exist but the render has no ⚠ section"),
+    ("reaches both renders", "render-question-dropped",
+     "Render numbers fewer ⚠ items than the brief has open questions"),
+    ("never appears in the ⚠ region", "render-conflict-dropped",
+     "Conflict position's source missing from the render's ⚠ region"),
+    # Creative discipline (Stage 2)
+    ("does not appear in the deterministic spec table", "spec-not-in-table",
+     "Creative spec value not found in the channel spec table"),
+    ("SHADOW MODE banner", "creative-missing-banner",
+     "Creative draft missing the SHADOW MODE banner"),
     # Classification discipline
     ("never inferred", "tier-inferred",
      "Classifier returned a tier differing from client config"),
@@ -131,10 +140,21 @@ def _iter_attempts(manifest: dict, repair_log: list):
 
     for step in manifest.get("steps") or []:
         stage = step.get("name", "?")
-        for extract in step.get("extracts") or []:
-            site = extract.get("source_id", "?")
-            for attempt in extract.get("attempts") or []:
-                yield stage, site, attempt.get("attempt"), attempt.get("violations") or []
+        # Every per-site outcome shape the runner writes: extracts[] (per source), fidelity[]
+        # (per transcript), creative[] (per A/B model). The Tier-4 spec-gate false positive was
+        # invisible here because creative[] was missing from this sweep.
+        for list_key, site_key in (("extracts", "source_id"), ("fidelity", "source_id"),
+                                   ("creative", "model_alias")):
+            for entry in step.get(list_key) or []:
+                site = entry.get(site_key, "?")
+                for attempt in entry.get("attempts") or []:
+                    yield stage, site, attempt.get("attempt"), attempt.get("violations") or []
+        # Single-outcome stages nest their attempts under the payload key.
+        for key in ("classification", "synthesis", "render"):
+            payload = step.get(key)
+            if isinstance(payload, dict):
+                for attempt in payload.get("attempts") or []:
+                    yield stage, stage, attempt.get("attempt"), attempt.get("violations") or []
         for attempt in step.get("attempts") or []:
             yield stage, stage, attempt.get("attempt"), attempt.get("violations") or []
 

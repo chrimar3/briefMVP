@@ -16,11 +16,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, diagnostics, gates
-
-#: Single source of truth for the retry budget lives in agents.py; re-exported here for the
-#: repair loop below (one attempt + one repair). See the note there for why two.
-MAX_ATTEMPTS = agents.MAX_ATTEMPTS
+from pipeline import agents, gates
 
 
 class ExtractionError(gates.GateError):
@@ -184,6 +180,7 @@ def check_extract(path: Path, source_text: str = "", glossary: Optional[dict] = 
     violations.extend(gates.find_uncited_items(extract))
     if source_text:
         violations.extend(gates.verify_citations(extract, source_text))
+        violations.extend(gates.verify_internal_conflict_citations(extract, source_text))
         if glossary:
             violations.extend(gates.find_unsourced_glossary_terms(extract, source_text, glossary))
     return violations
@@ -211,33 +208,24 @@ def extract_source(
         source, output_file, project_id, client_config, glossary_path,
         fidelity_annotated=read_path is not None, read_path=read_path,
     )
-    attempts = []
-
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        result = agents.invoke("extract", order, access_dirs)
-        violations = check_extract(output_file, source.text, client_config)
-        attempts.append(
-            {
-                "attempt": attempt,
-                "subagent": result.as_dict(),
-                "violations": violations,
-            }
-        )
-        diagnostics.record_attempt(run_dir, "extraction", source.source_id, attempt,
-                                   violations, result.as_dict())
-        if not violations:
-            extract = json.loads(output_file.read_text(encoding="utf-8"))
-            return {
-                "source_id": source.source_id,
-                "output_file": str(output_file),
-                "attempts": attempts,
-                "item_count": sum(len(extract.get(f) or []) for f in gates.BRIEF_FIELDS),
-                "open_question_count": len(extract.get("open_questions") or []),
-                "extraction_note_count": len(extract.get("extraction_notes") or []),
-            }
-        order = build_repair_order(output_file, violations)
-
-    raise ExtractionError(
-        f"{source.source_id}: no acceptable extract after {MAX_ATTEMPTS} attempts. "
-        f"Last violations:\n" + "\n".join(f"  - {v}" for v in attempts[-1]["violations"])
+    attempts, failed = agents.run_gated(
+        "extract", order,
+        lambda: check_extract(output_file, source.text, client_config),
+        lambda v: build_repair_order(output_file, v),
+        access_dirs, stage="extraction", site=source.source_id, run_dir=run_dir,
     )
+    if failed:
+        raise ExtractionError(
+            f"{source.source_id}: no acceptable extract after {agents.MAX_ATTEMPTS} attempts. "
+            f"Last violations:\n" + "\n".join(f"  - {v}" for v in failed)
+        )
+
+    extract = json.loads(output_file.read_text(encoding="utf-8"))
+    return {
+        "source_id": source.source_id,
+        "output_file": str(output_file),
+        "attempts": attempts,
+        "item_count": sum(len(extract.get(f) or []) for f in gates.BRIEF_FIELDS),
+        "open_question_count": len(extract.get("open_questions") or []),
+        "extraction_note_count": len(extract.get("extraction_notes") or []),
+    }

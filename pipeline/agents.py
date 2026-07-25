@@ -30,7 +30,9 @@ import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
+
+from pipeline import diagnostics
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
@@ -225,3 +227,47 @@ def invoke(
         num_turns=payload.get("num_turns"),
         usage=_summarise_usage(payload),
     )
+
+
+def repair_order(subject: str, violations: list, instruction: str) -> str:
+    """The standard second-attempt prompt: the failures verbatim, then the stage's own coda."""
+    listed = "\n".join(f"  - {v}" for v in violations)
+    return f"REPAIR ORDER — your {subject} failed the gate:\n{listed}\n\n{instruction}"
+
+
+def run_gated(
+    agent: str,
+    order: str,
+    check: Callable[[], list],
+    repair_prompt: Callable[[list], str],
+    access_dirs,
+    *,
+    stage: str,
+    site: str,
+    run_dir: Optional[Path] = None,
+    model_override: Optional[str] = None,
+) -> tuple:
+    """Invoke a subagent, gate its artifact, allow exactly one repair round (MAX_ATTEMPTS).
+
+    The single invoke-gate-repair mechanism behind every model stage — extraction, the four
+    stages of stages.py and the creative shadow all run through here, so the attempt budget,
+    the attempt record shape and the durable diagnostics cannot diverge between them. (The
+    creative stage once carried its own copy of this loop and was invisible to
+    eval/repair_analysis.py as a result.)
+
+    Each attempt is logged to the durable repair sink before the loop can raise, so a stage
+    that gives up still leaves a full record of why (see pipeline/diagnostics.py). `stage` and
+    `site` label those records — site distinguishes work within a stage (a source_id, a model
+    alias). Returns (attempts, failing_violations); the second is None on success.
+    """
+    attempts = []
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        result = invoke(agent, order, access_dirs, model_override=model_override)
+        violations = check()
+        attempts.append({"attempt": attempt, "subagent": result.as_dict(), "violations": violations})
+        if run_dir is not None:
+            diagnostics.record_attempt(run_dir, stage, site, attempt, violations, result.as_dict())
+        if not violations:
+            return attempts, None
+        order = repair_prompt(violations)
+    return attempts, attempts[-1]["violations"]

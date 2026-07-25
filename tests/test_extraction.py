@@ -102,8 +102,60 @@ def test_markdown_normalisation_still_rejects_fabrication():
 
 
 # --------------------------------------------------------------------------------------
+# Citations inside internal_conflicts must resolve too (design audit F2)
+# --------------------------------------------------------------------------------------
+
+
+def test_fabricated_internal_conflict_citation_is_caught():
+    """internal_conflicts anchors are admitted into synthesis's known-anchor set (the Tier-3
+    §7 fix), so an unverified one is a fabricated-citation path straight into the brief."""
+    conflict = {"field": "budget", "value_a": _item(),
+                "value_b": _item(location="[00:99:99]", anchor="ένα ποσό που δεν ειπώθηκε ποτέ")}
+    violations = gates.verify_internal_conflict_citations(
+        _extract(internal_conflicts=[conflict]), SOURCE_TEXT)
+    assert len(violations) == 2  # both the location and the anchor are invented
+    assert all("does not occur in the source" in v for v in violations)
+    assert all("internal_conflicts[0].value_b" in v for v in violations)
+
+
+def test_genuine_internal_conflict_citation_passes():
+    conflict = {"field": "budget", "value_a": _item(),
+                "value_b": _item(location="[00:02:05]", anchor="νέα κατηγορία")}
+    assert gates.verify_internal_conflict_citations(
+        _extract(internal_conflicts=[conflict]), SOURCE_TEXT) == []
+
+
+def test_check_extract_gates_internal_conflict_citations(tmp_path):
+    path = tmp_path / "e.json"
+    conflict = {"field": "budget", "value_a": _item(),
+                "value_b": _item(anchor="never said this either")}
+    path.write_text(json.dumps(_extract(internal_conflicts=[conflict])), encoding="utf-8")
+    violations = extraction.check_extract(path, SOURCE_TEXT, GLOSSARY)
+    assert any("internal_conflicts" in v for v in violations)
+
+
+# --------------------------------------------------------------------------------------
 # Silent repair / silent translation of protected terms
 # --------------------------------------------------------------------------------------
+
+
+def test_repaired_glossary_term_inside_an_internal_conflict_is_caught():
+    """A silent repair is no more acceptable for hiding inside a conflict record."""
+    conflict = {"field": "objectives",
+                "value_a": _item(value="brand awareness — new category",
+                                 location="[00:02:05]", anchor="νέα κατηγορία"),
+                "value_b": _item()}
+    violations = gates.find_unsourced_glossary_terms(
+        _extract(internal_conflicts=[conflict]), SOURCE_TEXT, GLOSSARY)
+    assert len(violations) == 1 and "brand awareness" in violations[0]
+
+
+def test_glossary_term_inside_another_word_is_not_flagged():
+    """'ooh' inside 'boohoo' is not a use of the term OOH — matching is word-bounded on the
+    value side, so short acronyms cannot false-positive inside unrelated words."""
+    glossary = {"terms": [{"term": "OOH", "rule": "keep_latin"}]}
+    item = _item(value="η καμπάνια boohoo δεν είναι δική μας")
+    assert gates.find_unsourced_glossary_terms(_extract(budget=[item]), SOURCE_TEXT, glossary) == []
 
 
 def test_silently_repaired_glossary_term_is_caught():
