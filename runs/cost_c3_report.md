@@ -1,4 +1,10 @@
-# Cost-audit tier C3 — render model A/B (sonnet vs haiku) · **EVIDENCE PACK — DECISION OPEN**
+# Cost-audit tier C3 — render model A/B (sonnet vs haiku) · **DECIDED: RENDER STAYS ON SONNET**
+
+> **Decision (2026-07-25, account lead):** keep render on sonnet. The −$0.35/brief from haiku
+> does not justify the visible Greek-register degradation in the client-facing document (§2).
+> The shipped routing was never changed during the experiment, so no code moves — this record
+> is the decision's audit trail. Any future revisit re-runs this A/B with a Greek-speaking
+> reviewer scoring blind samples (§3).
 
 **Date:** 2026-07-25 · **Arms:** `runs/cost-c2` (sonnet @ `effort: low`, the adopted C2 config) vs `runs/cost-c3` (haiku, same brief) · **Preceding:** C2 (`6b0bed9`)
 
