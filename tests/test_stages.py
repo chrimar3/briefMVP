@@ -464,3 +464,22 @@ def test_conflict_position_sources_must_appear_in_the_warning_region(tmp_path):
     el, en = _renders(tmp_path, GOOD_RENDER, GOOD_RENDER)
     violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
     assert any("conflicts[0]" in v and "paper" in v for v in violations)
+
+
+def test_render_threads_the_model_override_to_the_invocation_seam(tmp_path, monkeypatch):
+    """Cost-audit C3: the render A/B swaps the model exactly like the Tier-4 creative A/B —
+    through run_gated's model_override, never by editing the agent definition."""
+    captured = {}
+
+    def fake_run_gated(agent, order, check, repair, access_dirs, **kw):
+        captured.update(kw, agent=agent)
+        (tmp_path / "brief_el.md").write_text("x", encoding="utf-8")
+        (tmp_path / "brief_en.md").write_text("x", encoding="utf-8")
+        return [{"attempt": 1, "subagent": {}, "violations": []}], None
+
+    from pipeline import agents as agents_mod
+    monkeypatch.setattr(agents_mod, "run_gated", fake_run_gated)
+    (tmp_path / "brief.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "g.json").write_text(json.dumps(CLIENT_CONFIG), encoding="utf-8")
+    stages.render(tmp_path, BRIEF_FOR_RENDER, tmp_path / "g.json", [], model_override="haiku")
+    assert captured["model_override"] == "haiku"

@@ -21,6 +21,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from pipeline import PIPELINE_VERSION, agents, gates
 
@@ -579,7 +580,11 @@ def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> lis
     return violations
 
 
-def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs) -> dict:
+def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
+           model_override: Optional[str] = None) -> dict:
+    """`model_override` swaps the model alias for an A/B experiment (cost-audit C3), exactly
+    like the Tier-4 creative A/B — the default path always uses the frontmatter model, and
+    adopting a different one is a human routing decision (CLAUDE.md)."""
     out_el = Path(run_dir) / "brief_el.md"
     out_en = Path(run_dir) / "brief_en.md"
     brief_file = Path(run_dir) / "brief.json"
@@ -595,6 +600,7 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs) -> dict
             "Fix exactly these. Do not delete content to silence a check: a missing "
             "entry is a worse failure than an uncited one."),
         access_dirs, stage="render", site="render", run_dir=Path(run_dir),
+        model_override=model_override,
     )
     if failed:
         raise _fail("render", failed)
