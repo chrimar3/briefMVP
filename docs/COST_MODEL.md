@@ -95,7 +95,24 @@ none of which any deterministic gate consumes. The cache-write share is the subs
 substrate second (C4); the haiku/sonnet routing split is *confirmed* by this data — all six
 haiku calls together are ~$0.69 of the ~$3.55 total including Stage 2.
 
-## 6. For the deck
+## 6. Substrate spike (cost-audit C4) — a measured negative result, and the grounded projection
+
+`eval/substrate_spike.py --transport cli` ran the extraction stage as **single-turn,
+zero-tool** subagent calls (source inlined, JSON as the reply), graded by the pipeline's own
+gate: **$0.371 for 4 sources vs $0.381 multi-turn — flat.** The turn structure is NOT what
+the demo substrate charges for; the fixed per-invocation CLI harness overhead is. Two
+corollaries, both measured:
+
+- **The gated repair loop earns its keep:** 3/4 single-call extracts passed clean; the
+  transcript fell into the seeded-garbling trap (silent «μπραντ αγουέρνες»→"brand awareness"
+  repair) that the gate caught — the same violation class the pipeline's repair round fixes.
+- **Only the true API path can cut the fixed overhead.** `--transport api` (one metered
+  haiku call per source, static prefix prompt-cached) is implemented and is the one
+  sanctioned non-subagent path (CLAUDE.md rule 4, C4 amendment); it awaits credentials.
+  Token-grounded projection from the measured prompt sizes: **~$0.06 for all 4 extractions
+  (~6×)** — still a projection until a key runs it, and labeled as such.
+
+## 7. For the deck
 
 Quote the **ratio, not the absolute**: "even on the demo substrate, model cost is ~17:1 against
 account-lead labour; on the production API substrate the PRD projects ~80:1." Then make §10's

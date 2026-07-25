@@ -7,7 +7,7 @@ Two-stage AI briefing pipeline (extraction → synthesis → bilingual render �
 1. Work ONE tier at a time (`docs/TIERS.md`). When a tier's DoD passes: commit, STOP, await human review. Never start the next tier unprompted.
 2. READ-ONLY — never edit: `docs/PRD.md`, `fixtures/answer_key.json`, `eval/harness.py` (after Tier-1 freeze), `schema/brief_schema.json` (after Tier-0 approval).
 3. Never relax an acceptance criterion to pass a gate. 3 failed attempts on one tier → write `runs/BLOCKED.md` (cause + attempts), stop the session.
-4. Fixtures only. Never ingest real client/company/personal data. No network calls except Anthropic models via subagents.
+4. Fixtures only. Never ingest real client/company/personal data. No network calls except Anthropic models — via subagents, plus ONE sanctioned metered path: `eval/substrate_spike.py --transport api` (cost-audit C4; PRD DR-1's production shape), which runs only on explicit invocation with explicit credentials.
 5. Scope = PRD non-goals are prohibitions: no UI, no email/calendar/drive integrations, no live creative delivery (shadow output only).
 
 ## Build & test commands
