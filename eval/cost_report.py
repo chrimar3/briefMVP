@@ -1,11 +1,17 @@
 """eval/cost_report.py — re-derive per-brief cost from real run manifests.
 
     python eval/cost_report.py [runs/] [--labour-eur 38] [--json]
+    python eval/cost_report.py [runs/] --tokens          # where the tokens go, per stage
 
 PRD §10 estimated "<€0.50/brief" up front. This reads what the pipeline actually spent —
 `total_cost_usd` per subagent call, recorded in every `run_manifest.json` — and reports the
 per-stage and per-brief cost, so the deck quotes a measured number, not a guess. It also prints
 the number that actually carries the business case: cost against account-lead labour per brief.
+
+`--tokens` is the optimisation ruler (cost-audit C0): per stage, it aggregates the token
+categories the CLI reports (input, output, cache read, cache write) plus turns, and attributes
+dollars to each category at list rates — so "output tokens are two-thirds of spend" is a
+number this tool reproduces, not a one-off analysis.
 
 Not a gate and not frozen; it reads run records only. Costs are the demo substrate (each stage
 is a multi-turn Claude Code subagent). Production (PRD DR-1: enterprise API, prompt caching on
@@ -22,6 +28,19 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 STAGE1 = ("classification", "fidelity_check", "extraction", "conflict_pass", "synthesis", "render")
+
+#: Anthropic list prices, $/MTok — (input, output, cache_read, cache_write_5m).
+#: Snapshot 2026-07-25 for ATTRIBUTION ONLY: the authoritative per-call dollar figure is
+#: always the CLI-reported `cost_usd`; these rates just apportion it across token categories.
+#: (Known gap: the CLI appears to use 1h-TTL cache writes at 2×, so the cache-write share
+#: here is a floor. The tool prints computed vs reported side by side so drift is visible.)
+PRICES = {
+    "haiku":  (1.00, 5.00, 0.10, 1.25),
+    "sonnet": (3.00, 15.00, 0.30, 3.75),
+    "opus":   (5.00, 25.00, 0.50, 6.25),
+}
+
+USAGE_KEYS = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
 
 
 def _attempts(step: dict) -> list:
@@ -64,6 +83,92 @@ def load_runs(path: Path) -> list:
         except (json.JSONDecodeError, OSError):
             continue
     return runs
+
+
+def token_breakdown(runs: list) -> dict:
+    """Aggregate token categories, turns and cost per stage, across every gated attempt.
+
+    Includes failed and repaired attempts on purpose — spend is spend; a telemetry tool that
+    only counts the happy path understates exactly the runs worth investigating.
+    """
+    stages: dict = {}
+    for _run_id, m in runs:
+        for step in m.get("steps") or []:
+            if step.get("kind") != "model":
+                continue
+            for a in _attempts(step):
+                sub = a.get("subagent") or {}
+                usage = sub.get("usage") or {}
+                row = stages.setdefault(step["name"], {
+                    "attempts": 0, "cost": 0.0, "turns": 0, "models": set(),
+                    **{k: 0 for k in USAGE_KEYS},
+                })
+                row["attempts"] += 1
+                row["cost"] += sub.get("cost_usd") or 0.0
+                row["turns"] += sub.get("num_turns") or 0
+                for k in USAGE_KEYS:
+                    row[k] += usage.get(k) or 0
+                for mid in sub.get("model_ids") or []:
+                    row["models"].add(_short_model(mid))
+    return stages
+
+
+def attribute_dollars(row: dict) -> dict:
+    """Apportion one stage's tokens to dollars at list rates (see PRICES caveat)."""
+    tiers = row["models"] & set(PRICES)
+    # A stage normally runs one tier; the creative A/B mixes two — price at the costlier
+    # tier so the attribution stays a floor-vs-reported comparison, never an overclaim.
+    tier = max(tiers, key=lambda t: PRICES[t][1]) if tiers else "haiku"
+    p_in, p_out, p_cr, p_cw = PRICES[tier]
+    return {
+        "tier": tier,
+        "input": row["input_tokens"] * p_in / 1e6,
+        "output": row["output_tokens"] * p_out / 1e6,
+        "cache_read": row["cache_read_input_tokens"] * p_cr / 1e6,
+        "cache_write": row["cache_creation_input_tokens"] * p_cw / 1e6,
+    }
+
+
+def report_tokens(stages: dict, as_json: bool) -> None:
+    ordered = sorted(stages.items(), key=lambda kv: -kv[1]["cost"])
+    if as_json:
+        payload = {
+            name: {**{k: row[k] for k in ("attempts", "cost", "turns", *USAGE_KEYS)},
+                   "models": sorted(row["models"]),
+                   "attributed": {k: round(v, 4) for k, v in attribute_dollars(row).items()
+                                  if k != "tier"}}
+            for name, row in ordered
+        }
+        print(json.dumps(payload, indent=2))
+        return
+
+    print("\nBrief Builder — where the tokens go (all gated attempts, demo substrate)\n")
+    print(f"  {'stage':<16}{'n':>3}{'$rep':>8}{'turns/n':>8}{'out_tok':>9}{'cache_wr':>10}"
+          f"{'cache_rd':>10}{'in_tok':>8}")
+    print(f"  {'-'*16}{'-'*3:>3}{'-'*7:>8}{'-'*7:>8}{'-'*8:>9}{'-'*9:>10}{'-'*9:>10}{'-'*7:>8}")
+    for name, row in ordered:
+        print(f"  {name:<16}{row['attempts']:>3}{row['cost']:>8.3f}"
+              f"{row['turns'] / max(row['attempts'], 1):>8.1f}"
+              f"{row['output_tokens']:>9,}{row['cache_creation_input_tokens']:>10,}"
+              f"{row['cache_read_input_tokens']:>10,}{row['input_tokens']:>8,}")
+
+    totals = {"input": 0.0, "output": 0.0, "cache_read": 0.0, "cache_write": 0.0}
+    print(f"\n  {'stage':<16}{'model':<8}{'$out':>8}{'$cache_wr':>10}{'$cache_rd':>10}"
+          f"{'$in':>7}{'$computed':>10}{'$reported':>10}")
+    for name, row in ordered:
+        att = attribute_dollars(row)
+        computed = sum(v for k, v in att.items() if k != "tier")
+        for k in totals:
+            totals[k] += att[k]
+        print(f"  {name:<16}{att['tier']:<8}{att['output']:>8.3f}{att['cache_write']:>10.3f}"
+              f"{att['cache_read']:>10.3f}{att['input']:>7.3f}{computed:>10.3f}{row['cost']:>10.3f}")
+
+    grand = sum(totals.values())
+    if grand:
+        print(f"\n  Share of attributed spend: "
+              f"output {totals['output'] / grand:.0%} · cache_write {totals['cache_write'] / grand:.0%}"
+              f" · cache_read {totals['cache_read'] / grand:.0%} · input {totals['input'] / grand:.0%}")
+        print("  (computed = list-rate floor; reported = CLI cost_usd, the authoritative figure)\n")
 
 
 def analyse(runs: list) -> dict:
@@ -141,6 +246,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Re-derive per-brief cost from run manifests.")
     p.add_argument("path", nargs="?", default=str(REPO_ROOT / "runs"), help="runs/ dir or one run")
     p.add_argument("--labour-eur", type=float, default=38.0, help="account-lead labour €/brief (PRD A1×A4 ≈ 38–40)")
+    p.add_argument("--tokens", action="store_true", help="per-stage token categories + $ attribution")
     p.add_argument("--json", action="store_true")
     args = p.parse_args(argv)
 
@@ -148,7 +254,10 @@ def main(argv=None) -> int:
     if not runs:
         print(f"[cost] no run manifests under {args.path}", file=sys.stderr)
         return 2
-    report(analyse(runs), args.labour_eur, args.json)
+    if args.tokens:
+        report_tokens(token_breakdown(runs), args.json)
+    else:
+        report(analyse(runs), args.labour_eur, args.json)
     return 0
 
 

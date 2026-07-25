@@ -69,7 +69,33 @@ glossary/template upkeep — not the API bill.
   and reliability align (the same design that shrinks tokens produces the traceable intermediates).
 - **Batch where latency permits** — −50% on non-interactive stages.
 
-## 5. For the deck
+## 5. Where the tokens go — measured decomposition (cost-audit C0)
+
+Reproduce: `python eval/cost_report.py runs/tier3 --tokens` (the committed evidence pack; the
+tool runs over any run directory). Attribution uses list rates as a floor; the CLI-reported
+`cost_usd` stays authoritative.
+
+**Two categories carry almost the whole bill:** on the graded run, **output tokens are ~64% of
+attributed spend and cache writes ~31%**; fresh input is ~1% (the paths-not-content work-order
+design already won that battle) and cache reads ~5%.
+
+The sharper finding is **output-token inflation** — output tokens versus the artifact each stage
+actually produces:
+
+| Stage | Output tokens | Deliverable ≈ | Inflation |
+|---|---|---|---|
+| render (sonnet) | 49,760 | ~6,650 tok (both renders) | ~7.5× |
+| synthesis (sonnet) | 30,871 | ~7,380 tok (brief.json) | ~4.2× |
+| extraction ×4+1 (haiku) | ~14,550/call | ~1,530 tok/extract | ~7–13× |
+
+The gap is thinking, narration between tool calls, and content echoed outside the Write call —
+none of which any deterministic gate consumes. The cache-write share is the substrate itself
+(each stage is a fresh CLI process re-writing its harness prompt and every file read, across
+5–10 turns/stage). These two numbers are the optimisation agenda: output shape first (C1),
+substrate second (C4); the haiku/sonnet routing split is *confirmed* by this data — all six
+haiku calls together are ~$0.69 of the ~$3.55 total including Stage 2.
+
+## 6. For the deck
 
 Quote the **ratio, not the absolute**: "even on the demo substrate, model cost is ~17:1 against
 account-lead labour; on the production API substrate the PRD projects ~80:1." Then make §10's

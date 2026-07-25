@@ -89,3 +89,80 @@ def test_shipped_cost_model_doc_quotes_the_ratio_not_the_estimate(repo_root):
     text = (repo_root / "docs" / "COST_MODEL.md").read_text(encoding="utf-8")
     assert "17:1" in text
     assert "smallest line" in text
+
+
+# --------------------------------------------------------------------------------------
+# Token telemetry (cost-audit tier C0) — the optimisation ruler
+# --------------------------------------------------------------------------------------
+
+
+def _sub_usage(cost_usd, out, cw, cr, inp=0, turns=5, model="claude-sonnet-5"):
+    return {"attempt": 1, "subagent": {
+        "cost_usd": cost_usd, "model_ids": [model], "num_turns": turns,
+        "usage": {"input_tokens": inp, "output_tokens": out,
+                  "cache_read_input_tokens": cr, "cache_creation_input_tokens": cw},
+    }}
+
+
+def test_token_breakdown_aggregates_categories_and_turns():
+    m = {"steps": [
+        {"name": "render", "kind": "model", "status": "pass",
+         "render": {"attempts": [_sub_usage(1.0, out=40_000, cw=80_000, cr=150_000, turns=9)]}},
+        {"name": "extraction", "kind": "model", "status": "pass",
+         "extracts": [{"attempts": [_sub_usage(0.1, out=10_000, cw=20_000, cr=20_000,
+                                               turns=5, model="claude-haiku-4-5-20251001")]},
+                      {"attempts": [_sub_usage(0.1, out=12_000, cw=22_000, cr=21_000,
+                                               turns=5, model="claude-haiku-4-5-20251001")]}]},
+    ]}
+    stages = cost.token_breakdown([("r1", m)])
+    assert stages["render"]["output_tokens"] == 40_000
+    assert stages["extraction"]["attempts"] == 2
+    assert stages["extraction"]["output_tokens"] == 22_000
+    assert stages["extraction"]["turns"] == 10
+    assert stages["extraction"]["models"] == {"haiku"}
+
+
+def test_token_breakdown_counts_failed_and_repair_attempts():
+    """Spend is spend — a telemetry ruler that skips failed runs understates exactly the
+    runs worth investigating."""
+    m = {"steps": [{"name": "synthesis", "kind": "model", "status": "failed",
+                    "synthesis": {"attempts": [_sub_usage(0.8, out=30_000, cw=60_000, cr=70_000),
+                                               _sub_usage(0.8, out=30_000, cw=10_000, cr=90_000)]}}]}
+    stages = cost.token_breakdown([("r1", m)])
+    assert stages["synthesis"]["attempts"] == 2
+    assert stages["synthesis"]["cost"] == 1.6
+
+
+def test_dollar_attribution_uses_the_stage_tier_rates():
+    m = {"steps": [{"name": "render", "kind": "model", "status": "pass",
+                    "render": {"attempts": [_sub_usage(1.0, out=1_000_000, cw=0, cr=0)]}}]}
+    att = cost.attribute_dollars(cost.token_breakdown([("r1", m)])["render"])
+    assert att["tier"] == "sonnet"
+    assert att["output"] == 15.0  # 1M output tokens at sonnet list rate
+
+
+def test_mixed_tier_stage_attributes_at_the_costlier_tier():
+    """The creative A/B mixes sonnet and opus in one stage — pricing at the costlier tier
+    keeps the computed figure a floor-vs-reported comparison, never an overclaim."""
+    m = {"steps": [{"name": "creative_shadow", "kind": "model", "status": "pass",
+                    "creative": [{"attempts": [_sub_usage(0.3, out=8_000, cw=0, cr=0)]},
+                                 {"attempts": [_sub_usage(0.5, out=8_000, cw=0, cr=0,
+                                                          model="claude-opus-4-8")]}]}]}
+    att = cost.attribute_dollars(cost.token_breakdown([("r1", m)])["creative_shadow"])
+    assert att["tier"] == "opus"
+
+
+def test_tokens_report_prints_shares(capsys):
+    m = {"steps": [{"name": "render", "kind": "model", "status": "pass",
+                    "render": {"attempts": [_sub_usage(1.0, out=40_000, cw=80_000, cr=150_000)]}}]}
+    cost.report_tokens(cost.token_breakdown([("r1", m)]), as_json=False)
+    out = capsys.readouterr().out
+    assert "Share of attributed spend" in out and "render" in out
+
+
+def test_missing_usage_fields_do_not_crash_the_ruler():
+    """Older manifests predate usage capture — they aggregate as zeros, not errors."""
+    m = {"steps": [{"name": "render", "kind": "model", "status": "pass",
+                    "render": {"attempts": [{"attempt": 1, "subagent": {"cost_usd": 1.0}}]}}]}
+    stages = cost.token_breakdown([("r1", m)])
+    assert stages["render"]["output_tokens"] == 0 and stages["render"]["cost"] == 1.0
