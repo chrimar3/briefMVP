@@ -4,34 +4,23 @@
 
 ## About this project
 
-Every agency project starts the same way: a kickoff call, an RFP, a thread of emails, some
-background documents. Someone — usually an account lead, usually late — has to turn that pile
-into *the brief*: the single document everyone downstream works from. It takes hours, and the
-things that go wrong are always the same ones: a number gets "remembered" slightly wrong, two
-sources disagree and nobody notices, a gap gets papered over with a plausible guess.
+Every project starts as a pile of inputs — a kickoff transcript, an RFP, an email thread. An
+account lead spends hours turning it into *the brief*, and the same things always go wrong:
+a number misremembered, a contradiction missed, a gap filled with a guess.
 
-**Brief Builder** is an AI-assisted pipeline that does the reading and the drafting — and is
-deliberately built *not* to do the guessing. It reads the client's documents, drafts the brief
-in **Greek and English** from one shared source of truth, and attaches a citation to every
-single statement, pointing back to the exact moment in the transcript or the exact section of
-the RFP that supports it. When sources disagree (the RFP says one audience, the CMO said
-another), it doesn't pick a winner — it puts the disagreement in front of a human, with both
-quotes. When something is missing, it writes the question you should ask the client, ready to
-send.
+**Brief Builder** reads those documents and drafts the brief in **Greek and English**, with a
+citation on every statement pointing to the exact line that supports it. Where sources
+disagree, it shows both quotes and asks. Where something is missing, it writes the question
+to send the client. Three rules run through everything:
 
-Three principles run through everything:
-
-- 🧾 **Every claim carries a receipt.** No citation, no claim — checked by code, not by trust.
-- 🙋 **Gaps become questions, never guesses.** "Around eighty" stays "around eighty" until the
+- 🧾 **Every claim carries a receipt** — no citation, no claim.
+- 🙋 **Gaps become questions, never guesses** — "around eighty" stays that way until the
   client says eighty *what*.
-- ✍️ **People make every decision that matters.** Nothing advances past the draft without an
-  account lead's sign-off, and nothing the system produces ships to a client on its own.
+- ✍️ **People decide** — nothing moves past the draft without an account lead's sign-off.
 
-The project is a working demonstration built for the ATCOM assignment: it runs end-to-end on a
-realistic synthetic project (a Greek beverage brand's summer campaign — with contradictions,
-gaps and garbled transcript audio seeded on purpose), and it is graded by a frozen, automated
-exam it cannot see. Current score: **17/17**, at a measured cost of **about $2–2.6 per brief**
-against roughly €38–40 of account-lead time.
+Built as a working demo for the ATCOM assignment: it runs end-to-end on a realistic synthetic
+project with deliberately seeded traps, graded by a frozen exam it cannot see. Score:
+**17/17**, at **~$2–2.6 per brief** against ~€38–40 of account-lead time.
 
 ## How it works
 
@@ -62,16 +51,11 @@ flowchart TB
     class F human
 ```
 
-**How to read the colors — this is also the architecture:**
-🟦 *blue* is AI at work (reading, assembling, drafting) · 🟨 *amber* is an automatic check
-written in plain code (no AI involved — the same input always gives the same verdict) ·
-🟩 *green* is a person deciding. In fact every blue step has an amber check behind it: each
-AI output is inspected by code — citations must resolve word-for-word in the source, protected
-brand terms must survive untouched, no currency or total may appear that no source stated —
-and an output that fails its check is sent back once, with the exact list of problems, to fix.
-If it can't, the system stops and says so rather than passing along something unverified.
-That division of labor is the whole design: **AI does the reading and writing, deterministic
-code does the checking, humans do the deciding.**
+**The colors are the architecture:** 🟦 AI reads and drafts · 🟨 plain code checks ·
+🟩 people decide. Every blue step is verified by an amber check — citations must resolve
+word-for-word, protected brand terms must survive, no figure may appear that no source stated.
+An output that fails is sent back once to fix; if it still fails, the system stops and says so.
+**AI writes, code checks, humans decide.**
 
 ---
 
