@@ -37,15 +37,16 @@ You receive N structured extracts + the conflict pass output + the client glossa
 2. **Canonicalization, not translation.** `content` is a concise English-pivot claim faithful to the item's `value`. Glossary terms stay character-exact. Numbers, dates, ranges, and hedges transfer verbatim in meaning ("κάπου στα ογδόντα" → "around eighty (units unstated)" — the hedge and the gap survive; no €, no thousands, no midpoint).
 3. **No new facts, no lost facts.** Nothing enters `content` without an extract item behind it; no extracted item disappears silently — it lands in an entry, a conflict, or an open question.
 4. **Conflicts assemble, never resolve.** Cross-source same-field contradictions (from the conflict pass, plus any you detect) become `conflicts[]` objects with both positions and their evidence, `status: "open"`. You have no authority to prefer a source — authority ordering informs *presentation order only*.
-5. **Open questions: union + dedupe — and questions ASK, they never resolve.** Merge per-source `open_questions`; add questions for any of the 7 fields with no evidence at all. Deduplicate by meaning, keep the best-phrased `suggested_question_for_client`, merge `linked_evidence`. Rule 2 applies to **every string you emit** — questions and conflict statements included: a question may ask *whether* a figure means euros or thousands ("is the 80–85 in thousands of euros?"), but must never assert a resolved form the source did not write ("€80–85k per the kickoff" resolves currency the speaker never stated). A currency mark attaches to a figure only where some source wrote it on that figure.
+5. **Open questions: union + dedupe — and questions ASK, they never resolve.** Merge per-source `open_questions`; add questions for any of the 7 fields with no evidence at all. Deduplicate by meaning, keep the best-phrased `suggested_question_for_client`, merge `linked_evidence`. Rule 2 applies to **every string you emit** — questions and conflict statements included: a question may ask *whether* a figure means euros or thousands, but only **in words** ("is the 80–85 in thousands of euros?" / "αφορά χιλιάδες ευρώ;"). Never write the resolved form itself — not as an assertion, and not as a parenthetical gloss inside the question: "(€80k–€85k)" is writing the answer into the question. If no source wrote a currency mark on a figure, that mark never appears attached to that figure anywhere in your output, except inside a conflict position quoting a source that did.
 6. **Confidence propagates, never inflates.** A `brief_entry`'s confidence is that of its strongest single supporting item — corroboration across sources may be noted in content ("stated in both RFP and kickoff") but multiple weak items never sum to `high`.
 7. **Qualifiers survive.** A `conditional` item produces a `conditional` entry. Speculation stays speculation through every hop.
 8. **Readiness is not yours.** You emit entries; the deterministic runner computes the `readiness` block. Never populate or adjust it.
 
 ## 3. Self-check before emitting
 
-> Run this check **silently**: fix problems in the brief file itself. Do not enumerate the
-> checks or echo entries in your reply — the deterministic gate reads the file.
+> Work through this check **deliberately, one item at a time** — for this stage the check is
+> load-bearing, not a formality. Fix problems in the brief file itself; keep any narration
+> brief, but never skip an item to save tokens.
 
 1. Schema-valid against `brief_schema.json` (minus runner-computed `readiness`)?
 2. Every entry has ≥1 evidence ref, copied byte-exact from an extract?
@@ -53,5 +54,9 @@ You receive N structured extracts + the conflict pass output + the client glossa
 4. Every extract item accounted for (entry, conflict, or open question)?
 5. Any resolved conflict, invented figure, or inflated confidence? Undo it.
 6. Glossary terms character-exact in every `content`?
+7. **Currency scan.** Search every string you emitted — entries, questions, conflict
+   statements — for a currency mark (€, EUR) or unit gloss attached to a figure that no
+   source wrote in that form (rule 5). Found one outside a conflict position quoting a
+   source? Rewrite it in words or remove it.
 
 ===== END INJECTED SKILL: skills/SYNTHESIS.md =====
