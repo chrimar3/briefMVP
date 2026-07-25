@@ -118,6 +118,10 @@ Authority ordering across sources is applied **downstream** — your job is only
 
 ## 8. Self-check before emitting (run in order; failure on any check = fix, then re-check)
 
+> Run this check **silently**: fix problems in the JSON file itself. Do not enumerate the
+> checks, restate items, or echo extract content in your reply — the pipeline's deterministic
+> gate reads the file, and narrated verification is output no reader consumes.
+
 1. Does every item have non-empty `location` and `anchor`? (Rule 2)
 2. Zero values without source support? Search your output for anything you could not point to in the document.
 3. Every `medium`/`low` item linked to an `open_question`?

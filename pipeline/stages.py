@@ -298,6 +298,8 @@ OUTPUT
   Evidence refs are copied byte-exact from the extracts — anchors are never translated,
   normalised or trimmed. They are the render stage's Greek fidelity anchor.
 
+{agents.OUTPUT_DISCIPLINE}
+
 Reply with one line: entry count, conflict count, open-question count.
 """
 
@@ -493,6 +495,8 @@ OUTPUT — two files, at exactly these paths:
 
   Glossary terms are character-exact in BOTH documents. Numbers render verbatim as they appear
   in `content` — no conversion, no totalling, no currency inference.
+
+{agents.OUTPUT_DISCIPLINE}
 
 Reply with one line: the two paths written.
 """

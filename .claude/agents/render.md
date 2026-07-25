@@ -51,6 +51,9 @@ You receive one `brief_schema.json`-valid object and the template (`templates/no
 
 ## 4. Self-check before emitting (both documents)
 
+> Run this check **silently**: fix problems in the rendered files themselves. Do not enumerate
+> the checks or quote document content in your reply — the deterministic gate reads the files.
+
 1. Diff against the JSON: any rendered sentence with no schema entry? Delete it.
 2. Any schema entry missing from either render? Add it.
 3. Every glossary term character-exact in both documents?

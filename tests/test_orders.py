@@ -49,3 +49,13 @@ def test_every_work_order_carries_the_shared_skeleton(name):
     assert "OUTPUT" in order, f"{name}: no OUTPUT contract"
     assert "exactly th" in order, f"{name}: output path is not pinned ('exactly this path/these paths')"
     assert re.search(r"[Rr]eply with one line", order), f"{name}: no one-line reply contract"
+
+
+@pytest.mark.parametrize("name", ["extract", "synthesize", "render"])
+def test_token_heavy_orders_carry_the_output_discipline_block(name):
+    """Cost-audit C1: the three stages whose output ran 4-13x their artifact size carry the
+    shared efficiency block — batch reads, compose-in-the-Write-call, silent self-check."""
+    order = ORDERS[name]()
+    assert "EFFICIENCY" in order
+    assert "ONE message, as parallel Read calls" in order
+    assert "Do not draft, quote, or echo artifact" in order

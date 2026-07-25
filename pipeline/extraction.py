@@ -134,6 +134,8 @@ OUTPUT
     - Every item requires all 7 of: value, lang, location, anchor, speaker_or_author,
       qualifier, confidence. An item with an empty `location` or `anchor` fails the run.
 
+{agents.OUTPUT_DISCIPLINE}
+
 When the file is written, reply with one line: the output path and the number of items emitted.
 Do not print the JSON to your reply.
 """

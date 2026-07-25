@@ -44,7 +44,10 @@ CLAUDE_BIN = os.environ.get("BRIEF_BUILDER_CLAUDE_BIN", "claude")
 #: belt and braces, because a permission prompt in a non-interactive run would hang it.
 ALLOWED_TOOLS = ("Read", "Write")
 
-DEFAULT_TIMEOUT_S = 600
+#: Measured stage durations run up to ~580s (render, the longest stage — see run manifests);
+#: the original 600s ceiling was a coin flip that cost-audit C1 attempt 2 finally lost on a
+#: slightly larger brief. 2× the observed maximum: an infrastructure ceiling, not a gate.
+DEFAULT_TIMEOUT_S = 1200
 
 #: Initial attempt + one repair round. Deliberately low, and shared by both repair loops so
 #: the budget cannot diverge between them. Two is not a compromise: a transient slip is fixed
@@ -227,6 +230,18 @@ def invoke(
         num_turns=payload.get("num_turns"),
         usage=_summarise_usage(payload),
     )
+
+
+#: Appended to the token-heavy work orders (extraction, synthesis, render). The deterministic
+#: gates read artifacts, never transcripts — every artifact token echoed into the visible reply
+#: is spend without a reader. Measured in cost-audit C0: output tokens ran 4–13× artifact size,
+#: and serial one-file-per-turn reads inflated the per-turn cache writes.
+OUTPUT_DISCIPLINE = """EFFICIENCY — output discipline (the gate reads your FILES, never your prose)
+  Read all of your input files in ONE message, as parallel Read calls — never one per turn.
+  Compose each artifact directly inside its Write call. Do not draft, quote, or echo artifact
+  content in your visible reply or working notes.
+  Run your skill's self-check silently and fix problems in the file itself; mention a check in
+  your reply only to report a violation you could not fix."""
 
 
 def repair_order(subject: str, violations: list, instruction: str) -> str:
