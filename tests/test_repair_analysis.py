@@ -134,3 +134,10 @@ def test_load_manifests_reads_a_runs_parent(tmp_path):
     (run / "run_manifest.json").write_text(json.dumps(_manifest([[]])), encoding="utf-8")
     loaded = ra.load_manifests(tmp_path)
     assert len(loaded) == 1 and loaded[0][0] == "20260101-000000"
+
+
+def test_money_gate_violation_is_classified():
+    rule, _ = ra.classify_violation(
+        "budget[0].content: currency-marked figure (≈70000) has no source that wrote that "
+        "mark on it — rewrite the figure in words or drop the unsourced mark")
+    assert rule == "money-unsourced"

@@ -253,6 +253,29 @@ def fidelity_check(source, run_dir: Path, glossary_path: Path, access_dirs) -> d
 # Step 6 — synthesis
 # ======================================================================================
 
+#: Currency marks the money gate recognises when ATTACHED TO A FIGURE (€50.000, EUR 50k,
+#: 90 €). The word «ευρώ» in prose is deliberately not a mark — asking in words is the
+#: CORRECT behavior the gate must never punish (SYNTHESIS.md rule 5). Never extend these
+#: with fixture-specific patterns: that would be tuning against the answer key.
+_MONEY_PREFIX_RE = re.compile(r"(?:€|\bEUR\b)\s*(\d[\d.,]*)\s*([kK]\b)?")
+_MONEY_SUFFIX_RE = re.compile(r"(\d[\d.,]*)\s*([kK])?\s*€")
+
+
+def _money_figures(text: str) -> set:
+    """Canonical integer for every currency-marked figure in `text`.
+
+    Separator-insensitive (€50.000 ≡ €50,000) and k-aware (€50k ≡ €50.000), so a faithful
+    reformatting of a sourced figure never trips the gate. Decimal forms (€1,5 εκατ.) are
+    out of scope by design — precision over recall; the frozen harness stays the backstop
+    for shapes this normaliser does not know.
+    """
+    found = set()
+    for figure, k in _MONEY_PREFIX_RE.findall(text) + _MONEY_SUFFIX_RE.findall(text):
+        digits = re.sub(r"[.,]", "", figure)
+        if digits.isdigit():
+            found.add(int(digits) * (1000 if k else 1))
+    return found
+
 
 def build_synthesis_order(run_dir: Path, output_file: Path, project_id: str, client_config: dict,
                           classification: dict, sources, glossary_path: Path) -> str:
@@ -386,6 +409,34 @@ def check_synthesis(path: Path, extracts: dict) -> list:
                    f"conflicts[{idx}].positions")
         for idx, question in enumerate(brief.get("open_questions") or []):
             _sweep(question.get("linked_evidence") or [], f"open_questions[{idx}].linked_evidence")
+
+    # Currency discipline (SYNTHESIS.md rule 5, machine-checked): a currency-marked figure
+    # in an entry or open question must trace to source evidence that wrote that mark on
+    # that figure. Conflicts are exempt — quoting a disputed figure verbatim is their whole
+    # job (mirroring the harness trap's own conflict exemption). The trace-set is extract
+    # item values and anchors, which are citation-verified against the source; extract
+    # open-question prose is model-authored and deliberately NOT trusted as provenance.
+    sourced_money = set()
+    for extract in extracts.values():
+        for _path, item in gates._extract_items(extract):
+            sourced_money |= _money_figures(item.get("value") or "")
+            sourced_money |= _money_figures(item.get("anchor") or "")
+
+    def _scan_money(text: str, path: str) -> None:
+        for figure in sorted(_money_figures(text or "")):
+            if figure not in sourced_money:
+                violations.append(
+                    f"{path}: currency-marked figure (≈{figure}) has no source that wrote "
+                    f"that mark on it — rewrite the figure in words or drop the unsourced "
+                    f"mark; do NOT strip marks that trace to a source (SYNTHESIS.md rule 5)"
+                )
+
+    for fieldname in gates.BRIEF_FIELDS:
+        for idx, entry in enumerate(brief.get(fieldname) or []):
+            _scan_money(entry.get("content"), f"{fieldname}[{idx}].content")
+    for idx, question in enumerate(brief.get("open_questions") or []):
+        for key in ("gap", "why_it_matters", "suggested_question_for_client"):
+            _scan_money(question.get(key), f"open_questions[{idx}].{key}")
 
     # Schema violations must be visible INSIDE the gate, where the repair loop can still act.
     # The earlier design validated only after the loop had declared success, so a schema-invalid

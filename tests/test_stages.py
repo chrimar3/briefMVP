@@ -483,3 +483,92 @@ def test_render_threads_the_model_override_to_the_invocation_seam(tmp_path, monk
     (tmp_path / "g.json").write_text(json.dumps(CLIENT_CONFIG), encoding="utf-8")
     stages.render(tmp_path, BRIEF_FOR_RENDER, tmp_path / "g.json", [], model_override="haiku")
     assert captured["model_override"] == "haiku"
+
+
+# ======================================================================================
+# Currency-discipline gate (post-C4 hardening) — SYNTHESIS.md rule 5 as a machine check.
+# Synthetic figures ONLY (€70, £-free): encoding the fixture's seeded values would be
+# tuning against the answer key.
+# ======================================================================================
+
+
+def _money_extract(**over):
+    """An extract whose only currency-marked source evidence is '€50.000' (dot separator)."""
+    item = _item("συνολικό ποσό €50.000 για την καμπάνια", location="§6", anchor="€50.000 συνολικά")
+    return _extract(budget=[item], **over)
+
+
+def test_unsourced_currency_assertion_is_caught(tmp_path):
+    """Slip shape 1: an entry asserts a resolved '€70k' no source ever wrote."""
+    brief = _brief(budget=[_entry(content="Production budget is €70k excluding media",
+                                  evidence=[_ref(anchor="κάπου στα εβδομήντα")])])
+    extracts = {"talk": _extract(budget=[_item("κάπου στα εβδομήντα",
+                                               anchor="κάπου στα εβδομήντα")])}
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), extracts)
+    assert any("no source that wrote that mark" in v for v in violations)
+
+
+def test_unsourced_currency_gloss_in_a_question_is_caught(tmp_path):
+    """Slip shape 2: the question asks correctly in words, then writes the answer as a
+    parenthetical gloss — '(€70k–€75k)'."""
+    brief = _brief(open_questions=[{
+        "field": "budget", "gap": "range unstated",
+        "why_it_matters": "scoping",
+        "suggested_question_for_client":
+            "Το εύρος 70–75 αφορά χιλιάδες ευρώ (€70k–€75k);"}])
+    extracts = {"talk": _extract(budget=[_item("κάπου στα εβδομήντα",
+                                               anchor="κάπου στα εβδομήντα")])}
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), extracts)
+    assert any("no source that wrote that mark" in v for v in violations)
+
+
+def test_sourced_currency_passes_across_separator_styles(tmp_path):
+    """The control that keeps this from teaching symbol-stripping: a figure a source DID
+    write keeps its mark — in the source's dot style or the EN-pivot comma style."""
+    brief = _brief(
+        budget=[_entry(content="Total budget €50,000 including media",
+                       evidence=[_ref(anchor="€50.000 συνολικά")])],
+        open_questions=[{
+            "field": "budget", "gap": "allocation of the €50.000 unspecified",
+            "why_it_matters": "scoping",
+            "suggested_question_for_client":
+                "Από τα €50.000, πόσα αφορούν production;"}])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief),
+                                        {"paper": _money_extract()})
+    assert not any("wrote that mark" in v for v in violations)
+
+
+def test_asking_in_words_is_never_flagged(tmp_path):
+    """'σε χιλιάδες ευρώ;' is the CORRECT behavior — the word ευρώ with no mark+digit
+    pairing must never trigger the gate."""
+    brief = _brief(open_questions=[{
+        "field": "budget", "gap": "units unstated", "why_it_matters": "scoping",
+        "suggested_question_for_client":
+            "Το εύρος 70–75 αφορά χιλιάδες ευρώ; Ποιο είναι το νόμισμα;"}])
+    extracts = {"talk": _extract(budget=[_item("κάπου στα εβδομήντα",
+                                               anchor="κάπου στα εβδομήντα")])}
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief), extracts)
+    assert not any("wrote that mark" in v for v in violations)
+
+
+def test_conflict_positions_are_exempt_like_the_harness_trap(tmp_path):
+    """Conflicts quote sources verbatim — the one place a disputed figure belongs. The gate
+    mirrors harness X3's conflict exemption and never scans conflicts[]."""
+    brief = _brief(conflicts=[{"field": "budget", "status": "open",
+                               "positions": [
+                                   {"statement": "Total is €50.000 including media",
+                                    "evidence": _ref(anchor="€50.000 συνολικά")},
+                                   {"statement": "around seventy, units unstated",
+                                    "evidence": _ref()}]}])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief),
+                                        {"paper": _money_extract()})
+    assert not any("wrote that mark" in v for v in violations)
+
+
+def test_k_suffix_normalises_to_the_source_figure(tmp_path):
+    """'€50k' is the same fact as the source's '€50.000' — formatting, not invention."""
+    brief = _brief(budget=[_entry(content="Budget €50k total",
+                                  evidence=[_ref(anchor="€50.000 συνολικά")])])
+    violations = stages.check_synthesis(_brief_file(tmp_path, brief),
+                                        {"paper": _money_extract()})
+    assert not any("wrote that mark" in v for v in violations)

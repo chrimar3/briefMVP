@@ -46,6 +46,8 @@ _SIGNATURES = (
      "Conflict emitted as resolved rather than open"),
     ("copied verbatim", "anchor-altered",
      "Evidence anchor altered during assembly (breaks the Greek round-trip)"),
+    ("no source that wrote that mark", "money-unsourced",
+     "Currency-marked figure with no source that wrote the mark (SYNTHESIS.md rule 5)"),
     # 'a routing call with no citation' must be matched before the generic 'no evidence' below,
     # because the classification message contains both phrases.
     ("a routing call with no citation", "classification-uncited",
