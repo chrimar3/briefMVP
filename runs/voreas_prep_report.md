@@ -65,3 +65,43 @@ v1 (northlight) remains 17/17. The v2 exam is harder and it found real weaknesse
   copied entries — attribution corrected here). **Total $7.90.**
 - Resolved model IDs: `claude-haiku-4-5-20251001` (classify, fidelity, extract),
   `claude-sonnet-5` (synthesize, render). Orchestrator: `claude-fable-5`.
+
+## Addendum — artifact mining pass (2026-07-26, four read-only auditors, key claims re-verified)
+
+Auditors were barred from the answer key; that they independently rediscovered the C4
+key-messages drop is cross-validation. New verified findings, by importance:
+
+1. **The 16/17 brief asserts the superseded launch date.** `voreas-prep-03/brief.json`
+   timeline holds ONE entry: "mid-March 2027" (confidence high). The client's written,
+   declared-final Feb 14 exists only inside the conflict object and a question. The harness
+   cannot see this: T3.1/C2 passes because the conflict exists. Harness-green ≠
+   account-lead-ready. Candidate deterministic gate (runner-side `check_synthesis`, not the
+   frozen harness): a field with an open conflict must not carry one position as its sole
+   entry.
+2. **Render-stage invention:** EN render deliverable 2 says "hero video and key visuals"
+   cited to `[rfp_voreas §5]` — brief.json and the RFP say only "video". "hero" leaked in
+   from elsewhere in the corpus (the kickoff's garbled χίρο βίντεο is the likely vector) and
+   was attributed to a source that never wrote it. T2.4 passes (tag present and resolvable).
+   Candidate deterministic check: no new content tokens on cited render lines vs the brief.
+3. **Email supersession collapse has a spec root cause.** Jan 31 has zero trace in the
+   emails extract, `internal_conflicts: []` — and SOURCES.md licenses it: rule 3 says
+   "record both", §5's email row says latest-position-wins when the reversal is explicit.
+   The observed behavior is the predictable output of that contradiction. Reconcile §5 to
+   defer to rule 3. (Same extract also dropped the guidelines-v2.0 fact from mandatories —
+   the one field the spec calls asymmetric — and the March-plan/board-rationale context.)
+4. **Open-question quality is the weakest layer** (PRD explicitly cares about this
+   precision): 4–5 of 16–17 questions duplicate conflict objects; one asks the client what
+   their own guidelines say; one re-asks the launch date the client declared final in
+   writing; near-duplicates unmerged; most render without their linked_evidence citations.
+   Candidate gate: a question whose field matches an open conflict is a duplicate.
+5. **Readiness is conflict-blind:** 4 open conflicts (budget and timeline among them) still
+   verdicts `ready_for_review`. Whether conflicts should gate readiness is a policy call.
+6. Minor: EL render wrote "καμπάνια λανσαρίσματος" where the glossary says keep_latin
+   "launch" — but the quoted source itself wrote the Greek word; keep_latin's scope over
+   source-faithful paraphrase is genuinely ambiguous and worth one clarifying line in
+   TRANSLATION.md. Retracted pop-up rides as `conditional` (defensible; `retracted` would
+   be truer).
+
+Provenance note: an auditor flagged prep-02/prep-03 email extracts as byte-identical — that
+is the experiment's design (the re-roll held extraction constant via a copied run dir), not
+a pipeline defect.
