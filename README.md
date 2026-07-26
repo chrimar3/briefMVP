@@ -19,7 +19,7 @@ to send the client. Three rules run through everything:
 - ✍️ **People decide** — nothing moves past the draft without an account lead's sign-off.
 
 Built as a working demo for the ATCOM assignment: it runs end-to-end on a realistic synthetic
-project with deliberately seeded traps, graded by a frozen exam it cannot see. Score:
+project with deliberately seeded traps, graded against a sealed answer key it cannot see. Score:
 **17/17**, at **~$2–2.6 per brief** against ~€38–40 of account-lead time.
 
 ## How it works
@@ -86,12 +86,18 @@ A folder, an input, an output, and four instruction files. The skeleton is the p
 | `config/` | Agency policy as data: readiness thresholds, channel spec table, per-stage effort | Yes |
 | `pipeline/` | The deterministic core — runner, gates, repair loop | Yes |
 | `fixtures/` (+ `answer_key.json`) | The exam: a synthetic project with seeded conflicts, gaps and garbling | **No — test apparatus** |
-| `eval/harness.py` | The frozen grader — the only code allowed to read the answer key | **No — test apparatus** |
+| `eval/harness.py` | The grader — file unchanged since its Tier-1 freeze; criteria fixed; sole reader of the sealed answer key¹ | **No — test apparatus** |
 | `eval/` (rest) | Dev tooling over run manifests: recurring violations, cost, substrate | No |
 | `docs/` · `CLAUDE.md` | Build governance and the engineering record (PRD, tiers, cost model) | No |
 | `.claude/agents/` | Demo substrate (Claude Code subagents); production swaps in metered API calls — same skeleton | Depends |
 
 Demo naming: `fixtures/northlight_01/` plays `Input/`; `runs/<timestamp>/` plays `Output/`.
+
+¹ Precision matters here: the harness *file* has one commit in its history and the answer key
+has one; but one function the harness imports (`gates.verify_citations`) changed once, at
+Tier 3 (`81e201c`), to fix a demonstrated false positive — human-approved, documented in
+`runs/tier_3_report.md` §4, with fabrication detection re-proven. The criteria and the answer
+key never moved; the shared implementation did, once, in the open.
 
 ### Run it
 
