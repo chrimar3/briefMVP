@@ -21,6 +21,7 @@ to send the client. Three rules run through everything:
 Built as a working demo for a hiring case study: it runs end-to-end on a realistic synthetic
 project with deliberately seeded traps, graded against a sealed answer key it cannot see. Score:
 **17/17**, at **~$2–2.6 per brief** against ~€38–40 of account-lead time.
+Full artifact-backed proof — what ran, every check, every trap caught: **[docs/EVIDENCE.md](docs/EVIDENCE.md)**.
 
 ## How it works
 
@@ -112,6 +113,11 @@ python eval/harness.py runs/latest                           # grade against the
 python eval/cost_report.py                                   # measured cost per run
 python eval/cost_report.py runs/<ts> --tokens                # where the tokens go, per stage
 ```
+
+**Live demo** — one document in, verified facts out (classify → extract → gates, no synthesis):
+`python demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md` (or pipe any ≤800-word
+text via `-`). Prints the facts table with exact quotes, gate results, and the open questions
+it creates instead of guessing. Timing: [docs/demo_timing.md](docs/demo_timing.md).
 
 No CLI or budget? The graded run is committed at **`runs/tier3/`** — signed brief, both
 renders, all extracts, fidelity report, harness verdict (17/17), both shadow creative drafts.
