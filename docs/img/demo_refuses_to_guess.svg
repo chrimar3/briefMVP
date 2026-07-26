@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="120" viewBox="0 0 820 120">
+  <rect width="820" height="120" rx="8" fill="#1e1e1e"/>
+  <text x="20" y="40" font-family="monospace" font-size="15" fill="#9cdcfe">PLACEHOLDER — replace with a real screenshot of:</text>
+  <text x="20" y="75" font-family="monospace" font-size="16" fill="#ce9178">$ python demo/run_demo.py demo/broken_input.txt</text>
+</svg>
