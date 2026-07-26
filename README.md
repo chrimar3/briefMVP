@@ -18,7 +18,7 @@ to send the client. Three rules run through everything:
   client says eighty *what*.
 - ✍️ **People decide** — nothing moves past the draft without an account lead's sign-off.
 
-Built as a working demo for the ATCOM assignment: it runs end-to-end on a realistic synthetic
+Built as a working demo for a hiring case study: it runs end-to-end on a realistic synthetic
 project with deliberately seeded traps, graded against a sealed answer key it cannot see. Score:
 **17/17**, at **~$2–2.6 per brief** against ~€38–40 of account-lead time.
 
