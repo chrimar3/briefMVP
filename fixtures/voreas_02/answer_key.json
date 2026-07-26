@@ -1,0 +1,63 @@
+{
+  "fixture": "voreas_02",
+  "read_only_notice": "This file is the exam. The build agent must never read it during pipeline runs, never edit it, and never tune prompts against its specifics. Harness-only input. (CLAUDE.md rule 2.)",
+  "expected_classification": { "project_type": "advertising_creative", "sensitivity_tier": "S0" },
+  "seeded_conflicts": [
+    {
+      "id": "C1", "field": "budget",
+      "position_a": { "source_id": "rfp_voreas", "signal": "140.000" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "εκατόν είκοσι" },
+      "note": "€140k including media (RFP) vs 120–125 production-only, CFO-approved (00:12:41). Must surface as conflict with both citations; must NOT be merged, totalled, or converted to numerals."
+    },
+    {
+      "id": "C2", "field": "timeline",
+      "position_a": { "source_id": "rfp_voreas", "signal": "Μαρτίου 2027" },
+      "position_b": { "source_id": "emails_thread", "signal": "14 Φεβρουαρίου" },
+      "note": "RFP: mid-March 2027; email M4 2026-07-23 (most recent state, declared final by the client): board locked Feb 14. The intermediate Jan 31 request (M2) was superseded within the same thread. Conflict must cite both sources; recency may be noted but resolution is human-only."
+    },
+    {
+      "id": "C3", "field": "audiences",
+      "position_a": { "source_id": "rfp_voreas", "signal": "30–45" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "25 to 55" },
+      "note": "RFP women 30–45 vs CMO's explicit correction to unisex 25–55 (00:03:55)."
+    },
+    {
+      "id": "C4", "field": "key_messages",
+      "position_a": { "source_id": "rfp_voreas", "signal": "premium performance" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "athleisure lifestyle" },
+      "note": "RFP positioning: premium performance / technical superiority vs CMO's second thoughts: athleisure lifestyle (00:05:47), explicitly not locked with the board. Acceptable under key_messages; a synthesis filing it under objectives misses the seeded field."
+    },
+    {
+      "id": "C5", "field": "mandatories",
+      "position_a": { "source_id": "background_brand_guidelines", "signal": "χωρίς influencers" },
+      "position_b": { "source_id": "transcript_followup", "signal": "micro-influencers" },
+      "note": "Guidelines v2.0 hard rule: no influencers (company policy since 2024) vs CMO wanting three micro-influencers (00:05:05), with the Brand Director objecting on-call (00:06:29). Must surface as conflict, never silently resolved in either direction."
+    }
+  ],
+  "seeded_gaps": [
+    { "id": "G1", "field_any_of": ["objectives", "measurement"], "keyword_any_of": ["KPI", "success metric", "μέτρηση", "στόχος επιτυχίας"], "note": "No success metric exists anywhere; CMO admits it at 00:17:49. Open question required." },
+    { "id": "G2", "field_any_of": ["budget"], "keyword_any_of": ["media spend", "media budget"], "note": "Media budget unknown; CFO explicitly does not own the number (00:12:41–00:14:15). The research benchmark (€300–500k category media spend) is context, not this client's budget. Open question required." },
+    { "id": "G3", "field_any_of": ["process", "mandatories", "signoff"], "keyword_any_of": ["approval", "sign-off", "έγκριση"], "note": "Final approver undecided across the whole thread (M2 'θα σου απαντήσω σύντομα', M4 'εγώ ή η Στέλλα'). Open question required." },
+    { "id": "G4", "field_any_of": ["deliverables"], "keyword_any_of": ["format", "spec", "διάρκεια", "cutdown"], "note": "Hero video plus 'social stuff' — no formats, durations, or counts anywhere (00:09:04). Open question required." },
+    { "id": "G5", "field_any_of": ["audiences", "objectives", "markets", "scope"], "keyword_any_of": ["κύπρο", "cyprus"], "note": "Cyprus mentioned as possible but explicitly undecided by the board (00:10:02, 'μην το βάλετε ακόμα στο πλάνο'). Open question required; Cyprus must NOT appear as committed scope." },
+    { "id": "G6", "field_any_of": ["deliverables", "mandatories", "production", "assets"], "keyword_any_of": ["φωτογράφ", "photography", "δικαιώματα"], "note": "Existing product photography may not have advertising usage rights (00:12:15); cost plan depends on it (00:13:40). Open question required." }
+  ],
+  "seeded_garbling": [
+    { "id": "T1", "source_id": "transcript_kickoff", "corrupted": "μπραντ αγουέρνες", "intended": "brand awareness" },
+    { "id": "T2", "source_id": "transcript_kickoff", "corrupted": "χίρο βίντεο", "intended": "hero video" },
+    { "id": "T3", "source_id": "transcript_followup", "corrupted": "ρίτεϊλ ακτιβέισον", "intended": "retail activation" },
+    { "id": "T4", "source_id": "transcript_followup", "corrupted": "σόσιαλ κόμερς", "intended": "social commerce" }
+  ],
+  "traps": [
+    { "id": "X1", "type": "retraction", "check": "The Ermou pop-up store idea (proposed 00:10:26, retracted 00:10:48) must NOT appear as a committed deliverable in the draft or renders. Acceptable: absent, or recorded as retracted/conditional.", "forbidden_as_committed_keywords": ["pop-up", "Ερμού"] },
+    { "id": "X2", "type": "speculation", "check": "The AR filter remark (00:08:10, 'don't hold me to it') must carry qualifier=conditional wherever it appears.", "keywords": ["AR filter"] },
+    { "id": "X3", "type": "no_invention", "check": "No resolved numeric budget total may appear anywhere in the draft or renders: the CFO's spoken words ('εκατόν είκοσι', 'εκατόν είκοσι πέντε') must never be converted to numerals, and no summed or reconciled figure may be produced. Verbatim quoted signals inside conflict positions are allowed. The research doc's €210M category size and €300–500k benchmark are citable background, never budget values.", "forbidden_patterns": ["€120", "120.000", "€125", "125.000", "€140.000 τελικό σύνολο"] }
+  ],
+  "scoring": {
+    "conflicts_required": 4,
+    "gaps_required_min": 5,
+    "garbling_required_flagged_not_fixed": 4,
+    "uncited_values_allowed": 0,
+    "traps_required_pass": ["X1", "X2", "X3"]
+  }
+}

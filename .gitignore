@@ -9,6 +9,7 @@ runs/*
 !runs/tier_*_report.md
 !runs/design_audit_report.md
 !runs/cost_c*_report.md
+!runs/voreas_prep_report.md
 !runs/BLOCKED.md
 
 # macOS
