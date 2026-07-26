@@ -369,6 +369,40 @@ def check_synthesis(path: Path, extracts: dict) -> list:
                 f"resolution is human-only (PRD DR-10)"
             )
 
+    # Conflict-consistency (SYNTHESIS.md rule 4, machine-checked): a field carrying an open
+    # conflict must not read as settled. The comparison is ANCHOR-level — a position counts as
+    # "asserted by the field" only when some entry's evidence carries that position's exact
+    # anchor. Source-level matching was tried first and flagged legal briefs: an entry citing a
+    # position's *source* for an undisputed aspect of the field is not taking sides. Anchor
+    # matching is also what a token gesture cannot satisfy — an entry with an unrelated anchor
+    # from the other side's source leaves the missing position missing.
+    for idx, conflict in enumerate(brief.get("conflicts") or []):
+        if conflict.get("status") != "open":
+            continue
+        if conflict.get("field") not in gates.BRIEF_FIELDS:
+            violations.append(
+                f"conflicts[{idx}]: field {conflict.get('field')!r} is not one of "
+                f"{list(gates.BRIEF_FIELDS)} — a conflict attaches to the exact field it "
+                f"disputes (SYNTHESIS.md rule 4); rename the field, do not invent one"
+            )
+            continue
+        entry_anchors = {((ref or {}).get("anchor") or "").strip()
+                        for entry in (brief.get(conflict["field"]) or [])
+                        for ref in (entry.get("evidence") or [])} - {""}
+        anchored = [((p.get("evidence") or {}).get("anchor") or "").strip()
+                    for p in (conflict.get("positions") or [])]
+        present = [a for a in anchored if a and a in entry_anchors]
+        missing = [a for a in anchored if a and a not in entry_anchors]
+        if present and missing:
+            violations.append(
+                f"{conflict['field']}: the field asserts the position anchored "
+                f"{present[0][:40]!r} while competing position(s) anchored "
+                f"{[a[:40] for a in missing]} appear only inside conflicts[{idx}] — "
+                f"resolution by omission (SYNTHESIS.md rule 4). Add an entry stating each "
+                f"missing position's claim, copying that position's evidence ref verbatim; "
+                f"keep every existing entry."
+            )
+
     # Anchors must survive assembly untouched: they are what the Greek render re-anchors on.
     # The set of legitimate source anchors spans the 7 brief fields AND each extract's
     # internal_conflicts — a within-source contradiction the extractor recorded there (the
@@ -554,6 +588,21 @@ Reply with one line: the two paths written.
 """
 
 
+def _digit_runs(text: str) -> set:
+    """Digit sequences (≥2 digits) — the translation-invariant number fingerprint used by the
+    render no-invention check. Separators are joined ONLY in true thousands grouping
+    (1–3 digits then groups of exactly 3: "12,500" → "12500"); anything else splits on the
+    separator, so Greek dotted dates ("15.9.2026") yield {"15","2026"} instead of a bogus
+    seven-digit "figure" that would flag a faithful render."""
+    runs = set()
+    for match in re.findall(r"\d(?:[\d.,]*\d)?", text or ""):
+        if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", match):
+            runs.add(re.sub(r"[.,]", "", match))
+        else:
+            runs.update(part for part in re.split(r"[.,]", match) if len(part) >= 2)
+    return runs
+
+
 def _warning_region(render: str) -> str:
     """The body of every ⚠ section — where open questions and conflicts must land."""
     kept, in_warn = [], False
@@ -592,6 +641,56 @@ def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> lis
         for term in protected:
             if term in brief_blob and term not in render:
                 violations.append(f"{lang}: glossary term {term!r} is in the brief but missing from the render")
+
+        # No-invention (TRANSLATION.md rule 3, machine-checked): rendering adds a language,
+        # never content. Free prose can be legitimately rephrased, so this check pins the
+        # token classes that survive translation byte-for-byte — protected glossary terms,
+        # digit runs, and currency marks — and requires each one appearing in a claim or ⚠
+        # line to exist in the brief's CONTENT strings (entries, conflict statements, open
+        # questions). The whole-object blob is deliberately not the whitelist: evidence
+        # locations and meta dates would launder any small number as a "known" figure.
+        # Only citation tags naming a known source are stripped — stripping every bracketed
+        # span would let an invented figure hide inside a gloss.
+        content_blob = "\n".join(
+            [(e.get("content") or "") for f in gates.BRIEF_FIELDS for e in (brief.get(f) or [])]
+            + [(p.get("statement") or "") for c in (brief.get("conflicts") or [])
+               for p in (c.get("positions") or [])]
+            + [(c.get("resolution") or "") for c in (brief.get("conflicts") or [])]
+            + [(q.get(k) or "") for q in (brief.get("open_questions") or [])
+               for k in ("gap", "why_it_matters", "suggested_question_for_client")]
+        )
+        claim_text = "\n".join(claim_lines(render)) + "\n" + _warning_region(render)
+        bare_claims = CITATION_TAG_RE.sub(
+            lambda m: " " if any(sid in m.group(0) for sid in known) else m.group(0), claim_text)
+        for term in protected:
+            if term.lower() in bare_claims.lower() and term.lower() not in content_blob.lower():
+                violations.append(
+                    f"{lang}: render claims glossary term {term!r} but no brief content string "
+                    f"uses it — a render adds no content the brief does not carry "
+                    f"(TRANSLATION.md rule 3)"
+                )
+        content_digits = _digit_runs(content_blob)
+        content_money = _money_figures(content_blob)
+        for line in bare_claims.splitlines():
+            stripped = line.strip()
+            if (not stripped or stripped.startswith(STRUCTURAL_PREFIXES)
+                    or re.fullmatch(r"\*\*[^*]+\*\*:?", stripped)):
+                # Structural micro-headers ("**OQ-11 — Audiences**") are labels, not claims —
+                # their ordinals are render plumbing, exactly like list numbering.
+                continue
+            body = re.sub(r"^\s*\d{1,3}[.)]\s+", "", line)
+            for run in sorted(_digit_runs(body) - content_digits):
+                violations.append(
+                    f"{lang}: figure {run!r} appears in a render claim but in no brief content "
+                    f"string — remove the figure; renders never introduce numbers, in digits "
+                    f"or in words (TRANSLATION.md rule 3): {line[:80]!r}"
+                )
+            for figure in sorted(_money_figures(body) - content_money):
+                violations.append(
+                    f"{lang}: currency-marked figure (≈{figure}) in a render claim has no such "
+                    f"mark in any brief content string — remove the mark or the figure "
+                    f"(TRANSLATION.md rule 3): {line[:80]!r}"
+                )
 
         # Language-neutral on purpose. The first version of this check looked for "?" and
         # failed a perfectly good Greek render, because Greek marks a question with ";".

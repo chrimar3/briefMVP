@@ -572,3 +572,178 @@ def test_k_suffix_normalises_to_the_source_figure(tmp_path):
     violations = stages.check_synthesis(_brief_file(tmp_path, brief),
                                         {"paper": _money_extract()})
     assert not any("wrote that mark" in v for v in violations)
+
+
+# --------------------------------------------------------------------------------------
+# Conflict-consistency gate (SYNTHESIS.md rule 4, machine-checked) — anchor-level
+# --------------------------------------------------------------------------------------
+
+
+def _aref(anchor, sid="talk"):
+    return {"source_id": sid, "location": "[00:02:00]", "anchor": anchor, "speaker_or_author": "X"}
+
+
+def _conflicted_brief(entry_anchors, position_anchors=("side-a says March", "side-b says February"),
+                      field="timeline"):
+    """One open conflict on `field` (positions anchored per `position_anchors`) and entries
+    whose evidence carries `entry_anchors`."""
+    return {
+        "signoff": {"status": "draft"},
+        field: [{"content": f"claim anchored {a}", "evidence": [_aref(a)],
+                 "confidence": "high", "qualifier": "stated"} for a in entry_anchors],
+        "conflicts": [{
+            "field": field, "status": "open",
+            "positions": [{"statement": f"position anchored {a}", "evidence": _aref(a, sid)}
+                          for a, sid in zip(position_anchors, ("talk", "paper", "mail"))],
+        }],
+    }
+
+
+def _synthesis_violations(tmp_path, brief):
+    path = tmp_path / "brief.json"
+    path.write_text(json.dumps(brief, ensure_ascii=False), encoding="utf-8")
+    return [v for v in stages.check_synthesis(path, extracts={})
+            if "resolution by omission" in v or "not one of" in v]
+
+
+def test_field_asserting_one_side_of_its_open_conflict_is_refused(tmp_path):
+    """The voreas-prep-03 failure: timeline asserts mid-March (one position's anchor) while
+    the client's declared-final Feb 14 lives only inside the conflict object."""
+    brief = _conflicted_brief(entry_anchors=["side-a says March"])
+    assert any("resolution by omission" in v for v in _synthesis_violations(tmp_path, brief))
+
+
+def test_field_carrying_both_sides_passes(tmp_path):
+    brief = _conflicted_brief(entry_anchors=["side-a says March", "side-b says February"])
+    assert _synthesis_violations(tmp_path, brief) == []
+
+
+def test_empty_field_leaves_the_assertion_to_the_conflict(tmp_path):
+    assert _synthesis_violations(tmp_path, _conflicted_brief(entry_anchors=[])) == []
+
+
+def test_undisputed_aspect_entry_is_not_taking_sides(tmp_path):
+    """Reviewer probe: a payment-terms entry citing a position's SOURCE but not its anchor
+    must not fire — source-level matching flagged legal briefs for exactly this."""
+    brief = _conflicted_brief(entry_anchors=["payment in two waves"])
+    assert _synthesis_violations(tmp_path, brief) == []
+
+
+def test_token_gesture_from_the_other_source_still_fires(tmp_path):
+    """Reviewer probe P1: an unrelated-anchor entry from the other side's source does not
+    make the missing position present."""
+    brief = _conflicted_brief(entry_anchors=["side-a says March", "timing was also raised"])
+    assert any("resolution by omission" in v for v in _synthesis_violations(tmp_path, brief))
+
+
+def test_three_position_conflict_fires_while_any_side_is_missing(tmp_path):
+    brief = _conflicted_brief(
+        entry_anchors=["side-a says March", "side-b says February"],
+        position_anchors=("side-a says March", "side-b says February", "side-c says January"))
+    assert any("resolution by omission" in v for v in _synthesis_violations(tmp_path, brief))
+
+
+def test_unrecognized_conflict_field_is_a_violation_not_a_silent_skip(tmp_path):
+    """Reviewer probe P3: renaming conflicts[].field must not silence the gate."""
+    brief = _conflicted_brief(entry_anchors=["side-a says March"])
+    brief["conflicts"][0]["field"] = "launch timing"
+    assert any("not one of" in v for v in _synthesis_violations(tmp_path, brief))
+
+
+# --------------------------------------------------------------------------------------
+# Render no-invention gate (TRANSLATION.md rule 3, machine-checked)
+# --------------------------------------------------------------------------------------
+
+
+INVENTING_RENDER = """# Brief
+
+## 6. Budget
+Around eighty for Meltemi Fizz, excluding media spend. [talk 00:02:00]
+
+## ⚠ Open Questions for the Client
+1. What is the media budget?
+"""
+
+
+def test_render_inventing_a_glossary_term_is_refused(tmp_path):
+    el, en = _renders(tmp_path, INVENTING_RENDER, INVENTING_RENDER)
+    violations = stages.check_render(el, en, BRIEF_FOR_RENDER, CLIENT_CONFIG)
+    assert any("Meltemi Fizz" in v and "does not carry" in v for v in violations)
+
+
+def test_render_inventing_a_number_is_refused(tmp_path):
+    render = GOOD_RENDER.replace("Around eighty", "Around 85,000 euros")
+    el, en = _renders(tmp_path, render, render)
+    violations = stages.check_render(el, en, BRIEF_FOR_RENDER, CLIENT_CONFIG)
+    assert any("85000" in v for v in violations)
+
+
+def test_brief_backed_numbers_pass_regardless_of_separator_style(tmp_path):
+    brief = dict(BRIEF_FOR_RENDER)
+    brief["budget"] = [{"content": "Fee cap €12.500 per wave", "evidence": [_ref()],
+                       "confidence": "medium", "qualifier": "stated"}]
+    render = GOOD_RENDER.replace("Around eighty, excluding media spend.",
+                                 "Fee cap €12,500 per wave.")
+    el, en = _renders(tmp_path, render, render)
+    assert not any("TRANSLATION.md rule 3" in v
+                   for v in stages.check_render(el, en, brief, CLIENT_CONFIG))
+
+
+def test_citation_tag_timestamps_are_not_treated_as_invented_numbers(tmp_path):
+    el, en = _renders(tmp_path, GOOD_RENDER, GOOD_RENDER)
+    assert not any("TRANSLATION.md rule 3" in v
+                   for v in stages.check_render(el, en, BRIEF_FOR_RENDER, CLIENT_CONFIG))
+
+
+def test_unknown_bracketed_gloss_cannot_hide_an_invented_figure(tmp_path):
+    """Reviewer probe P6: only tags naming a known source are stripped."""
+    render = GOOD_RENDER.replace(
+        "Around eighty, excluding media spend.",
+        "Around eighty [total approx 95,000 incl. fees], excluding media spend.")
+    el, en = _renders(tmp_path, render, render)
+    violations = stages.check_render(el, en, BRIEF_FOR_RENDER, CLIENT_CONFIG)
+    assert any("95000" in v for v in violations)
+
+
+def test_evidence_timestamps_do_not_launder_invented_figures(tmp_path):
+    """Reviewer probe P9: the digit whitelist comes from content strings, not the whole
+    object — a '[00:14:32]' location must not legitimize an invented '14 days'."""
+    render = GOOD_RENDER.replace("Around eighty, excluding media spend.",
+                                 "Around eighty, delivery within 14 days.")
+    el, en = _renders(tmp_path, render, render)
+    violations = stages.check_render(el, en, BRIEF_FOR_RENDER, CLIENT_CONFIG)
+    assert any("'14'" in v for v in violations)
+
+
+def test_greek_dotted_dates_of_brief_backed_dates_pass(tmp_path):
+    brief = dict(BRIEF_FOR_RENDER)
+    brief["timeline"] = [{"content": "Launch on 15 September 2026", "evidence": [_ref()],
+                         "confidence": "high", "qualifier": "stated"}]
+    render = GOOD_RENDER.replace("Around eighty, excluding media spend.",
+                                 "Launch 15.9.2026 as stated.")
+    el, en = _renders(tmp_path, render, render)
+    assert not any("TRANSLATION.md rule 3" in v
+                   for v in stages.check_render(el, en, brief, CLIENT_CONFIG))
+
+
+def test_reverse_glossary_check_is_case_insensitive(tmp_path):
+    brief = dict(BRIEF_FOR_RENDER)
+    brief["budget"] = [{"content": "Media spend handled separately", "evidence": [_ref()],
+                       "confidence": "medium", "qualifier": "stated"}]
+    render = GOOD_RENDER.replace("Around eighty, excluding media spend.",
+                                 "Excludes media spend per the CFO.")
+    el, en = _renders(tmp_path, render, render)
+    assert not any("media spend" in v and "does not carry" in v
+                   for v in stages.check_render(el, en, brief, CLIENT_CONFIG))
+
+
+def test_invented_currency_mark_on_a_brief_backed_figure_is_refused(tmp_path):
+    """Reviewer probe P7: brief says bare 'around eighty-five (85)'; render writes '€85'."""
+    brief = dict(BRIEF_FOR_RENDER)
+    brief["budget"] = [{"content": "Around 85 (units unstated)", "evidence": [_ref()],
+                       "confidence": "medium", "qualifier": "stated"}]
+    render = GOOD_RENDER.replace("Around eighty, excluding media spend.",
+                                 "Confirmed budget €85.")
+    el, en = _renders(tmp_path, render, render)
+    violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
+    assert any("currency-marked" in v for v in violations)

@@ -22,7 +22,6 @@ The rules below are the specification for this stage. They are not advisory, and
 <!-- SKILL_SOURCE: skills/TRANSCRIPTS.md — injected verbatim below. Do not hand-edit this block; edit the skill and re-sync. tests/test_agents.py enforces byte-equality. -->
 
 ===== BEGIN INJECTED SKILL: skills/TRANSCRIPTS.md =====
-
 # TRANSCRIPTS.md — Fidelity Gate (Pipeline Step 3)
 
 > Runtime instruction file for the `fidelity-check` subagent. Runs on every transcript BEFORE extraction. Mixed Greek/English meetings produce "script collapse": English terms mangled into Greek characters — exactly on the tokens a brief most needs (terms, brand names, numbers). This gate scores and annotates; it never silently rewrites.
@@ -63,5 +62,4 @@ The original tokens stay in place. Proposals reference the glossary or state `no
 1. Zero replacements in the annotated transcript (diff vs original must show only `[FIDELITY: …]` insertions).
 2. Every annotation resolves to a glossary term or `no-glossary-match` — no invented "corrections".
 3. Report counts match annotations.
-
 ===== END INJECTED SKILL: skills/TRANSCRIPTS.md =====

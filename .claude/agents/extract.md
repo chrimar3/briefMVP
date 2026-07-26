@@ -21,7 +21,6 @@ The rules below are the specification for this stage. They are not advisory, and
 <!-- SKILL_SOURCE: skills/SOURCES.md — injected verbatim below. Do not hand-edit this block; edit the skill and re-sync. tests/test_agents.py enforces byte-equality. -->
 
 ===== BEGIN INJECTED SKILL: skills/SOURCES.md =====
-
 # SOURCES.md — Client-Brief Stage · Per-Source Extraction (Pipeline Step 4)
 
 > One of the four runtime skeleton files (this file · `SYNTHESIS.md` · `TRANSLATION.md` · `TRANSCRIPTS.md`). Build governance lives separately in `CLAUDE.md` and is never shipped in client runtime.
@@ -119,7 +118,7 @@ Transcripts arrive **after** the fidelity gate (see `TRANSCRIPTS.md`) — but tr
 |---|---|---|
 | `transcript` | What was actually **said**, by whom, when | Highest evidentiary weight for decisions & state changes. Attribute every item to a speaker. Watch for retractions later in the same meeting — extract both, flag as internal conflict. |
 | `rfp` | What the client **wrote that they want** | Treat every requirement as a **claim** (`qualifier: "stated"`, but see below). Extract faithfully AND flag assumptions worth challenging as `open_questions` (e.g. prescribed channel with no stated objective behind it → "RFP mandates TikTok; no stated objective links to this audience — confirm intent"). |
-| `email_thread` | The **most recent state** of logistics & agreements | Recency within the thread matters: extract the latest position per topic, but record superseded positions as internal conflicts if the reversal is not explicit. Always cite message sender + date. |
+| `email_thread` | The **most recent state** of logistics & agreements | Recency within the thread matters: extract the latest position per topic, and record superseded positions as `internal_conflicts` **even when the reversal is explicit** — note the explicitness in the conflict instead of dropping the history (downstream needs the full position trail). An `open_question` is only needed when the final state is genuinely unclear. Always cite message sender + date. |
 | `background` | **Context**, not commitments | Nothing in a background doc creates a deliverable, budget, or deadline on its own. Extract as `qualifier: "implied"` unless the doc is explicitly referenced as binding elsewhere. |
 
 Authority ordering across sources is applied **downstream** — your job is only to label each item's provenance precisely enough for that ordering to work.
@@ -173,5 +172,4 @@ Source line (14:32, client CFO): *"Κοιτάξτε, είμαστε κάπου �
 → auto-generated open question: `{ "field": "budget", "gap": "Figure is a hedged range with unstated currency/units and excludes media spend; total budget unknown.", "why_it_matters": "Deliverable scoping and channel mix depend on total vs production-only budget.", "suggested_question_for_client": "Να επιβεβαιώσουμε: το 80–85 αφορά χιλιάδες ευρώ για production μόνο; Υπάρχει ξεχωριστό media budget και ποιο είναι το εύρος του;" }`
 
 Note what did NOT happen: no €80,000 was written anywhere. The system knows the difference between what was said and what it means — and asks.
-
 ===== END INJECTED SKILL: skills/SOURCES.md =====

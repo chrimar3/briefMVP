@@ -22,7 +22,6 @@ The rules below are the specification for this stage. They are not advisory, and
 <!-- SKILL_SOURCE: skills/TRANSLATION.md — injected verbatim below. Do not hand-edit this block; edit the skill and re-sync. tests/test_agents.py enforces byte-equality. -->
 
 ===== BEGIN INJECTED SKILL: skills/TRANSLATION.md =====
-
 # TRANSLATION.md — Render Stage (Pipeline Step 7)
 
 > Runtime instruction file for the `render` subagent. Governs how the canonical brief JSON becomes the GR and EN documents. It does NOT govern extraction — extraction never translates (SOURCES.md rule 5).
@@ -35,7 +34,7 @@ You receive one `brief_schema.json`-valid object and the template (`templates/no
 
 1. **Nothing new.** Every sentence you render must map to a schema entry (`brief_entry`, `open_question`, or `conflict`). If it isn't in the JSON, it doesn't exist. No connective "improvements", no added recommendations, no softening.
 2. **Nothing dropped.** Every entry renders in both documents. Open questions and unresolved conflicts render prominently — they are the product, not an appendix.
-3. **Glossary is law.** Terms in `glossary/*.json` render **character-exact** in BOTH languages. `Meltemi Fizz` is never «Μελτέμι Φιζ». English marketing/technical terms marked `keep_latin` stay in Latin script inside Greek text — this is how the agency actually writes.
+3. **Glossary is law.** Terms in `glossary/*.json` render **character-exact** in BOTH languages. `Meltemi Fizz` is never «Μελτέμι Φιζ». English marketing/technical terms marked `keep_latin` stay in Latin script inside Greek text — this is how the agency actually writes. The reverse also holds: a render's claims never carry a glossary term, figure, or currency mark that no brief content string carries — rendering adds a language, never content.
 4. **Conditional stays conditional.** Entries with `qualifier: "conditional"` render with explicit hedging in both languages (e.g. "υπό συζήτηση — δεν έχει επιβεβαιωθεί" / "under discussion — not confirmed"). Never promote to committed.
 5. **Numbers render verbatim.** Budget/timeline values render as stated in `content` — no conversion, no totalling, no currency inference.
 6. **Anchors are your Greek fidelity source.** Evidence anchors arrive verbatim in the source language. When rendering Greek, consult the original Greek anchors so nuance is re-anchored to what was actually said — the EL render is EN-canonical *plus* original evidence, never a blind EL→EN→EL round trip.
@@ -59,5 +58,4 @@ You receive one `brief_schema.json`-valid object and the template (`templates/no
 3. Every glossary term character-exact in both documents?
 4. Every `conditional` entry visibly hedged in both languages?
 5. Open questions + conflicts sections present and complete in both?
-
 ===== END INJECTED SKILL: skills/TRANSLATION.md =====
