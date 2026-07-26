@@ -1,4 +1,4 @@
-# Project: Brief Builder — MVP demo (ATCOM assignment)
+# Project: Brief Builder — MVP demo
 
 Two-stage AI briefing pipeline (extraction → synthesis → bilingual render → shadow creative) built as Claude Code subagents + deterministic Python gates, on synthetic fixtures only. Full spec: `docs/PRD.md`. Tier plan + DoD: `docs/TIERS.md`.
 

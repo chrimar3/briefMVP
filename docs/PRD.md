@@ -1,7 +1,7 @@
 # Brief Builder — MVP PRD v1
 
 **Case:** Northlight Communications (~40-person PR/ad agency, Athens; corporate clients incl. banking & pharma)
-**Author:** Christos — AI Transformation Specialist assignment (ATCOM)
+**Author:** Christos — AI Transformation Specialist assignment
 **Status:** Working document. Feeds the 10-slide deck and the 20-minute defense.
 **Design philosophy:** Deterministic core, thin AI edges. Buy the model, build the skeleton. The skeleton is the product.
 

@@ -1,6 +1,6 @@
 {
   "run_id": "tier3",
-  "run_dir": "/Users/chrism/atcom-run/brief-builder/runs/tier3",
+  "run_dir": "runs/tier3",
   "fixture": "northlight_01",
   "summary": {
     "passed": 17,

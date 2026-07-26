@@ -1,7 +1,7 @@
 {
   "run_id": "tier3",
   "pipeline_version": "0.1.0-tier0",
-  "project_dir": "/Users/chrism/atcom-run/brief-builder/fixtures/northlight_01",
+  "project_dir": "fixtures/northlight_01",
   "started_ts": "2026-07-24T16:38:34",
   "finished_ts": "2026-07-24T16:41:56",
   "outcome": "complete",
@@ -60,7 +60,7 @@
       "description": "Project type + onboarding sensitivity tier",
       "status": "pass",
       "classification": {
-        "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/classification.json",
+        "output_file": "runs/tier3/classification.json",
         "project_type": "advertising_creative",
         "classification_confidence": "high",
         "sensitivity_tier": "S1",
@@ -100,8 +100,8 @@
       "fidelity": [
         {
           "source_id": "transcript_kickoff",
-          "report_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/fidelity/transcript_kickoff.report.json",
-          "annotated_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/fidelity/transcript_kickoff.annotated.md",
+          "report_file": "runs/tier3/fidelity/transcript_kickoff.report.json",
+          "annotated_file": "runs/tier3/fidelity/transcript_kickoff.annotated.md",
           "verdict": "pass_with_flags",
           "fidelity_score": "high",
           "tokens_flagged": 2,
@@ -142,7 +142,7 @@
       "extracts": [
         {
           "source_id": "background_brand_guidelines",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/background_brand_guidelines.json",
+          "output_file": "runs/tier3/extracts/background_brand_guidelines.json",
           "attempts": [
             {
               "attempt": 1,
@@ -172,7 +172,7 @@
         },
         {
           "source_id": "emails_thread",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/emails_thread.json",
+          "output_file": "runs/tier3/extracts/emails_thread.json",
           "attempts": [
             {
               "attempt": 1,
@@ -202,7 +202,7 @@
         },
         {
           "source_id": "rfp_meltemi",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/rfp_meltemi.json",
+          "output_file": "runs/tier3/extracts/rfp_meltemi.json",
           "attempts": [
             {
               "attempt": 1,
@@ -232,7 +232,7 @@
         },
         {
           "source_id": "transcript_kickoff",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/extracts/transcript_kickoff.json",
+          "output_file": "runs/tier3/extracts/transcript_kickoff.json",
           "attempts": [
             {
               "attempt": 1,
@@ -295,7 +295,7 @@
       "agent": null,
       "description": "Cross-source contradictions — surfaced, never resolved",
       "status": "pass",
-      "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/conflict_candidates.json",
+      "output_file": "runs/tier3/conflict_candidates.json",
       "candidate_count": 7,
       "candidate_fields": [
         "objectives",
@@ -317,7 +317,7 @@
       "description": "Assemble the canonical brief object",
       "status": "pass",
       "synthesis": {
-        "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief.json",
+        "output_file": "runs/tier3/brief.json",
         "entry_count": 25,
         "conflict_count": 3,
         "open_question_count": 10,
@@ -361,8 +361,8 @@
       "description": "GR + EN documents from the same object",
       "status": "pass",
       "render": {
-        "el_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief_el.md",
-        "en_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/brief_en.md",
+        "el_file": "runs/tier3/brief_el.md",
+        "en_file": "runs/tier3/brief_en.md",
         "el_chars": 13970,
         "en_chars": 12643,
         "attempts": [
@@ -401,7 +401,7 @@
       "creative": [
         {
           "model_alias": "sonnet",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/creative/creative_brief_sonnet.md",
+          "output_file": "runs/tier3/creative/creative_brief_sonnet.md",
           "model_ids": [
             "claude-sonnet-5"
           ],
@@ -439,7 +439,7 @@
         },
         {
           "model_alias": "opus",
-          "output_file": "/Users/chrism/atcom-run/brief-builder/runs/tier3/creative/creative_brief_opus.md",
+          "output_file": "runs/tier3/creative/creative_brief_opus.md",
           "model_ids": [
             "claude-opus-4-8"
           ],
