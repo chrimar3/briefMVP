@@ -1,0 +1,21 @@
+Brief Builder 1.0.0 · run case-full-20260728b
+  input : fixtures/northlight_01
+  output: runs/case-full-20260728b
+
+  · background_brand_guidelines (background, 2026-03-02)
+  · emails_thread (email_thread, 2026-07-15 (latest message))
+  · rfp_meltemi (rfp, 2026-06-28)
+  · transcript_kickoff (transcript, 2026-07-10)
+
+  client: meltemi_beverages · tier S1
+
+  resuming with: classification, 4 extract(s), brief
+
+[5] conflict_pass: 6 candidate field(s) ['objectives', 'audiences', 'deliverables', 'timeline', 'budget', 'mandatories'] · 2 internal
+[6] synthesis: dispatching 'synthesize'…
+        26 entries · 3 conflicts · 9 open questions · 1 attempt(s) · $1.3355 · claude-sonnet-5
+        readiness: 4/7 fields evidenced · 0.0 low-confidence share → thin_input_return_to_client
+[6] synthesis: ok
+[7] render: dispatching 'render'…
+        el=12325 chars · en=11409 chars · 1 attempt(s) · $0.7148 · claude-sonnet-5
+[7] render: ok

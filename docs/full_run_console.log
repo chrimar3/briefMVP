@@ -1,0 +1,40 @@
+Brief Builder 1.0.0 · run case-full-20260728b
+  input : fixtures/northlight_01
+  output: runs/case-full-20260728b
+
+  · background_brand_guidelines (background, 2026-03-02)
+  · emails_thread (email_thread, 2026-07-15 (latest message))
+  · rfp_meltemi (rfp, 2026-06-28)
+  · transcript_kickoff (transcript, 2026-07-10)
+
+  client: meltemi_beverages · tier S1
+
+[1] readiness_gate: input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript
+[2] classification: dispatching 'classify'…
+        advertising_creative (high confidence) · tier S1 · 1 attempt(s) · $0.0349 · claude-haiku-4-5-20251001
+[2] classification: ok
+[3] fidelity_check: dispatching 'fidelity-check'…
+      · scoring transcript_kickoff…
+        verdict=pass_with_flags · score=high · 2 token(s) flagged · 1 attempt(s) · $0.0440 · claude-haiku-4-5-20251001
+[3] fidelity_check: ok
+[4] extraction: dispatching 'extract'…
+      · extracting background_brand_guidelines (background)…
+        9 items · 0 open questions · 1 attempt(s) · $0.0906 · claude-haiku-4-5-20251001
+      · extracting emails_thread (email_thread)…
+        4 items · 4 open questions · 1 attempt(s) · $0.1146 · claude-haiku-4-5-20251001
+      · extracting rfp_meltemi (rfp)…
+        8 items · 6 open questions · 1 attempt(s) · $0.1275 · claude-haiku-4-5-20251001
+      · extracting transcript_kickoff (transcript) (fidelity-annotated)…
+        13 items · 5 open questions · 2 attempt(s) · $0.1799 · claude-haiku-4-5-20251001
+[4] extraction: ok
+[5] conflict_pass: 6 candidate field(s) ['objectives', 'audiences', 'deliverables', 'timeline', 'budget', 'mandatories'] · 2 internal
+[6] synthesis: dispatching 'synthesize'…
+        28 entries · 3 conflicts · 9 open questions · 1 attempt(s) · $1.0135 · claude-sonnet-5
+        readiness: 5/7 fields evidenced · 0.0 low-confidence share → ready_for_review
+[6] synthesis: ok
+[7] render: dispatching 'render'…
+        el=13806 chars · en=12891 chars · 1 attempt(s) · $0.4544 · claude-sonnet-5
+[7] render: ok
+real 1300.64
+user 13.72
+sys 5.33

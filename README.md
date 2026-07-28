@@ -104,7 +104,7 @@ key never moved; the shared implementation did, once, in the open.
 
 ```bash
 pip install -r requirements.txt        # jsonschema, pytest, PyYAML — nothing else
-python -m pytest -q                    # 280 tests, no model calls, ~0.3s
+python -m pytest -q                    # 305 tests, no model calls, ~0.4s
 
 # Model stages run as Claude Code subagents (install + authenticate the `claude` CLI).
 # A full Stage-1 run makes 6 model calls — ~$2–2.6 measured (docs/COST_MODEL.md).

@@ -27,7 +27,7 @@ from pathlib import Path
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import extraction, gates, intake, stages  # noqa: E402
+from pipeline import agents, extraction, gates, intake, stages  # noqa: E402
 
 MAX_WORDS = 800
 
@@ -101,6 +101,11 @@ def main(argv=None) -> int:
     parser.add_argument("input", help="a text/markdown file, or '-' for stdin")
     parser.add_argument("--type", default=None, help="source type when it cannot be inferred")
     parser.add_argument("--max-words", type=int, default=MAX_WORDS)
+    parser.add_argument("--retries", type=int, default=2,
+                        help="extra extraction legs after a gate refusal (each leg already "
+                             "carries one internal repair attempt); refusals are printed, "
+                             "never hidden — a refusal is the citation gate rejecting a "
+                             "fabricated quote, i.e. the product working")
     args = parser.parse_args(argv)
 
     started = time.monotonic()
@@ -131,18 +136,29 @@ def main(argv=None) -> int:
     except stages.HaltForHuman as exc:
         print(f"      HALTED FOR HUMAN (by design — it asks instead of guessing): {exc}")
         return 3
+    except (gates.GateError, agents.SubagentError) as exc:
+        print(f"      classification failed: {exc}")
+        return 2
     cost += sum(a["subagent"].get("cost_usd") or 0 for a in classification["attempts"])
     print(f"      {classification['project_type']} · tier {classification['sensitivity_tier']} "
           f"(copied from client config, never inferred) · "
           f"confidence {classification['classification_confidence']}\n")
 
     print("[2/2] extract — every value must carry a verbatim quote or it does not exist…")
-    try:
-        outcome = extraction.extract_source(source=source, run_dir=run_dir, project_id="demo",
-                                            client_config=client_config,
-                                            glossary_path=glossary_path, access_dirs=access_dirs)
-    except gates.GateError as exc:
-        print(f"      REFUSED by the verification gate (this is the product working):\n      {exc}")
+    outcome = None
+    for leg in range(1, args.retries + 2):
+        try:
+            outcome = extraction.extract_source(source=source, run_dir=run_dir,
+                                                project_id="demo", client_config=client_config,
+                                                glossary_path=glossary_path,
+                                                access_dirs=access_dirs)
+            break
+        except (gates.GateError, agents.SubagentError) as exc:
+            print(f"      REFUSED by the verification gate, leg {leg}/{args.retries + 1} — a "
+                  f"near-miss quote was rejected; this is the product working:\n      {exc}")
+            if leg <= args.retries:
+                print("      re-running the leg with a fresh model call…")
+    if outcome is None:
         return 2
     cost += sum(a["subagent"].get("cost_usd") or 0 for a in outcome["attempts"])
 
