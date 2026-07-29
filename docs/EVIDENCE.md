@@ -74,6 +74,16 @@ checks the evidence layer, tier 2 the brief and both renders, tier 3 the seeded 
 
 Live single-document timing (10 measured runs, p50/p95): [`demo_timing.md`](demo_timing.md).
 
+## Live-demo rehearsal (2026-07-29, fresh unseen sample)
+
+A ~160-word synthetic kickoff snippet (new fictional client, never used in any fixture)
+pasted into `demo_live/sources/live_transcript.md`, then both defense-session paths:
+
+| Path | Command | Wall clock | Result |
+|---|---|---|---|
+| Extraction + verification only | `./demo.sh` | **205 s (3:25)** | 9 cited facts (speculation `conditional`, spoken figures kept in words), 9/9 citations verbatim, 4 open questions · $0.17 |
+| Full pipeline, single source | `./run_full.sh` | **345 s (5:45)** | All stages first-attempt → both renders; run manifest records `demo_profile` and the production input gate's refusal (`refused_overridden_demo_profile`) — the override is logged, never silent · ~$0.64 |
+
 ## Screenshot moments (for the reviewer walk-through)
 
 1. **Full pipeline completing with total wall-clock**

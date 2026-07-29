@@ -133,6 +133,12 @@ def load_run(run_path: Path) -> Run:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     project_dir = Path(manifest["project_dir"])
+    if not project_dir.is_absolute():
+        # Committed evidence manifests carry repo-relative paths (no machine-specific
+        # prefixes in public artifacts); resolve them against the repo root so grading
+        # works from any working directory. Path plumbing only — no acceptance criterion
+        # is touched.
+        project_dir = REPO_ROOT / project_dir
     key_path = project_dir / "answer_key.json"
     if not key_path.is_file():
         raise HarnessError(f"no answer_key.json in {project_dir} — nothing to grade against")

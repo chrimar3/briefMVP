@@ -100,6 +100,8 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="One document in, verified facts out.")
     parser.add_argument("input", help="a text/markdown file, or '-' for stdin")
     parser.add_argument("--type", default=None, help="source type when it cannot be inferred")
+    parser.add_argument("--glossary", default=None,
+                        help="client config path (default: the single file in glossary/)")
     parser.add_argument("--max-words", type=int, default=MAX_WORDS)
     parser.add_argument("--retries", type=int, default=2,
                         help="extra extraction legs after a gate refusal (each leg already "
@@ -118,7 +120,7 @@ def main(argv=None) -> int:
     source_path = run_dir / f"{meta['source_id']}.md"
     source_path.write_text(stamped, encoding="utf-8")
 
-    glossary_path = extraction.resolve_glossary(None)
+    glossary_path = extraction.resolve_glossary(Path(args.glossary) if args.glossary else None)
     client_config = extraction.load_client_config(glossary_path)
     source = gates.SourceDoc(meta["source_id"], meta["source_type"], meta["source_date"],
                              source_path, stamped)

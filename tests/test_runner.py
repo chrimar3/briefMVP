@@ -6,7 +6,7 @@ import json
 import shutil
 from pathlib import Path
 
-from pipeline import runner
+from pipeline import gates, runner
 
 
 def _manifest(out_dir, run_id="testrun"):
@@ -155,3 +155,46 @@ def test_run_reports_an_undeclared_input_folder(tmp_path):
 def test_extraction_stage_selects_only_the_gate_and_step_4():
     """`--stage extraction` is the Tier-1 path: prove one leg without faking the rest."""
     assert runner.STAGE_SELECTIONS["extraction"] == ("readiness_gate", "extraction")
+
+
+def test_demo_profile_overrides_refusal_loudly_and_is_recorded(tmp_path, fixture_project):
+    """--demo-profile: the production input gate's refusal is recorded (never hidden) and the
+    run continues; the manifest carries the profile path so no demo run can pass as production."""
+    project = tmp_path / "thin"
+    project.mkdir()
+    (project / "only_transcript.md").write_text(
+        "# T\nsource_id: t1 · source_type: transcript · source_date: 2026-01-01\n"
+        "[00:01:00] A: budget εξήντα χιλιάδες, launch τον Μάρτιο.\n", encoding="utf-8")
+    policy = tmp_path / "demo_policy.json"
+    policy.write_text('{"min_fields_with_evidence": 2, "max_low_confidence_share": 0.6}',
+                      encoding="utf-8")
+
+    code = runner.main([
+        "--project", str(project), "--out", str(tmp_path / "out"),
+        "--run-id", "demo-profile-test", "--glossary",
+        str(gates.REPO_ROOT / "glossary" / "meltemi.json"), "--demo-profile", str(policy)])
+
+    manifest = json.loads((tmp_path / "out" / "demo-profile-test" / "run_manifest.json")
+                          .read_text(encoding="utf-8"))
+    assert manifest["demo_profile"] == str(policy)
+    readiness = [s for s in manifest["steps"] if s["name"] == "readiness_gate"][0]
+    assert readiness["status"] == "refused_overridden_demo_profile"
+    assert readiness["verdict"]["ok"] is False
+    # The run proceeded past the gate and died at the first model stage (models are poisoned
+    # in tests) — anything but "insufficient_input" proves the override took effect.
+    assert manifest["outcome"] != "insufficient_input" and code != 3
+
+
+def test_without_demo_profile_thin_input_still_refuses(tmp_path):
+    project = tmp_path / "thin"
+    project.mkdir()
+    (project / "only_transcript.md").write_text(
+        "# T\nsource_id: t1 · source_type: transcript · source_date: 2026-01-01\n"
+        "[00:01:00] A: budget εξήντα χιλιάδες, launch τον Μάρτιο.\n", encoding="utf-8")
+    code = runner.main([
+        "--project", str(project), "--out", str(tmp_path / "out"), "--run-id", "refusal-test",
+        "--glossary", str(gates.REPO_ROOT / "glossary" / "meltemi.json")])
+    manifest = json.loads((tmp_path / "out" / "refusal-test" / "run_manifest.json")
+                          .read_text(encoding="utf-8"))
+    assert manifest["outcome"] == "insufficient_input"
+    assert manifest["demo_profile"] is None

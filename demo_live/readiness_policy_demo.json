@@ -1,0 +1,7 @@
+{
+  "_what_this_is": "DEMO PROFILE — readiness thresholds for the live defense session only. A single pasted transcript cannot meet the production bar (config/readiness_policy.json: 5 of 7 fields evidenced), so this profile lowers the draft-level thresholds and the runner's --demo-profile flag records its use in the run manifest. Production runs never load this file.",
+  "_verdict_rule": "ready_for_review requires BOTH conditions to hold; otherwise thin_input_return_to_client.",
+
+  "min_fields_with_evidence": 2,
+  "max_low_confidence_share": 0.6
+}

@@ -111,6 +111,10 @@ class RunContext:
     artifacts: dict = field(default_factory=dict)
     glossary_path: Optional[Path] = None
     source_filter: Optional[str] = None
+    #: Demo-profile readiness policy (loaded dict) — None in every production run. When set,
+    #: the input readiness gate's refusal is printed and recorded but does not stop the run,
+    #: and the draft readiness block is computed with this policy instead of the shipped one.
+    readiness_policy: Optional[dict] = None
 
     def selected_sources(self) -> list:
         """Sources this run acts on — all of them, or the one named by --source."""
@@ -212,7 +216,7 @@ def _synthesis_handler(ctx: "RunContext", step: Step) -> dict:
         run_dir=ctx.run_dir, project_id=ctx.project_id, client_config=ctx.client_config,
         classification=ctx.artifacts["classification"], sources=ctx.selected_sources(),
         extracts=ctx.artifacts.get("extracts") or {}, glossary_path=ctx.glossary_path,
-        access_dirs=_access_dirs(ctx),
+        access_dirs=_access_dirs(ctx), readiness_policy=ctx.readiness_policy,
     )
     ctx.artifacts["brief"] = json.loads(Path(outcome["output_file"]).read_text(encoding="utf-8"))
     readiness = outcome["readiness"]
@@ -274,6 +278,7 @@ class Runner:
         stage: str = "full",
         glossary: Optional[Path] = None,
         source: Optional[str] = None,
+        demo_profile: Optional[Path] = None,
     ):
         self.project_dir = Path(project_dir).resolve()
         self.out_dir = Path(out_dir).resolve()
@@ -282,6 +287,7 @@ class Runner:
         self.stage = stage
         self.glossary = glossary
         self.source = source
+        self.demo_profile = Path(demo_profile) if demo_profile else None
         self.steps: list[dict] = []
 
     # -- plumbing ----------------------------------------------------------------
@@ -301,6 +307,7 @@ class Runner:
             "outcome": outcome,
             "exit_code": exit_code,
             "stage": self.stage,
+            "demo_profile": str(self.demo_profile) if self.demo_profile else None,
             "sources": [s.as_meta() for s in self.sources],
             "steps": self.steps,
         }
@@ -392,6 +399,16 @@ class Runner:
 
         print(f"  client: {client_config['client_id']} · tier {client_config['sensitivity_tier']}\n")
 
+        readiness_policy = None
+        if self.demo_profile:
+            try:
+                readiness_policy = gates.load_readiness_policy(self.demo_profile)
+            except gates.GateError as exc:
+                print(f"[demo profile] {exc}", file=sys.stderr)
+                self._write_manifest("demo_profile_error", EXIT_GATE_ERROR)
+                return EXIT_GATE_ERROR
+            print(f"  DEMO PROFILE: {self.demo_profile} — recorded in the run manifest\n")
+
         ctx = RunContext(
             project_dir=self.project_dir,
             run_dir=self.run_dir,
@@ -402,6 +419,7 @@ class Runner:
             client_config=client_config,
             glossary_path=glossary_path,
             source_filter=self.source,
+            readiness_policy=readiness_policy,
         )
 
         self._hydrate(ctx)
@@ -435,6 +453,15 @@ class Runner:
 
         if step.name == "readiness_gate":
             verdict = gates.readiness_gate(ctx.sources)
+            if not verdict.ok and ctx.readiness_policy is not None:
+                # Demo profile: the production gate's refusal is shown and recorded — never
+                # hidden — but the run continues. The manifest carries both the refusal and
+                # the profile, so no demo run can pass itself off as a production run.
+                self._record(step, "refused_overridden_demo_profile", verdict=verdict.as_dict())
+                print(f"{label}: {verdict.message}")
+                print(f"{label}: DEMO PROFILE OVERRIDE — production input gate refused this "
+                      f"input; continuing for the live demo. This run is marked in its manifest.")
+                return None, EXIT_OK
             self._record(step, "pass" if verdict.ok else "refused", verdict=verdict.as_dict())
             print(f"{label}: {verdict.message}")
             if not verdict.ok:
@@ -487,6 +514,11 @@ def main(argv: Optional[list] = None) -> int:
     )
     parser.add_argument("--glossary", default=None, help="Client config; defaults to the single file in glossary/")
     parser.add_argument("--source", default=None, help="Restrict extraction to one source_id")
+    parser.add_argument(
+        "--demo-profile", default=None, metavar="POLICY_JSON",
+        help="Live-demo mode: readiness policy file for the draft verdict; the production "
+             "input gate's refusal is printed and recorded in the manifest but does not stop "
+             "the run. Never used in production runs.")
     args = parser.parse_args(argv)
 
     try:
@@ -497,6 +529,7 @@ def main(argv: Optional[list] = None) -> int:
             stage=args.stage,
             glossary=Path(args.glossary) if args.glossary else None,
             source=args.source,
+            demo_profile=Path(args.demo_profile) if args.demo_profile else None,
         ).run()
     except gates.GateError as exc:
         print(f"[gate] {exc}", file=sys.stderr)

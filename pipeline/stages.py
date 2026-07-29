@@ -488,7 +488,8 @@ def check_synthesis(path: Path, extracts: dict) -> list:
 
 
 def synthesize(run_dir: Path, project_id: str, client_config: dict, classification: dict,
-               sources, extracts: dict, glossary_path: Path, access_dirs) -> dict:
+               sources, extracts: dict, glossary_path: Path, access_dirs,
+               readiness_policy: Optional[dict] = None) -> dict:
     output_file = Path(run_dir) / "brief.json"
     order = build_synthesis_order(run_dir, output_file, project_id, client_config, classification,
                                   sources, glossary_path)
@@ -506,8 +507,10 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
         raise _fail("synthesize", failed)
 
     # The runner owns readiness. Injected here, then the full schema is enforced.
+    # `readiness_policy` is only ever non-None under the runner's --demo-profile flag; the
+    # production path always computes with the shipped config/readiness_policy.json.
     brief = json.loads(output_file.read_text(encoding="utf-8"))
-    brief["readiness"] = gates.compute_readiness_block(brief)
+    brief["readiness"] = gates.compute_readiness_block(brief, readiness_policy)
     output_file.write_text(json.dumps(brief, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     gates.enforce_sensitivity_tier((brief.get("meta") or {}).get("sensitivity_tier"))

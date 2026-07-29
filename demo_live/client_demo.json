@@ -1,0 +1,6 @@
+{
+  "client_id": "live_demo_client",
+  "sensitivity_tier": "S0",
+  "_what_this_is": "Deliberately empty glossary for the defense session: no client terms are assumed about pasted text. The tier is S0 (public/synthetic) — the pipeline copies it, never infers it (PRD DR-11).",
+  "terms": []
+}
