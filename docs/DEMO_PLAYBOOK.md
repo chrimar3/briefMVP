@@ -17,7 +17,7 @@ below is exercised in advance; nothing here requires touching frozen files.
 Drop whatever they give you into a folder (`.md`/`.txt`), then:
 
 ```bash
-python pipeline/intake.py raw_docs/ --out fixtures/exam_01 --client examclient --tier S1
+python3 pipeline/intake.py raw_docs/ --out fixtures/exam_01 --client examclient --tier S1
 ```
 
 - `--tier` is **required and never inferred** (PRD DR-11). Ask the evaluators what the
@@ -40,7 +40,7 @@ insufficient input, and show what it asked for.
 ## 2. Run
 
 ```bash
-python pipeline/runner.py --project fixtures/exam_01 --glossary fixtures/exam_01/client_examclient.json
+python3 pipeline/runner.py --project fixtures/exam_01 --glossary fixtures/exam_01/client_examclient.json
 ```
 
 While it runs, narrate the step sequence (PRD §5): readiness gate → classify → transcript
@@ -61,7 +61,7 @@ Useful mid-run artifacts to show: `runs/latest/extracts/*.json` (citations on ev
 
 ## 4. Grading — what the harness can and cannot say
 
-- **With an answer key** (northlight_01, voreas_02): `python eval/harness.py runs/latest`
+- **With an answer key** (northlight_01, voreas_02): `python3 eval/harness.py runs/latest`
   grades the full exam: seeded conflicts/gaps/garbling, traps X1–X3, citations, renders.
 - **On unseen exam input there is no answer key** — the harness stops at "nothing to grade
   against". What still holds machine-checkably for ANY input: schema validation, citation

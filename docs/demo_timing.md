@@ -5,7 +5,7 @@ All numbers from `demo/run_demo.py` on `fixtures/northlight_01/transcript_kickof
 `claude-haiku-4-5-20251001`, run sequentially on one machine. Reproduce any single run with:
 
 ```bash
-python demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md
+python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md
 ```
 
 ## Ten supervised runs (2026-07-28, machine sleep disabled)

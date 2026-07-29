@@ -103,19 +103,19 @@ key never moved; the shared implementation did, once, in the open.
 ### Run it
 
 ```bash
-pip install -r requirements.txt        # jsonschema, pytest, PyYAML — nothing else
-python -m pytest -q                    # 305 tests, no model calls, ~0.4s
+pip3 install -r requirements.txt        # jsonschema, pytest, PyYAML — nothing else
+python3 -m pytest -q                    # 305 tests, no model calls, ~0.4s
 
 # Model stages run as Claude Code subagents (install + authenticate the `claude` CLI).
 # A full Stage-1 run makes 6 model calls — ~$2–2.6 measured (docs/COST_MODEL.md).
-python pipeline/runner.py --project fixtures/northlight_01   # full run → runs/<ts>/
-python eval/harness.py runs/latest                           # grade against the answer key
-python eval/cost_report.py                                   # measured cost per run
-python eval/cost_report.py runs/<ts> --tokens                # where the tokens go, per stage
+python3 pipeline/runner.py --project fixtures/northlight_01   # full run → runs/<ts>/
+python3 eval/harness.py runs/latest                           # grade against the answer key
+python3 eval/cost_report.py                                   # measured cost per run
+python3 eval/cost_report.py runs/<ts> --tokens                # where the tokens go, per stage
 ```
 
 **Live demo** — one document in, verified facts out (classify → extract → gates, no synthesis):
-`python demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md` (or pipe any ≤800-word
+`python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md` (or pipe any ≤800-word
 text via `-`). Prints the facts table with exact quotes, gate results, and the open questions
 it creates instead of guessing. Timing: [docs/demo_timing.md](docs/demo_timing.md).
 

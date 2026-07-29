@@ -58,7 +58,7 @@ checks the evidence layer, tier 2 the brief and both renders, tier 3 the seeded 
 ## Measured cost and timing
 
 - **$2.25 per Stage-1 brief** (measured range $2.07–2.44 across runs) — method and
-  breakdown in [`COST_MODEL.md`](COST_MODEL.md); reproduce with `python eval/cost_report.py`.
+  breakdown in [`COST_MODEL.md`](COST_MODEL.md); reproduce with `python3 eval/cost_report.py`.
 - The tier-3 manifest totals $4.29 because it additionally includes repair attempts and the
   two-model creative A/B arm.
 - Stage timings summed over all attempts recorded in the tier-3 manifest:
@@ -92,13 +92,13 @@ The images below are the **actual console output** of these commands, run for th
 1. **Full pipeline completing** — 25.2 min wall-clock, $2.12, one disclosed synthesis
    re-roll (trap X1 slipped on the first roll; the playbook's re-roll recovered it — both
    passes are in the capture):
-   `time python pipeline/runner.py --project fixtures/northlight_01`
+   `time python3 pipeline/runner.py --project fixtures/northlight_01`
    ![full run completes — real output](img/full_run_complete.svg)
 2. **The frozen harness grading that run 17/17**
-   `python eval/harness.py runs/evidence-20260729`
+   `python3 eval/harness.py runs/evidence-20260729`
    ![harness 17/17 — real output](img/harness_17_17.svg)
 3. **The demo refusing to guess on a deliberately broken input** — garbled terms flagged
    as-is, an `[inaudible]` budget carried at `low` confidence, five open questions,
    nothing invented (212 s, $0.17):
-   `python demo/run_demo.py demo/broken_input.txt`
+   `python3 demo/run_demo.py demo/broken_input.txt`
    ![demo refuses to guess — real output](img/demo_refuses_to_guess.svg)
