@@ -747,3 +747,110 @@ def test_invented_currency_mark_on_a_brief_backed_figure_is_refused(tmp_path):
     el, en = _renders(tmp_path, render, render)
     violations = stages.check_render(el, en, brief, CLIENT_CONFIG)
     assert any("currency-marked" in v for v in violations)
+
+
+# --------------------------------------------------------------------------------------
+# Superseded-within-source gate (SYNTHESIS.md rules 4 & 7, machine-checked)
+# --------------------------------------------------------------------------------------
+
+
+def _metro_extract(speaker_b="DIMITRIS", qual_b="stated", loc_a="[00:08:15]", loc_b="[00:08:34]"):
+    """The X1 trap's real shape: same speaker proposes then retracts 19 seconds later."""
+    return {"internal_conflicts": [{
+        "field": "deliverables",
+        "value_a": {"value": "ίσως κάνουμε OOH στο μετρό", "location": loc_a,
+                    "anchor": "ίσως κάνουμε OOH στο μετρό",
+                    "speaker_or_author": "DIMITRIS", "qualifier": "conditional"},
+        "value_b": {"value": "actually scratch that", "location": loc_b,
+                    "anchor": "actually scratch that, το μετρό είναι πανάκριβο",
+                    "speaker_or_author": speaker_b, "qualifier": qual_b},
+        "note": "proposed then retracted",
+    }]}
+
+
+def _retraction_brief(qualifier="stated", anchors=("ίσως κάνουμε OOH στο μετρό",), sid="talk"):
+    return {
+        "signoff": {"status": "draft"},
+        "deliverables": [{
+            "content": "OOH at metro stations",
+            "evidence": [_aref(a, sid) for a in anchors],
+            "confidence": "low", "qualifier": qualifier,
+        }],
+        "conflicts": [],
+    }
+
+
+def _retraction_violations(tmp_path, brief, extracts):
+    path = tmp_path / "brief.json"
+    path.write_text(json.dumps(brief, ensure_ascii=False), encoding="utf-8")
+    return [v for v in stages.check_synthesis(path, extracts=extracts)
+            if "retracted" in v and "qualifier" in v]
+
+
+def test_retracted_idea_committed_as_stated_is_refused(tmp_path):
+    """The X1 lesson, made deterministic — it slipped on 3 of 5 synthesis rolls before."""
+    violations = _retraction_violations(tmp_path, _retraction_brief(), {"talk": _metro_extract()})
+    assert violations and "conditional" in violations[0]
+
+
+def test_retracted_idea_carried_as_conditional_passes(tmp_path):
+    violations = _retraction_violations(
+        tmp_path, _retraction_brief(qualifier="conditional"), {"talk": _metro_extract()})
+    assert violations == []
+
+
+def test_citing_the_retraction_beside_the_claim_does_not_license_stated(tmp_path):
+    """Adversarial-review fix (X1 contour): a stated entry citing BOTH the proposal and the
+    retraction still presents a retracted idea as firm — the frozen harness fails it, so the
+    runner gate must too, or 'append the later ref' becomes the gate-silencing repair."""
+    brief = _retraction_brief(anchors=("ίσως κάνουμε OOH στο μετρό",
+                                       "actually scratch that, το μετρό είναι πανάκριβο"))
+    violations = _retraction_violations(tmp_path, brief, {"talk": _metro_extract()})
+    assert violations and "even when the retraction is cited" in violations[0]
+
+
+def test_two_speaker_disagreement_is_a_dispute_not_a_retraction(tmp_path):
+    """Adversarial-review blocker: ELENI-quotes-RFP vs MARIA-corrects is conflict material
+    under rule 4 — recency must never demote either side."""
+    violations = _retraction_violations(
+        tmp_path, _retraction_brief(), {"talk": _metro_extract(speaker_b="MARIA")})
+    assert violations == []
+
+
+def test_same_anchor_text_in_another_source_does_not_collide(tmp_path):
+    """An email quoting the transcript's proposal line verbatim is that SOURCE's own claim —
+    the transcript's internal conflict must not reach across sources."""
+    brief = _retraction_brief(sid="mail")
+    violations = _retraction_violations(tmp_path, brief, {"talk": _metro_extract()})
+    assert violations == []
+
+
+def test_a_later_hedge_does_not_supersede_the_earlier_commitment(tmp_path):
+    violations = _retraction_violations(
+        tmp_path, _retraction_brief(), {"talk": _metro_extract(qual_b="conditional")})
+    assert violations == []
+
+
+def test_mixed_timestamp_formats_are_skipped_not_misordered(tmp_path):
+    """'[01:15]' in an hh:mm transcript vs '[00:58:30]' would invert lexically-parsed order —
+    unorderable formats are skipped, never guessed."""
+    violations = _retraction_violations(
+        tmp_path, _retraction_brief(), {"talk": _metro_extract(loc_a="[00:58:30]", loc_b="[01:15]")})
+    assert violations == []
+
+
+def test_timestamp_ordering_is_numeric_not_lexicographic():
+    assert stages._timestamp_seconds("[9:05]") > stages._timestamp_seconds("[00:08:34]")
+    assert stages._timestamp_seconds("[00:08:15]") < stages._timestamp_seconds("[00:08:34]")
+    assert stages._timestamp_seconds("## 6. Budget") is None
+
+
+def test_recording_the_withdrawal_as_a_no_go_in_another_field_is_legitimate(tmp_path):
+    """Corpus regression (tier3-confirm2): 'proposed then withdrawn — not to be pursued'
+    filed firm under mandatories is correct use of a retraction; only the conflict's OWN
+    field (deliverables) is policed."""
+    brief = _retraction_brief(anchors=("ίσως κάνουμε OOH στο μετρό",
+                                       "actually scratch that, το μετρό είναι πανάκριβο"))
+    brief["mandatories"] = brief.pop("deliverables")
+    violations = _retraction_violations(tmp_path, brief, {"talk": _metro_extract()})
+    assert violations == []

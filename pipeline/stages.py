@@ -403,6 +403,64 @@ def check_synthesis(path: Path, extracts: dict) -> list:
                 f"keep every existing entry."
             )
 
+    # Superseded-within-source (SYNTHESIS.md rules 4 & 7, machine-checked): when a transcript
+    # contradicts itself, the later statement supersedes — a retraction or a correction. An
+    # entry anchored to the EARLIER side, without the later side's anchor beside it and
+    # without a `conditional` qualifier, presents a superseded claim as firm. Deterministic
+    # form of trap X1's lesson (it slipped on 3 of 5 synthesis rolls before this gate).
+    # Ordering is only trusted where both sides carry parseable [hh:mm:ss] timestamps.
+    # A retraction is SAME-speaker (adversarial review, probe-verified): a two-speaker
+    # disagreement inside one source is a dispute — conflict material under rule 4, never
+    # demoted by recency. Anchor matching is per-source (identical quote text in another
+    # source must not collide), and the X1 contour applies: an entry citing the retracted
+    # side stays `conditional` even when it also cites the retraction itself. Known semantic
+    # blind spot (shared with the anchor sweep): a paraphrased retracted claim re-anchored
+    # to an unrelated legitimate anchor is invisible to every deterministic check here.
+    for conflict_source_id, extract in (extracts or {}).items():
+        for conflict in extract.get("internal_conflicts") or []:
+            side_a, side_b = conflict.get("value_a") or {}, conflict.get("value_b") or {}
+            speaker_a = (side_a.get("speaker_or_author") or "").strip()
+            speaker_b = (side_b.get("speaker_or_author") or "").strip()
+            if not speaker_a or speaker_a != speaker_b:
+                continue
+            loc_a = (side_a.get("location") or "").strip()
+            loc_b = (side_b.get("location") or "").strip()
+            if loc_a.count(":") != loc_b.count(":"):
+                continue  # mixed [mm:ss]/[hh:mm:ss] formats cannot be ordered safely
+            secs_a, secs_b = _timestamp_seconds(loc_a), _timestamp_seconds(loc_b)
+            if secs_a is None or secs_b is None or secs_a == secs_b:
+                continue
+            earlier, later = (side_a, side_b) if secs_a < secs_b else (side_b, side_a)
+            if (later.get("qualifier") or "") == "conditional":
+                # A later HEDGE ("might be revisited, but work with it") qualifies the
+                # earlier commitment without superseding it — only a firm statement retracts.
+                continue
+            earlier_anchor = (earlier.get("anchor") or "").strip()
+            fieldname = conflict.get("field")
+            if not earlier_anchor or fieldname not in gates.BRIEF_FIELDS:
+                # Only the conflict's OWN field is policed — a mandatories no-go recording
+                # the withdrawal ("not to be pursued", firm) is legitimate downstream use of
+                # a retraction, measured on the stored corpus. The frozen harness X1 remains
+                # the backstop for anything an unrecognized field string lets slip here.
+                continue
+            for idx, entry in enumerate(brief.get(fieldname) or []):
+                if entry.get("qualifier") == "conditional":
+                    continue
+                cites_retracted = any(
+                    ((ref or {}).get("anchor") or "").strip() == earlier_anchor
+                    and ((ref or {}).get("source_id") or "").strip() == conflict_source_id
+                    for ref in (entry.get("evidence") or []))
+                if cites_retracted:
+                    violations.append(
+                        f"{fieldname}[{idx}]: anchored to {earlier_anchor[:40]!r} — a claim "
+                        f"its own speaker retracted at {later.get('location')} in "
+                        f"{conflict_source_id} — yet qualifier is "
+                        f"{entry.get('qualifier')!r}. A retracted claim is `conditional` "
+                        f"or absent in its own field, never firm, even when the retraction "
+                        f"is cited beside it (SYNTHESIS.md rules 4 & 7): set qualifier to "
+                        f"'conditional' and note the retraction in the content."
+                    )
+
     # Anchors must survive assembly untouched: they are what the Greek render re-anchors on.
     # The set of legitimate source anchors spans the 7 brief fields AND each extract's
     # internal_conflicts — a within-source contradiction the extractor recorded there (the
@@ -589,6 +647,22 @@ OUTPUT — two files, at exactly these paths:
 
 Reply with one line: the two paths written.
 """
+
+
+_TIMESTAMP_LOC_RE = re.compile(r"^\[(\d{1,2}):(\d{2})(?::(\d{2}))?\]$")
+
+
+def _timestamp_seconds(location) -> Optional[int]:
+    """Parse a transcript location like '[00:08:34]' to seconds; None for anything else.
+    Numeric, not lexicographic — '[9:05]' must order after '[00:08:34]'."""
+    match = _TIMESTAMP_LOC_RE.match((location or "").strip())
+    if not match:
+        return None
+    h_or_m, m_or_s, maybe_s = match.groups()
+    parts = [int(h_or_m), int(m_or_s)] + ([int(maybe_s)] if maybe_s is not None else [])
+    if len(parts) == 2:
+        parts = [0] + parts
+    return parts[0] * 3600 + parts[1] * 60 + parts[2]
 
 
 def _digit_runs(text: str) -> set:
