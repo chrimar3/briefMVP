@@ -1,5 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="120" viewBox="0 0 820 120">
-  <rect width="820" height="120" rx="8" fill="#1e1e1e"/>
-  <text x="20" y="40" font-family="monospace" font-size="15" fill="#9cdcfe">PLACEHOLDER — replace with a real screenshot of:</text>
-  <text x="20" y="75" font-family="monospace" font-size="16" fill="#ce9178">$ time python pipeline/runner.py --project fixtures/northlight_01</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="856" viewBox="0 0 1000 856">
+  <rect width="1000" height="856" rx="10" fill="#1b1e23"/>
+  <circle cx="22" cy="20" r="6" fill="#ff5f57"/><circle cx="42" cy="20" r="6" fill="#febc2e"/><circle cx="62" cy="20" r="6" fill="#28c840"/>
+  <text x="16" y="42" font-family="Menlo,monospace" font-size="13" fill="#8be9fd" xml:space="preserve">$ time python pipeline/runner.py --project fixtures/northlight_01</text>
+  <text x="16" y="58" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">Brief Builder 1.0.0 · run evidence-20260729</text>
+<text x="16" y="75" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  input : fixtures/northlight_01</text>
+<text x="16" y="92" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  output: runs/evidence-20260729</text>
+<text x="16" y="109" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="126" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · background_brand_guidelines (background, 2026-03-02)</text>
+<text x="16" y="143" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · emails_thread (email_thread, 2026-07-15 (latest message))</text>
+<text x="16" y="160" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · rfp_meltemi (rfp, 2026-06-28)</text>
+<text x="16" y="177" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · transcript_kickoff (transcript, 2026-07-10)</text>
+<text x="16" y="194" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="211" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  client: meltemi_beverages · tier S1</text>
+<text x="16" y="228" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="245" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[1] readiness_gate: input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript</text>
+<text x="16" y="262" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[2] classification: dispatching 'classify'…</text>
+<text x="16" y="279" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        advertising_creative (high confidence) · tier S1 · 1 attempt(s) · $0.0369 · claude-haiku-4-5-20251001</text>
+<text x="16" y="296" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[2] classification: ok</text>
+<text x="16" y="313" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[3] fidelity_check: dispatching 'fidelity-check'…</text>
+<text x="16" y="330" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">      · scoring transcript_kickoff…</text>
+<text x="16" y="347" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        verdict=pass · score=high · 2 token(s) flagged · 1 attempt(s) · $0.0441 · claude-haiku-4-5-20251001</text>
+<text x="16" y="364" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[3] fidelity_check: ok</text>
+<text x="16" y="381" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[4] extraction: dispatching 'extract'…</text>
+<text x="16" y="398" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">      · extracting background_brand_guidelines (background)…</text>
+<text x="16" y="415" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        11 items · 0 open questions · 1 attempt(s) · $0.1402 · claude-haiku-4-5-20251001</text>
+<text x="16" y="432" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">      · extracting emails_thread (email_thread)…</text>
+<text x="16" y="449" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">    … (middle elided — full log committed alongside) …</text>
+<text x="16" y="466" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        9 items · 6 open questions · 2 attempt(s) · $0.2889 · claude-haiku-4-5-20251001</text>
+<text x="16" y="483" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[4] extraction: ok</text>
+<text x="16" y="500" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[5] conflict_pass: 6 candidate field(s) ['objectives', 'audiences', 'deliverables', 'timeline', 'budget', 'mandatories</text>
+<text x="16" y="517" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[6] synthesis: dispatching 'synthesize'…</text>
+<text x="16" y="534" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        28 entries · 3 conflicts · 12 open questions · 1 attempt(s) · $0.9421 · claude-sonnet-5</text>
+<text x="16" y="551" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        readiness: 5/7 fields evidenced · 0.0357 low-confidence share → ready_for_review</text>
+<text x="16" y="568" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[6] synthesis: ok</text>
+<text x="16" y="585" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[7] render: dispatching 'render'…</text>
+<text x="16" y="602" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        el=12731 chars · en=11567 chars · 1 attempt(s) · $0.4044 · claude-sonnet-5</text>
+<text x="16" y="619" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[7] render: ok</text>
+<text x="16" y="636" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">real 1510.78</text>
+<text x="16" y="653" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">user 15.78</text>
+<text x="16" y="670" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">sys 6.42</text>
+<text x="16" y="687" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"># synthesis re-roll appended below the first pass</text>
+<text x="16" y="704" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[5] conflict_pass: 6 candidate field(s) ['objectives', 'audiences', 'deliverables', 'timeline', 'budget', 'mandatories</text>
+<text x="16" y="721" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[6] synthesis: dispatching 'synthesize'…</text>
+<text x="16" y="738" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        35 entries · 3 conflicts · 12 open questions · 1 attempt(s) · $1.2731 · claude-sonnet-5</text>
+<text x="16" y="755" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        readiness: 7/7 fields evidenced · 0.0571 low-confidence share → ready_for_review</text>
+<text x="16" y="772" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[6] synthesis: ok</text>
+<text x="16" y="789" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[7] render: dispatching 'render'…</text>
+<text x="16" y="806" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">        el=13985 chars · en=12792 chars · 1 attempt(s) · $0.8001 · claude-sonnet-5</text>
+<text x="16" y="823" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">[7] render: ok</text>
+  <title>Full pipeline run — real output 2026-07-29</title>
 </svg>

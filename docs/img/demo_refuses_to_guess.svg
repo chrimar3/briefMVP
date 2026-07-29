@@ -1,5 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="120" viewBox="0 0 820 120">
-  <rect width="820" height="120" rx="8" fill="#1e1e1e"/>
-  <text x="20" y="40" font-family="monospace" font-size="15" fill="#9cdcfe">PLACEHOLDER — replace with a real screenshot of:</text>
-  <text x="20" y="75" font-family="monospace" font-size="16" fill="#ce9178">$ python demo/run_demo.py demo/broken_input.txt</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="635" viewBox="0 0 1000 635">
+  <rect width="1000" height="635" rx="10" fill="#1b1e23"/>
+  <circle cx="22" cy="20" r="6" fill="#ff5f57"/><circle cx="42" cy="20" r="6" fill="#febc2e"/><circle cx="62" cy="20" r="6" fill="#28c840"/>
+  <text x="16" y="42" font-family="Menlo,monospace" font-size="13" fill="#8be9fd" xml:space="preserve">$ python demo/run_demo.py demo/broken_input.txt</text>
+  <text x="16" y="58" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">Brief Builder — live demo · broken_input.txt (transcript, 75 words)</text>
+<text x="16" y="75" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  output: runs/demo-20260729-155827</text>
+<text x="16" y="92" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="109" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[1/2] classify — what is this project, which onboarding tier applies…</text>
+<text x="16" y="126" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">      advertising_creative · tier S1 (copied from client config, never inferred) · confidence high</text>
+<text x="16" y="143" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="160" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">[2/2] extract — every value must carry a verbatim quote or it does not exist…</text>
+<text x="16" y="177" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="194" font-family="Menlo,monospace" font-size="12.5" fill="#e3b341" xml:space="preserve">FACTS the document actually states (5):</text>
+<text x="16" y="211" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  field        value                              exact quote (anchor)               where          conf   qualifier</text>
+<text x="16" y="228" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  ------------------------------------------------------------------------------------------------------------------</text>
+<text x="16" y="245" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  objectives   λανσάρισμα ή επανατοποθέτηση       σκεφτόμαστε ένα λανσάρισμα, το λε… [00:01:04]     medium stated</text>
+<text x="16" y="262" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  objectives   το μπραντ αγουέρνες να ανέβει      Θέλουμε πάντως το μπραντ αγουέρνε… [00:03:27]     high   stated</text>
+<text x="16" y="279" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  deliverables ένα κι βίζουαλ φρέσκο              ίσως ένα κι βίζουαλ φρέσκο         [00:03:27]     medium conditional</text>
+<text x="16" y="296" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  timeline     Ημερομηνίες δεν βάζουμε ακόμα      Ημερομηνίες δεν βάζουμε ακόμα      [00:04:40]     high   stated</text>
+<text x="16" y="313" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  budget       κάπου στα… [inaudible] …θα σου πω… Το μπάτζετ είναι κάπου στα… [inau… [00:02:11]     low    stated</text>
+<text x="16" y="330" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="347" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">VERIFICATION GATES (deterministic, no model):</text>
+<text x="16" y="364" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ schema: extract validates against schema/extract_schema.json</text>
+<text x="16" y="381" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ citations: 5/5 anchor+location strings occur verbatim in the source</text>
+<text x="16" y="398" font-family="Menlo,monospace" font-size="12.5" fill="#e3b341" xml:space="preserve">  ⚠  3 extraction note(s) — garbled/ambiguous tokens carried AS-IS, never silently 'fixed':</text>
+<text x="16" y="415" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">       · Token 'μπραντ αγουέρνες' at [00:03:27] appears to be Greek-script phonetic rendering of 'brand awar…</text>
+<text x="16" y="432" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">       · Token 'βίζουαλ' at [00:03:27] appears to be Greek-script phonetic rendering of 'visual'. Glossary l…</text>
+<text x="16" y="449" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">       · Budget statement at [00:02:11] contains '[inaudible]' segment obscuring the numerical figure. Ioann…</text>
+<text x="16" y="466" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="483" font-family="Menlo,monospace" font-size="12.5" fill="#e3b341" xml:space="preserve">OPEN QUESTIONS created instead of guesses (5):</text>
+<text x="16" y="500" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · [objectives] Μπορούμε να ξεκαθαρίσουμε: σκοπεύετε λανσάρισμα νέου προϊόντος, ή επανατοποθέτηση της υπάρχουσας μάρκ</text>
+<text x="16" y="517" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · [budget] Ποιο είναι το εύρος του προϋπολογισμού (σε κάποια νόμισμα και μονάδα); Θα επιβεβαιωθεί αμέσως μετά το ΔΣ,</text>
+<text x="16" y="534" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · [deliverables] Είναι υποχρεωτική η ανανέωση της οπτικής ταυτότητας; Αν ναι, τι ακριβώς περιλαμβάνει (λογότυπο, χρώ</text>
+<text x="16" y="551" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · [timeline] Ποιο είναι το target date για το λανσάρισμα ή την ενεργοποίηση; Ποια είναι τα κρίσιμα milestones (στρατ</text>
+<text x="16" y="568" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">  · [objectives] Πότε θα ανακοιωθεί ο νέος διευθυντής; Θα έχει εξουσία να αλλάξει τη στρατηγική ή θα ενημερωθεί για υπ</text>
+<text x="16" y="585" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="602" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">done in 212.2s · model cost $0.165 · artifacts in runs/demo-20260729-155827</text>
+  <title>Demo refusing to guess — real output 2026-07-29</title>
 </svg>

@@ -84,18 +84,21 @@ pasted into `demo_live/sources/live_transcript.md`, then both defense-session pa
 | Extraction + verification only | `./demo.sh` | **205 s (3:25)** | 9 cited facts (speculation `conditional`, spoken figures kept in words), 9/9 citations verbatim, 4 open questions · $0.17 |
 | Full pipeline, single source | `./run_full.sh` | **345 s (5:45)** | All stages first-attempt → both renders; run manifest records `demo_profile` and the production input gate's refusal (`refused_overridden_demo_profile`) — the override is logged, never silent · ~$0.64 |
 
-## Screenshot moments (for the reviewer walk-through)
+## The three moments — real captured output (2026-07-29)
 
-1. **Full pipeline completing with total wall-clock**
+The images below are the **actual console output** of these commands, run for this page
+(terminal-rendered text, not screenshots; every character is genuine).
+
+1. **Full pipeline completing** — 25.2 min wall-clock, $2.12, one disclosed synthesis
+   re-roll (trap X1 slipped on the first roll; the playbook's re-roll recovered it — both
+   passes are in the capture):
    `time python pipeline/runner.py --project fixtures/northlight_01`
-   ![full run completes](img/full_run_complete.svg)
-2. **The frozen harness grading it 17/17**
-   `python eval/harness.py runs/latest`
-   ![harness 17/17](img/harness_17_17.svg)
+   ![full run completes — real output](img/full_run_complete.svg)
+2. **The frozen harness grading that run 17/17**
+   `python eval/harness.py runs/evidence-20260729`
+   ![harness 17/17 — real output](img/harness_17_17.svg)
 3. **The demo refusing to guess on a deliberately broken input** — garbled terms flagged
-   as-is, vague budget becomes an open question, nothing invented
+   as-is, an `[inaudible]` budget carried at `low` confidence, five open questions,
+   nothing invented (212 s, $0.17):
    `python demo/run_demo.py demo/broken_input.txt`
-   ![demo refuses to guess](img/demo_refuses_to_guess.svg)
-
-*(The `.svg` files are placeholders; replace each with a real screenshot of the same name
-in PNG, updating the extension, when preparing the walk-through.)*
+   ![demo refuses to guess — real output](img/demo_refuses_to_guess.svg)

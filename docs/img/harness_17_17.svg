@@ -1,5 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="120" viewBox="0 0 820 120">
-  <rect width="820" height="120" rx="8" fill="#1e1e1e"/>
-  <text x="20" y="40" font-family="monospace" font-size="15" fill="#9cdcfe">PLACEHOLDER — replace with a real screenshot of:</text>
-  <text x="20" y="75" font-family="monospace" font-size="16" fill="#ce9178">$ python eval/harness.py runs/latest</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="686" viewBox="0 0 1000 686">
+  <rect width="1000" height="686" rx="10" fill="#1b1e23"/>
+  <circle cx="22" cy="20" r="6" fill="#ff5f57"/><circle cx="42" cy="20" r="6" fill="#febc2e"/><circle cx="62" cy="20" r="6" fill="#28c840"/>
+  <text x="16" y="42" font-family="Menlo,monospace" font-size="13" fill="#8be9fd" xml:space="preserve">$ python eval/harness.py runs/evidence-20260729</text>
+  <text x="16" y="58" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="75" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">Brief Builder harness · run evidence-20260729 · fixture northlight_01</text>
+<text x="16" y="92" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="109" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T1.1  Every extract validates against extract_schema.json</text>
+<text x="16" y="126" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         4 extract(s) valid</text>
+<text x="16" y="143" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T1.2  Zero items with empty location or anchor</text>
+<text x="16" y="160" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         34 item(s), all cited</text>
+<text x="16" y="177" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T1.3  Every location and anchor occurs verbatim in its source</text>
+<text x="16" y="194" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         all citations resolve</text>
+<text x="16" y="211" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T1.4  Seeded garbled terms present as-is with glossary-match proposals</text>
+<text x="16" y="228" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         2/2 flagged, none fixed</text>
+<text x="16" y="245" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.1  Draft validates against brief_schema.json</text>
+<text x="16" y="262" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.2  sensitivity_tier is within S0–S1</text>
+<text x="16" y="279" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         tier S1</text>
+<text x="16" y="296" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.3  Both GR and EN renders exist</text>
+<text x="16" y="313" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         el=13985 chars · en=12792 chars</text>
+<text x="16" y="330" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.4  Every rendered claim carries a resolvable citation tag</text>
+<text x="16" y="347" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         all claim lines cited</text>
+<text x="16" y="364" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.5  Glossary terms character-exact in both renders</text>
+<text x="16" y="381" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         protected terms intact in both renders</text>
+<text x="16" y="398" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T2.6  Readiness block recomputes deterministically to the same values</text>
+<text x="16" y="415" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         {"fields_with_evidence": 7, "low_confidence_share": 0.0571, "open_question_count": 12, "verdict": "ready_for_</text>
+<text x="16" y="432" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T3.1  Seeded conflicts detected with citations to both sources</text>
+<text x="16" y="449" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         3/3 required (C1, C2, C3)</text>
+<text x="16" y="466" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T3.2  Seeded gaps present as open questions</text>
+<text x="16" y="483" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         4/4 found, 3 required (G1, G2, G3, G4)</text>
+<text x="16" y="500" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T3.3  Garbled terms still flagged (not fixed) in the brief and renders</text>
+<text x="16" y="517" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         2/2 carried through</text>
+<text x="16" y="534" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ T3.4  Zero uncited values anywhere in the draft</text>
+<text x="16" y="551" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ X1    Retracted idea is not a committed deliverable</text>
+<text x="16" y="568" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ X2    Speculative remark carries the conditional qualifier</text>
+<text x="16" y="585" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve">         1 matching entr(ies), all conditional</text>
+<text x="16" y="602" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  ✅ X3    No resolved numeric budget total in the draft or renders</text>
+<text x="16" y="619" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+<text x="16" y="636" font-family="Menlo,monospace" font-size="12.5" fill="#7ee787" xml:space="preserve">  17 passed · 0 failed · 0 skipped   →  PASS</text>
+<text x="16" y="653" font-family="Menlo,monospace" font-size="12.5" fill="#c9d1d9" xml:space="preserve"></text>
+  <title>Frozen harness 17/17 — real output 2026-07-29</title>
 </svg>
