@@ -12,6 +12,7 @@ on any Input folder honouring the source-header contract.
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -188,6 +189,97 @@ def check_extract(path: Path, source_text: str = "", glossary: Optional[dict] = 
     return violations
 
 
+#: Independent-verification routing (human decision 2026-07-30: extraction runs on sonnet and
+#: every extract gets a fresh-session second check; the checker itself runs the strong model
+#: whenever the extract carries risk classes). Policy knobs live in config/model_routing.json
+#: under "verify_extract" so the routing is config-visible; these are the fallbacks.
+_VERIFY_DEFAULTS = {"strong_model": "sonnet", "base_model": None,
+                    "risk_classes": ["mandatories", "figures", "garbling", "low_confidence"]}
+
+
+def _verify_policy() -> dict:
+    path = gates.CONFIG_DIR / "model_routing.json"
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8")).get("verify_extract") or {}
+    except (OSError, json.JSONDecodeError):
+        loaded = {}
+    return {**_VERIFY_DEFAULTS, **loaded}
+
+
+def risk_classes(extract: dict) -> list:
+    """Deterministic risk read of one extract — which classes make the verifier run strong.
+
+    mandatories: the one asymmetric field (a missed brand rule is the worst miss).
+    figures: any digit or currency signal in a value — numbers are where drift costs money.
+    garbling: rule-G flags present — fidelity of corrupted tokens is under active question.
+    low_confidence: the extractor itself is unsure somewhere.
+    """
+    items = [(f, i) for f in gates.BRIEF_FIELDS for i in (extract.get(f) or [])]
+    risky = []
+    if extract.get("mandatories"):
+        risky.append("mandatories")
+    if any(re.search(r"\d|€|\bEUR\b", (i.get("value") or "")) for _, i in items):
+        risky.append("figures")
+    if extract.get("extraction_notes"):
+        risky.append("garbling")
+    if any((i.get("confidence") == "low") for _, i in items):
+        risky.append("low_confidence")
+    return risky
+
+
+def build_verify_order(source: gates.SourceDoc, extract_file: Path, report_file: Path,
+                       glossary_path: Path, read_path: Optional[Path] = None) -> str:
+    """The prompt handed to the `verify-extract` subagent — parameters only, like every order;
+    the reviewer's rules live in its agent definition."""
+    return f"""VERIFICATION WORK ORDER — Brief Builder pipeline step 4b.
+
+Independently check ONE finished extract against its source. You are a fresh set of eyes:
+report what the extract missed or distorted, per the rules in your agent definition.
+
+INPUT
+  source_file : {read_path or source.path}
+  extract_file: {extract_file}
+  client_glossary: {glossary_path}
+
+READ ONLY THESE THREE FILES: source_file, extract_file, client_glossary.
+Read no other file in this repository under any circumstances. In particular, any file named
+`answer_key.json` is test apparatus and is off limits — reading it would invalidate the run.
+
+OUTPUT
+  Write one JSON report to exactly this path (create parent directories if needed):
+    {report_file}
+  with source_id = {source.source_id} and the verdict/issues shape from your definition.
+
+When the file is written, reply with one line: the verdict and the number of issues.
+Do not print the JSON to your reply.
+"""
+
+
+def check_verify_report(report_file: Path) -> list:
+    """Deterministic gate on the verifier's report: shape only — its judgment is its own."""
+    if not report_file.is_file():
+        return [f"no file written at {report_file}"]
+    try:
+        report = json.loads(report_file.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return [f"not valid JSON: {exc}"]
+    violations = []
+    if report.get("verdict") not in ("confirms", "issues_found"):
+        violations.append(f"verdict {report.get('verdict')!r} is not 'confirms' or 'issues_found'")
+    issues = report.get("issues")
+    if not isinstance(issues, list):
+        violations.append("issues must be a list")
+    else:
+        for idx, issue in enumerate(issues):
+            if not isinstance(issue, dict) or not (issue.get("problem") or "").strip():
+                violations.append(f"issues[{idx}]: needs a non-empty 'problem'")
+        if report.get("verdict") == "confirms" and issues:
+            violations.append("verdict 'confirms' with a non-empty issues list — pick one")
+        if report.get("verdict") == "issues_found" and not issues:
+            violations.append("verdict 'issues_found' with no issues — pick one")
+    return violations
+
+
 def extract_source(
     source: gates.SourceDoc,
     run_dir: Path,
@@ -223,10 +315,65 @@ def extract_source(
         )
 
     extract = json.loads(output_file.read_text(encoding="utf-8"))
+
+    # Independent second check (step 4b): a fresh-session reviewer reads source + extract and
+    # reports what the deterministic gates cannot see (missed claims, drift, mis-attribution).
+    # Risk-routed model: strong when the extract carries risk classes, base otherwise. Its
+    # findings drive ONE standard repair round of the extractor; the deterministic gates then
+    # re-verify the repaired artifact. One verification round by design — no verify loop.
+    policy = _verify_policy()
+    risks = risk_classes(extract)
+    verify_model = policy["strong_model"] if risks else policy["base_model"]
+    report_file = run_dir / "verification" / f"{source.source_id}.verify.json"
+    report_file.parent.mkdir(parents=True, exist_ok=True)
+    verify_order = build_verify_order(source, output_file, report_file, glossary_path, read_path)
+    verify_attempts, verify_failed = agents.run_gated(
+        "verify-extract", verify_order,
+        lambda: check_verify_report(report_file),
+        lambda v: agents.repair_order(
+            "verification report", v, f"Fix exactly these and rewrite {report_file}."),
+        access_dirs, stage="verification", site=source.source_id, run_dir=run_dir,
+        model_override=verify_model,
+    )
+    if verify_failed:
+        raise ExtractionError(
+            f"{source.source_id}: independent verifier produced no valid report after "
+            f"{agents.MAX_ATTEMPTS} attempts:\n" + "\n".join(f"  - {v}" for v in verify_failed)
+        )
+    report = json.loads(report_file.read_text(encoding="utf-8"))
+    issues = report.get("issues") or []
+    if issues:
+        findings = [
+            f"independent review — {i.get('where', '?')}: {i['problem']}"
+            + (f" (evidence: {i['evidence']})" if i.get("evidence") else "")
+            for i in issues
+        ]
+        repair_attempts, repair_failed = agents.run_gated(
+            "extract", build_repair_order(output_file, findings),
+            lambda: check_extract(output_file, source.text, client_config),
+            lambda v: build_repair_order(output_file, v),
+            access_dirs, stage="extraction", site=f"{source.source_id}:verified-repair",
+            run_dir=run_dir,
+        )
+        attempts = attempts + repair_attempts
+        if repair_failed:
+            raise ExtractionError(
+                f"{source.source_id}: repair after independent review failed the gates:\n"
+                + "\n".join(f"  - {v}" for v in repair_failed)
+            )
+        extract = json.loads(output_file.read_text(encoding="utf-8"))
+
     return {
         "source_id": source.source_id,
         "output_file": str(output_file),
         "attempts": attempts,
+        "verification": {
+            "report_file": str(report_file),
+            "model": verify_model or "agent-default",
+            "risk_classes": risks,
+            "issue_count": len(issues),
+            "attempts": verify_attempts,
+        },
         "item_count": sum(len(extract.get(f) or []) for f in gates.BRIEF_FIELDS),
         "open_question_count": len(extract.get("open_questions") or []),
         "extraction_note_count": len(extract.get("extraction_notes") or []),

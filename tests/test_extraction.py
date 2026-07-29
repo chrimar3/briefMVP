@@ -270,3 +270,60 @@ def test_annotated_transcript_drops_the_precondition():
 
 def test_non_transcript_sources_get_no_fidelity_precondition():
     assert "fidelity gate" not in _work_order(source_type="rfp")
+
+
+# --------------------------------------------------------------------------------------
+# Independent verification (step 4b) — risk routing + report gate
+# --------------------------------------------------------------------------------------
+
+
+def test_mandatories_make_an_extract_risky():
+    assert "mandatories" in extraction.risk_classes(_extract(mandatories=[_item()]))
+
+
+def test_figures_in_values_make_an_extract_risky():
+    risky = extraction.risk_classes(_extract(budget=[_item(value="κάπου στα 80.000")]))
+    assert "figures" in risky
+
+
+def test_spoken_numbers_without_digits_are_not_the_figures_class():
+    calm = extraction.risk_classes(_extract(budget=[_item(value="κάπου στα ογδόντα")]))
+    assert "figures" not in calm
+
+
+def test_low_confidence_and_garbling_are_risky():
+    e = _extract(objectives=[{**_item(), "confidence": "low"}], extraction_notes=["rule G flag"])
+    risky = extraction.risk_classes(e)
+    assert "low_confidence" in risky and "garbling" in risky
+
+
+def test_clean_extract_has_no_risk_classes():
+    assert extraction.risk_classes(_extract(objectives=[_item(value="grow the category")])) == []
+
+
+def test_verify_report_gate_accepts_a_clean_confirmation(tmp_path):
+    p = tmp_path / "v.json"
+    p.write_text('{"source_id": "s", "verdict": "confirms", "issues": []}', encoding="utf-8")
+    assert extraction.check_verify_report(p) == []
+
+
+def test_verify_report_gate_refuses_contradictory_verdicts(tmp_path):
+    p = tmp_path / "v.json"
+    p.write_text('{"source_id": "s", "verdict": "confirms", "issues": [{"problem": "x"}]}',
+                 encoding="utf-8")
+    assert any("pick one" in v for v in extraction.check_verify_report(p))
+    p.write_text('{"source_id": "s", "verdict": "issues_found", "issues": []}', encoding="utf-8")
+    assert any("pick one" in v for v in extraction.check_verify_report(p))
+
+
+def test_verify_report_gate_refuses_empty_problems(tmp_path):
+    p = tmp_path / "v.json"
+    p.write_text('{"source_id": "s", "verdict": "issues_found", "issues": [{"problem": " "}]}',
+                 encoding="utf-8")
+    assert any("non-empty 'problem'" in v for v in extraction.check_verify_report(p))
+
+
+def test_verify_policy_reads_the_shipped_config():
+    policy = extraction._verify_policy()
+    assert policy["strong_model"] == "sonnet"
+    assert set(policy["risk_classes"]) == {"mandatories", "figures", "garbling", "low_confidence"}

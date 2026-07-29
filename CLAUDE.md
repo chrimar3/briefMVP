@@ -20,7 +20,7 @@ Two-stage AI briefing pipeline (extraction → synthesis → bilingual render �
 
 - `schema/brief_schema.json` — the data model. One-way door: renders, metrics, and creative stage all hang off it.
 - `skills/SOURCES.md` · `SYNTHESIS.md` · `TRANSLATION.md` · `TRANSCRIPTS.md` — the four runtime instruction files, injected into subagent prompts verbatim (extract←SOURCES, synthesize←SYNTHESIS, render←TRANSLATION, fidelity-check←TRANSCRIPTS; classify and creative-shadow carry inline instructions). Treat as spec, not suggestions.
-- `.claude/agents/` — `extract` (haiku) · `classify` (haiku) · `fidelity-check` (haiku) · `synthesize` (sonnet) · `render` (sonnet) · `creative-shadow` (sonnet). Invoked with the definition passed inline (`--agents`) from a neutral cwd, so this CLAUDE.md never loads into a runtime agent.
+- `.claude/agents/` — `extract` (sonnet) · `verify-extract` (haiku/sonnet, risk-routed) · `classify` (haiku) · `fidelity-check` (haiku) · `synthesize` (sonnet) · `render` (sonnet) · `creative-shadow` (sonnet). Invoked with the definition passed inline (`--agents`) from a neutral cwd, so this CLAUDE.md never loads into a runtime agent.
 - `pipeline/` — deterministic orchestration: `gates.py` (input contract, readiness, schema validation, citation verification, readiness block) · `runner.py` (step sequence per PRD §5, stage selections, resume) · `stages.py` (classify/fidelity/synthesize/render work orders + gates) · `extraction.py` (per-source extraction + repair loop) · `conflicts.py` (deterministic cross-source candidate pass) · `creative.py` (Stage-2 sign-off gate + spec-match gate + sonnet/opus A/B) · `agents.py` (clean-substrate subagent invocation seam) · `diagnostics.py` (durable per-attempt repair log)
 - `config/` — `readiness_policy.json` (agency readiness thresholds) · `channel_specs.json` (deterministic channel spec table, DR-7 — creative selects rows, never generates values)
 - `fixtures/northlight_01/` — synthetic transcript, RFP, email thread, background doc + `answer_key.json` (seeded conflicts, gaps, garbled terms)
@@ -29,7 +29,7 @@ Two-stage AI briefing pipeline (extraction → synthesis → bilingual render �
 
 ## Model routing
 
-- Schema-following work (extract, classify, fidelity) → haiku. Judgment work (synthesize, render, creative-shadow) → sonnet.
+- Schema-following work (classify, fidelity) → haiku. Extraction → sonnet, plus an independent `verify-extract` second check per source (fresh session; sonnet when the extract carries risk classes — mandatories, figures, garbling, low confidence — else haiku; policy in `config/model_routing.json`). Judgment work (synthesize, render, creative-shadow) → sonnet. (Routing decision by the human, 2026-07-30.)
 - Never upgrade a stage's model to pass a quality gate — report the failure instead; routing changes are a human decision.
 
 ## Anti-patterns

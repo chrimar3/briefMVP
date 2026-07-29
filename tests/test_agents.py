@@ -14,7 +14,11 @@ from conftest import split_frontmatter
 #: The routing table of CLAUDE.md, as a test. Schema-following work -> haiku;
 #: judgment work -> sonnet. Changing a value here is a human decision (CLAUDE.md).
 AGENT_SPEC = {
-    "extract": ("haiku", "skills/SOURCES.md"),
+    # Routing decision 2026-07-30: extraction runs sonnet, with an independent fresh-session
+    # second check (verify-extract) whose model is risk-routed at call time — haiku here is
+    # its frontmatter base; pipeline/extraction.py overrides to sonnet on risky extracts.
+    "extract": ("sonnet", "skills/SOURCES.md"),
+    "verify-extract": ("haiku", None),
     "classify": ("haiku", None),
     "fidelity-check": ("haiku", "skills/TRANSCRIPTS.md"),
     "synthesize": ("sonnet", "skills/SYNTHESIS.md"),
@@ -105,7 +109,7 @@ def test_inline_agents_declare_no_skill_injection(agent):
 
 
 def test_no_stray_agent_definitions(repo_root):
-    """Exactly six agents — an undeclared seventh would run outside the routing table."""
+    """Exactly seven agents — an undeclared extra would run outside the routing table."""
     found = {p.stem for p in (repo_root / ".claude" / "agents").glob("*.md")}
     assert found == set(AGENT_SPEC)
 
@@ -132,7 +136,7 @@ def test_build_inline_agent_carries_prompt_model_and_tools():
     payload = agents.build_inline_agent("extract")
     assert set(payload) == {"extract"}
     spec = payload["extract"]
-    assert spec["model"] == "haiku"
+    assert spec["model"] == "sonnet"  # routing decision 2026-07-30: extraction runs sonnet
     assert spec["tools"] == ["Read", "Write"]
     # The body is the system prompt verbatim — injected skill and all.
     assert "BEGIN INJECTED SKILL: skills/SOURCES.md" in spec["prompt"]

@@ -6,5 +6,12 @@
 
   "effort": {
     "render": "low"
+  },
+
+  "_verify_extract": "Independent second check on every extract (pipeline step 4b). Human routing decision 2026-07-30: extraction itself runs sonnet (agent frontmatter); the verifier runs `strong_model` whenever the extract carries any of `risk_classes` (deterministically read by pipeline/extraction.py:risk_classes), else `base_model` (null = the agent's own frontmatter, haiku).",
+  "verify_extract": {
+    "strong_model": "sonnet",
+    "base_model": null,
+    "risk_classes": ["mandatories", "figures", "garbling", "low_confidence"]
   }
 }

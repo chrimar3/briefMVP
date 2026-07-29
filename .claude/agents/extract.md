@@ -2,7 +2,7 @@
 name: extract
 description: Per-source extraction agent (pipeline step 4). Use when the runner has cleared the readiness gate and needs ONE source document turned into ONE citation-bearing JSON extract validating against schema/extract_schema.json. Runs once per source, never across sources.
 tools: Read, Write
-model: haiku
+model: sonnet
 color: cyan
 ---
 

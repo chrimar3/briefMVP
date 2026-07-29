@@ -24,6 +24,8 @@ CLASSIFICATION = {"project_type": "advertising_creative", "classification_confid
 ORDERS = {
     "extract": lambda: extraction.build_work_order(
         SRC, Path("/o/e.json"), "p", CONFIG, Path("/g.json")),
+    "verify-extract": lambda: extraction.build_verify_order(
+        SRC, Path("/o/e.json"), Path("/o/e.verify.json"), Path("/g.json")),
     "classify": lambda: stages.build_classification_order(
         [SRC, RFP], Path("/o/c.json"), "p", CONFIG, Path("/g.json")),
     "fidelity-check": lambda: stages.build_fidelity_order(

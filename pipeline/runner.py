@@ -206,6 +206,13 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
             f"        {outcome['item_count']} items · {outcome['open_question_count']} open questions"
             f" · {_summarise(outcome['attempts'])}"
         )
+        verification = outcome.get("verification")
+        if verification:
+            risks = ", ".join(verification["risk_classes"]) or "none"
+            print(
+                f"        verified independently ({verification['model']}, risk: {risks}) · "
+                f"{verification['issue_count']} issue(s) · {_summarise(verification['attempts'])}"
+            )
         results.append(outcome)
     return {"extracts": results}
 
