@@ -670,6 +670,15 @@ def render_review(brief: dict) -> str:
     )
 
 
+def _load_brief_meta(run_dir) -> dict:
+    """Best-effort read of ``run_dir/brief.json``'s meta block — {} when absent/invalid."""
+    try:
+        brief = json.loads((Path(run_dir) / "brief.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return (brief.get("meta") or {}) if isinstance(brief, dict) else {}
+
+
 def write_review(run_dir) -> Path:
     """Read ``run_dir/brief.json``, emit ``run_dir/brief_review.html``, return its path."""
     run_dir = Path(run_dir)

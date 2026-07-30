@@ -12,6 +12,10 @@ runs/*
 !runs/voreas_prep_report.md
 !runs/BLOCKED.md
 
+# The shareable shelf: distribution copies regenerated from runs/, never source.
+# The README explaining the folder IS tracked.
+reviews/*.html
+
 # macOS
 .DS_Store
 

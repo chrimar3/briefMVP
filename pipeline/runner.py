@@ -29,7 +29,7 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, extraction, gates, review, run_review, stages
+from pipeline import agents, conflicts, creative, extraction, gates, publish, review, run_review, stages
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -330,6 +330,14 @@ class Runner:
             run_review.write_run_review(self.run_dir)
         except Exception as exc:
             print(f"        run review page skipped: {exc}")
+        # Completed runs also land on the shareable reviews/ shelf (email / synced
+        # folder distribution — mission §8). Refusals stay in runs/ for the operator.
+        try:
+            published = publish.publish_run(self.run_dir)
+            if published:
+                print(f"        reviews/ shelf: {', '.join(p.name for p in published)}")
+        except Exception as exc:
+            print(f"        reviews publish skipped: {exc}")
         return path
 
     def _hydrate(self, ctx: RunContext) -> None:
