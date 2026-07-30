@@ -2,9 +2,10 @@
 
 **From a messy pile of client inputs to a client-ready brief — in two languages, with receipts.**
 
-> **Just cloned?** Open **[START_HERE.html](START_HERE.html)** in your browser first — the
-> visual front door: a finished brief, the pipeline walkthrough, and the five-minute run
-> guide, all offline from this repo. (GitHub shows this file as source; your browser renders it.)
+> **Just cloned? Double-click [START_HERE.html](START_HERE.html)** (Finder/Explorer → it
+> opens in your browser — no server, no install). It's the visual front door: a finished
+> brief, the pipeline walkthrough, and the five-minute run guide, all offline from this
+> repo. (GitHub shows the file as source; double-clicking your local copy renders it.)
 
 ## About this project
 
