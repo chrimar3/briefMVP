@@ -103,8 +103,9 @@ key never moved; the shared implementation did, once, in the open.
 ### Run it
 
 ```bash
-pip3 install -r requirements.txt        # jsonschema, pytest, PyYAML — nothing else
-python3 -m pytest -q                    # 305 tests, no model calls, ~0.4s
+python3 -m venv .venv && source .venv/bin/activate   # system pip is locked on modern macOS
+python3 -m pip install -r requirements.txt           # jsonschema, pytest, PyYAML — nothing else
+python3 -m pytest -q                                 # 321 tests, no model calls, ~0.4s
 
 # Model stages run as Claude Code subagents (install + authenticate the `claude` CLI).
 # A full Stage-1 run makes 6 model calls — ~$2–2.6 measured (docs/COST_MODEL.md).
