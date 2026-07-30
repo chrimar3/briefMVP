@@ -121,6 +121,25 @@ Test posture: same as gates — deterministic, no model calls in tests.
 Resolution write-back and sign-off capture (option C) · runs dashboard (option B) ·
 client delivery portal · notifications/integrations of any kind (PRD non-goal stands).
 
+## 8. Owner extension (2026-07-30, same day as the go)
+
+After reviewing the built brief page, the owner extended the mission:
+
+1. **Whole-pipeline walkthrough** — `run_review.html` per run (`pipeline/run_review.py`):
+   how the ingested RFP / email thread / transcripts / background docs travelled through
+   the pipeline — journey step tracker, per-source cards (cited excerpts, fidelity
+   verdicts, extraction notes, original document), cross-source conflict candidates,
+   synthesis readiness with a link to the brief page. Emitted deterministically by the
+   runner next to every `run_manifest.json`, refusals included. Same containment rules
+   as the brief page: it reads only the run's artifact files, never the manifest's
+   `attempts` payloads — run cost and model information cannot reach it.
+2. **Consumer-grade restyle** of both pages ("less AI, more Airbnb"): white surfaces,
+   one warm accent reserved for actions, rounded cards, familiar chrome. Shared theme
+   in `pipeline/review.py` so the two pages read as one product.
+
+This partially pulls option B's *walkthrough* value forward while keeping its cost/ops
+dashboard aspect out (decision §6.1 stands: no cost or model info on any review page).
+
 ---
 
 *Next step: the owner says "go" (or edits this doc further) — implementation then starts

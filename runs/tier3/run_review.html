@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="el" data-lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meltemi Beverages — Run review</title>
+<style>
+:root {
+  --bg: #ffffff; --bg-soft: #f7f7f7; --card: #ffffff;
+  --ink: #222222; --ink-2: #6a6a6a; --line: #ebebeb;
+  --brand: #ff385c;
+  --ok: #067433; --ok-bg: #ebf7ef;
+  --warn: #96610c; --warn-bg: #fdf5e3; --warn-line: #eed49a;
+  --bad: #c13515; --bad-bg: #fbeeea; --bad-line: #f0c9ba;
+  --quote: #45494f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616; --bg-soft: #1f1f1f; --card: #1e1e1e;
+    --ink: #f2f0ed; --ink-2: #a5a29e; --line: #313131;
+    --brand: #ff5471;
+    --ok: #63c384; --ok-bg: #17301f;
+    --warn: #e3ac52; --warn-bg: #32280f; --warn-line: #7a6224;
+    --bad: #ff7d61; --bad-bg: #3a1f17; --bad-line: #6d3b2c;
+    --quote: #c3c9d0;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 Circular, "Avenir Next", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Segoe UI", Arial, sans-serif; }
+h1, h2, h3 { letter-spacing: -0.01em; }
+.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.82em; }
+[data-lang="el"] .i-en { display: none; }
+[data-lang="en"] .i-el { display: none; }
+.lang-switch { display: flex; gap: 2px; border: 1px solid var(--line);
+  border-radius: 999px; padding: 3px; flex: none; background: var(--card); }
+.lang-btn { border: 0; background: transparent; color: var(--ink-2);
+  font: 600 0.8rem/1 inherit; font-family: inherit; padding: 0.45rem 0.85rem;
+  border-radius: 999px; cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.pill, .badge, .chip { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 0.25rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+.pill.conf-high { background: var(--ok-bg); color: var(--ok); }
+.pill.conf-medium { background: var(--bg-soft); color: var(--ink-2); }
+.pill.conf-low { background: var(--warn-bg); color: var(--warn);
+  outline: 1px solid var(--warn-line); }
+.badge { border: 1px solid var(--line); color: var(--ink-2); }
+.badge.qual-implied { border-color: var(--ink-2); }
+.badge.qual-conditional { background: var(--warn-bg); color: var(--warn);
+  border-color: var(--warn-line); }
+.chip-open { background: var(--bad-bg); color: var(--bad); }
+.chip-resolved { background: var(--ok-bg); color: var(--ok); }
+.evidence { margin-top: 0.5rem; }
+.evidence > summary, .q-why > summary { cursor: pointer; font-size: 0.8rem;
+  color: var(--ink); font-weight: 600; text-decoration: underline;
+  text-underline-offset: 3px; }
+.ev { margin: 0.6rem 0 0.2rem; padding-left: 0.85rem; border-left: 2px solid var(--line); }
+.ev-anchor { margin: 0; font-style: italic; color: var(--quote); font-size: 0.92rem;
+  quotes: "\00ab" "\00bb"; }
+.ev-anchor::before { content: open-quote; }
+.ev-anchor::after { content: close-quote; }
+.ev-meta { margin: 0.3rem 0 0; font-size: 0.76rem; color: var(--ink-2);
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; }
+.ev-source { font-family: "SF Mono", Menlo, Consolas, monospace; }
+.ev-speaker { font-weight: 600; }
+.empty-field { color: var(--ink-2); font-style: italic; font-size: 0.9rem;
+  border: 1px dashed var(--line); border-radius: 12px; padding: 0.8rem 1rem; }
+@media print {
+  :root { --bg: #ffffff; --card: #ffffff; --ink: #000000; }
+  body { font-size: 11pt; }
+  .lang-switch, .copy-btn, .q-check { display: none; }
+  .conflict, .question, .entry, .src-card { break-inside: avoid; box-shadow: none; }
+  .evidence > summary, .q-why > summary { list-style: none; }
+  a { color: inherit; }
+}
+
+.masthead { border-bottom: 1px solid var(--line); background: var(--bg); }
+.mast-top { max-width: 66rem; margin: 0 auto; padding: 2.4rem 1.5rem 1rem;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.kicker { margin: 0 0 0.4rem; font-size: 0.72rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+h1 { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1.15; }
+.mast-sub { margin: 0.45rem 0 0; color: var(--ink-2); font-size: 0.92rem; }
+.banner { max-width: 66rem; margin: 0 auto; padding: 0.35rem 1.5rem 0;
+  font-size: 0.8rem; font-weight: 700; }
+.banner.draft { color: var(--warn); }
+.banner.signed { color: var(--ok); }
+.banner-detail { font-weight: 500; color: var(--ink-2); }
+.health { max-width: 66rem; margin: 0 auto; padding: 0.7rem 1.5rem 1.5rem;
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.verdict { font-size: 0.76rem; font-weight: 700; padding: 0.4rem 0.85rem;
+  border-radius: 999px; }
+.verdict.ok { background: var(--ok-bg); color: var(--ok); }
+.verdict.warn { background: var(--warn-bg); color: var(--warn); }
+.stat { font-size: 0.83rem; color: var(--ink-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.35rem 0.8rem; }
+.stat strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat-warn { border-color: var(--warn-line); background: var(--warn-bg);
+  color: var(--warn); }
+.stat-warn strong { color: var(--warn); }
+main { max-width: 66rem; margin: 0 auto; padding: 0.6rem 1.5rem 3.5rem; }
+section { margin-top: 2.6rem; }
+h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 1.1rem; }
+.h2-mark { display: none; }
+.sec-head { display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; flex-wrap: wrap; }
+.conflict { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  margin-bottom: 1.1rem; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.conflict.open { border-color: var(--bad-line); }
+.conflict-head { display: flex; justify-content: space-between; align-items: center;
+  padding: 0.85rem 1.15rem; border-bottom: 1px solid var(--line); gap: 0.6rem;
+  flex-wrap: wrap; }
+.conflict-head h3 { margin: 0; font-size: 1.02rem; font-weight: 700; }
+.positions { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.position { padding: 1rem 1.15rem; }
+.position + .position { border-left: 1px solid var(--line); }
+.pos-statement { margin: 0 0 0.5rem; font-weight: 600; font-size: 0.94rem; }
+.resolution { border-top: 1px solid var(--line); padding: 0.85rem 1.15rem;
+  background: var(--ok-bg); }
+.res-label { margin: 0; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ok); }
+.res-text { margin: 0.3rem 0 0.2rem; font-size: 0.92rem; }
+.res-by { margin: 0; font-size: 0.8rem; color: var(--ink-2); }
+.q-list { margin: 0; padding: 0; list-style: none; counter-reset: q; }
+.question { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  margin-bottom: 0.75rem; padding: 0.95rem 1.15rem 0.95rem 1rem;
+  display: flex; gap: 0.85rem; counter-increment: q;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.15s ease; }
+.question:hover { box-shadow: 0 5px 16px rgba(0,0,0,0.1); }
+.question::before { content: counter(q); font-size: 0.95rem; color: var(--ink-2);
+  font-weight: 700; min-width: 1.3rem; text-align: right; padding-top: 0.1rem; }
+.q-check { display: flex; align-items: flex-start; padding-top: 0.22rem; }
+.q-check input { accent-color: var(--brand); width: 1.05rem; height: 1.05rem;
+  cursor: pointer; }
+.q-field { display: none; }
+.q-body { flex: 1; min-width: 0; }
+.q-text { margin: 0; font-size: 0.96rem; }
+.question:has(input:checked) { opacity: 0.45; }
+.question:has(input:checked) .q-text { text-decoration: line-through; }
+.q-why { margin-top: 0.4rem; }
+.q-gap, .q-matters { margin: 0.35rem 0 0; font-size: 0.86rem; color: var(--ink-2); }
+.q-matters { font-style: italic; }
+.copy-btn { border: 0; background: var(--brand); color: #ffffff;
+  font: 600 0.86rem/1 inherit; font-family: inherit; border-radius: 999px;
+  padding: 0.65rem 1.15rem; cursor: pointer; }
+.copy-btn:hover { filter: brightness(0.94); }
+.copy-btn .lbl-copied { display: none; }
+.copy-btn.copied { background: var(--ok); }
+.copy-btn.copied .lbl-default { display: none; }
+.copy-btn.copied .lbl-copied { display: inline; }
+.field { border-top: 1px solid var(--line); padding-top: 1.4rem; margin-top: 1.8rem; }
+.field h3 { margin: 0 0 0.9rem; font-size: 1.12rem; font-weight: 700;
+  display: flex; align-items: baseline; gap: 0.5rem; }
+.field-no { color: var(--ink-2); font-size: 0.9rem; font-weight: 600; }
+.field-count { font-size: 0.72rem; color: var(--ink-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.1rem 0.55rem; font-weight: 600; }
+.entry { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 0.85rem 1.05rem; margin-bottom: 0.65rem; }
+.entry.attention { border-color: var(--warn-line); background: var(--warn-bg); }
+.entry-head { display: flex; justify-content: space-between; gap: 0.9rem;
+  align-items: flex-start; flex-wrap: wrap; }
+.entry-content { margin: 0; flex: 1 1 24rem; font-size: 0.95rem; }
+.entry-badges { margin: 0; display: flex; gap: 0.4rem; flex: none; }
+footer { border-top: 1px solid var(--line); background: var(--bg-soft);
+  margin-top: 2.5rem; }
+footer .src, footer .colophon { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; }
+.src { padding-bottom: 0; }
+.src-label { margin: 0 0 0.3rem; font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+.src ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap;
+  gap: 0.3rem 1.4rem; }
+.src li { font-size: 0.85rem; }
+.src-type { color: var(--ink-2); font-size: 0.78rem; }
+.colophon { color: var(--ink-2); font-size: 0.8rem; }
+
+.journey { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap;
+  gap: 0.6rem; }
+.jstep { display: flex; align-items: center; gap: 0.6rem; background: var(--card);
+  border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.95rem 0.45rem 0.5rem; }
+.jstep-no { width: 1.7rem; height: 1.7rem; border-radius: 999px; background: var(--bg-soft);
+  color: var(--ink-2); font-size: 0.8rem; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex: none; }
+.jstep.ok .jstep-no { background: var(--ok-bg); color: var(--ok); }
+.jstep.warn .jstep-no { background: var(--warn-bg); color: var(--warn); }
+.jstep.bad .jstep-no { background: var(--bad-bg); color: var(--bad); }
+.jstep-body { display: flex; flex-direction: column; line-height: 1.25; }
+.jstep-name { font-size: 0.85rem; font-weight: 600; }
+.jstep-status { font-size: 0.72rem; color: var(--ink-2); }
+.jstep.warn .jstep-status { color: var(--warn); }
+.jstep.bad .jstep-status { color: var(--bad); }
+.chip.outcome-ok { background: var(--ok-bg); color: var(--ok); }
+.chip.outcome-warn { background: var(--warn-bg); color: var(--warn); }
+.chip.outcome-bad { background: var(--bad-bg); color: var(--bad); }
+.chip.outcome-other, .chip-demo { border: 1px solid var(--line); color: var(--ink-2); }
+.src-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+  gap: 1rem; }
+.src-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  padding: 1.05rem 1.15rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: box-shadow 0.15s ease; min-width: 0; }
+.src-card:hover { box-shadow: 0 5px 16px rgba(0,0,0,0.1); }
+.src-head { display: flex; gap: 0.75rem; align-items: center; }
+.src-icon { width: 2.6rem; height: 2.6rem; border-radius: 12px; background: var(--bg-soft);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  flex: none; }
+.src-id h3 { margin: 0; font-size: 1.02rem; font-weight: 700; }
+.src-meta { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--ink-2); }
+.src-stats { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.8rem 0 0.2rem; }
+.x-item { border-top: 1px solid var(--line); padding: 0.65rem 0; }
+.x-head { display: flex; justify-content: space-between; gap: 0.7rem;
+  align-items: flex-start; flex-wrap: wrap; }
+.x-value { margin: 0; font-size: 0.9rem; font-weight: 600; flex: 1 1 14rem; }
+#sources h4 { margin: 1rem 0 0.2rem; font-size: 0.82rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--ink-2); display: flex; align-items: baseline;
+  gap: 0.45rem; }
+.notes { margin: 0.5rem 0 0; padding-left: 1.1rem; }
+.notes li { font-size: 0.85rem; color: var(--ink-2); margin-bottom: 0.35rem; }
+.raw-doc { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+  padding: 0.9rem 1rem; font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap;
+  overflow-wrap: anywhere; max-height: 24rem; overflow-y: auto; }
+.sec-note { color: var(--ink-2); font-size: 0.88rem; max-width: 46rem;
+  margin: -0.4rem 0 1.1rem; }
+.synth-health { padding: 0 0 0.4rem; max-width: none; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+  margin-top: 0.6rem; }
+.cta { background: var(--brand); color: #ffffff; text-decoration: none; font-weight: 600;
+  font-size: 0.9rem; border-radius: 999px; padding: 0.7rem 1.25rem; }
+.cta:hover { filter: brightness(0.94); }
+.doc-link { color: var(--ink); font-size: 0.85rem; text-decoration: underline;
+  text-underline-offset: 3px; border: 1px solid var(--line); border-radius: 999px;
+  padding: 0.55rem 0.95rem; text-decoration: none; }
+.doc-link:hover { background: var(--bg-soft); }
+</style>
+</head>
+<body>
+<header class="masthead"><div class="mast-top"><div class="mast-id"><p class="kicker"><span class="i-el">Εσωτερικο εγγραφο · διαδρομη του run</span><span class="i-en">Internal document · run walkthrough</span></p><h1>Meltemi Beverages</h1><p class="mast-sub"><span class="i-el">Από τις πηγές στο brief</span><span class="i-en">From the sources to the brief</span> · <span class="mono">tier3</span> · 2026-07-24</p></div><div class="lang-switch" role="group" aria-label="language"><button type="button" class="lang-btn" data-set-lang="el" aria-pressed="true">ΕΛ</button><button type="button" class="lang-btn" data-set-lang="en" aria-pressed="false">EN</button></div></div><div class="health"><span class="chip outcome-ok"><span class="i-el">Ολοκληρώθηκε</span><span class="i-en">Complete</span></span><span class="stat"><strong>4</strong> <span class="i-el">πηγές</span><span class="i-en">sources</span></span><span class="stat">advertising_creative · S1</span></div></header><main><section id="journey"><h2><span class="i-el">Η διαδρομή του υλικού</span><span class="i-en">How the material travelled</span></h2><ol class="journey"><li class="jstep ok"><span class="jstep-no">1</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Έλεγχος επάρκειας</span><span class="i-en">Readiness gate</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">2</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Ταξινόμηση</span><span class="i-en">Classification</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">3</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Έλεγχος πιστότητας</span><span class="i-en">Fidelity check</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">4</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Εξαγωγή</span><span class="i-en">Extraction</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">5</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Διασταύρωση πηγών</span><span class="i-en">Conflict pass</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">6</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Σύνθεση</span><span class="i-en">Synthesis</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">7</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Απόδοση ΕΛ/EN</span><span class="i-en">Render EL/EN</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li><li class="jstep ok"><span class="jstep-no">9</span><span class="jstep-body"><span class="jstep-name"><span class="i-el">Δημιουργικό (σκιά)</span><span class="i-en">Creative (shadow)</span></span><span class="jstep-status"><span class="i-el">πέρασε</span><span class="i-en">pass</span></span></span></li></ol></section><section id="sources"><h2><span class="i-el">Τι εισήλθε — πηγή προς πηγή</span><span class="i-en">What came in — source by source</span></h2><div class="src-grid"><article class="src-card"><div class="src-head"><span class="src-icon" aria-hidden="true">📚</span><div class="src-id"><h3><span class="i-el">Υλικό υποβάθρου</span><span class="i-en">Background</span></h3><p class="src-meta"><span class="mono">background_brand_guidelines</span> · 2026-03-02</p></div></div><div class="src-stats"><span class="stat"><strong>8</strong> <span class="i-el">αποσπάσματα με παραπομπή</span><span class="i-en">cited excerpts</span></span><span class="stat"><strong>0</strong> <span class="i-el">κενά → ερωτήσεις</span><span class="i-en">gaps → questions</span></span><span class="stat stat-warn"><strong>1</strong> <span class="i-el">σημειώσεις εξαγωγής</span><span class="i-en">extraction notes</span></span></div><details class="evidence"><summary><span class="i-el">Τι εξήχθη</span><span class="i-en">What was extracted</span> <span class="ev-count">(8)</span></summary><h4><span class="i-el">Βασικά μηνύματα</span><span class="i-en">Key messages</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Confident, modern Greek with natural use of English category terms. Humor allowed; sarcasm about competitors is not.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Confident, modern Greek with natural use of English category terms. Humor allowed;</blockquote><p class="ev-meta"><span class="ev-loc">## Tone (guidance)</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><h4><span class="i-el">Υποχρεωτικά</span><span class="i-en">Mandatories</span> <span class="field-count">7</span></h4><div class="x-item"><div class="x-head"><p class="x-value">The product name Meltemi Fizz is always written in Latin script, in full. Never transliterated, never abbreviated to &quot;Fizz&quot;.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">The product name **Meltemi Fizz** is always written in Latin script, in full.</blockquote><p class="ev-meta"><span class="ev-loc">## Brand name usage</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Logo clear space: minimum 1× the height of the wordmark on all sides.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Logo clear space: minimum 1× the height of the wordmark on all sides.</blockquote><p class="ev-meta"><span class="ev-loc">## Brand name usage</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.</blockquote><p class="ev-meta"><span class="ev-loc">## Color &amp; visual</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Permitted claims: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list).</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Permitted: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list).</blockquote><p class="ev-meta"><span class="ev-loc">## Claims — hard rules</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Not permitted: any health or weight-loss claim; any comparison naming a competitor brand.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">**Not permitted:** any health or weight-loss claim; any comparison naming a competitor brand.</blockquote><p class="ev-meta"><span class="ev-loc">## Claims — hard rules</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">No alcohol association of any kind (imagery, occasions, co-branding).</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">No alcohol association of any kind (imagery, occasions, co-branding).</blockquote><p class="ev-meta"><span class="ev-loc">## Category no-gos</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break.</blockquote><p class="ev-meta"><span class="ev-loc">## Category no-gos</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div></details><details class="evidence"><summary><span class="i-el">Σημειώσεις εξαγωγής</span><span class="i-en">Extraction notes</span> <span class="ev-count">(1)</span></summary><ul class="notes"><li>Document is marked as an excerpt (v3.1). Guidelines reference an &#x27;approved ingredient list&#x27; for permitted claims including φυσικά συστατικά, but the actual list is not provided in this excerpt.</li></ul></details><details class="evidence"><summary><span class="i-el">Πρωτότυπο έγγραφο</span><span class="i-en">Original document</span></summary><pre class="raw-doc"># Meltemi Beverages — Brand Guidelines v3.1 (excerpt)
+source_id: background_brand_guidelines · source_type: background · source_date: 2026-03-02
+
+## Brand name usage
+- The product name **Meltemi Fizz** is always written in Latin script, in full. Never transliterated, never abbreviated to &quot;Fizz&quot;.
+- Logo clear space: minimum 1× the height of the wordmark on all sides.
+
+## Color &amp; visual
+- Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.
+
+## Claims — hard rules
+- Permitted: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list).
+- **Not permitted:** any health or weight-loss claim; any comparison naming a competitor brand.
+
+## Category no-gos
+- No alcohol association of any kind (imagery, occasions, co-branding).
+- Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break.
+
+## Tone (guidance)
+Confident, modern Greek with natural use of English category terms. Humor allowed; sarcasm about competitors is not.
+</pre></details></article><article class="src-card"><div class="src-head"><span class="src-icon" aria-hidden="true">✉️</span><div class="src-id"><h3><span class="i-el">Αλληλογραφία</span><span class="i-en">Email thread</span></h3><p class="src-meta"><span class="mono">emails_thread</span> · 2026-07-15 (latest message)</p></div></div><div class="src-stats"><span class="stat"><strong>7</strong> <span class="i-el">αποσπάσματα με παραπομπή</span><span class="i-en">cited excerpts</span></span><span class="stat"><strong>5</strong> <span class="i-el">κενά → ερωτήσεις</span><span class="i-en">gaps → questions</span></span><span class="stat stat-warn"><strong>3</strong> <span class="i-el">σημειώσεις εξαγωγής</span><span class="i-en">extraction notes</span></span></div><details class="evidence"><summary><span class="i-el">Τι εξήχθη</span><span class="i-en">What was extracted</span> <span class="ev-count">(7)</span></summary><h4><span class="i-el">Στόχοι</span><span class="i-en">Objectives</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><h4><span class="i-el">Παραδοτέα</span><span class="i-en">Deliverables</span> <span class="field-count">2</span></h4><div class="x-item"><div class="x-head"><p class="x-value">brief</p><p class="entry-badges"><span class="pill conf-medium"><span class="i-el">μέτρια</span><span class="i-en">medium</span></span><span class="badge qual-implied"><span class="i-el">συναγόμενο</span><span class="i-en">implied</span></span></p></div><blockquote class="ev-anchor">τελικό approval του brief</blockquote><p class="ev-meta"><span class="ev-loc">**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">αναθεωρημένο πλάνο</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">θα σας στείλουμε αναθεωρημένο πλάνο</blockquote><p class="ev-meta"><span class="ev-loc">**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><h4><span class="i-el">Χρονοδιάγραμμα</span><span class="i-en">Timeline</span> <span class="field-count">3</span></h4><div class="x-item"><div class="x-head"><p class="x-value">το board μετέθεσε το launch για 15 Σεπτεμβρίου</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">**το board μετέθεσε το launch για 15 Σεπτεμβρίου**</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Ξέρω ότι στενεύει το χρονοδιάγραμμα</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Ξέρω ότι στενεύει το χρονοδιάγραμμα</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">το 15/9 αλλάζει αρκετά τον προγραμματισμό</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">το 15/9 αλλάζει αρκετά τον προγραμματισμό</blockquote><p class="ev-meta"><span class="ev-loc">**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><h4><span class="i-el">Υποχρεωτικά</span><span class="i-en">Mandatories</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">brand guidelines (ισχύει η έκδοση 3.1)</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Επισυνάπτω τα brand guidelines (ισχύει η έκδοση 3.1)</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div></details><details class="evidence"><summary><span class="i-el">Σημειώσεις εξαγωγής</span><span class="i-en">Extraction notes</span> <span class="ev-count">(3)</span></summary><ul class="notes"><li>Market research: Client has no internal research available. Message 2 states: &#x27;Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο&#x27; (no internal research; use public data if available).</li><li>Launch date is new/recent change; original planned launch date not documented in this thread.</li><li>Scope of &#x27;αναθεωρημένο πλάνο&#x27; not detailed; delivery commitment stated but content undefined.</li></ul></details><details class="evidence"><summary><span class="i-el">Πρωτότυπο έγγραφο</span><span class="i-en">Original document</span></summary><pre class="raw-doc"># Email Thread — Meltemi Fizz / Υλικό &amp; Επόμενα Βήματα
+source_id: emails_thread · source_type: email_thread · source_date: 2026-07-15 (latest message)
+
+---
+**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40
+Καλημέρα Δημήτρη, ευχαριστούμε για τη χθεσινή κλήση. Recap συνημμένο. Θα χρειαστούμε τα brand guidelines και ό,τι έρευνα αγοράς υπάρχει για την κατηγορία. Επίσης, ποιος θα κάνει το τελικό approval του brief από πλευράς σας;
+
+---
+**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22
+Καλησπέρα Ελένη. Επισυνάπτω τα brand guidelines (ισχύει η έκδοση 3.1). Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο.
+Σημαντικό: **το board μετέθεσε το launch για 15 Σεπτεμβρίου** — θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών. Ξέρω ότι στενεύει το χρονοδιάγραμμα, ας το συζητήσουμε.
+Για το approval θα επανέλθω — παίζει ανάμεσα σε εμένα και τη διοίκηση.
+
+---
+**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05
+Ελήφθη — το 15/9 αλλάζει αρκετά τον προγραμματισμό, θα σας στείλουμε αναθεωρημένο πλάνο. Περιμένουμε και το όνομα για το approval.
+</pre></details></article><article class="src-card"><div class="src-head"><span class="src-icon" aria-hidden="true">📄</span><div class="src-id"><h3><span class="i-el">RFP</span><span class="i-en">RFP</span></h3><p class="src-meta"><span class="mono">rfp_meltemi</span> · 2026-06-28</p></div></div><div class="src-stats"><span class="stat"><strong>8</strong> <span class="i-el">αποσπάσματα με παραπομπή</span><span class="i-en">cited excerpts</span></span><span class="stat"><strong>8</strong> <span class="i-el">κενά → ερωτήσεις</span><span class="i-en">gaps → questions</span></span><span class="stat stat-warn"><strong>2</strong> <span class="i-el">σημειώσεις εξαγωγής</span><span class="i-en">extraction notes</span></span></div><details class="evidence"><summary><span class="i-el">Τι εξήχθη</span><span class="i-en">What was extracted</span> <span class="ev-count">(8)</span></summary><h4><span class="i-el">Στόχοι</span><span class="i-en">Objectives</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά</blockquote><p class="ev-meta"><span class="ev-loc">## 2. Στόχος</span><span class="ev-speaker">Meltemi Beverages</span></p></div><h4><span class="i-el">Κοινά-στόχος</span><span class="i-en">Audiences</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα</blockquote><p class="ev-meta"><span class="ev-loc">## 3. Κοινό-στόχος</span><span class="ev-speaker">Meltemi Beverages</span></p></div><h4><span class="i-el">Παραδοτέα</span><span class="i-en">Deliverables</span> <span class="field-count">2</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Δημιουργικό υλικό για το launch (βίντεο, key visuals)</p><p class="entry-badges"><span class="pill conf-medium"><span class="i-el">μέτρια</span><span class="i-en">medium</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Δημιουργικό υλικό για το launch (βίντεο, key visuals)</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Παρουσία σε social media και ψηφιακά κανάλια</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Παρουσία σε social media και ψηφιακά κανάλια</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><h4><span class="i-el">Χρονοδιάγραμμα</span><span class="i-en">Timeline</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Launch την πρώτη εβδομάδα του Οκτωβρίου 2026</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**</blockquote><p class="ev-meta"><span class="ev-loc">## 5. Χρονοδιάγραμμα</span><span class="ev-speaker">Meltemi Beverages</span></p></div><h4><span class="i-el">Προϋπολογισμός</span><span class="i-en">Budget</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">**€90.000, συμπεριλαμβανομένου του media**</blockquote><p class="ev-meta"><span class="ev-loc">## 6. Προϋπολογισμός</span><span class="ev-speaker">Meltemi Beverages</span></p></div><h4><span class="i-el">Υποχρεωτικά</span><span class="i-en">Mandatories</span> <span class="field-count">2</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Ισχύουν οι οδηγίες brand των συνημμένων guidelines</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Ισχύουν οι οδηγίες brand των συνημμένων guidelines</blockquote><p class="ev-meta"><span class="ev-loc">## 7. Λοιπά</span><span class="ev-speaker">Meltemi Beverages</span></p></div></details><details class="evidence"><summary><span class="i-el">Σημειώσεις εξαγωγής</span><span class="i-en">Extraction notes</span> <span class="ev-count">(2)</span></summary><ul class="notes"><li>Budget figure stated with Greek decimal notation (€90.000) representing 90,000 euros; no currency conversion applied.</li><li>RFP references &#x27;συνημμένα guidelines&#x27; (attached guidelines) but attachment is not provided in source; recorded as stated without verification.</li></ul></details><details class="evidence"><summary><span class="i-el">Πρωτότυπο έγγραφο</span><span class="i-en">Original document</span></summary><pre class="raw-doc"># RFP — Καμπάνια Λανσαρίσματος Meltemi Fizz
+source_id: rfp_meltemi · source_type: rfp · source_date: 2026-06-28
+Από: Meltemi Beverages S.A. · Προς: Northlight Communications
+
+## 1. Πλαίσιο
+Η Meltemi Beverages λανσάρει το **Meltemi Fizz**, ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις. Πρόκειται για την είσοδό μας σε νέα κατηγορία.
+
+## 2. Στόχος
+Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά.
+
+## 3. Κοινό-στόχος
+Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα.
+
+## 4. Απαιτήσεις καμπάνιας
+- Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok.
+- Παρουσία σε social media και ψηφιακά κανάλια.
+- Δημιουργικό υλικό για το launch (βίντεο, key visuals).
+
+## 5. Χρονοδιάγραμμα
+Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.
+
+## 6. Προϋπολογισμός
+Συνολικός προϋπολογισμός **€90.000, συμπεριλαμβανομένου του media**.
+
+## 7. Λοιπά
+Ισχύουν οι οδηγίες brand των συνημμένων guidelines. Αναμένουμε την πρότασή σας.
+</pre></details></article><article class="src-card"><div class="src-head"><span class="src-icon" aria-hidden="true">🎙️</span><div class="src-id"><h3><span class="i-el">Απομαγνητοφώνηση</span><span class="i-en">Transcript</span></h3><p class="src-meta"><span class="mono">transcript_kickoff</span> · 2026-07-10</p></div></div><div class="src-stats"><span class="chip chip-open"><span class="i-el">πιστότητα: </span><span class="i-en">fidelity: </span>pass_with_flags · 2 <span class="i-el">όροι επισημάνθηκαν</span><span class="i-en">tokens flagged</span></span><span class="stat"><strong>10</strong> <span class="i-el">αποσπάσματα με παραπομπή</span><span class="i-en">cited excerpts</span></span><span class="stat"><strong>5</strong> <span class="i-el">κενά → ερωτήσεις</span><span class="i-en">gaps → questions</span></span><span class="stat stat-warn"><strong>4</strong> <span class="i-el">σημειώσεις εξαγωγής</span><span class="i-en">extraction notes</span></span></div><details class="evidence"><summary><span class="i-el">Τι εξήχθη</span><span class="i-en">What was extracted</span> <span class="ev-count">(10)</span></summary><h4><span class="i-el">Στόχοι</span><span class="i-en">Objectives</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Το βασικό για μας είναι το μπραντ αγουέρνες — είναι καινούργια κατηγορία για εμάς, sparkling tea. Θέλουμε να μπούμε δυνατά.</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Το βασικό για μας είναι το μπραντ αγουέρνες</blockquote><p class="ev-meta"><span class="ev-loc">[00:02:05]</span><span class="ev-speaker">DIMITRIS</span></p></div><h4><span class="i-el">Κοινά-στόχος</span><span class="i-en">Audiences</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">25 to 40, urban professionals</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">our buyer is 25 to 40, urban professionals</blockquote><p class="ev-meta"><span class="ev-loc">[00:03:41]</span><span class="ev-speaker">DIMITRIS</span></p></div><h4><span class="i-el">Βασικά μηνύματα</span><span class="i-en">Key messages</span> <span class="field-count">3</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Refreshment without the sugar guilt — zero sugar, natural ingredients</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">refreshment without the sugar guilt — zero sugar, φυσικά υλικά</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Greek brand that owns the modern category (sparkling tea)</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div><h4><span class="i-el">Παραδοτέα</span><span class="i-en">Deliverables</span> <span class="field-count">2</span></h4><div class="x-item"><div class="x-head"><p class="x-value">Some videos and social content (formats not yet decided)</p><p class="entry-badges"><span class="pill conf-medium"><span class="i-el">μέτρια</span><span class="i-en">medium</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats</blockquote><p class="ev-meta"><span class="ev-loc">[00:10:22]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">TikTok dance (speculative: &#x27;just thinking out loud, don&#x27;t hold me to it&#x27;)</p><p class="entry-badges"><span class="pill conf-low"><span class="i-el">χαμηλή</span><span class="i-en">low</span></span><span class="badge qual-conditional"><span class="i-el">υπό όρους</span><span class="i-en">conditional</span></span></p></div><blockquote class="ev-anchor">Just thinking out loud — maybe a TikTok dance thing? Don&#x27;t hold me to it</blockquote><p class="ev-meta"><span class="ev-loc">[00:11:47]</span><span class="ev-speaker">DIMITRIS</span></p></div><h4><span class="i-el">Χρονοδιάγραμμα</span><span class="i-en">Timeline</span> <span class="field-count">2</span></h4><div class="x-item"><div class="x-head"><p class="x-value">October (per RFP)</p><p class="entry-badges"><span class="pill conf-high"><span class="i-el">υψηλή</span><span class="i-en">high</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">Το RFP έλεγε Οκτώβριο</blockquote><p class="ev-meta"><span class="ev-loc">[00:16:40]</span><span class="ev-speaker">ELENI</span></p></div><div class="x-item"><div class="x-head"><p class="x-value">Autumn (&#x27;κάπου εκεί&#x27;), to be finalized by board meeting end of month</p><p class="entry-badges"><span class="pill conf-medium"><span class="i-el">μέτρια</span><span class="i-en">medium</span></span><span class="badge qual-conditional"><span class="i-el">υπό όρους</span><span class="i-en">conditional</span></span></p></div><blockquote class="ev-anchor">Κάπου εκεί κινούμαστε, ναι — φθινόπωρο. Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα</blockquote><p class="ev-meta"><span class="ev-loc">[00:17:03]</span><span class="ev-speaker">DIMITRIS</span></p></div><h4><span class="i-el">Προϋπολογισμός</span><span class="i-en">Budget</span> <span class="field-count">1</span></h4><div class="x-item"><div class="x-head"><p class="x-value">κάπου στα ογδόντα, μπορεί ογδόντα πέντε — χωρίς το media spend</p><p class="entry-badges"><span class="pill conf-medium"><span class="i-el">μέτρια</span><span class="i-en">medium</span></span><span class="badge qual-stated"><span class="i-el">δηλωμένο</span><span class="i-en">stated</span></span></p></div><blockquote class="ev-anchor">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</blockquote><p class="ev-meta"><span class="ev-loc">[00:14:32]</span><span class="ev-speaker">ANNA</span></p></div></details><details class="evidence"><summary><span class="i-el">Σημειώσεις εξαγωγής</span><span class="i-en">Extraction notes</span> <span class="ev-count">(4)</span></summary><ul class="notes"><li>[00:02:05] Token &#x27;μπραντ αγουέρνες&#x27; (Greek-script rendering) flagged by fidelity gate with glossary-match proposal &#x27;brand awareness&#x27; (confidence high). Extracted as-is per rule G; glossary match noted for downstream translation stage.</li><li>[00:06:02] Token &#x27;κι βίζουαλ&#x27; (Greek-script rendering) — glossary term &#x27;key visual&#x27; rendered in Greek as-is per rule G. Value preserves source language; anchor updated to be verbatim.</li><li>[REPAIR: audiences[0] with anchor &#x27;Το RFP που σας στείλαμε λέει Gen Z&#x27; removed — anchor not found verbatim in source per validator (SOURCES.md rule 2).]</li><li>[REPAIR: deliverables[2] with anchor containing combined metro proposal + retraction removed — combined anchor not found verbatim in source per validator (SOURCES.md rule 2). Metro retraction documented only via internal_conflict; both removed together.]</li></ul></details><details class="evidence"><summary><span class="i-el">Πρωτότυπο έγγραφο</span><span class="i-en">Original document</span></summary><pre class="raw-doc"># Kickoff Call — Meltemi Fizz Launch
+source_id: transcript_kickoff · source_type: transcript · source_date: 2026-07-10
+Participants: ELENI (Northlight, account lead) · DIMITRIS (Meltemi, CMO) · ANNA (Meltemi, CFO)
+
+[00:01:12] ELENI: Καλημέρα σε όλους. Σκοπός σήμερα είναι να καταλάβουμε τι θέλετε να πετύχει το launch του Meltemi Fizz.
+
+[00:02:05] DIMITRIS: Ωραία. Το βασικό για μας είναι το μπραντ αγουέρνες — είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί. Θέλουμε να μπούμε δυνατά.
+
+[00:03:41] DIMITRIS: Και να το πω καθαρά: το RFP που σας στείλαμε λέει Gen Z, αλλά honestly, our buyer is 25 to 40, urban professionals. Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea. Το Gen Z το έγραψε το προηγούμενο agency στο positioning και έμεινε.
+
+[00:05:20] ELENI: Κρατάω τη διόρθωση — σημαντικό. Μηνύματα; Τι θέλουμε να πει η καμπάνια;
+
+[00:06:02] DIMITRIS: Δύο πράγματα. Ένα: refreshment without the sugar guilt — zero sugar, φυσικά υλικά. Δύο: ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του. Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι.
+
+[00:08:15] DIMITRIS: Α, και σκεφτόμουν — ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές… [00:08:34] …actually scratch that, το μετρό είναι πανάκριβο φέτος, το κοίταξα τον Μάιο. Ξεχάστε το.
+
+[00:09:50] ELENI: ΟΚ. Παραδοτέα — τι φαντάζεστε;
+
+[00:10:22] DIMITRIS: Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς.
+
+[00:11:47] DIMITRIS: Just thinking out loud — maybe a TikTok dance thing? Don&#x27;t hold me to it, δεν το έχουμε συζητήσει καν μέσα.
+
+[00:13:05] ELENI: Καταγράφηκε ως ιδέα, όχι ως απόφαση. Πάμε στο budget;
+
+[00:14:32] ANNA: Κοιτάξτε, είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend. Το media το βλέπουμε ξεχωριστά με τον media shop μας.
+
+[00:15:10] ELENI: Άρα production. Και το media range θα το μάθουμε από εκείνους;
+
+[00:15:26] ANNA: Ναι, δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα.
+
+[00:16:40] ELENI: Χρονικά; Το RFP έλεγε Οκτώβριο.
+
+[00:17:03] DIMITRIS: Κάπου εκεί κινούμαστε, ναι — φθινόπωρο. Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα.
+
+[00:18:30] ELENI: Τελευταίο από εμένα: πώς θα ξέρουμε ότι πέτυχε; Έχετε κάποιο συγκεκριμένο στόχο, sales ή awareness metric;
+
+[00:18:52] DIMITRIS: …Καλή ερώτηση. Όχι ακόμα κάτι γραμμένο. Ας το δούμε μαζί.
+
+[00:19:40] ELENI: Θα το σημειώσω ως ανοιχτό. Ευχαριστώ πολύ και τους δύο — στέλνω recap μέσα στη μέρα.
+</pre></details></article></div></section><section id="conflict-pass"><h2><span class="i-el">Διασταύρωση πηγών — υποψήφιες συγκρούσεις</span><span class="i-en">Cross-source pass — conflict candidates</span></h2><p class="sec-note">Candidates are fields where 2+ sources contributed evidence. They are NOT conflicts. Synthesis decides which are genuine contradictions and emits conflicts[] with both positions and status &#x27;open&#x27;. No stage may resolve a conflict (PRD DR-10).</p><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Στόχοι</span><span class="i-en">Objectives</span></h3><span class="chip">3 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών</p><blockquote class="ev-anchor">θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά</p><blockquote class="ev-anchor">Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά</blockquote><p class="ev-meta"><span class="ev-loc">## 2. Στόχος</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Το βασικό για μας είναι το μπραντ αγουέρνες — είναι καινούργια κατηγορία για εμάς, sparkling tea. Θέλουμε να μπούμε δυνατά.</p><blockquote class="ev-anchor">Το βασικό για μας είναι το μπραντ αγουέρνες</blockquote><p class="ev-meta"><span class="ev-loc">[00:02:05]</span><span class="ev-speaker">DIMITRIS</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Κοινά-στόχος</span><span class="i-en">Audiences</span></h3><span class="chip">2 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα</p><blockquote class="ev-anchor">Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα</blockquote><p class="ev-meta"><span class="ev-loc">## 3. Κοινό-στόχος</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">25 to 40, urban professionals</p><blockquote class="ev-anchor">our buyer is 25 to 40, urban professionals</blockquote><p class="ev-meta"><span class="ev-loc">[00:03:41]</span><span class="ev-speaker">DIMITRIS</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Βασικά μηνύματα</span><span class="i-en">Key messages</span></h3><span class="chip">2 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Confident, modern Greek with natural use of English category terms. Humor allowed; sarcasm about competitors is not.</p><blockquote class="ev-anchor">Confident, modern Greek with natural use of English category terms. Humor allowed;</blockquote><p class="ev-meta"><span class="ev-loc">## Tone (guidance)</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Refreshment without the sugar guilt — zero sugar, natural ingredients</p><blockquote class="ev-anchor">refreshment without the sugar guilt — zero sugar, φυσικά υλικά</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Greek brand that owns the modern category (sparkling tea)</p><blockquote class="ev-anchor">ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι</p><blockquote class="ev-anchor">Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι</blockquote><p class="ev-meta"><span class="ev-loc">[00:06:02]</span><span class="ev-speaker">DIMITRIS</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Παραδοτέα</span><span class="i-en">Deliverables</span></h3><span class="chip">3 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">brief</p><blockquote class="ev-anchor">τελικό approval του brief</blockquote><p class="ev-meta"><span class="ev-loc">**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">αναθεωρημένο πλάνο</p><blockquote class="ev-anchor">θα σας στείλουμε αναθεωρημένο πλάνο</blockquote><p class="ev-meta"><span class="ev-loc">**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Δημιουργικό υλικό για το launch (βίντεο, key visuals)</p><blockquote class="ev-anchor">Δημιουργικό υλικό για το launch (βίντεο, key visuals)</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Παρουσία σε social media και ψηφιακά κανάλια</p><blockquote class="ev-anchor">Παρουσία σε social media και ψηφιακά κανάλια</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Some videos and social content (formats not yet decided)</p><blockquote class="ev-anchor">Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats</blockquote><p class="ev-meta"><span class="ev-loc">[00:10:22]</span><span class="ev-speaker">DIMITRIS</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">TikTok dance (speculative: &#x27;just thinking out loud, don&#x27;t hold me to it&#x27;)</p><blockquote class="ev-anchor">Just thinking out loud — maybe a TikTok dance thing? Don&#x27;t hold me to it</blockquote><p class="ev-meta"><span class="ev-loc">[00:11:47]</span><span class="ev-speaker">DIMITRIS</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Χρονοδιάγραμμα</span><span class="i-en">Timeline</span></h3><span class="chip">3 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">το board μετέθεσε το launch για 15 Σεπτεμβρίου</p><blockquote class="ev-anchor">**το board μετέθεσε το launch για 15 Σεπτεμβρίου**</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">Ξέρω ότι στενεύει το χρονοδιάγραμμα</p><blockquote class="ev-anchor">Ξέρω ότι στενεύει το χρονοδιάγραμμα</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">το 15/9 αλλάζει αρκετά τον προγραμματισμό</p><blockquote class="ev-anchor">το 15/9 αλλάζει αρκετά τον προγραμματισμό</blockquote><p class="ev-meta"><span class="ev-loc">**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05</span><span class="ev-speaker">Eleni (Northlight)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Launch την πρώτη εβδομάδα του Οκτωβρίου 2026</p><blockquote class="ev-anchor">Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**</blockquote><p class="ev-meta"><span class="ev-loc">## 5. Χρονοδιάγραμμα</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">October (per RFP)</p><blockquote class="ev-anchor">Το RFP έλεγε Οκτώβριο</blockquote><p class="ev-meta"><span class="ev-loc">[00:16:40]</span><span class="ev-speaker">ELENI</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">Autumn (&#x27;κάπου εκεί&#x27;), to be finalized by board meeting end of month</p><blockquote class="ev-anchor">Κάπου εκεί κινούμαστε, ναι — φθινόπωρο. Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα</blockquote><p class="ev-meta"><span class="ev-loc">[00:17:03]</span><span class="ev-speaker">DIMITRIS</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Προϋπολογισμός</span><span class="i-en">Budget</span></h3><span class="chip">2 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media</p><blockquote class="ev-anchor">**€90.000, συμπεριλαμβανομένου του media**</blockquote><p class="ev-meta"><span class="ev-loc">## 6. Προϋπολογισμός</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">transcript_kickoff</span></p><p class="pos-statement">κάπου στα ογδόντα, μπορεί ογδόντα πέντε — χωρίς το media spend</p><blockquote class="ev-anchor">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</blockquote><p class="ev-meta"><span class="ev-loc">[00:14:32]</span><span class="ev-speaker">ANNA</span></p></div></div></article><article class="conflict"><header class="conflict-head"><h3><span class="i-el">Υποχρεωτικά</span><span class="i-en">Mandatories</span></h3><span class="chip">3 <span class="i-el">πηγές</span><span class="i-en">sources</span></span></header><div class="positions"><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">The product name Meltemi Fizz is always written in Latin script, in full. Never transliterated, never abbreviated to &quot;Fizz&quot;.</p><blockquote class="ev-anchor">The product name **Meltemi Fizz** is always written in Latin script, in full.</blockquote><p class="ev-meta"><span class="ev-loc">## Brand name usage</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Logo clear space: minimum 1× the height of the wordmark on all sides.</p><blockquote class="ev-anchor">Logo clear space: minimum 1× the height of the wordmark on all sides.</blockquote><p class="ev-meta"><span class="ev-loc">## Brand name usage</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.</p><blockquote class="ev-anchor">Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.</blockquote><p class="ev-meta"><span class="ev-loc">## Color &amp; visual</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Permitted claims: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list).</p><blockquote class="ev-anchor">Permitted: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list).</blockquote><p class="ev-meta"><span class="ev-loc">## Claims — hard rules</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Not permitted: any health or weight-loss claim; any comparison naming a competitor brand.</p><blockquote class="ev-anchor">**Not permitted:** any health or weight-loss claim; any comparison naming a competitor brand.</blockquote><p class="ev-meta"><span class="ev-loc">## Claims — hard rules</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">No alcohol association of any kind (imagery, occasions, co-branding).</p><blockquote class="ev-anchor">No alcohol association of any kind (imagery, occasions, co-branding).</blockquote><p class="ev-meta"><span class="ev-loc">## Category no-gos</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">background_brand_guidelines</span></p><p class="pos-statement">Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break.</p><blockquote class="ev-anchor">Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break.</blockquote><p class="ev-meta"><span class="ev-loc">## Category no-gos</span><span class="ev-speaker">Meltemi Beverages (Brand Guidelines)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">emails_thread</span></p><p class="pos-statement">brand guidelines (ισχύει η έκδοση 3.1)</p><blockquote class="ev-anchor">Επισυνάπτω τα brand guidelines (ισχύει η έκδοση 3.1)</blockquote><p class="ev-meta"><span class="ev-loc">**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22</span><span class="ev-speaker">Dimitris (Meltemi)</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok</p><blockquote class="ev-anchor">Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok</blockquote><p class="ev-meta"><span class="ev-loc">## 4. Απαιτήσεις καμπάνιας</span><span class="ev-speaker">Meltemi Beverages</span></p></div><div class="position"><p class="ev-meta"><span class="ev-source">rfp_meltemi</span></p><p class="pos-statement">Ισχύουν οι οδηγίες brand των συνημμένων guidelines</p><blockquote class="ev-anchor">Ισχύουν οι οδηγίες brand των συνημμένων guidelines</blockquote><p class="ev-meta"><span class="ev-loc">## 7. Λοιπά</span><span class="ev-speaker">Meltemi Beverages</span></p></div></div></article></section><section id="synthesis"><h2><span class="i-el">Σύνθεση & ετοιμότητα</span><span class="i-en">Synthesis & readiness</span></h2><div class="health synth-health"><span class="verdict ok"><span class="i-el">ΕΤΟΙΜΟ ΓΙΑ ΕΛΕΓΧΟ</span><span class="i-en">READY FOR REVIEW</span></span><span class="stat"><strong>5/7</strong> <span class="i-el">πεδία με τεκμηρίωση</span><span class="i-en">fields evidenced</span></span><span class="stat"><strong>4%</strong> <span class="i-el">χαμηλής βεβαιότητας</span><span class="i-en">low-confidence</span></span><span class="stat"><strong>3</strong> <span class="i-el">συγκρούσεις</span><span class="i-en">conflicts</span></span><span class="stat"><strong>10</strong> <span class="i-el">ανοιχτές ερωτήσεις</span><span class="i-en">open questions</span></span></div><div class="cta-row"><a class="cta" href="brief_review.html"><span class="i-el">Άνοιγμα σελίδας ελέγχου brief</span><span class="i-en">Open the brief review page</span></a><a class="doc-link" href="brief_el.md"><span class="mono">brief_el.md</span></a><a class="doc-link" href="brief_en.md"><span class="mono">brief_en.md</span></a></div></section></main><footer><p class="colophon"><span class="i-el">Παρήχθη ντετερμινιστικά από τα αρχεία του run — η σελίδα δεν μπορεί να πει τίποτα που δεν λένε τα αρχεία.</span><span class="i-en">Generated deterministically from the run's artifact files — this page cannot say anything the files do not say.</span> <span class="mono">northlight_01 · 0.1.0-tier0</span></p></footer><script>
+(function () {
+  "use strict";
+  var buttons = document.querySelectorAll(".lang-btn");
+  function setLang(lang) {
+    document.documentElement.setAttribute("data-lang", lang);
+    for (var i = 0; i < buttons.length; i++) {
+      var b = buttons[i];
+      b.setAttribute("aria-pressed", b.getAttribute("data-set-lang") === lang ? "true" : "false");
+    }
+  }
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", function () {
+      setLang(this.getAttribute("data-set-lang"));
+    });
+  }
+
+  var copyBtn = document.getElementById("copy-questions");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", function () {
+      var nodes = document.querySelectorAll("#questions .q-text");
+      var lines = [];
+      for (var j = 0; j < nodes.length; j++) {
+        lines.push((j + 1) + ". " + nodes[j].textContent.trim());
+      }
+      var text = lines.join("\n");
+      function done() {
+        copyBtn.classList.add("copied");
+        setTimeout(function () { copyBtn.classList.remove("copied"); }, 1800);
+      }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+
+  var reopened = [];
+  window.addEventListener("beforeprint", function () {
+    reopened = [];
+    var all = document.querySelectorAll("details:not([open])");
+    for (var k = 0; k < all.length; k++) {
+      all[k].setAttribute("open", "");
+      reopened.push(all[k]);
+    }
+  });
+  window.addEventListener("afterprint", function () {
+    for (var k = 0; k < reopened.length; k++) {
+      reopened[k].removeAttribute("open");
+    }
+    reopened = [];
+  });
+})();
+</script>
+</body>
+</html>

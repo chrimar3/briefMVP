@@ -29,7 +29,7 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, extraction, gates, review, stages
+from pipeline import agents, conflicts, creative, extraction, gates, review, run_review, stages
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -324,6 +324,12 @@ class Runner:
         }
         path = self.run_dir / "run_manifest.json"
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        # Deterministic walkthrough view of whatever this run produced — every outcome
+        # gets one, refusals included. The view must never change a run's outcome.
+        try:
+            run_review.write_run_review(self.run_dir)
+        except Exception as exc:
+            print(f"        run review page skipped: {exc}")
         return path
 
     def _hydrate(self, ctx: RunContext) -> None:
