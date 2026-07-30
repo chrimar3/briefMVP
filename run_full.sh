@@ -13,4 +13,15 @@ nohup python3 pipeline/runner.py \
   --glossary demo_live/client_demo.json \
   --demo-profile demo_live/readiness_policy_demo.json \
   --run-id live >> runs/live/run.log 2>&1 &
+runner_pid=$!
+# Demo closing shot (mission decision §6.3): when the runner finishes AND the manifest
+# says complete, open the account-lead review page. Fully detached and silent — stdout
+# stays the single line below. `wait` cannot target a non-child from the subshell, so
+# poll the pid; a failed or refused run never opens a stale page.
+(
+  while kill -0 "$runner_pid" 2>/dev/null; do sleep 5; done
+  if grep -q '"outcome": "complete"' runs/live/run_manifest.json 2>/dev/null; then
+    open runs/live/brief_review.html
+  fi
+) >/dev/null 2>&1 &
 echo "started — outputs will land in runs/live/"

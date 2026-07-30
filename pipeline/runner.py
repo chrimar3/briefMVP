@@ -29,7 +29,7 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, extraction, gates, stages
+from pipeline import agents, conflicts, creative, extraction, gates, review, stages
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -248,6 +248,10 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
         f"        el={outcome['el_chars']} chars · en={outcome['en_chars']} chars"
         f" · {_summarise(outcome['attempts'])}"
     )
+    # Deterministic tail of the render step, not a new model step: the account-lead
+    # review page is a VIEW of brief.json (docs/FABLE_MISSION_visualisation.md).
+    outcome["review_file"] = str(review.write_review(ctx.run_dir))
+    print(f"        review page → {outcome['review_file']}")
     return {"render": outcome}
 
 
