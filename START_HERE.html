@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brief Builder — start here</title>
+<style>
+:root {
+  --bg: #ffffff; --bg-soft: #f7f7f7; --card: #ffffff;
+  --ink: #222222; --ink-2: #6a6a6a; --line: #ebebeb;
+  --brand: #ff385c;
+  --ok: #067433; --ok-bg: #ebf7ef;
+  --warn: #96610c; --warn-bg: #fdf5e3; --warn-line: #eed49a;
+  --quote: #45494f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616; --bg-soft: #1f1f1f; --card: #1e1e1e;
+    --ink: #f2f0ed; --ink-2: #a5a29e; --line: #313131;
+    --brand: #ff5471;
+    --ok: #63c384; --ok-bg: #17301f;
+    --warn: #e3ac52; --warn-bg: #32280f; --warn-line: #7a6224;
+    --quote: #c3c9d0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 Circular, "Avenir Next", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Segoe UI", Arial, sans-serif; }
+h1, h2, h3 { letter-spacing: -0.01em; }
+.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.82em; }
+.masthead { border-bottom: 1px solid var(--line); }
+.mast-inner { max-width: 66rem; margin: 0 auto; padding: 2.6rem 1.5rem 1.6rem; }
+.kicker { margin: 0 0 0.4rem; font-size: 0.72rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+h1 { margin: 0; font-size: 2.2rem; font-weight: 700; line-height: 1.12; }
+.mast-sub { margin: 0.55rem 0 1rem; color: var(--ink-2); font-size: 1rem; max-width: 42rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip { font-size: 0.78rem; font-weight: 600; padding: 0.35rem 0.8rem;
+  border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); }
+.chip.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+main { max-width: 66rem; margin: 0 auto; padding: 0.5rem 1.5rem 3.5rem; }
+section { margin-top: 2.8rem; }
+h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.4rem; }
+.lede { margin: 0 0 1.1rem; color: var(--ink-2); font-size: 0.95rem; max-width: 44rem; }
+.card-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1rem; }
+.card { display: block; background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; padding: 1.15rem 1.25rem; text-decoration: none; color: inherit;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.15s ease; }
+a.card:hover { box-shadow: 0 5px 16px rgba(0,0,0,0.1); }
+.card h3 { margin: 0 0 0.25rem; font-size: 1.05rem; font-weight: 700; }
+.card p { margin: 0; font-size: 0.88rem; color: var(--ink-2); }
+.card .go { display: inline-block; margin-top: 0.7rem; font-size: 0.85rem; font-weight: 600;
+  color: var(--brand); }
+.journey { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.jstep { display: flex; align-items: center; gap: 0.6rem; background: var(--card);
+  border: 1px solid var(--line); border-radius: 999px; padding: 0.45rem 0.95rem 0.45rem 0.5rem; }
+.jstep-no { width: 1.7rem; height: 1.7rem; border-radius: 999px; background: var(--bg-soft);
+  color: var(--ink-2); font-size: 0.8rem; font-weight: 700; display: flex;
+  align-items: center; justify-content: center; flex: none; }
+.jstep.ai .jstep-no { background: var(--bg-soft); color: var(--ink); }
+.jstep.human { border-color: var(--ok); }
+.jstep.human .jstep-no { background: var(--ok-bg); color: var(--ok); }
+.jstep-body { display: flex; flex-direction: column; line-height: 1.25; }
+.jstep-name { font-size: 0.85rem; font-weight: 600; }
+.jstep-status { font-size: 0.72rem; color: var(--ink-2); }
+.legend { margin: 0.8rem 0 0; font-size: 0.82rem; color: var(--ink-2); }
+pre.cmd { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+  padding: 1rem 1.1rem; font-size: 0.82rem; line-height: 1.7; overflow-x: auto;
+  font-family: "SF Mono", Menlo, Consolas, monospace; }
+pre.cmd .c { color: var(--ink-2); }
+.g-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0.8rem; }
+.g-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  padding: 0.9rem 1.05rem; }
+.g-card h3 { margin: 0 0 0.2rem; font-size: 0.92rem; font-weight: 700; }
+.g-card p { margin: 0; font-size: 0.84rem; color: var(--ink-2); }
+.map { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.map-row { display: flex; gap: 1rem; padding: 0.6rem 1rem; border-top: 1px solid var(--line);
+  font-size: 0.88rem; align-items: baseline; }
+.map-row:first-child { border-top: 0; }
+.map-row .mono { flex: 0 0 13rem; color: var(--ink); }
+.map-row span:last-child { color: var(--ink-2); }
+footer { border-top: 1px solid var(--line); background: var(--bg-soft); margin-top: 3rem; }
+footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--ink-2);
+  font-size: 0.8rem; }
+@media print { body { font-size: 11pt; } .card, .g-card, .jstep { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<header class="masthead"><div class="mast-inner">
+  <p class="kicker">Operator's front door · start here</p>
+  <h1>Brief Builder</h1>
+  <p class="mast-sub">From a messy pile of client inputs to a client-ready brief — in two
+  languages, with receipts. AI writes, code checks, humans decide.</p>
+  <div class="chips">
+    <span class="chip ok">17/17 on the sealed answer key</span>
+    <span class="chip">every claim carries a citation</span>
+    <span class="chip">gaps become questions, never guesses</span>
+    <span class="chip">Greek + English from one object</span>
+  </div>
+</div></header>
+<main>
+
+<section id="see-it">
+  <h2>See it before you run anything</h2>
+  <p class="lede">The graded run ships in this repo. These two pages are the product's
+  account-team surface — double-click, no install, works offline:</p>
+  <div class="card-row">
+    <a class="card" href="runs/tier3/brief_review.html">
+      <h3>The brief review</h3>
+      <p>What the account lead gets: conflicts pinned as decisions, send-ready client
+      questions with a copy button, seven evidenced fields — every value one click from
+      its verbatim source quote. Greek-first, EN toggle.</p>
+      <span class="go">Open the signed-off example →</span>
+    </a>
+    <a class="card" href="runs/tier3/run_review.html">
+      <h3>The pipeline walkthrough</h3>
+      <p>How that brief was built: what each source contributed, what the fidelity gate
+      flagged, the cross-source conflict candidates, and the readiness verdict — the
+      system explaining its own work.</p>
+      <span class="go">Open the run walkthrough →</span>
+    </a>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <p class="lede">Seven pipeline steps, one human gate. The runner owns sequence and
+  refusal; deterministic gates verify every model output; nothing moves past the draft
+  without an account lead.</p>
+  <ol class="journey">
+    <li class="jstep"><span class="jstep-no">1</span><span class="jstep-body">
+      <span class="jstep-name">Readiness gate</span>
+      <span class="jstep-status">refuses to draft on thin input</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">2</span><span class="jstep-body">
+      <span class="jstep-name">Classification</span>
+      <span class="jstep-status">project type + sensitivity tier</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">3</span><span class="jstep-body">
+      <span class="jstep-name">Fidelity check</span>
+      <span class="jstep-status">garbled transcripts flagged, never fixed</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">4</span><span class="jstep-body">
+      <span class="jstep-name">Extraction</span>
+      <span class="jstep-status">no verbatim quote → no claim</span></span></li>
+    <li class="jstep"><span class="jstep-no">5</span><span class="jstep-body">
+      <span class="jstep-name">Conflict pass</span>
+      <span class="jstep-status">disagreements surfaced, never resolved</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">6</span><span class="jstep-body">
+      <span class="jstep-name">Synthesis</span>
+      <span class="jstep-status">one canonical brief object</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">7</span><span class="jstep-body">
+      <span class="jstep-name">Render EL/EN</span>
+      <span class="jstep-status">generate once, render twice + review pages</span></span></li>
+    <li class="jstep human"><span class="jstep-no">8</span><span class="jstep-body">
+      <span class="jstep-name">Human sign-off</span>
+      <span class="jstep-status">not a system step — the gate it stops at</span></span></li>
+    <li class="jstep ai"><span class="jstep-no">9</span><span class="jstep-body">
+      <span class="jstep-name">Creative (shadow)</span>
+      <span class="jstep-status">only after sign-off, never delivered</span></span></li>
+  </ol>
+  <p class="legend">Every model step is verified by a deterministic gate: citations must
+  resolve word-for-word, protected brand terms must survive, no figure may appear that no
+  source stated. A failing output gets one repair attempt; then the system stops and says so.</p>
+</section>
+
+<section id="run">
+  <h2>Run it in five minutes</h2>
+  <pre class="cmd"><span class="c"># tests need no model access — do this first</span>
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+python3 -m pytest -q
+
+<span class="c"># model stages run as Claude Code subagents — install + authenticate the claude CLI, then:</span>
+./demo.sh                                       <span class="c"># 2-3 min: one document in, verified facts out,</span>
+                                                <span class="c">#   ends by opening the walkthrough page</span>
+python3 pipeline/runner.py --project fixtures/northlight_01   <span class="c"># full Stage-1 run → runs/&lt;ts&gt;/</span>
+python3 eval/harness.py runs/latest             <span class="c"># grade against the sealed answer key</span>
+./run_full.sh                                   <span class="c"># background demo run — opens the finished brief</span></pre>
+  <p class="lede">Completed runs also copy their pages to <span class="mono">reviews/</span>
+  under recognisable names — that folder is the account team's shelf
+  (see <span class="mono">reviews/README.md</span> for the sharing channels).</p>
+</section>
+
+<section id="guarantees">
+  <h2>What the system will not do</h2>
+  <div class="g-grid">
+    <div class="g-card"><h3>Guess</h3><p>Thin input is refused with a precise list of
+      what to request from the client — a refusal is the product working.</p></div>
+    <div class="g-card"><h3>Resolve conflicts</h3><p>When sources disagree, both quotes
+      are shown with citations. Resolution belongs to the account lead, by design.</p></div>
+    <div class="g-card"><h3>Silently fix garbles</h3><p>A mangled term is extracted
+      as written and flagged — the reader decides what it meant.</p></div>
+    <div class="g-card"><h3>Invent figures</h3><p>"Around eighty" stays that way until
+      the client says eighty <em>what</em>. No number appears that no source stated.</p></div>
+    <div class="g-card"><h3>Editorialise in views</h3><p>The review pages are
+      deterministic renders of the run's artifacts — they cannot say anything the
+      artifacts do not say, and carry no run cost or model information.</p></div>
+    <div class="g-card"><h3>Ship creative</h3><p>The creative brief stage runs in shadow
+      mode on signed-off briefs only; its drafts are for evaluation, never delivery.</p></div>
+  </div>
+</section>
+
+<section id="map">
+  <h2>Where things live</h2>
+  <div class="map">
+    <div class="map-row"><span class="mono">docs/PRD.md</span><span>the spec — read-only, the contract everything hangs off</span></div>
+    <div class="map-row"><span class="mono">docs/EVIDENCE.md</span><span>artifact-backed proof of every claim: what ran, every check, every trap caught</span></div>
+    <div class="map-row"><span class="mono">runs/tier3/</span><span>the committed graded run — signed brief, renders, extracts, both review pages</span></div>
+    <div class="map-row"><span class="mono">reviews/</span><span>the shareable shelf — completed runs publish both pages here automatically</span></div>
+    <div class="map-row"><span class="mono">pipeline/</span><span>deterministic orchestration: runner, gates, extraction, conflicts, review pages</span></div>
+    <div class="map-row"><span class="mono">skills/</span><span>the four runtime instruction files injected into subagents — spec, not suggestions</span></div>
+    <div class="map-row"><span class="mono">fixtures/northlight_01/</span><span>the synthetic project: transcript, RFP, emails, background + sealed answer key</span></div>
+    <div class="map-row"><span class="mono">CLAUDE.md</span><span>working rules for operating this repo with Claude Code — tiers, freezes, anti-patterns</span></div>
+  </div>
+</section>
+
+</main>
+<footer><p>Internal pilot. Fixtures are synthetic — never ingest real client data.
+Clients receive the rendered documents; these pages are the account team's surface.</p></footer>
+</body>
+</html>

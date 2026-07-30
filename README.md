@@ -2,6 +2,10 @@
 
 **From a messy pile of client inputs to a client-ready brief — in two languages, with receipts.**
 
+> **Just cloned?** Open **[START_HERE.html](START_HERE.html)** in your browser first — the
+> visual front door: a finished brief, the pipeline walkthrough, and the five-minute run
+> guide, all offline from this repo. (GitHub shows this file as source; your browser renders it.)
+
 ## About this project
 
 Every project starts as a pile of inputs — a kickoff transcript, an RFP, an email thread. An

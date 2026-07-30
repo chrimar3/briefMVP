@@ -199,6 +199,39 @@ def main(argv=None) -> int:
     for q in questions:
         print(f"  · [{q.get('field')}] {q.get('suggested_question_for_client') or q.get('gap')}")
 
+    # -- visual payoff: the same walkthrough page every full run gets ----------------------
+    # The demo bypasses the runner, so write the minimal manifest the page renders from.
+    # Best-effort by design: the view must never turn a successful demo into a failure.
+    try:
+        import os
+        import subprocess
+        from pipeline import run_review
+
+        (run_dir / "run_manifest.json").write_text(json.dumps({
+            "run_id": run_dir.name,
+            "pipeline_version": "demo",
+            "project_dir": str(run_dir),  # the stamped source lives here → page embeds it
+            "started_ts": datetime.now().isoformat(timespec="seconds"),
+            "finished_ts": datetime.now().isoformat(timespec="seconds"),
+            "outcome": "complete",
+            "exit_code": 0,
+            "stage": "extraction",
+            "demo_profile": None,
+            "sources": [dict(meta)],
+            "steps": [
+                {"number": 2, "name": "classification", "kind": "model", "agent": "classify",
+                 "description": "Project type + onboarding sensitivity tier", "status": "pass"},
+                {"number": 4, "name": "extraction", "kind": "model", "agent": "extract",
+                 "description": "Per-source citation-bearing extracts", "status": "pass"},
+            ],
+        }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        page = run_review.write_run_review(run_dir)
+        print(f"\nWALKTHROUGH PAGE — what just happened, as the account team sees it: {page}")
+        if sys.platform == "darwin" and not os.environ.get("DEMO_NO_OPEN") and sys.stdout.isatty():
+            subprocess.run(["open", str(page)], check=False)
+    except Exception as exc:
+        print(f"\n(walkthrough page skipped: {exc})")
+
     elapsed = time.monotonic() - started
     print(f"\ndone in {elapsed:.1f}s · model cost ${cost:.3f} · artifacts in {run_dir}")
     return 0
