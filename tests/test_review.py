@@ -10,6 +10,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import types
 from pathlib import Path
 
 import pytest
@@ -275,6 +276,28 @@ def test_render_review_is_deterministic():
     its own, so reruns and git diffs stay honest."""
     brief = _brief("runs/tier3")
     assert review.render_review(brief) == review.render_review(brief)
+
+
+def test_render_handler_view_failure_never_fails_the_run(tmp_path, monkeypatch):
+    """The review page is a VIEW: if writing it explodes (full disk, future schema
+    surprise), the render step's model artifacts must survive and the runner must go
+    on to write its manifest — a view can never erase a successful run's record.
+    Regression for the one spot where the best-effort rule was originally missed."""
+    from pipeline import runner
+
+    fake_render = {"el_file": "x", "en_file": "y", "el_chars": 1, "en_chars": 1, "attempts": []}
+    monkeypatch.setattr(runner.stages, "render", lambda **kwargs: dict(fake_render))
+    monkeypatch.setattr(runner, "_access_dirs", lambda ctx: [])
+
+    def _explode(run_dir):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(runner.review, "write_review", _explode)
+    ctx = types.SimpleNamespace(run_dir=tmp_path, artifacts={"brief": {}}, glossary_path=None)
+    step = next(s for s in runner.STEP_SEQUENCE if s.name == "render")
+    payload = runner._render_handler(ctx, step)
+    assert payload["render"]["el_file"] == "x"  # model artifacts intact
+    assert "review_file" not in payload["render"]  # view honestly absent, not faked
 
 
 # ------------------------------------------------------------------ write/CLI

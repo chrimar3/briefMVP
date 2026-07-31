@@ -251,9 +251,13 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
     # Deterministic tail of the render step, not a new model step: the account-lead
     # review page is a VIEW of brief.json (docs/FABLE_MISSION_visualisation.md), and
     # the styled document views typeset the two rendered markdown documents.
-    outcome["review_file"] = str(review.write_review(ctx.run_dir))
-    outcome["document_views"] = [str(p) for p in docview.write_documents(ctx.run_dir)]
-    print(f"        review page → {outcome['review_file']}")
+    # Best-effort: the view must never fail a run whose model artifacts succeeded.
+    try:
+        outcome["review_file"] = str(review.write_review(ctx.run_dir))
+        outcome["document_views"] = [str(p) for p in docview.write_documents(ctx.run_dir)]
+        print(f"        review page → {outcome['review_file']}")
+    except Exception as exc:
+        print(f"        review page skipped: {exc}")
     return {"render": outcome}
 
 
