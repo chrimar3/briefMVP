@@ -25,24 +25,49 @@ def _embedded(key: str) -> str:
     return json.loads(match.group(1))
 
 
+def _tier3(name: str) -> str:
+    return (REPO / "runs" / "tier3" / name).read_text(encoding="utf-8")
+
+
 def test_committed_share_file_matches_the_real_example_pages():
     """The embedded copies must track the committed tier3 pages — regenerate with
     `python3 pipeline/share.py` after any renderer change. The brief page rides
     byte-identical; the walkthrough gets exactly one adaptation (see below)."""
-    brief = (REPO / "runs" / "tier3" / "brief_review.html").read_text(encoding="utf-8")
-    assert _embedded("brief") == brief
-    run = (REPO / "runs" / "tier3" / "run_review.html").read_text(encoding="utf-8")
-    assert _embedded("run") == share.adapt_run_page(run)
+    assert _embedded("brief") == _tier3("brief_review.html")
+    assert _embedded("run") == share.adapt_run_page(
+        _tier3("run_review.html"),
+        _tier3("brief_review.html"),
+        _tier3("brief_el.md"),
+        _tier3("brief_en.md"),
+    )
 
 
-def test_embedded_walkthrough_has_no_dead_relative_buttons():
-    """A blob page has no folder around it — relative hrefs to sibling files can never
-    resolve, so the bottom button row must be adapted out, not shipped broken."""
+def test_embedded_walkthrough_buttons_carry_their_own_targets():
+    """A blob page has no folder around it — relative hrefs can never resolve. The
+    bottom buttons must therefore carry their targets: the brief page and both
+    rendered documents ride inside the walkthrough as payloads, and every button is
+    a blob-opener. No dead relative href may survive."""
     run = _embedded("run")
-    assert '<div class="cta-row">' not in run  # the class survives only as a CSS rule
     assert 'href="brief_review.html"' not in run
     assert 'href="brief_el.md"' not in run
-    assert "εξώφυλλο" in run  # the replacement note pointing back to the cover
+    assert 'href="brief_en.md"' not in run
+    for key in ("brief", "el", "en"):
+        assert f'data-open="{key}"' in run
+        payload = re.search(
+            rf'<script type="application/json" id="doc-{key}">(.*?)</script>', run, re.S
+        )
+        assert payload, f"walkthrough lost its embedded {key!r} payload"
+        assert "</" not in payload.group(1)  # inner carrier escaped like the outer ones
+    assert json.loads(
+        re.search(
+            r'<script type="application/json" id="doc-brief">(.*?)</script>', run, re.S
+        ).group(1)
+    ) == _tier3("brief_review.html")
+    assert json.loads(
+        re.search(
+            r'<script type="application/json" id="doc-el">(.*?)</script>', run, re.S
+        ).group(1)
+    ) == _tier3("brief_el.md")
 
 
 def test_share_file_is_self_sufficient():

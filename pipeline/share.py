@@ -192,23 +192,60 @@ _JS = """
 """
 
 
-def adapt_run_page(page_html: str) -> str:
+_ADAPTED_BUTTONS = """<div class="cta-row">
+<button type="button" class="cta" data-open="brief" data-mime="text/html">
+<span class="i-el">Άνοιγμα σελίδας ελέγχου brief</span>
+<span class="i-en">Open the brief review page</span></button>
+<button type="button" class="doc-link" data-open="el" data-mime="text/plain;charset=utf-8">
+<span class="mono">brief_el.md</span></button>
+<button type="button" class="doc-link" data-open="en" data-mime="text/plain;charset=utf-8">
+<span class="mono">brief_en.md</span></button>
+</div>"""
+
+_ADAPTED_JS = """
+(function () {
+  "use strict";
+  function openPayload(key, mime) {
+    var node = document.getElementById("doc-" + key);
+    if (!node) { return; }
+    var blob = new Blob([JSON.parse(node.textContent)], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var win = window.open(url, "_blank");
+    if (!win) { location.href = url; }
+  }
+  var buttons = document.querySelectorAll("[data-open]");
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener("click", function () {
+      openPayload(this.getAttribute("data-open"), this.getAttribute("data-mime"));
+    });
+  }
+})();
+"""
+
+
+def adapt_run_page(page_html: str, brief_html: str, el_md: str, en_md: str) -> str:
     """Prepare the walkthrough page for life inside SHARE_ME.
 
     Its bottom buttons link sibling files by relative href — meaningless from a blob
-    page with no folder around it. The cover page already opens both documents, so the
-    button row becomes a note pointing back there. Everything else stays byte-identical.
+    page with no folder around it. So the siblings ride along: the brief page and both
+    rendered documents are embedded as payloads inside the walkthrough itself, and the
+    buttons become blob-openers — same mechanism as the cover cards, works anywhere.
+    Everything above the button row stays byte-identical.
     """
-    note = (
-        '<p class="empty-field">'
-        '<span class="i-el">Η σελίδα ελέγχου του brief ανοίγει από το εξώφυλλο '
-        "αυτού του αρχείου.</span>"
-        '<span class="i-en">Open the brief review from this file&#x27;s cover '
-        "page.</span></p>"
-    )
     import re
 
-    return re.sub(r'<div class="cta-row">.*?</div>', note, page_html, count=1, flags=re.S)
+    adapted = re.sub(
+        r'<div class="cta-row">.*?</div>', _ADAPTED_BUTTONS, page_html, count=1, flags=re.S
+    )
+    payload_block = (
+        "<style>button.cta, button.doc-link { font: inherit; cursor: pointer; }"
+        " button.cta { border: 0; } button.doc-link { background: transparent; }</style>"
+        + _carrier("brief", brief_html)
+        + _carrier("el", el_md)
+        + _carrier("en", en_md)
+        + f"<script>{_ADAPTED_JS}</script>"
+    )
+    return adapted.replace("</body>", payload_block + "</body>", 1)
 
 
 def _carrier(key: str, page_html: str) -> str:
@@ -223,16 +260,24 @@ def _carrier(key: str, page_html: str) -> str:
 
 def build_share(example_run=EXAMPLE_RUN, out_path=DEFAULT_OUT) -> Path:
     example_run = Path(example_run)
-    pages = {}
-    for key, name in (("brief", "brief_review.html"), ("run", "run_review.html")):
+    texts = {}
+    for name in ("brief_review.html", "run_review.html", "brief_el.md", "brief_en.md"):
         path = example_run / name
         if not path.is_file():
             raise ReviewInputError(
                 f"no {name} in {example_run} — SHARE_ME embeds the committed example "
-                "pages; generate them first"
+                "run's pages and rendered documents; generate them first"
             )
-        text = path.read_text(encoding="utf-8")
-        pages[key] = adapt_run_page(text) if key == "run" else text
+        texts[name] = path.read_text(encoding="utf-8")
+    pages = {
+        "brief": texts["brief_review.html"],
+        "run": adapt_run_page(
+            texts["run_review.html"],
+            texts["brief_review.html"],
+            texts["brief_el.md"],
+            texts["brief_en.md"],
+        ),
+    }
     html = (
         "<!DOCTYPE html>\n"
         '<html lang="en">\n<head>\n<meta charset="utf-8">\n'
