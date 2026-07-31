@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northlight Communications — Client Brief [EL]</title>
+<style>
+:root {
+  --bg: #ffffff; --bg-soft: #f7f7f7; --card: #ffffff;
+  --ink: #222222; --ink-2: #6a6a6a; --line: #ebebeb;
+  --brand: #ff385c;
+  --ok: #067433; --ok-bg: #ebf7ef;
+  --warn: #96610c; --warn-bg: #fdf5e3; --warn-line: #eed49a;
+  --bad: #c13515; --bad-bg: #fbeeea; --bad-line: #f0c9ba;
+  --quote: #45494f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616; --bg-soft: #1f1f1f; --card: #1e1e1e;
+    --ink: #f2f0ed; --ink-2: #a5a29e; --line: #313131;
+    --brand: #ff5471;
+    --ok: #63c384; --ok-bg: #17301f;
+    --warn: #e3ac52; --warn-bg: #32280f; --warn-line: #7a6224;
+    --bad: #ff7d61; --bad-bg: #3a1f17; --bad-line: #6d3b2c;
+    --quote: #c3c9d0;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 Circular, "Avenir Next", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Segoe UI", Arial, sans-serif; }
+h1, h2, h3 { letter-spacing: -0.01em; }
+.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.82em; }
+[data-lang="el"] .i-en { display: none; }
+[data-lang="en"] .i-el { display: none; }
+.lang-switch { display: flex; gap: 2px; border: 1px solid var(--line);
+  border-radius: 999px; padding: 3px; flex: none; background: var(--card); }
+.lang-btn { border: 0; background: transparent; color: var(--ink-2);
+  font: 600 0.8rem/1 inherit; font-family: inherit; padding: 0.45rem 0.85rem;
+  border-radius: 999px; cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.pill, .badge, .chip { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 0.25rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+.pill.conf-high { background: var(--ok-bg); color: var(--ok); }
+.pill.conf-medium { background: var(--bg-soft); color: var(--ink-2); }
+.pill.conf-low { background: var(--warn-bg); color: var(--warn);
+  outline: 1px solid var(--warn-line); }
+.badge { border: 1px solid var(--line); color: var(--ink-2); }
+.badge.qual-implied { border-color: var(--ink-2); }
+.badge.qual-conditional { background: var(--warn-bg); color: var(--warn);
+  border-color: var(--warn-line); }
+.chip-open { background: var(--bad-bg); color: var(--bad); }
+.chip-resolved { background: var(--ok-bg); color: var(--ok); }
+.evidence { margin-top: 0.5rem; }
+.evidence > summary, .q-why > summary { cursor: pointer; font-size: 0.8rem;
+  color: var(--ink); font-weight: 600; text-decoration: underline;
+  text-underline-offset: 3px; }
+.ev { margin: 0.6rem 0 0.2rem; padding-left: 0.85rem; border-left: 2px solid var(--line); }
+.ev-anchor { margin: 0; font-style: italic; color: var(--quote); font-size: 0.92rem;
+  quotes: "\00ab" "\00bb"; }
+.ev-anchor::before { content: open-quote; }
+.ev-anchor::after { content: close-quote; }
+.ev-meta { margin: 0.3rem 0 0; font-size: 0.76rem; color: var(--ink-2);
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; }
+.ev-source { font-family: "SF Mono", Menlo, Consolas, monospace; }
+.ev-speaker { font-weight: 600; }
+.empty-field { color: var(--ink-2); font-style: italic; font-size: 0.9rem;
+  border: 1px dashed var(--line); border-radius: 12px; padding: 0.8rem 1rem; }
+@media print {
+  :root { --bg: #ffffff; --card: #ffffff; --ink: #000000; }
+  body { font-size: 11pt; }
+  .lang-switch, .copy-btn, .q-check { display: none; }
+  .conflict, .question, .entry, .src-card { break-inside: avoid; box-shadow: none; }
+  .evidence > summary, .q-why > summary { list-style: none; }
+  a { color: inherit; }
+}
+
+main.doc { max-width: 46rem; margin: 0 auto; padding: 2.6rem 1.5rem 3.5rem; }
+.doc h1 { margin: 0 0 1rem; font-size: 1.75rem; font-weight: 700; line-height: 1.2;
+  text-wrap: balance; }
+.doc h2 { margin: 2.2rem 0 0.7rem; font-size: 1.18rem; font-weight: 700;
+  padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.doc p { margin: 0.6rem 0; }
+.doc blockquote { margin: 0.7rem 0; padding: 0.65rem 1rem; border-left: 3px solid var(--line);
+  background: var(--bg-soft); border-radius: 0 10px 10px 0; color: var(--ink-2);
+  font-style: italic; }
+.doc ul, .doc ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+.doc li { margin: 0.45rem 0; }
+.doc ol > li { margin: 0.9rem 0; }
+.doc .cont { display: block; margin-top: 0.35rem; }
+.doc .cite { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.72rem;
+  color: var(--ink-2); background: var(--bg-soft); border-radius: 6px;
+  padding: 0.08rem 0.35rem; white-space: nowrap; }
+.doc strong { font-weight: 700; }
+footer p { max-width: 46rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--ink-2);
+  font-size: 0.8rem; }
+footer { border-top: 1px solid var(--line); background: var(--bg-soft); }
+@media print {
+  main.doc { padding: 0; }
+  .doc h2 { break-after: avoid; }
+  .doc li, .doc blockquote { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main class="doc"><h1>Northlight Communications — Client Brief [EL]</h1><blockquote><p><strong>ΥΠΟΓΕΓΡΑΜΜΕΝΟ από τον Χρήστο Μαραγκουδάκη (επικεφαλής λογαριασμού), 2026-07-24</strong></p></blockquote><p><strong>Πελάτης:</strong> Meltemi Beverages · <strong>Έργο:</strong> northlight_01 · <strong>Τύπος έργου:</strong> Δημιουργικό διαφήμισης (advertising creative) · <strong>Επίπεδο ευαισθησίας:</strong> S1<br><strong>Κάλυψη εισερχομένων:</strong> 5/7 πεδία τεκμηριωμένα · <strong>Αξιολόγηση:</strong> Έτοιμο για επισκόπηση<br><strong>Πηγές που χρησιμοποιήθηκαν:</strong> background_brand_guidelines (2026-03-02) · emails_thread (2026-07-15) · rfp_meltemi (2026-06-28) · transcript_kickoff (2026-07-10) · <strong>Δημιουργήθηκε:</strong> 2026-07-24T12:59:28 · <strong>Pipeline:</strong> brief-builder-stage1</p><h2>1. Στόχοι</h2><ul><li>Η Meltemi θέλει να προλάβει το τέλος της σεζόν αναψυκτικών με αυτό το launch (η πίεση χρόνου καθορίζει το πρόγραμμα). <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Επιτυχημένο launch της νέας σειράς προϊόντων στην ελληνική αγορά. <span class="cite">[rfp_meltemi §2]</span></li><li>Το brand awareness είναι κεντρικό: το Meltemi Fizz μπαίνει σε μια νέα κατηγορία (sparkling tea) για την εταιρεία, και θέλουν να μπουν δυναμικά σε αυτήν. <span class="cite">[transcript_kickoff 00:02:05]</span></li></ul><h2>2. Κοινό-Στόχος</h2><blockquote><p>Δεν υπάρχουν επιβεβαιωμένες καταχωρήσεις — βλ. Ανοιχτά Ερωτήματα.</p></blockquote><h2>3. Βασικά Μηνύματα</h2><ul><li>Tone of voice: σίγουρο, μοντέρνο ελληνικό ύφος με φυσική χρήση αγγλικών όρων κατηγορίας· χιούμορ επιτρέπεται, αλλά σαρκασμός για ανταγωνιστές όχι. <span class="cite">[background_brand_guidelines §Tone (guidance)]</span></li><li>Βασικό μηνυματικό angle: αναζωογόνηση χωρίς την ενοχή της ζάχαρης — zero sugar, φυσικά υλικά. <span class="cite">[transcript_kickoff 00:06:02]</span></li><li>Positioning: ένα ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του. <span class="cite">[transcript_kickoff 00:06:02]</span></li><li>Οπτική κατεύθυνση: το key visual πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι — όχι μια γενική αίσθηση beach party. <span class="cite">[transcript_kickoff 00:06:02]</span></li></ul><h2>4. Παραδοτέα</h2><ul><li>Η τελική έγκριση του brief είναι απαραίτητο βήμα πριν προχωρήσουμε (η αρχή έγκρισης παραμένει ανεπιβεβαίωτη — βλ. Ανοιχτά Ερωτήματα). <span class="cite">[emails_thread Message 1, 2026-07-11]</span></li><li>Το Northlight θα στείλει αναθεωρημένο πλάνο που θα αντικατοπτρίζει τη νέα ημερομηνία launch. <span class="cite">[emails_thread Message 3, 2026-07-15]</span></li><li>Δημιουργικό υλικό για το launch: video και key visuals. <span class="cite">[rfp_meltemi §4]</span></li><li>Παρουσία σε social media και ψηφιακά κανάλια. <span class="cite">[rfp_meltemi §4]</span></li><li>Προγραμματίζονται κάποια videos και social content, κυρίως· τα συγκεκριμένα formats δεν έχουν αποφασιστεί ακόμα. <span class="cite">[transcript_kickoff 00:10:22]</span></li><li>Υπό συζήτηση — δεν έχει επιβεβαιωθεί: αναφέρθηκε μια πιθανή δράση TikTok dance, αλλά μόνο ως ιδέα σε επίπεδο σκέψης (&quot;just thinking out loud, don&#x27;t hold me to it&quot;). <span class="cite">[transcript_kickoff 00:11:47]</span></li></ul><h2>5. Χρονοδιάγραμμα</h2><ul><li>Ο Δημήτρης αναγνώρισε ότι το χρονοδιάγραμμα στενεύει ως αποτέλεσμα της αλλαγής ημερομηνίας. <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Η Ελένη σημείωσε ότι η ημερομηνία 15/9 αλλάζει αρκετά τον προγραμματισμό παραγωγής. <span class="cite">[emails_thread Message 3, 2026-07-15]</span></li></ul><h2>6. Προϋπολογισμός</h2><blockquote><p>Δεν υπάρχουν επιβεβαιωμένες καταχωρήσεις — βλ. Ανοιχτά Ερωτήματα.</p></blockquote><h2>7. Υποχρεωτικά &amp; Απαγορεύσεις</h2><ul><li>Το όνομα προϊόντος Meltemi Fizz γράφεται πάντα με λατινικούς χαρακτήρες, ολόκληρο — ποτέ μεταγραμματισμένο, ποτέ συντετμημένο σε &quot;Fizz&quot;. <span class="cite">[background_brand_guidelines §Brand name usage]</span></li><li>Clear space λογότυπου: ελάχιστο 1× το ύψος του wordmark σε όλες τις πλευρές. <span class="cite">[background_brand_guidelines §Brand name usage]</span></li><li>Κύρια παλέτα: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Τα backgrounds δεν πρέπει να χρησιμοποιούν gradients πάνω από φωτογραφία. <span class="cite">[background_brand_guidelines §Color &amp; visual]</span></li><li>Επιτρεπόμενα claims: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (βάσει εγκεκριμένης λίστας συστατικών). <span class="cite">[background_brand_guidelines §Claims — hard rules]</span></li><li>Δεν επιτρέπεται: οποιοδήποτε claim υγείας ή απώλειας βάρους· καμία σύγκριση που κατονομάζει ανταγωνιστικό brand. <span class="cite">[background_brand_guidelines §Claims — hard rules]</span></li><li>Καμία σύνδεση με αλκοόλ, οποιασδήποτε μορφής (imagery, περιστάσεις, co-branding). <span class="cite">[background_brand_guidelines §Category no-gos]</span></li><li>Αποφυγή γενικών κλισέ &quot;beach party&quot;· το brand κινείται σε λογική premium-everyday, όχι spring break. <span class="cite">[background_brand_guidelines §Category no-gos]</span></li><li>Ισχύει η έκδοση 3.1 των brand guidelines (επισυναπτόμενη από τον Δημήτρη). <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Η στρατηγική είναι TikTok-first: το σύνολο της δημιουργικής προσέγγισης πρέπει να σχεδιαστεί πρωτίστως για TikTok. <span class="cite">[rfp_meltemi §4]</span></li><li>Οι brand guidelines του συνημμένου εγγράφου διέπουν τη δημιουργική δουλειά. <span class="cite">[rfp_meltemi §7]</span></li></ul><h2>⚠ Ανοιχτά Ερωτήματα προς τον Πελάτη</h2><ol><li value="1"><strong>Υποχρεωτικά — αρχή έγκρισης.</strong> Κενό: Ο υπεύθυνος έγκρισης του brief παραμένει ακαθόριστος: ο Δημήτρης ανέφερε ότι η έγκριση βρίσκεται μεταξύ αυτού και της διοίκησης και θα ενημερώσει· η Ελένη εξακολουθεί να αναμένει το όνομα του εγκριτή. <span class="cite">[emails_thread Message 1, 2026-07-11]</span><span class="cont">Γιατί έχει σημασία: Πρέπει να προσδιοριστεί η συγκεκριμένη αρχή έγκρισης για τον συντονισμό των κύκλων ελέγχου του brief και την αποφυγή καθυστερήσεων.</span><span class="cont">Προτεινόμενη ερώτηση: «Ποιο είναι το ακριβές όνομα και η θέση της προσώπου που θα εγκρίνει το brief;»</span></li></ol><ol><li value="2"><strong>Κοινό-στόχος — αντικρουόμενοι ορισμοί.</strong> Κενό: Το RFP ορίζει Gen Z (18–24)· στο kickoff, ο Δημήτρης δήλωσε ότι ο πραγματικός buyer είναι 25–40, urban professionals. Δεν υπάρχει ένας ενιαίος επιβεβαιωμένος ορισμός κοινού (βλ. σύγκρουση). <span class="cite">[rfp_meltemi §3]</span> <span class="cite">[transcript_kickoff 00:03:41]</span><span class="cont">Γιατί έχει σημασία: Ο ορισμός του κοινού καθορίζει το channel mix, τον δημιουργικό τόνο και τη media στρατηγική· πρέπει να επιβεβαιωθεί ποιος ορισμός στοχεύει το campaign.</span><span class="cont">Προτεινόμενη ερώτηση: «Στο RFP ήταν Gen Z, αλλά σήμερα ειπώθηκε ότι ο πραγματικός buyer είναι 25–40 χρονών urban professionals. Ποια ακριβώς είναι η target audience για το campaign;»</span></li></ol><ol><li value="3"><strong>Προϋπολογισμός — μη συμφωνημένα νούμερα.</strong> Κενό: Το RFP αναφέρει συνολικό προϋπολογισμό €90.000 συμπεριλαμβανομένου του media, χωρίς να διευκρινίζεται η κατανομή μεταξύ παραγωγής και paid media· ξεχωριστά, στο kickoff η Άννα ανέφερε ένα νούμερο «γύρω στα ογδόντα, μπορεί ογδόντα πέντε», ρητά χωρίς το media spend, χωρίς επιβεβαιωμένη μονάδα ή νόμισμα. Τα δύο νούμερα δεν έχουν συμφωνηθεί (βλ. σύγκρουση). <span class="cite">[rfp_meltemi §6]</span> <span class="cite">[transcript_kickoff 00:14:32]</span><span class="cont">Γιατί έχει σημασία: Οι παράμετροι του προϋπολογισμού καθορίζουν το εύρος, το channel mix και την ποιότητα παραγωγής· ο προγραμματισμός πόρων του γραφείου εξαρτάται από την κατανόηση του πόσο είναι διαθέσιμο για δημιουργική παραγωγή έναντι media spend.</span><span class="cont">Προτεινόμενη ερώτηση: «Να επιβεβαιώσουμε: τα 80–85 είναι σε χιλιάδες ευρώ για production μόνο; Πώς διαμερίζεται ο συνολικός προϋπολογισμός των €90.000 μεταξύ δημιουργικής παραγωγής και media spend;»</span></li></ol><ol><li value="4"><strong>Στόχοι — δεν έχουν οριστεί KPI.</strong> Κενό: Αναφέρονται πολλαπλοί στόχοι σε διάφορες πηγές (να προλάβουν το τέλος της σεζόν, επιτυχημένο market launch, δυναμική είσοδο στην κατηγορία sparkling tea / brand awareness), αλλά δεν έχουν οριστεί μετρήσιμα success metrics ή KPI· στο kickoff ο Δημήτρης επιβεβαίωσε ότι δεν έχει γραφτεί ακόμα τίποτα σχετικά. <span class="cite">[emails_thread Message 2, 2026-07-14]</span> <span class="cite">[rfp_meltemi §2]</span> <span class="cite">[transcript_kickoff 00:02:05]</span><span class="cont">Γιατί έχει σημασία: Η στρατηγική μέτρησης και η αξιολόγηση επιτυχίας απαιτούν προσυμφωνημένα KPI ευθυγραμμισμένα με τους επιχειρηματικούς στόχους.</span><span class="cont">Προτεινόμενη ερώτηση: «Ποιοι είναι οι κύριοι KPI για το launch; Ποιό είναι το target reach, impressions, engagement rate ή conversion target; Υπάρχουν στόχοι πωλήσεων ή brand awareness shift που αναμένετε;»</span></li></ol><ol><li value="5"><strong>Βασικά μηνύματα — δεν υπάρχει ενοποιημένη πρόταση.</strong> Κενό: Δεν έχει τεκμηριωθεί ενοποιημένη «single-minded proposition» ή επίσημο μήνυμα καμπάνιας· υπάρχουν μόνο άτυπα αποσπάσματα (οδηγίες tone of voice, ένα angle zero-sugar/αναζωογόνησης, και μια γραμμή «ελληνικό brand που κάνει τη κατηγορία δικιά του»). <span class="cite">[background_brand_guidelines §Tone (guidance)]</span> <span class="cite">[transcript_kickoff 00:06:02]</span><span class="cont">Γιατί έχει σημασία: Η δημιουργική ανάπτυξη απαιτεί σαφείς πυλώνες μηνυμάτων ώστε να διασφαλιστεί συνέπεια σε όλα τα κανάλια και απήχηση στο κοινό-στόχο.</span><span class="cont">Προτεινόμενη ερώτηση: «Ποια είναι τα κύρια μηνύματα ή η &#x27;single-minded proposition&#x27; που πρέπει να είναι κεντρικά στην καμπάνια για το Meltemi Fizz;»</span></li></ol><ol><li value="6"><strong>Παραδοτέα — προδιαγραφές video ανεπιβεβαίωτες.</strong> Κενό: Τα video deliverables δεν διαθέτουν τεχνική προδιαγραφή (ποσότητα, διάρκεια, format, διανομή)· στο kickoff, ο Δημήτρης επιβεβαίωσε ότι τα formats δεν έχουν αποφασιστεί ακόμα. <span class="cite">[rfp_meltemi §4]</span> <span class="cite">[transcript_kickoff 00:10:22]</span><span class="cont">Γιατί έχει σημασία: Ο προγραμματισμός παραγωγής και η κατανομή προϋπολογισμού απαιτούν σαφείς τεχνικές προδιαγραφές για τον σωστό scope της εργασίας.</span><span class="cont">Προτεινόμενη ερώτηση: «Πόσα βίντεο αναμένετε και ποια θα ήταν η ιδανική διάρκειά τους (π.χ., τυπικό μήκος TikTok vs Instagram Reels vs YouTube);»</span></li></ol><ol><li value="7"><strong>Παραδοτέα — key visuals ανεπιβεβαίωτα.</strong> Κενό: Η προδιαγραφή των key visuals δεν έχει οριστεί: ποσότητα, format, περιπτώσεις χρήσης και πλαίσια εφαρμογής δεν έχουν προσδιοριστεί. <span class="cite">[rfp_meltemi §4]</span><span class="cont">Γιατί έχει σημασία: Το εύρος της δημιουργικής δουλειάς και ο προγραμματισμός παραγωγής εξαρτώνται από την κατανόηση του συνολικού όγκου deliverables και των επιδιωκόμενων formats.</span><span class="cont">Προτεινόμενη ερώτηση: «Πόσα key visuals θα χρειάζονται και που ακριβώς θα χρησιμοποιηθούν (social media, retail, OOH, packaging);»</span></li></ol><ol><li value="8"><strong>Παραδοτέα — ασάφεια στρατηγικής TikTok-first.</strong> Κενό: Η στρατηγική «TikTok-first» δηλώνεται ως υποχρεωτική, αλλά η σχέση της με τις υπόλοιπες απαιτούμενες πλατφόρμες δεν είναι σαφής· η προτεραιοποίηση μεταξύ budget, παραγωγής και διανομής παραμένει ασαφής. <span class="cite">[rfp_meltemi §4]</span><span class="cont">Γιατί έχει σημασία: Η προτεραιοποίηση δημιουργικών πόρων και η κατανομή budget ανά κανάλι εξαρτώνται από το αν το TikTok κυριαρχεί στην παραγωγή, στη διανομή, ή και στα δύο.</span><span class="cont">Προτεινόμενη ερώτηση: «Όταν λέτε &#x27;TikTok-first&#x27;, αναφέρεστε σε προτεραιότητα κατανομής budget, παραγωγής creative, ή και των δύο; Πώς θα πρέπει τα creative assets να προσαρμοστούν για άλλα κανάλια;»</span></li></ol><ol><li value="9"><strong>Χρονοδιάγραμμα — ημερομηνία ανεπιβεβαίωτη, δεν υπάρχουν milestones.</strong> Κενό: Η ίδια η ημερομηνία launch αμφισβητείται (RFP: πρώτη εβδομάδα Οκτωβρίου· board σύμφωνα με email 14 Ιουλίου: 15 Σεπτεμβρίου — βλ. σύγκρουση), και ακόμα κι όταν οριστικοποιηθεί, δεν έχουν οριστεί milestones παραγωγής (έγκριση concept, πρώτη έκδοση για review, τελική παράδοση). <span class="cite">[rfp_meltemi §5]</span> <span class="cite">[emails_thread Message 2, 2026-07-14]</span> <span class="cite">[transcript_kickoff 00:17:03]</span><span class="cont">Γιατί έχει σημασία: Ο προγραμματισμός του έργου και η κατανομή πόρων απαιτούν επιβεβαιωμένη ημερομηνία και σαφή milestones παραγωγής για να διασφαλιστεί έγκαιρη παράδοση.</span><span class="cont">Προτεινόμενη ερώτηση: «Ποια είναι η οριστική ημερομηνία launch; Ποιες είναι οι βασικές ημερομηνίες για υποβολή της πρότασης, την πρώτη έκδοση (concept), τη τελική έγκριση και την παράδοση των deliverables πριν από το launch;»</span></li></ol><ol><li value="10"><strong>Υποχρεωτικά — λείπει η λίστα συστατικών.</strong> Κενό: Οι brand guidelines (απόσπασμα v3.1) αναφέρονται σε μια «εγκεκριμένη λίστα συστατικών» ως βάση για τα επιτρεπόμενα claims (π.χ. «φυσικά συστατικά»), αλλά η ίδια η λίστα συστατικών δεν περιλαμβάνεται στο υλικό που παρασχέθηκε. <span class="cite">[background_brand_guidelines §Claims — hard rules]</span><span class="cont">Γιατί έχει σημασία: Η δημιουργική υλοποίηση και ο έλεγχος claims απαιτούν τη συγκεκριμένη εγκεκριμένη λίστα συστατικών για να επιβεβαιωθεί συμμορφούμενο copy πριν την παραγωγή.</span><span class="cont">Προτεινόμενη ερώτηση: «Μπορείτε να μας στείλετε την εγκεκριμένη λίστα συστατικών που αναφέρεται στις brand guidelines, ώστε να επιβεβαιώσουμε τα επιτρεπόμενα claims;»</span></li></ol><h2>⚠ Ανεπίλυτες Συγκρούσεις (ο account lead πρέπει να τις επιλύσει πριν την έγκριση)</h2><p><strong>Πεδίο: Κοινό-Στόχος</strong> — κατάσταση: επιλύθηκε από άνθρωπο</p><ul><li>Θέση Α: Το RFP ορίζει το κοινό-στόχος ως Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα. <span class="cite">[rfp_meltemi §3]</span></li><li>Θέση Β: Στο kickoff, ο Δημήτρης δήλωσε ότι ο πραγματικός buyer είναι 25 έως 40 ετών, urban professionals. <span class="cite">[transcript_kickoff 00:03:41]</span></li><li>Επίλυση: 25–40, urban professionals — η ρητή διόρθωση του CMO στο kickoff (00:03:41) υπερισχύει του Gen Z 18–24 του RFP, το οποίο είχε μεταφέρει το προηγούμενο agency στην τοποθέτηση.</li><li>Επιλύθηκε από: Χρήστος Μαραγκουδάκης (επικεφαλής λογαριασμού)</li></ul><p><strong>Πεδίο: Προϋπολογισμός</strong> — κατάσταση: επιλύθηκε από άνθρωπο</p><ul><li>Θέση Α: Το RFP αναφέρει συνολικό προϋπολογισμό €90.000, συμπεριλαμβανομένου του media. <span class="cite">[rfp_meltemi §6]</span></li><li>Θέση Β: Στο kickoff, η Άννα δήλωσε ότι ο προϋπολογισμός είναι «κάπου στα ογδόντα, μπορεί ογδόντα πέντε» — ρητά χωρίς το media spend. <span class="cite">[transcript_kickoff 00:14:32]</span></li><li>Επίλυση: Προϋπολογισμός παραγωγής στα ογδόντα, χωρίς το media spend, σύμφωνα με τον CFO στο kickoff (00:14:32). Ο προϋπολογισμός media διαχειρίζεται ξεχωριστά μέσω του media shop του πελάτη και δεν είναι ακόμη γνωστός — το σύνολο συμπεριλαμβανομένου του media παραμένει ανεπιβεβαίωτο και παραμένει ανοιχτό ερώτημα.</li><li>Επιλύθηκε από: Χρήστος Μαραγκουδάκης (επικεφαλής λογαριασμού)</li></ul><p><strong>Πεδίο: Χρονοδιάγραμμα</strong> — κατάσταση: επιλύθηκε από άνθρωπο</p><ul><li>Θέση Α: Το RFP αναφέρει launch την πρώτη εβδομάδα του Οκτωβρίου 2026. <span class="cite">[rfp_meltemi §5]</span></li><li>Θέση Β: Στο kickoff (10 Ιουλίου), η Ελένη επανέλαβε ότι το RFP ανέφερε Οκτώβριο. <span class="cite">[transcript_kickoff 00:16:40]</span></li><li>Θέση Γ: Στο ίδιο kickoff, ο Δημήτρης περιέγραψε το timing μόνο ως «κάπου στο φθινόπωρο», να οριστικοποιηθεί από συνεδρίαση του board στο τέλος του μήνα. <span class="cite">[transcript_kickoff 00:17:03]</span></li><li>Θέση Δ: Έως τις 14 Ιουλίου, ο Δημήτρης ανέφερε ότι το board είχε μεταθέσει το launch για 15 Σεπτεμβρίου. <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Επίλυση: Launch στις 15 Σεπτεμβρίου — η απόφαση του board που αναφέρθηκε με email στις 2026-07-14 είναι η πιο πρόσφατη κατάσταση και υπερισχύει της πρώτης εβδομάδας Οκτωβρίου του RFP.</li><li>Επιλύθηκε από: Χρήστος Μαραγκουδάκης (επικεφαλής λογαριασμού)</li></ul><h2>Έγκριση</h2><p>Account lead: Χρήστος Μαραγκουδάκης   Ημερομηνία: 2026-07-24   Αλλαγές που έγιναν: Έγινε επανεξέταση και των δύο renders· καμία αλλαγή στις εξαχθείσες καταχωρήσεις. Επιλύθηκαν οι τρεις αντικρούσεις μεταξύ πηγών στις θέσεις που υποστηρίζονται από αρχή/επικαιρότητα (κοινό-στόχος 25–40· προϋπολογισμός παραγωγής στα ογδόντα χωρίς media· launch 15 Σεπτεμβρίου). Το συνολικό ποσό media budget παραμένει σκόπιμα ανοιχτό ερώτημα.</p></main>
+<footer><p>Παρήχθη ντετερμινιστικά από το αντίστοιχο έγγραφο markdown — ίδιο περιεχόμενο, μορφοποιημένο για ανάγνωση.</p></footer>
+</body>
+</html>

@@ -37,8 +37,8 @@ def test_committed_share_file_matches_the_real_example_pages():
     assert _embedded("run") == share.adapt_run_page(
         _tier3("run_review.html"),
         _tier3("brief_review.html"),
-        _tier3("brief_el.md"),
-        _tier3("brief_en.md"),
+        _tier3("brief_el.html"),
+        _tier3("brief_en.html"),
     )
 
 
@@ -67,7 +67,7 @@ def test_embedded_walkthrough_buttons_carry_their_own_targets():
         re.search(
             r'<script type="application/json" id="doc-el">(.*?)</script>', run, re.S
         ).group(1)
-    ) == _tier3("brief_el.md")
+    ) == _tier3("brief_el.html")
 
 
 def test_share_file_is_self_sufficient():

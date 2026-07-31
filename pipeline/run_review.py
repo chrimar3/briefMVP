@@ -154,6 +154,8 @@ def collect_run(run_dir) -> dict:
         "renders": {
             "el": (run_dir / "brief_el.md").is_file(),
             "en": (run_dir / "brief_en.md").is_file(),
+            "el_view": (run_dir / "brief_el.html").is_file(),
+            "en_view": (run_dir / "brief_en.html").is_file(),
         },
     }
 
@@ -496,9 +498,18 @@ def _synthesis_section(data: dict) -> str:
             + _bil("Άνοιγμα σελίδας ελέγχου brief", "Open the brief review page")
             + "</a>"
         )
-    if data["renders"].get("el"):
+    renders = data["renders"]
+    if renders.get("el_view"):
+        links += '<a class="doc-link" href="brief_el.html">' + _bil(
+            "Έγγραφο πελάτη (ΕΛ)", "Client document (EL)"
+        ) + "</a>"
+    elif renders.get("el"):
         links += '<a class="doc-link" href="brief_el.md"><span class="mono">brief_el.md</span></a>'
-    if data["renders"].get("en"):
+    if renders.get("en_view"):
+        links += '<a class="doc-link" href="brief_en.html">' + _bil(
+            "Έγγραφο πελάτη (EN)", "Client document (EN)"
+        ) + "</a>"
+    elif renders.get("en"):
         links += '<a class="doc-link" href="brief_en.md"><span class="mono">brief_en.md</span></a>'
     return (
         '<section id="synthesis"><h2>'

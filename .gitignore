@@ -15,6 +15,8 @@ runs/*
 # The shareable shelf: distribution copies regenerated from runs/, never source.
 # The README explaining the folder IS tracked.
 reviews/*.html
+reviews/*.md
+!reviews/README.md
 
 # macOS
 .DS_Store

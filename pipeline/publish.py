@@ -41,6 +41,8 @@ DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
 _FILES = (
     ("brief_review.html", "brief.html"),
     ("run_review.html", "run.html"),
+    ("brief_el.html", "el.html"),
+    ("brief_en.html", "en.html"),
     ("brief_el.md", "el.md"),
     ("brief_en.md", "en.md"),
 )

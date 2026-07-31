@@ -196,10 +196,10 @@ _ADAPTED_BUTTONS = """<div class="cta-row">
 <button type="button" class="cta" data-open="brief" data-mime="text/html">
 <span class="i-el">Άνοιγμα σελίδας ελέγχου brief</span>
 <span class="i-en">Open the brief review page</span></button>
-<button type="button" class="doc-link" data-open="el" data-mime="text/plain;charset=utf-8">
-<span class="mono">brief_el.md</span></button>
-<button type="button" class="doc-link" data-open="en" data-mime="text/plain;charset=utf-8">
-<span class="mono">brief_en.md</span></button>
+<button type="button" class="doc-link" data-open="el" data-mime="text/html">
+<span class="i-el">Έγγραφο πελάτη (ΕΛ)</span><span class="i-en">Client document (EL)</span></button>
+<button type="button" class="doc-link" data-open="en" data-mime="text/html">
+<span class="i-el">Έγγραφο πελάτη (EN)</span><span class="i-en">Client document (EN)</span></button>
 </div>"""
 
 _ADAPTED_JS = """
@@ -261,12 +261,12 @@ def _carrier(key: str, page_html: str) -> str:
 def build_share(example_run=EXAMPLE_RUN, out_path=DEFAULT_OUT) -> Path:
     example_run = Path(example_run)
     texts = {}
-    for name in ("brief_review.html", "run_review.html", "brief_el.md", "brief_en.md"):
+    for name in ("brief_review.html", "run_review.html", "brief_el.html", "brief_en.html"):
         path = example_run / name
         if not path.is_file():
             raise ReviewInputError(
                 f"no {name} in {example_run} — SHARE_ME embeds the committed example "
-                "run's pages and rendered documents; generate them first"
+                "run's pages and styled document views; generate them first"
             )
         texts[name] = path.read_text(encoding="utf-8")
     pages = {
@@ -274,8 +274,8 @@ def build_share(example_run=EXAMPLE_RUN, out_path=DEFAULT_OUT) -> Path:
         "run": adapt_run_page(
             texts["run_review.html"],
             texts["brief_review.html"],
-            texts["brief_el.md"],
-            texts["brief_en.md"],
+            texts["brief_el.html"],
+            texts["brief_en.html"],
         ),
     }
     html = (

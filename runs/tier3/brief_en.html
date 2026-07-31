@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northlight Communications — Client Brief [EN]</title>
+<style>
+:root {
+  --bg: #ffffff; --bg-soft: #f7f7f7; --card: #ffffff;
+  --ink: #222222; --ink-2: #6a6a6a; --line: #ebebeb;
+  --brand: #ff385c;
+  --ok: #067433; --ok-bg: #ebf7ef;
+  --warn: #96610c; --warn-bg: #fdf5e3; --warn-line: #eed49a;
+  --bad: #c13515; --bad-bg: #fbeeea; --bad-line: #f0c9ba;
+  --quote: #45494f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161616; --bg-soft: #1f1f1f; --card: #1e1e1e;
+    --ink: #f2f0ed; --ink-2: #a5a29e; --line: #313131;
+    --brand: #ff5471;
+    --ok: #63c384; --ok-bg: #17301f;
+    --warn: #e3ac52; --warn-bg: #32280f; --warn-line: #7a6224;
+    --bad: #ff7d61; --bad-bg: #3a1f17; --bad-line: #6d3b2c;
+    --quote: #c3c9d0;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 Circular, "Avenir Next", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", "Segoe UI", Arial, sans-serif; }
+h1, h2, h3 { letter-spacing: -0.01em; }
+.mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.82em; }
+[data-lang="el"] .i-en { display: none; }
+[data-lang="en"] .i-el { display: none; }
+.lang-switch { display: flex; gap: 2px; border: 1px solid var(--line);
+  border-radius: 999px; padding: 3px; flex: none; background: var(--card); }
+.lang-btn { border: 0; background: transparent; color: var(--ink-2);
+  font: 600 0.8rem/1 inherit; font-family: inherit; padding: 0.45rem 0.85rem;
+  border-radius: 999px; cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.pill, .badge, .chip { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 0.25rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+.pill.conf-high { background: var(--ok-bg); color: var(--ok); }
+.pill.conf-medium { background: var(--bg-soft); color: var(--ink-2); }
+.pill.conf-low { background: var(--warn-bg); color: var(--warn);
+  outline: 1px solid var(--warn-line); }
+.badge { border: 1px solid var(--line); color: var(--ink-2); }
+.badge.qual-implied { border-color: var(--ink-2); }
+.badge.qual-conditional { background: var(--warn-bg); color: var(--warn);
+  border-color: var(--warn-line); }
+.chip-open { background: var(--bad-bg); color: var(--bad); }
+.chip-resolved { background: var(--ok-bg); color: var(--ok); }
+.evidence { margin-top: 0.5rem; }
+.evidence > summary, .q-why > summary { cursor: pointer; font-size: 0.8rem;
+  color: var(--ink); font-weight: 600; text-decoration: underline;
+  text-underline-offset: 3px; }
+.ev { margin: 0.6rem 0 0.2rem; padding-left: 0.85rem; border-left: 2px solid var(--line); }
+.ev-anchor { margin: 0; font-style: italic; color: var(--quote); font-size: 0.92rem;
+  quotes: "\00ab" "\00bb"; }
+.ev-anchor::before { content: open-quote; }
+.ev-anchor::after { content: close-quote; }
+.ev-meta { margin: 0.3rem 0 0; font-size: 0.76rem; color: var(--ink-2);
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; }
+.ev-source { font-family: "SF Mono", Menlo, Consolas, monospace; }
+.ev-speaker { font-weight: 600; }
+.empty-field { color: var(--ink-2); font-style: italic; font-size: 0.9rem;
+  border: 1px dashed var(--line); border-radius: 12px; padding: 0.8rem 1rem; }
+@media print {
+  :root { --bg: #ffffff; --card: #ffffff; --ink: #000000; }
+  body { font-size: 11pt; }
+  .lang-switch, .copy-btn, .q-check { display: none; }
+  .conflict, .question, .entry, .src-card { break-inside: avoid; box-shadow: none; }
+  .evidence > summary, .q-why > summary { list-style: none; }
+  a { color: inherit; }
+}
+
+main.doc { max-width: 46rem; margin: 0 auto; padding: 2.6rem 1.5rem 3.5rem; }
+.doc h1 { margin: 0 0 1rem; font-size: 1.75rem; font-weight: 700; line-height: 1.2;
+  text-wrap: balance; }
+.doc h2 { margin: 2.2rem 0 0.7rem; font-size: 1.18rem; font-weight: 700;
+  padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.doc p { margin: 0.6rem 0; }
+.doc blockquote { margin: 0.7rem 0; padding: 0.65rem 1rem; border-left: 3px solid var(--line);
+  background: var(--bg-soft); border-radius: 0 10px 10px 0; color: var(--ink-2);
+  font-style: italic; }
+.doc ul, .doc ol { margin: 0.6rem 0; padding-left: 1.4rem; }
+.doc li { margin: 0.45rem 0; }
+.doc ol > li { margin: 0.9rem 0; }
+.doc .cont { display: block; margin-top: 0.35rem; }
+.doc .cite { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.72rem;
+  color: var(--ink-2); background: var(--bg-soft); border-radius: 6px;
+  padding: 0.08rem 0.35rem; white-space: nowrap; }
+.doc strong { font-weight: 700; }
+footer p { max-width: 46rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--ink-2);
+  font-size: 0.8rem; }
+footer { border-top: 1px solid var(--line); background: var(--bg-soft); }
+@media print {
+  main.doc { padding: 0; }
+  .doc h2 { break-after: avoid; }
+  .doc li, .doc blockquote { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main class="doc"><h1>Northlight Communications — Client Brief [EN]</h1><blockquote><p><strong>SIGNED OFF by Christos Maragkoudakis (account lead), 2026-07-24</strong></p></blockquote><p><strong>Client:</strong> Meltemi Beverages · <strong>Project:</strong> northlight_01 · <strong>Project type:</strong> Advertising creative · <strong>Sensitivity tier:</strong> S1<br><strong>Input coverage:</strong> 5/7 fields evidenced · <strong>Verdict:</strong> Ready for review<br><strong>Sources used:</strong> background_brand_guidelines (2026-03-02) · emails_thread (2026-07-15) · rfp_meltemi (2026-06-28) · transcript_kickoff (2026-07-10) · <strong>Generated:</strong> 2026-07-24T12:59:28 · <strong>Pipeline:</strong> brief-builder-stage1</p><h2>1. Objectives</h2><ul><li>Meltemi wants to catch the end of the soft-drinks season with this launch (timing pressure driving the schedule). <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Successful launch of the new product line in the Greek market. <span class="cite">[rfp_meltemi §2]</span></li><li>Building brand awareness is central: Meltemi Fizz enters a new category (sparkling tea) for the company, and they want to enter it strongly. <span class="cite">[transcript_kickoff 00:02:05]</span></li></ul><h2>2. Audiences</h2><blockquote><p>No confirmed entries — see Open Questions.</p></blockquote><h2>3. Key Messages</h2><ul><li>Tone of voice: confident, modern Greek with natural use of English category terms; humor is allowed but sarcasm about competitors is not. <span class="cite">[background_brand_guidelines §Tone (guidance)]</span></li><li>Core message angle: refreshment without the sugar guilt — zero sugar, natural ingredients. <span class="cite">[transcript_kickoff 00:06:02]</span></li><li>Positioning: a Greek brand that owns the modern category (sparkling tea). <span class="cite">[transcript_kickoff 00:06:02]</span></li><li>Visual direction: the key visual should evoke summer, but premium summer — not a generic beach-party feel. <span class="cite">[transcript_kickoff 00:06:02]</span></li></ul><h2>4. Deliverables</h2><ul><li>Final approval of the brief is a required step before proceeding (approval authority still unconfirmed — see Open Questions). <span class="cite">[emails_thread Message 1, 2026-07-11]</span></li><li>Northlight will send a revised plan reflecting the new launch date. <span class="cite">[emails_thread Message 3, 2026-07-15]</span></li><li>Creative material for the launch: video and key visuals. <span class="cite">[rfp_meltemi §4]</span></li><li>Presence across social media and digital channels. <span class="cite">[rfp_meltemi §4]</span></li><li>Some videos and social content are planned, mainly; specific formats have not yet been decided. <span class="cite">[transcript_kickoff 00:10:22]</span></li><li>Conditional — under discussion, not confirmed: a possible TikTok dance activation was floated, but only as a speculative idea (&quot;just thinking out loud, don&#x27;t hold me to it&quot;). <span class="cite">[transcript_kickoff 00:11:47]</span></li></ul><h2>5. Timeline</h2><ul><li>Dimitris acknowledged that the timeline is tightening as a result of the date change. <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Eleni noted that the 15 September date changes the production planning considerably. <span class="cite">[emails_thread Message 3, 2026-07-15]</span></li></ul><h2>6. Budget</h2><blockquote><p>No confirmed entries — see Open Questions.</p></blockquote><h2>7. Mandatories &amp; No-gos</h2><ul><li>The product name Meltemi Fizz is always written in Latin script, in full — never transliterated, never abbreviated to &quot;Fizz&quot;. <span class="cite">[background_brand_guidelines §Brand name usage]</span></li><li>Logo clear space: minimum 1× the height of the wordmark on all sides. <span class="cite">[background_brand_guidelines §Brand name usage]</span></li><li>Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography. <span class="cite">[background_brand_guidelines §Color &amp; visual]</span></li><li>Permitted claims: &quot;zero sugar&quot;, &quot;φυσικά συστατικά&quot; (per approved ingredient list). <span class="cite">[background_brand_guidelines §Claims — hard rules]</span></li><li>Not permitted: any health or weight-loss claim; any comparison naming a competitor brand. <span class="cite">[background_brand_guidelines §Claims — hard rules]</span></li><li>No alcohol association of any kind (imagery, occasions, co-branding). <span class="cite">[background_brand_guidelines §Category no-gos]</span></li><li>Avoid generic &quot;beach party&quot; clichés; the brand leans premium-everyday, not spring break. <span class="cite">[background_brand_guidelines §Category no-gos]</span></li><li>Brand guidelines version 3.1 is the applicable version (attached by Dimitris). <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Strategy is TikTok-first: the entire creative approach must be designed primarily for TikTok. <span class="cite">[rfp_meltemi §4]</span></li><li>The brand guidelines in the attached document govern the creative work. <span class="cite">[rfp_meltemi §7]</span></li></ul><h2>⚠ Open Questions for the Client</h2><ol><li value="1"><strong>Mandatories — approval authority.</strong> Gap: Approval decision-maker for the brief is still undefined: Dimitris said approval sits between himself and management and would follow up; Eleni is still awaiting the name of the approver. <span class="cite">[emails_thread Message 1, 2026-07-11]</span><span class="cont">Why it matters: Must identify the specific approval authority to coordinate brief review cycles and prevent delays.</span><span class="cont">Suggested question: &quot;What is the exact name and title of the person who will approve the brief?&quot;</span></li></ol><ol><li value="2"><strong>Audiences — conflicting definitions.</strong> Gap: RFP specifies Gen Z (18–24); at kickoff, Dimitris stated the actual buyer is 25–40, urban professionals. No single confirmed audience definition exists (see conflict). <span class="cite">[rfp_meltemi §3]</span> <span class="cite">[transcript_kickoff 00:03:41]</span><span class="cont">Why it matters: Audience definition drives channel mix, creative tone, and media strategy; must confirm which definition the campaign targets.</span><span class="cont">Suggested question: &quot;The RFP specified Gen Z, but today it was said the actual buyer is 25–40-year-old urban professionals. What exactly is the target audience for the campaign?&quot;</span></li></ol><ol><li value="3"><strong>Budget — unreconciled figures.</strong> Gap: RFP states a total budget of €90,000 including media, with allocation between production and paid media unspecified; separately, at kickoff Anna cited a figure of &quot;around eighty, maybe eighty-five&quot; explicitly excluding media spend, with no confirmed unit or currency. The two figures are not reconciled (see conflict). <span class="cite">[rfp_meltemi §6]</span> <span class="cite">[transcript_kickoff 00:14:32]</span><span class="cont">Why it matters: Budget parameters determine scope, channel mix, and production quality; agency resource planning depends on understanding how much is available for creative production versus paid media.</span><span class="cont">Suggested question: &quot;To confirm: is the 80–85 figure in thousands of euros for production only? How is the total budget of €90,000 allocated between creative production and media spend?&quot;</span></li></ol><ol><li value="4"><strong>Objectives — no KPIs defined.</strong> Gap: Multiple objectives are stated across sources (catch end of season, successful market launch, strong entry into the sparkling tea category / brand awareness), but no measurable success metrics or KPIs have been defined; at kickoff Dimitris confirmed nothing is written yet on this. <span class="cite">[emails_thread Message 2, 2026-07-14]</span> <span class="cite">[rfp_meltemi §2]</span> <span class="cite">[transcript_kickoff 00:02:05]</span><span class="cont">Why it matters: Measurement strategy and success evaluation require pre-agreed KPIs aligned with business objectives.</span><span class="cont">Suggested question: &quot;What are the main KPIs for the launch? What is the target reach, impressions, engagement rate, or conversion target? Are there any sales or brand-awareness-shift goals you expect?&quot;</span></li></ol><ol><li value="5"><strong>Key messages — no consolidated proposition.</strong> Gap: No consolidated &quot;single-minded proposition&quot; or formal campaign messaging has been documented; only informal fragments exist (tone guidance, a zero-sugar/refreshment angle, and a &quot;Greek brand owns the category&quot; line). <span class="cite">[background_brand_guidelines §Tone (guidance)]</span> <span class="cite">[transcript_kickoff 00:06:02]</span><span class="cont">Why it matters: Creative development requires clear messaging pillars to ensure consistency across channels and resonance with the target audience.</span><span class="cont">Suggested question: &quot;What are the main messages, or the &#x27;single-minded proposition&#x27;, that should be central to the Meltemi Fizz campaign?&quot;</span></li></ol><ol><li value="6"><strong>Deliverables — video specs undefined.</strong> Gap: Video deliverables lack technical specification (quantity, duration, format, distribution); at kickoff, Dimitris confirmed formats have not yet been decided. <span class="cite">[rfp_meltemi §4]</span> <span class="cite">[transcript_kickoff 00:10:22]</span><span class="cont">Why it matters: Production planning and budget allocation require clear technical specifications to scope work appropriately.</span><span class="cont">Suggested question: &quot;How many videos do you expect, and what would be the ideal duration for each (e.g., typical TikTok length vs. Instagram Reels vs. YouTube)?&quot;</span></li></ol><ol><li value="7"><strong>Deliverables — key visuals undefined.</strong> Gap: Key visuals specification undefined: quantity, format, use cases, and application contexts not specified. <span class="cite">[rfp_meltemi §4]</span><span class="cont">Why it matters: Creative scope and production planning depend on understanding total deliverable volume and intended formats.</span><span class="cont">Suggested question: &quot;How many key visuals will be needed, and where exactly will they be used (social media, retail, OOH, packaging)?&quot;</span></li></ol><ol><li value="8"><strong>Deliverables — TikTok-first ambiguity.</strong> Gap: &quot;TikTok-first&quot; strategy is stated as mandatory but its relationship to other required platforms is unclear; prioritization of budget vs. production vs. distribution is ambiguous. <span class="cite">[rfp_meltemi §4]</span><span class="cont">Why it matters: Creative resource prioritization and channel budget allocation depend on whether TikTok dominates production, distribution, or both.</span><span class="cont">Suggested question: &quot;When you say &#x27;TikTok-first&#x27;, do you mean priority in budget allocation, in creative production, or both? How should creative assets be adapted for other channels?&quot;</span></li></ol><ol><li value="9"><strong>Timeline — date not fixed, no milestones.</strong> Gap: The launch date itself is contested (RFP: first week of October; board per 14 July email: 15 September — see conflict), and even once fixed, no production milestones (concept approval, first draft review, final delivery) have been defined. <span class="cite">[rfp_meltemi §5]</span> <span class="cite">[emails_thread Message 2, 2026-07-14]</span> <span class="cite">[transcript_kickoff 00:17:03]</span><span class="cont">Why it matters: Project scheduling and resource allocation require a confirmed date and clear production milestones to ensure on-time delivery.</span><span class="cont">Suggested question: &quot;What is the definitive launch date? What are the key dates for submitting the proposal, the first concept draft, final approval, and delivery of deliverables before launch?&quot;</span></li></ol><ol><li value="10"><strong>Mandatories — ingredient list missing.</strong> Gap: Brand guidelines (v3.1 excerpt) reference an &quot;approved ingredient list&quot; as the basis for permitted claims (e.g., &quot;φυσικά συστατικά&quot;), but the actual ingredient list is not included in the materials provided. <span class="cite">[background_brand_guidelines §Claims — hard rules]</span><span class="cont">Why it matters: Creative execution and claims review require the specific approved ingredient list to verify compliant copy before production.</span><span class="cont">Suggested question: &quot;Could you send us the approved ingredient list referenced in the brand guidelines, so we can confirm the permitted claims?&quot;</span></li></ol><h2>⚠ Unresolved Conflicts (account lead must resolve before sign-off)</h2><p><strong>Field: Audiences</strong> — status: resolved by human</p><ul><li>Position A: RFP specifies the target audience as Gen Z, ages 18–24, with emphasis on urban centers. <span class="cite">[rfp_meltemi §3]</span></li><li>Position B: At kickoff, Dimitris stated the actual buyer is 25 to 40, urban professionals. <span class="cite">[transcript_kickoff 00:03:41]</span></li><li>Resolution: 25–40 urban professionals — the CMO&#x27;s explicit correction at kickoff (00:03:41) supersedes the RFP&#x27;s Gen Z 18–24, which the previous agency had carried over in positioning.</li><li>Resolved by: Christos Maragkoudakis (account lead)</li></ul><p><strong>Field: Budget</strong> — status: resolved by human</p><ul><li>Position A: RFP states the total budget is €90,000, including media. <span class="cite">[rfp_meltemi §6]</span></li><li>Position B: At kickoff, Anna stated the budget is &quot;somewhere in the eighties, maybe eighty-five&quot; — explicitly excluding media spend. <span class="cite">[transcript_kickoff 00:14:32]</span></li><li>Resolution: Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client&#x27;s media shop and is not yet known — total including media remains unconfirmed and stays an open question.</li><li>Resolved by: Christos Maragkoudakis (account lead)</li></ul><p><strong>Field: Timeline</strong> — status: resolved by human</p><ul><li>Position A: RFP states launch in the first week of October 2026. <span class="cite">[rfp_meltemi §5]</span></li><li>Position B: At kickoff (July 10), Eleni reiterated that the RFP said October. <span class="cite">[transcript_kickoff 00:16:40]</span></li><li>Position C: At the same kickoff, Dimitris described the timing only as &quot;somewhere in autumn&quot;, to be finalized by a board meeting at the end of the month. <span class="cite">[transcript_kickoff 00:17:03]</span></li><li>Position D: By 14 July, Dimitris reported that the board had moved the launch to 15 September. <span class="cite">[emails_thread Message 2, 2026-07-14]</span></li><li>Resolution: Launch 15 September — the board&#x27;s decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP&#x27;s first week of October.</li><li>Resolved by: Christos Maragkoudakis (account lead)</li></ul><h2>Sign-off</h2><p>Account lead: Christos Maragkoudakis   Date: 2026-07-24   Edits made: Reviewed both renders; no edits to extracted entries. Resolved the three cross-source conflicts to the authority/recency-correct positions (audiences 25–40; production budget in the eighties excluding media; launch 15 September). Media budget total left as an open question by design.</p></main>
+<footer><p>Generated deterministically from the matching markdown document — same content, typeset for reading.</p></footer>
+</body>
+</html>

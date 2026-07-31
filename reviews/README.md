@@ -6,8 +6,10 @@ named so a non-technical reader can recognise them at a glance:
 ```
 meltemi-beverages-2026-07-24-brief.html   ← the brief review page (account-lead surface)
 meltemi-beverages-2026-07-24-run.html     ← the pipeline walkthrough (how it was built)
-meltemi-beverages-2026-07-24-el.md        ← the rendered Greek brief document
-meltemi-beverages-2026-07-24-en.md        ← the rendered English brief document
+meltemi-beverages-2026-07-24-el.html      ← the Greek brief document, typeset for reading
+meltemi-beverages-2026-07-24-en.html      ← the English brief document, typeset for reading
+meltemi-beverages-2026-07-24-el.md        ← the same Greek document as raw markdown
+meltemi-beverages-2026-07-24-en.md        ← the same English document as raw markdown
 ```
 
 The walkthrough's bottom buttons are rewritten on copy so they link the shelf names —
