@@ -36,8 +36,14 @@ from pipeline.review import ReviewInputError, _load_brief_meta  # noqa: E402
 #: The shelf lives beside `runs/` at the repo root unless a caller says otherwise.
 DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
 
-#: page filename in the run dir → suffix on the shelf
-_PAGES = (("brief_review.html", "brief"), ("run_review.html", "run"))
+#: run-dir filename → suffix on the shelf. The walkthrough page cross-links the other
+#: three by their run-dir names, so its copy gets those hrefs rewritten to shelf names.
+_FILES = (
+    ("brief_review.html", "brief.html"),
+    ("run_review.html", "run.html"),
+    ("brief_el.md", "el.md"),
+    ("brief_en.md", "en.md"),
+)
 
 
 def _slug(value: str) -> str:
@@ -59,13 +65,25 @@ def publish_run(run_dir, reviews_dir=None) -> list[Path]:
     date = str(meta.get("created_ts", ""))[:10] or "undated"
     reviews_dir = Path(reviews_dir) if reviews_dir else DEFAULT_REVIEWS_DIR
     reviews_dir.mkdir(parents=True, exist_ok=True)
+    shelf_names = {
+        name: f"{client}-{date}-{suffix}"
+        for name, suffix in _FILES
+        if (run_dir / name).is_file()
+    }
     published = []
-    for page_name, suffix in _PAGES:
-        source = run_dir / page_name
-        if not source.is_file():
-            continue
-        target = reviews_dir / f"{client}-{date}-{suffix}.html"
-        shutil.copyfile(source, target)
+    for name, shelf_name in shelf_names.items():
+        source = run_dir / name
+        target = reviews_dir / shelf_name
+        if name == "run_review.html":
+            # The walkthrough's bottom buttons link its siblings by run-dir name;
+            # on the shelf those siblings wear shelf names — rewrite or the buttons die.
+            text = source.read_text(encoding="utf-8")
+            for sibling, sibling_shelf in shelf_names.items():
+                if sibling != name:
+                    text = text.replace(f'href="{sibling}"', f'href="{sibling_shelf}"')
+            target.write_text(text, encoding="utf-8")
+        else:
+            shutil.copyfile(source, target)
         published.append(target)
     return published
 

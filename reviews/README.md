@@ -6,7 +6,12 @@ named so a non-technical reader can recognise them at a glance:
 ```
 meltemi-beverages-2026-07-24-brief.html   ← the brief review page (account-lead surface)
 meltemi-beverages-2026-07-24-run.html     ← the pipeline walkthrough (how it was built)
+meltemi-beverages-2026-07-24-el.md        ← the rendered Greek brief document
+meltemi-beverages-2026-07-24-en.md        ← the rendered English brief document
 ```
+
+The walkthrough's bottom buttons are rewritten on copy so they link the shelf names —
+everything cross-links correctly inside this folder.
 
 ## How account leads get them (pilot distribution — no server, by design)
 

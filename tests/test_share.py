@@ -26,11 +26,23 @@ def _embedded(key: str) -> str:
 
 
 def test_committed_share_file_matches_the_real_example_pages():
-    """The embedded copies must be byte-identical to the committed tier3 pages —
-    regenerate with `python3 pipeline/share.py` after any renderer change."""
-    for key, name in (("brief", "brief_review.html"), ("run", "run_review.html")):
-        real = (REPO / "runs" / "tier3" / name).read_text(encoding="utf-8")
-        assert _embedded(key) == real
+    """The embedded copies must track the committed tier3 pages — regenerate with
+    `python3 pipeline/share.py` after any renderer change. The brief page rides
+    byte-identical; the walkthrough gets exactly one adaptation (see below)."""
+    brief = (REPO / "runs" / "tier3" / "brief_review.html").read_text(encoding="utf-8")
+    assert _embedded("brief") == brief
+    run = (REPO / "runs" / "tier3" / "run_review.html").read_text(encoding="utf-8")
+    assert _embedded("run") == share.adapt_run_page(run)
+
+
+def test_embedded_walkthrough_has_no_dead_relative_buttons():
+    """A blob page has no folder around it — relative hrefs to sibling files can never
+    resolve, so the bottom button row must be adapted out, not shipped broken."""
+    run = _embedded("run")
+    assert '<div class="cta-row">' not in run  # the class survives only as a CSS rule
+    assert 'href="brief_review.html"' not in run
+    assert 'href="brief_el.md"' not in run
+    assert "εξώφυλλο" in run  # the replacement note pointing back to the cover
 
 
 def test_share_file_is_self_sufficient():

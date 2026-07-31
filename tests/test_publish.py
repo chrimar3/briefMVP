@@ -56,6 +56,33 @@ def test_awkward_client_ids_become_safe_slugs(tmp_path):
     assert published[0].name == "acme-s-da-gmbh-co-2026-07-30-brief.html"
 
 
+def test_shelf_walkthrough_buttons_link_shelf_names(tmp_path):
+    """The walkthrough's bottom buttons link siblings by run-dir name; on the shelf the
+    siblings wear shelf names, so unrewritten hrefs are dead buttons — the exact bug
+    an account lead would hit first."""
+    shelf = tmp_path / "shelf"
+    run_dir = _run_dir(tmp_path)
+    (run_dir / "run_review.html").write_text(
+        '<a href="brief_review.html">x</a><a href="brief_el.md">y</a>'
+        '<a href="brief_en.md">z</a>',
+        encoding="utf-8",
+    )
+    (run_dir / "brief_el.md").write_text("el", encoding="utf-8")
+    (run_dir / "brief_en.md").write_text("en", encoding="utf-8")
+    published = publish.publish_run(run_dir, reviews_dir=shelf)
+    assert {p.name for p in published} == {
+        "acme-soda-2026-07-30-brief.html",
+        "acme-soda-2026-07-30-run.html",
+        "acme-soda-2026-07-30-el.md",
+        "acme-soda-2026-07-30-en.md",
+    }
+    shelf_run = (shelf / "acme-soda-2026-07-30-run.html").read_text(encoding="utf-8")
+    assert 'href="acme-soda-2026-07-30-brief.html"' in shelf_run
+    assert 'href="acme-soda-2026-07-30-el.md"' in shelf_run
+    assert 'href="brief_review.html"' not in shelf_run
+    assert (shelf / "acme-soda-2026-07-30-el.md").read_text(encoding="utf-8") == "el"
+
+
 def test_republishing_the_same_day_overwrites_latest_wins(tmp_path):
     """The shelf shows the latest state of that day's brief; history lives in runs/."""
     shelf = tmp_path / "shelf"

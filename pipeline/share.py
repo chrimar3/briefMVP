@@ -192,6 +192,25 @@ _JS = """
 """
 
 
+def adapt_run_page(page_html: str) -> str:
+    """Prepare the walkthrough page for life inside SHARE_ME.
+
+    Its bottom buttons link sibling files by relative href — meaningless from a blob
+    page with no folder around it. The cover page already opens both documents, so the
+    button row becomes a note pointing back there. Everything else stays byte-identical.
+    """
+    note = (
+        '<p class="empty-field">'
+        '<span class="i-el">Η σελίδα ελέγχου του brief ανοίγει από το εξώφυλλο '
+        "αυτού του αρχείου.</span>"
+        '<span class="i-en">Open the brief review from this file&#x27;s cover '
+        "page.</span></p>"
+    )
+    import re
+
+    return re.sub(r'<div class="cta-row">.*?</div>', note, page_html, count=1, flags=re.S)
+
+
 def _carrier(key: str, page_html: str) -> str:
     """JSON-encode a full HTML document so it can ride inside a <script> tag.
 
@@ -212,7 +231,8 @@ def build_share(example_run=EXAMPLE_RUN, out_path=DEFAULT_OUT) -> Path:
                 f"no {name} in {example_run} — SHARE_ME embeds the committed example "
                 "pages; generate them first"
             )
-        pages[key] = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding="utf-8")
+        pages[key] = adapt_run_page(text) if key == "run" else text
     html = (
         "<!DOCTYPE html>\n"
         '<html lang="en">\n<head>\n<meta charset="utf-8">\n'
