@@ -1,8 +1,11 @@
 """Source of truth: /Users/chrism/AI-transformation-assignment/brief-builder/WALKTHROUGH.html (standalone).
 Derives the artifact variant (no doctype/html/head/body — the Artifact tool adds those)."""
 import re, pathlib
+import sys
 SRC = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder/WALKTHROUGH.html')
 OUT = pathlib.Path(__file__).parent / 'a_brief_with_receipts.html'  # artifact variant (no doctype/html/head/body)
+if '--src' in sys.argv: SRC = pathlib.Path(sys.argv[sys.argv.index('--src') + 1]).resolve()
+if '--out' in sys.argv: OUT = pathlib.Path(sys.argv[sys.argv.index('--out') + 1]).resolve()
 doc = SRC.read_text(encoding='utf-8')
 title = re.search(r'<title>(.*?)</title>', doc, flags=re.S).group(1)
 style = re.search(r'<style>.*?</style>', doc, flags=re.S).group(0)

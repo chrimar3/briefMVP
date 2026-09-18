@@ -1,0 +1,24 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "Brief Builder turns scattered client documents into a sourced Greek and English brief, highlighting disagreements and questions. For the agency, it aims to reduce preparation work; for me, it makes disputed commitments and missing answers easier to spot before creative work begins. This synthetic run passed 17 defined checks, preserved evidence and exposed three conflicts. It demonstrated a controlled drafting process, not proven savings or reliable everyday performance: the creative drafts still introduced errors. People confirm the facts, resolve disagreements, sign off and judge creative ideas. Nothing creative was delivered. I would support the conditional pilot to measure usefulness, review effort and actual costs.",
+  "missing": [
+    "No essential information was missing for this explanation. Actual savings, operating costs and everyday reliability remain unproven, as the sheets acknowledge."
+  ],
+  "confusions": [
+    "“a schema-validated edit in v1” — I cannot tell what practical task the account lead must perform or whether technical help is needed.",
+    "“question precision >80%, draft survival >70%” — these pilot success measures are not explained on the visible sheet.",
+    "“the two garbled terms were flagged, never repaired” followed by “the finished documents print the glossary term” — I had to infer that the original transcript stays unchanged while the draft uses the proposed term."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “a schema-validated edit in v1” with “in this version, the account lead must edit the underlying brief file; the review page only displays the decisions”.",
+    "Replace “question precision >80%, draft survival >70%” with “over 80% of flagged questions judged relevant by the lead; over 70% of draft text retained without edits”.",
+    "Replace “the two garbled terms were flagged, never repaired” with “the original transcript was preserved; two garbled terms were flagged, and the drafts used the proposed glossary terms with citations”.",
+    "Replace “Re-baseline the changed routing before week 1.” with “Measure time and usage again before week 1 because the AI reading process has changed.”"
+  ]
+}

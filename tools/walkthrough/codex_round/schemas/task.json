@@ -1,0 +1,68 @@
+{
+ "type": "object",
+ "properties": {
+  "hashMismatch": {
+   "type": "boolean"
+  },
+  "passed": {
+   "type": "boolean"
+  },
+  "answer": {
+   "type": "string"
+  },
+  "missing": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "confusions": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "scores": {
+   "type": "object",
+   "properties": {
+    "clarity": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "completeness": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 10
+    },
+    "concision": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 10
+    }
+   },
+   "required": [
+    "clarity",
+    "completeness",
+    "concision"
+   ],
+   "additionalProperties": false
+  },
+  "fixes": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "required": [
+  "hashMismatch",
+  "passed",
+  "answer",
+  "missing",
+  "confusions",
+  "scores",
+  "fixes"
+ ],
+ "additionalProperties": false
+}

@@ -1,0 +1,28 @@
+{
+  "hashMismatch": false,
+  "passed": false,
+  "answer": "Stage-one tokens: Haiku 4.5=533,641; Sonnet 5=165,820+285,359=451,179; total=984,820. Creative adds 86,441 Sonnet and 63,473 Opus 4.8: total=1,134,734. Monthly: 984,820×15=14,772,300; one creative draft gives 15,724,395–16,068,915. Returned hours: [120−(20 assembling+30 reviewing)]×(15×12)/60=210/year; ×€19–20=€3,990–4,200 gross. Baseline, volume, rate and target attention are assumptions, not demonstrated savings. Approve four weeks: two leads, six retrospective projects, S0–S1, agency workspace, creative shadow. Before week 1, operator remeasures routing; management/operator validate subscription capacity/terms. Week-4 live use depends on retrospective targets: precision >80%, survival >70%, review <30 minutes, Greek quality and adoption. Exact release conditions and spending authority remain unclear.",
+  "missing": [
+    "Pilot budget, spending ceiling, implementation/support effort and subscription cost; net benefit cannot be calculated.",
+    "A Greek-quality pass threshold and a clear distinction between week-4 release criteria and month-2 adoption targets.",
+    "An unequivocal mandatory stop rule and explicit approval gate for month-2 default rollout.",
+    "Measured review time and validation of the 50-minute attention target; the graded review was not timed."
+  ],
+  "confusions": [
+    "“Stop rule, recommended: if weeks 2–3 miss the targets, week 4 does not go live.” Is this binding or merely proposed?",
+    "“Greek naturalness rated 1–5 with EL/EN edit comparison” gives a measurement method but no passing score.",
+    "“at least 3 further leads request onboarding in month 2” cannot determine whether week 4 may go live.",
+    "“Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.” Capacity and routing are elsewhere required before week 1, while no cost-estimation owner or approval ceiling is specified."
+  ],
+  "scores": {
+    "clarity": 7,
+    "completeness": 7,
+    "concision": 6
+  },
+  "fixes": [
+    "Change “Pilot effort and operating costs are still to be estimated.” to specify an estimation owner, deadline, spending ceiling and financial approval gate.",
+    "Change “Stop rule, recommended:” to state explicitly whether the rule is mandatory, and name the week-4 release decision owner.",
+    "Change “Greek naturalness rated 1–5 with EL/EN edit comparison” to include a passing threshold; separate week-4 criteria from month-2 adoption measures.",
+    "Change “from month 2 new projects start from a draft by default” to specify whether rollout requires a successful pilot and separate sponsor approval."
+  ]
+}

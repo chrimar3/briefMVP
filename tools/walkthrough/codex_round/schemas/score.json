@@ -1,0 +1,77 @@
+{
+ "type": "object",
+ "properties": {
+  "hashMismatch": {
+   "type": "boolean"
+  },
+  "scores": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "aspect": {
+      "type": "string",
+      "enum": [
+       "concision",
+       "completeness",
+       "clarity",
+       "storyline",
+       "product_framing",
+       "visual_design",
+       "fact_fidelity",
+       "ux",
+       "finale"
+      ]
+     },
+     "score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+     },
+     "why": {
+      "type": "string"
+     },
+     "fixes": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "sheet": {
+         "type": "string"
+        },
+        "quote": {
+         "type": "string"
+        },
+        "change": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "sheet",
+        "quote",
+        "change"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "required": [
+     "aspect",
+     "score",
+     "why",
+     "fixes"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "overall": {
+   "type": "string"
+  }
+ },
+ "required": [
+  "hashMismatch",
+  "scores",
+  "overall"
+ ],
+ "additionalProperties": false
+}

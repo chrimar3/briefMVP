@@ -1,0 +1,164 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 7,
+      "why": "Ten sheets meet the limit, but repeated explanations slow the presentation and sheet 9 contains approximately 756 words outside collapsed details.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#ch09 .brief",
+          "change": "Keep the proposition, A/B choice, channel table and decision request visible; move the expanded insight, tone and readiness recap into details."
+        },
+        {
+          "sheet": "07",
+          "quote": "The same three contradictions from sheet 05, now each with a person’s decision.",
+          "change": "Remove this takeaway: the title, margin and three resolution blocks already communicate it."
+        },
+        {
+          "sheet": "10",
+          "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+          "change": "Remove this repeated campaign-budget recap from the pilot decision sheet."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The evidence, deliverables, usage, timings and human responsibilities are covered, but the CFO still lacks an assigned action to price the pilot and its ongoing support.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Pilot effort and operating costs are still to be estimated.",
+          "change": "Turn this ledger caveat into a visible decision action: management and the operator estimate setup, training, subscription and maintenance effort before pilot spending is approved."
+        },
+        {
+          "sheet": "10",
+          "quote": "Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready.",
+          "change": "Add the concrete consequence from the cited report: the second fixture retained a superseded launch date despite passing the conflict check, so reviewers must verify meaning as well as citations."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 7,
+      "why": "The AI/code/people distinction is strong, but technical terminology and compressed metric labels still make the CMO work harder than necessary.",
+      "fixes": [
+        {
+          "sheet": "07",
+          "quote": "The account lead writes each resolution into brief.json (conflicts[n].resolution, resolved_by) and the sign-off block (status, signed_by, signed_ts, edits_summary): a schema-validated edit in v1, a one-page runbook by week 1 (PRD §8).",
+          "change": "Use plain language in the margin: the lead manually records decisions and approval in the master file using a runbook; put field names and validation mechanics in the ledger."
+        },
+        {
+          "sheet": "10",
+          "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+          "change": "Explain the measures here: over 80% of questions judged useful, over 70% of draft text retained, and under 30 minutes reviewing."
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence-to-decision sequence work, but the creative takeaway is convoluted and the closing title promises more certainty than its actions establish.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+          "change": "Replace with a direct takeaway: “The shadow drafts need three corrections and a creative lead’s decision.”"
+        },
+        {
+          "sheet": "10",
+          "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+          "change": "Replace with “Approve a conditional pilot; confirm capacity and operating effort before it starts,” matching the stated pre-week-1 actions."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a clear identity, anatomy, outputs and operating boundaries, but its business promise and everyday workflow receive less prominence than its implementation.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "The thin layer",
+          "change": "Move the code-size and agent-count explanation into the ledger and use this margin for the daily workflow: assemble files, operator runs, lead reviews and records approval, creative lead evaluates."
+        },
+        {
+          "sheet": "01",
+          "quote": "Brief Builder turns a client’s pile of documents into a Greek and English brief.",
+          "change": "Add the business purpose immediately: more consistent briefs across account leads, with reduced preparation time as a pilot target."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 8,
+      "why": "The source defines a coherent editorial system with restrained colour and clear role markings, although long headings and the small mobile portrait treatment weaken hierarchy.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Nine steps, three roles: six are AI, two are plain code, and the one that releases the work is a person.",
+          "change": "Shorten the heading to “AI drafts, code checks, and a person releases the work”; let the numbered diagram carry the step count."
+        },
+        {
+          "sheet": "09",
+          "quote": ".plate.p916",
+          "change": "At phone widths, enlarge the portrait plate beyond the current 56% width so its wordmark and mock-up label remain comfortably readable."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "Headline totals, model IDs, timings and the 17 checks match the artifacts, but two smaller statements need correction or clearer attribution.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Replace the stale ring-and-leaf description with the actual wind stroke and bubbles, and limit the clear-space assertion to applications that have been checked."
+        },
+        {
+          "sheet": "07",
+          "quote": "a one-page runbook by week 1 (PRD §8)",
+          "change": "Label week 1 as a proposed earlier deadline; PRD §8 specifies champion training on the runbook by week 4."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 7,
+      "why": "Offline assets, keyboard controls, focus handling and return navigation are implemented, but mobile CSS crowds the contents control and places crucial creative warnings after the entire sheet.",
+      "fixes": [
+        {
+          "sheet": "All, phone",
+          "quote": ".ruler .fol",
+          "change": "Keep Contents outside the horizontally scrolling tick strip, or hide ticks on phones; ten minimum-width ticks currently compete with a contents button allowed to shrink nearly to its padding."
+        },
+        {
+          "sheet": "09, phone",
+          "quote": ".margin { order: 2; }",
+          "change": "Place the “Three strikes, one call” warning directly before the creative draft on small screens instead of after the long body."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The wind-and-fizz artwork and can make the output tangible with honest mock-up labels, but the can breaches wordmark clearance and the portrait crop knowingly leaves the lockup in the caption zone.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": ".plate.pack img",
+          "change": "Increase separation above and below the can’s wordmark to at least one wordmark height; the inspected image places both the yellow mark and category line too close."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Show the dedicated portrait layout with the lockup raised, retaining the provisional-spec and illustration labels."
+        }
+      ]
+    }
+  ],
+  "overall": "A credible, evidence-rich pilot case that needs tighter presentation and mobile/creative refinement before shipping unchanged. The required SHA-256 matched before and after review; no repository files were changed. Chrome failed to launch, so layout and navigation scores are based on source inspection, supplemented by direct inspection of the embedded can image."
+}

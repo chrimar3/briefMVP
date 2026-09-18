@@ -605,7 +605,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <p class="note"><b>Where the documents go</b>, as the PRD assumes it: the agency&rsquo;s own workspace under a data-processing agreement, EU processing, zero retention; only clients at the two lowest sensitivity tiers in the pilot, and the runner refuses higher tiers before drafting. The subscription direction leaves the commercial terms to confirm before week 1 (decision 3). <span class="cite">docs/PRD.md &sect;8&ndash;9 &middot; pipeline/gates.py</span></p>
 <details class="ledger">
         <summary><span>Ledger &mdash; where each part lives</span></summary>
-<p class="foot">brief_review.html is a review view: it shows resolutions and the signature already recorded in brief.json, offers a language toggle and copyable questions. The account lead writes each resolution into brief.json (conflicts[n].resolution and resolved_by) and the sign-off block (signoff: status, signed_by, signed_ts, edits_summary), a schema-validated edit in v1; a one-page runbook is a week-1 deliverable (PRD &sect;8).</p>
+<p class="foot">brief_review.html is a review view: it shows resolutions and the signature already recorded in brief.json, offers a language toggle and copyable questions. The account lead writes each resolution into brief.json (conflicts[n].resolution and resolved_by) and the sign-off block (signoff: status, signed_by, signed_ts, edits_summary), a manual, schema-validated edit in v1; the review page does not save decisions or signatures. This walkthrough proposes the runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p>
 <p class="foot">Both documents are written from one master record; whether the Greek reads like agency Greek still needs a person&rsquo;s review (PRD &sect;7).</p>
 <p class="principles">Ask, don&rsquo;t guess &middot; Surface, don&rsquo;t resolve &middot; Flag, don&rsquo;t correct &middot; Look up, don&rsquo;t invent &middot; Sign, don&rsquo;t send</p>
 <p class="narr promise"><b>v1.0, pilot.</b> Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.</p>
@@ -647,7 +647,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>policy tables</td><td>config/readiness_policy.json &middot; channel_specs.json &middot; model_routing.json &middot; glossary/&lt;client&gt;.json</td></tr>
           <tr><td>grader (frozen)</td><td>eval/harness.py &middot; the only code allowed to read the answer key</td></tr>
         </table></div>
-        <p class="foot">Built as four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into each AI step, with small models where the task is following a set form and larger ones where judgement is needed; routing is a human decision.</p>
+        <p class="foot">Built around four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into their respective client-brief agents; classification and creative-shadow use separate inline instructions, with small models where the task is following a set form and larger ones where judgement is needed; routing is a human decision.</p>
       </details>
     </div>
   </section>
@@ -994,7 +994,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <div class="stamps"><span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span></div>
       <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each.</p>
       <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
-      <p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. The account lead writes each resolution into brief.json (conflicts[n].resolution, resolved_by) and the sign-off block (status, signed_by, signed_ts, edits_summary): a schema-validated edit in v1, a one-page runbook by week 1 (PRD &sect;8).</p>
+      <p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary); the review page only displays them. This walkthrough proposes a runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p>
     </aside>
     <div class="body">
       <ul class="takeaways">
@@ -1101,7 +1101,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <section class="sheet" id="ch09" data-n="9" aria-labelledby="t09">
     <header class="slide-head">
       <p class="kicker"><span class="num">09</span><span>Creative brief, shadow</span><span class="el" lang="el">Δημιουργικό (σκιά)</span></p>
-      <h1 class="title action" id="t09" tabindex="-1">The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.</h1>
+      <h1 class="title action" id="t09" tabindex="-1">The shadow drafts need three corrections and a creative lead&rsquo;s decision.</h1>
     </header>
     <aside class="margin">
       <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">09 / 10 &middot; Contents</button></div>
@@ -1187,7 +1187,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             <li>Launch success metrics / KPIs.</li>
             <li>Production milestones against 15 September.</li>
           </ul>
-          <p class="pencil">Signed as the account lead&rsquo;s was: in the run, by a named person, due before week 4 goes live.</p>
+          <p class="pencil">Creative approval is pending: the named creative lead records a choice and corrections before week 4. Client-brief live use does not authorize creative delivery; creative stays in shadow in v1.</p>
           <div class="resolve"><span>chosen by:</span><span class="line"></span><span>(creative lead)</span></div>
         </div>
 
@@ -1195,7 +1195,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 
         <h4><span class="n">7</span>Deliverables &amp; channel specs</h4>
         <p>The brief asks for video and key visuals, TikTok-first; quantities and durations are undecided, and the table&rsquo;s technical specs are provisional. <span class="cite">[deliverables; mandatories; open_questions/deliverables]</span></p>
-        <p class="pencil">Demo spec table: values are a pilot stub and need the traffic team&rsquo;s confirmation before delivery; the gate only checks that each spec token exists in the table, not that the row fits the deliverable. <span class="cite">config/channel_specs.json _stub_notice</span></p>
+        <p class="pencil">Demo spec table: values are a pilot stub and need the traffic team&rsquo;s confirmation before delivery; the gate checks normalized dimensions and some ratios, not durations, file types or whether the row fits the deliverable. <span class="cite">config/channel_specs.json _stub_notice</span></p>
         <div class="ledger-wrap"><table class="spec">
           <tr><th>Deliverable (from the brief)</th><th>Spec (from the table, not generated)</th><th>Row</th></tr>
           <tr><td>Primary launch video &mdash; TikTok</td><td>In-feed video &middot; 9:16 &middot; 1080x1920 &middot; 9-60s &middot; MP4</td><td>[spec: tiktok_infeed_video]</td></tr>
@@ -1232,7 +1232,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
           <tr><td>9 creative_shadow &middot; arm A</td><td>creative-shadow</td><td>claude-sonnet-5</td><td class="r">86 441</td><td class="r">90 s</td><td>creative/creative_brief_sonnet.md &middot; 6 994 chars</td></tr>
           <tr><td>9 creative_shadow &middot; arm B</td><td>creative-shadow</td><td>claude-opus-4-8</td><td class="r">63 473</td><td class="r">110 s</td><td>creative/creative_brief_opus.md &middot; 8 525 chars</td></tr>
-          <tr><td>spec-match gate</td><td>deterministic &middot; pipeline/creative.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>every spec-shaped token must appear byte-for-byte in config/channel_specs.json (PRD DR-7)</td></tr>
+          <tr><td>spec-match gate</td><td>deterministic &middot; pipeline/creative.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>Checks normalized resolution and aspect-ratio tokens against config/channel_specs.json; exempts ratio-shaped values with denominators 10&ndash;59; does not validate duration or file-type tokens. PRD DR-7 describes the intended policy.</td></tr>
         </table></div>
         <div class="swatches">
           <div class="swatch"><i style="background:#1B4F8A"></i>Aegean Blue #1B4F8A</div>
@@ -1256,7 +1256,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <section class="sheet" id="ch10" data-n="10" aria-labelledby="t10">
     <header class="slide-head">
       <p class="kicker"><span class="num">10</span><span>Numbers and decisions</span><span class="el" lang="el">Αριθμοί και αποφάσεις</span></p>
-      <h1 class="title action" id="t10" tabindex="-1">Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.</h1>
+      <h1 class="title action" id="t10" tabindex="-1">Approve a conditional four-week pilot; confirm capacity, costs and a spending ceiling before it starts.</h1>
     </header>
     <aside class="margin">
       <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">10 / 10 &middot; Contents</button></div>
@@ -1268,19 +1268,19 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             <h2 class="sub">Decisions needed</h2>
       <ol class="decisions">
         <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results.
-          <ul class="sub-list"><li>Targets: question precision &gt;80%, draft survival &gt;70%, review &lt;30 minutes; Greek-language quality and voluntary adoption.</li></ul>
+          <ul class="sub-list"><li>Weeks 2&ndash;3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft. Greek naturalness rated 1&ndash;5, with EL/EN edits compared; the sponsor must confirm a release threshold before week 1 (docs/pilot/SCORECARD.md leaves it unset). Both pilot leads must choose voluntary reuse. Proposed mandatory gate: missed targets block week-4 live use; the named sponsor records the release decision. Month-2 adoption is tracked separately.</li></ul>
           <span class="cite">Sponsor &middot; PRD &sect;7&ndash;8; protocol in ledger.</span></li>
         <li>Re-baseline usage and time under the 30 July routing before week 1: larger extraction model plus second reader. <span class="cite">Operator &middot; routing-validate-01.</span></li>
-        <li>Validate subscription capacity: measure the plan&rsquo;s usage window against roughly 15 M tokens a month before week 1 (15 M under the graded routing; higher under the 30 July routing until decision 2 re-measures it); the PRD&rsquo;s API-terms assumption is superseded by the client&rsquo;s subscription direction and stays unresolved. <span class="cite">Management + operator &middot; PRD &sect;8.</span></li>
+        <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved. <span class="cite">Management + operator &middot; PRD &sect;8.</span></li>
       </ol>
       
       <h2 class="sub">Why: the measured numbers behind decisions 2 and 3</h2>
 
       <div class="hero">
         <ul class="numbers">
-          <li><span class="big">0.98<small>M tokens</small></span><p class="what">Nine model calls (four documents, one sent back once). 1.13 M with creative A/B.</p></li>
+          <li><span class="big">0.98<small>M tokens</small></span><p class="what">Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried). 1.13 M with creative A/B.</p></li>
           <li><span class="big">598&#8201;743<small>tokens</small></span><p class="what">Later transcript extraction versus 295&#8201;774 graded: re-baseline before planning capacity.</p></li>
-          <li><span class="big">210<small>hours/year target</small></span><p class="what">A brief takes an account lead about two hours today (PRD A1); the target is fifty minutes (&sect;2). Across 180 briefs a year (A2) that is about 210 hours, worth &euro;4.0&ndash;4.2k at &euro;19&ndash;20 an hour (A4), before running and support costs, which are not yet estimated; all three inputs are validated in week 1.</p></li>
+          <li><span class="big">210<small>hours/year target</small></span><p class="what">The assumed baseline is two hours per brief (PRD A1); fifty minutes is an unvalidated attention target (&sect;2): twenty assembling and thirty reviewing. The graded review was not timed; the pilot must measure both tasks. Across 180 briefs a year (A2) that is about 210 hours, worth &euro;4.0&ndash;4.2k at &euro;19&ndash;20 an hour (A4), before running and support costs, which are not yet estimated; all three inputs are validated in week 1.</p></li>
         </ul>
       </div>
       <h2 class="sub">Limits</h2>
@@ -1294,20 +1294,20 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <details class="ledger">
         <summary><span>Ledger &mdash; the whole run</span></summary>
 <h2 class="sub">Measured usage and assumed labour</h2><ul class="numbers">
-          <li><span class="big">0.98<small>M tokens, stage one</small></span><p class="what">Nine model calls (four documents, one sent back once): 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields</span></p></li>
+          <li><span class="big">0.98<small>M tokens, stage one</small></span><p class="what">Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried): 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields</span></p></li>
           <li><span class="big">~15<small>M tokens a month</small></span><p class="what">0.98 M per brief at about 15 briefs a month (PRD A2); about 16 M with one creative draft each. The figure to hold against a plan&rsquo;s usage window.<span class="cite">docs/PRD.md &sect;4 A2</span></p></li>
-          <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today. Target: about 210 account-lead hours a year, worth &euro;4.0&ndash;4.2k before operating costs &mdash; (120 &minus; 50) minutes saved per brief &times; 180 briefs a year &divide; 60 = 210 hours, &times; &euro;19&ndash;20 an hour; baseline, volume and rate are PRD assumptions A1, A2, A4, validated in week 1. Pilot effort and operating costs are still to be estimated.<span class="cite">docs/COST_MODEL.md &sect;3 &middot; PRD A1, A2, A4</span></p></li>
-          <li><span class="big">25.2<small>min</small></span><p class="what">The continuous 29 July capture, one pass re-rolled; the graded run&rsquo;s stages sum to 33 minutes. One document: about 4 minutes to classify and extract, 5:45 for a full run.<span class="cite">docs/EVIDENCE.md &middot; docs/demo_timing.md</span></p></li>
+          <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today. Target: about 210 account-lead hours a year, worth &euro;4.0&ndash;4.2k before operating costs &mdash; (120 &minus; 50) minutes saved per brief &times; 180 briefs a year &divide; 60 = 210 hours, &times; &euro;19&ndash;20 an hour; baseline, volume and rate are PRD assumptions A1, A2, A4, validated in week 1. Pilot effort and operating costs remain unestimated; the proposed pre-week-1 financial gate is decision 3.<span class="cite">docs/COST_MODEL.md &sect;3 &middot; PRD A1, A2, A4</span></p></li>
+          <li><span class="big">25.2<small>min</small></span><p class="what">The continuous 29 July capture, one pass re-rolled; the graded run&rsquo;s stages sum to 33 minutes. One document: about 4 minutes to classify and extract; 5:45 for a full run under a demo profile with the production input gate overridden.<span class="cite">docs/EVIDENCE.md &middot; docs/demo_timing.md</span></p></li>
         </ul>
 <h2 class="sub">Pilot protocol and decision owners</h2><ol class="decision-record">
         <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results. Two account leads, three past projects each; weeks 2&ndash;3 retrospective, creative in shadow, S0&ndash;S1 clients, agency workspace.
           <ul class="sub-list">
-            <li>Targets: open-question precision above 80% (flagged questions the lead judges real), draft survival above 70% (draft text the lead leaves unedited), under 30 minutes of review per draft; Greek naturalness rated 1&ndash;5 with EL/EN edit comparison; voluntary adoption: 2/2 pilot leads choose the next project, at least 3 further leads request onboarding in month 2.</li>
-            <li>Stop rule, recommended: if weeks 2&ndash;3 miss the targets, week 4 does not go live. After the pilot a named sponsor signs the report; from month 2 new projects start from a draft by default.</li>
+            <li>Weeks 2&ndash;3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft. Greek naturalness rated 1&ndash;5, with EL/EN edits compared; the sponsor must confirm a release threshold before week 1 (docs/pilot/SCORECARD.md leaves it unset). Both pilot leads must choose voluntary reuse. Proposed mandatory gate: missed targets block week-4 live use; the named sponsor records the release decision. Month-2 adoption is tracked separately. Month-2 adoption target: at least three further leads request onboarding.</li>
+            <li>Proposed binding pilot condition: if weeks 2&ndash;3 miss any release target, week 4 does not go live. The executive sponsor named at kickoff records the week-4 release decision. Default use from month 2 requires a successful pilot report and separate sponsor approval; month-2 onboarding requests are an adoption measure, not a week-4 release criterion.</li>
           </ul>
           <span class="cite">docs/PRD.md &sect;7&ndash;8 &middot; owner: the executive sponsor named at kickoff &middot; needed before week 1</span></li>
         <li>Re-baseline usage and time: rerun and re-measure under the 30 July routing (a larger extraction model plus a second reader), which on the transcript alone measured 598 743 tokens against 295 774. <span class="cite">config/model_routing.json &middot; runs/routing-validate-01 &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
-        <li>Validate subscription capacity: measure the plan&rsquo;s usage window against roughly 15 M tokens a month before week 1 (15 M under the graded routing; higher under the 30 July routing until decision 2 re-measures it); the PRD&rsquo;s API-terms assumption is superseded by the client&rsquo;s subscription direction and stays unresolved. <span class="cite">docs/PRD.md &sect;8 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
+        <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved. <span class="cite">docs/PRD.md &sect;8 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
       </ol>
 <p class="foot">docs/COST_MODEL.md &sect;3 quotes ~&euro;5&ndash;6k a year; the PRD&rsquo;s own assumptions give ~&euro;4.0&ndash;4.2k, the figure used here. Conversion: (120 &minus; 50) &times; 180 / 60 = 210 hours; 210 &times; &euro;19&ndash;20 = &euro;3&#8201;990&ndash;4&#8201;200.</p>
 <p class="marginalia"><span class="lbl">Measured, not estimated</span>A token is roughly three-quarters of a word a model reads or writes; cached context is text it was already sent and re-reads. Counts are what the runs recorded; times are wall clock. Usage, not a price: the client will most likely run this on a subscription.</p>

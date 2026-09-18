@@ -34,3 +34,10 @@ tools/walkthrough/_s*.js
 # documented content-integrity failures were found in; small, synthetic, read-only.
 !runs/voreas-prep-02
 !runs/voreas-prep-03
+
+# Codex round runner: per-agent logs and scratch dirs are regenerated; results (out/, result.json, report.md) are kept.
+tools/walkthrough/codex_round/*/logs/
+tools/walkthrough/codex_round/*/work/
+tools/walkthrough/codex_round/*.log
+tools/walkthrough/redesign/*.log
+tools/walkthrough/redesign/chrome/

@@ -1,0 +1,159 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 7,
+      "why": "Ten sheets meet the limit, but repeated summaries and sheet 9’s roughly 768 words outside collapsed details weaken presentation discipline.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#ch09 .brief",
+          "change": "Keep the proposition, short A/B comparison and creative-lead decision visible; place the insight, extended rationale, specifications and readiness checklist in expandable reference sections."
+        },
+        {
+          "sheet": "01",
+          "quote": "#ch01 .takeaways",
+          "change": "Remove this repeated summary: the headline, opening paragraph and metric tiles already communicate its three points."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The essential evidence, deliverables, usage, risks and owners are present, but the approval request leaves pilot effort and operating-cost estimation without an explicit owner or deadline.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Pilot effort and operating costs are still to be estimated.",
+          "change": "Add a visible action assigning management and the operator to estimate pilot effort, subscription and support costs before live-use approval."
+        },
+        {
+          "sheet": "10",
+          "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+          "change": "Add the six-project retrospective sample and the week-4 stop rule beside these targets so the sponsor can understand the approval conditions without opening the ledger."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 8,
+      "why": "The AI/code/people distinction is strong, but several executive-facing phrases retain technical shorthand or awkward wording.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+          "change": "Use ‘Over 80% of questions judged useful; over 70% of draft text retained; under 30 minutes of review,’ followed by the language and adoption measures."
+        },
+        {
+          "sheet": "09",
+          "quote": "Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.",
+          "change": "Replace with ‘The creative lead must record a named evaluation before week 4; creative output remains in shadow mode.’"
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence-to-decision sequence work, but the last two titles dilute their takeaways with qualifications and an unsupported deadline promise.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+          "change": "Replace with ‘Creative drafts still need a creative lead: three corrections and one judgement call.’"
+        },
+        {
+          "sheet": "10",
+          "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+          "change": "Replace with ‘Approve a conditional four-week pilot; confirm capacity and operating costs before live use,’ aligning the title with the actual decision gates."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a clear promise, anatomy and human gate, but its operating principles and practical handover are less prominent than its internal pipeline.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+          "change": "Move this compact principles statement out of the ledger and place it beside the pipeline."
+        },
+        {
+          "sheet": "02",
+          "quote": "Code checks citations and gates the run; static review pages support command-line operation.",
+          "change": "Replace with a concrete workflow: the operator runs the folder, the account lead reviews and records approval, and two trained brief champions take over by week 4."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 8,
+      "why": "The source defines a distinctive, coherent editorial system, but oversized supporting elements and an uneven creative composition weaken hierarchy; full rendered inspection was unavailable.",
+      "fixes": [
+        {
+          "sheet": "01",
+          "quote": ".legend li",
+          "change": "Reduce the 24px role legend to a compact horizontal key on desktop, retaining a stacked version on phones."
+        },
+        {
+          "sheet": "09",
+          "quote": ".plate.pack",
+          "change": "Integrate the can into a deliberate desktop composition with the square and vertical artwork instead of placing a 40%-width plate alone on a second row."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "Headline tokens, model IDs, timings, costs, checks and sign-off match the artifacts, but small residual claims misdescribe the artwork and equate agent attempts with individual model calls.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Replace ‘ring, leaf’ with the actual wind stroke and bubbles, and limit any clearance claim to applications that have been measured."
+        },
+        {
+          "sheet": "10",
+          "quote": "Nine model calls (four documents, one sent back once).",
+          "change": "Use ‘Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried).’ Apply the same terminology in the ledger."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 7,
+      "why": "Navigation, focus handling and offline dependencies are thoughtfully implemented, but phone ordering separates important qualifications from the content they explain and the mobile contents control competes with ten progress ticks.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": ".margin { order: 2; }",
+          "change": "Keep the ‘Three strikes, one call’ warning immediately before the creative proposition on phones rather than after the entire creative brief."
+        },
+        {
+          "sheet": "All",
+          "quote": ".ruler .tick",
+          "change": "Hide progress ticks below 700px and reserve the centre navigation area for a stable sheet counter and Contents button."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The artwork is appealing, honestly labelled and uses the supplied specifications, but the can infringes wordmark clearance and the vertical execution knowingly leaves the brand lockup in the caption zone.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#kv-packaging img",
+          "change": "Increase the gaps above and below the wordmark to at least one wordmark height; the inspected raster places both the yellow symbol and category line too close."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Provide that dedicated vertical composition now, raising the lockup while retaining the mock-up label and provisional specification caveat."
+        }
+      ]
+    }
+  ],
+  "overall": "Strong evidence-led deliverable, but not ready to ship unchanged: tighten the presentation layer, complete the pilot approval conditions and refine the creative applications. Hash verified; no repository files changed. Chrome failed to launch through both attempted methods, so visual and UX scores rely on HTML/CSS/JavaScript inspection and direct inspection of the embedded can."
+}

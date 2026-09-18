@@ -1,0 +1,58 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d",
+  "hardFailures": [
+    {
+      "category": "missing_exhibit",
+      "sheet": "01",
+      "pageText": "0.98 M tokens, stage one",
+      "evidence": "runs/tier3/run_manifest.json: stage-one attempts[].subagent.usage totals recompute to 533 641 Haiku tokens and 451 179 Sonnet tokens, together 984 820.",
+      "why": "The required sheet-01 model breakdown—0.53 M Haiku 4.5 and 0.45 M Sonnet 5—is absent from both its tiles and ledger. It survives on sheet 10, but not in the specified sheet-01 exhibit."
+    },
+    {
+      "category": "wrong_fact",
+      "sheet": "02",
+      "pageText": "Built as four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into each AI step",
+      "evidence": ".claude/agents/classify.md:11: \"This stage carries its instructions inline — there is no skeleton file for it, because classification is routing, not briefing craft.\" .claude/agents/creative-shadow.md:11: \"This stage carries its instructions inline. The four skeleton files govern the client-brief stage\".",
+      "why": "The files are injected into their respective briefing agents, not every AI step. Classification and creative-shadow explicitly use separate inline instructions."
+    },
+    {
+      "category": "unsupported_guarantee",
+      "sheet": "09",
+      "pageText": "every spec-shaped token must appear byte-for-byte in config/channel_specs.json (PRD DR-7)",
+      "evidence": "pipeline/creative.py:66 checks only (\"resolution\", \"aspect_ratio\"). Line 74 normalizes whitespace and replaces \"×\" with \"x\". Lines 107–113 explicitly permit an invented ratio whose denominator is 10–59. Direct checks returned no violations for \"1080 × 1920\", \"7:17\", and \"999-9999s · AVI\".",
+      "why": "The gate does not guarantee byte-for-byte membership for every spec token. It normalizes dimensions, exempts some ratio-shaped values, and does not validate duration or file-type tokens."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "04",
+      "pageText": "Just thinking out loud — maybe a TikTok dance thing? Don’t hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+      "evidence": "fixtures/northlight_01/transcript_kickoff.md, [00:11:47]: \"Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.\"",
+      "why": "Strict character-level mismatch: the page substitutes U+2019 in “Don’t” for the source's ASCII apostrophe. The words and meaning match, but the repository's own citation normalization does not accept this substitution."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "09",
+      "pageText": "For urban professionals who’ve outgrown sugary, beach-party fizz",
+      "evidence": "runs/tier3/creative/creative_brief_sonnet.md:5: \"For urban professionals who've outgrown sugary, beach-party fizz\".",
+      "why": "Strict character-level mismatch: the quoted Draft A proposition changes the source's ASCII apostrophe to U+2019."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "02, 07",
+      "issue": "The one-page runbook is described as a week-1 deliverable attributed to PRD §8. That section specifies champions trained on the runbook by week 4, without assigning the runbook a week-1 deadline.",
+      "fix": "Label week 1 as the walkthrough's proposed deadline."
+    },
+    {
+      "sheet": "10",
+      "issue": "The 5:45 single-document full-run timing omits that this demonstration used an explicitly logged override of the production input gate, as disclosed in docs/EVIDENCE.md.",
+      "fix": "Add “demo profile; production input gate overridden” beside that timing."
+    },
+    {
+      "sheet": "08",
+      "issue": "Phone rendering remains unverified: Chrome exited with code 134 before producing the requested screenshot. The three summary rows exist in the HTML.",
+      "fix": "Confirm their rendered layout at 390×844 in a working browser before accepting the phone regression check."
+    }
+  ]
+}

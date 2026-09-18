@@ -1,7 +1,9 @@
-"""Deterministic gate for WALKTHROUGH.html. Exit 0 = all green, 1 = failures (printed)."""
+"""Deterministic gate for WALKTHROUGH.html (or --file <path>). Exit 0 = all green, 1 = failures (printed)."""
 import re, html, pathlib, unicodedata, collections, subprocess, sys, json
 ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder')
-doc = (ROOT / 'WALKTHROUGH.html').read_text(encoding='utf-8')
+PAGE = ROOT / 'WALKTHROUGH.html'
+if '--file' in sys.argv: PAGE = pathlib.Path(sys.argv[sys.argv.index('--file') + 1]).resolve()
+doc = PAGE.read_text(encoding='utf-8')
 fx = ROOT / 'fixtures/northlight_01'
 corpus = unicodedata.normalize('NFC', ''.join((fx / f).read_text(encoding='utf-8') for f in
     ['transcript_kickoff.md', 'rfp_meltemi.md', 'emails_thread.md', 'background_brand_guidelines.md']).replace('**', ''))
@@ -44,7 +46,7 @@ for f in re.findall(r'<figure[^>]*>(.*?)</figure>', doc, flags=re.S):
 if not re.search(r'<!DOCTYPE html>', doc, flags=re.I): fails.append('missing doctype')
 # 4 scripts parse
 for i, sc in enumerate(re.findall(r'<script>(.*?)</script>', doc, flags=re.S)):
-    p = pathlib.Path(__file__).parent / f'_s{i}.js'; p.write_text(sc)
+    import tempfile; p = pathlib.Path(tempfile.gettempdir()) / f'walkthrough_s{i}.js'; p.write_text(sc)
     r = subprocess.run(['node', '--check', str(p)], capture_output=True, text=True)
     if r.returncode != 0: fails.append(f'script {i} syntax: {r.stderr[:160]}')
 # 5 tag balance

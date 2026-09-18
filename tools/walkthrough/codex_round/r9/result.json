@@ -1,0 +1,916 @@
+{
+ "round": 9,
+ "page": "/Users/chrism/AI-transformation-assignment/brief-builder/WALKTHROUGH.html",
+ "hash": "3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d",
+ "stable": false,
+ "hashProblems": [],
+ "hardFailures": [
+  {
+   "category": "wrong_fact",
+   "sheet": "02",
+   "pageText": "Built as four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into each AI step",
+   "evidence": ".claude/agents/classify.md:11: \"This stage carries its instructions inline — there is no skeleton file for it, because classification is routing, not briefing craft.\" .claude/agents/creative-shadow.md:11: \"This stage carries its instructions inline. The four skeleton files govern the client-brief stage\".",
+   "why": "The files are injected into their respective briefing agents, not every AI step. Classification and creative-shadow explicitly use separate inline instructions.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. WALKTHROUGH.html:658 says “each AI step,” and sheet 02 explicitly includes classification and creative drafting as AI steps without exempting them. Both cited agent files explicitly use inline instructions instead; the four rule files are injected into their respective briefing agents. This is a factual scope error, not a house rule or disclosed discrepancy.",
+     "correctedClaim": "Four plain-text rule files are injected verbatim into their respective client-brief agents; classification and creative-shadow use separate inline instructions."
+    },
+    {
+     "refuted": false,
+     "reason": "The hash matches. Sheet 02 explicitly says “each AI step” and lists classification and creative-shadow alongside briefing agents, without qualifying the claim. Both cited agent files state at line 11 that their instructions are inline; the four rule files govern briefing stages only. This misstates the scope of the shared rules and is not a disclosed discrepancy or house rule.",
+     "correctedClaim": "The four plain-text rule files are injected verbatim into their respective briefing agents; classification and creative-shadow use separate inline instructions."
+    }
+   ]
+  },
+  {
+   "category": "unsupported_guarantee",
+   "sheet": "09",
+   "pageText": "every spec-shaped token must appear byte-for-byte in config/channel_specs.json (PRD DR-7)",
+   "evidence": "pipeline/creative.py:66 checks only (\"resolution\", \"aspect_ratio\"). Line 74 normalizes whitespace and replaces \"×\" with \"x\". Lines 107–113 explicitly permit an invented ratio whose denominator is 10–59. Direct checks returned no violations for \"1080 × 1920\", \"7:17\", and \"999-9999s · AVI\".",
+   "why": "The gate does not guarantee byte-for-byte membership for every spec token. It normalizes dimensions, exempts some ratio-shaped values, and does not validate duration or file-type tokens.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The frozen file’s SHA-256 matches. Sheet 09 explicitly describes byte-for-byte enforcement; its stub and row-fit caveats do not disclose the gate’s actual limitations. Executing the repository’s checker reproduced zero violations for “1080 × 1920”, “7:17”, and “999-9999s · AVI”. DR-7 states the intended policy, not proof of enforcement.",
+     "correctedClaim": "Sheet 09 overstates the spec-match gate: it checks normalized resolution and aspect-ratio tokens, exempts ratio-shaped values with denominators 10–59, and does not validate duration or file-type tokens."
+    },
+    {
+     "refuted": false,
+     "reason": "The hash matches. Sheet 09’s “Ledger — what ran” presents universal byte-for-byte validation as implemented behavior. pipeline/creative.py instead normalizes dimensions, exempts ratio-shaped values with denominators 10–59, and does not validate durations or file types. The page’s stub and row-suitability caveats do not disclose these limitations, so a careful stakeholder could be misled about the gate’s coverage.",
+     "correctedClaim": "The spec-match gate checks normalized resolution and aspect-ratio tokens against the table, exempts timecode-like ratios with denominators 10–59, and does not validate duration or file-type tokens."
+    }
+   ]
+  }
+ ],
+ "refutedClaims": [
+  {
+   "category": "missing_exhibit",
+   "sheet": "01",
+   "pageText": "0.98 M tokens, stage one",
+   "evidence": "runs/tier3/run_manifest.json: stage-one attempts[].subagent.usage totals recompute to 533 641 Haiku tokens and 451 179 Sonnet tokens, together 984 820.",
+   "why": "The required sheet-01 model breakdown—0.53 M Haiku 4.5 and 0.45 M Sonnet 5—is absent from both its tiles and ledger. It survives on sheet 10, but not in the specified sheet-01 exhibit.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "The frozen file’s hash matches. Recomputed stage-one usage is 533 641 Haiku tokens plus 451 179 Sonnet tokens, totaling 984 820; sheet 01 correctly rounds this to 0.98 M and links directly to sheet 10, whose ledger supplies both model totals. The breakdown is absent locally, but the cited evidence establishes usage, not a requirement to repeat the breakdown on sheet 01. This supports a placement preference, not a HARD missing-exhibit failure.",
+     "correctedClaim": ""
+    },
+    {
+     "refuted": true,
+     "reason": "The hash matches. The manifest confirms 533 641 Haiku tokens plus 451 179 Sonnet tokens, totaling 984 820; sheet 01 correctly rounds this to 0.98 M and identifies stage one in its ledger. Its token tile explicitly links to sheet 10, which supplies the model breakdown. The breakdown is absent locally, but requiring its repetition on the summary sheet is a placement preference, not an established hard fidelity failure. A careful stakeholder has accurate totals and a direct route to the detail. Rendering was attempted but Chrome failed to launch; these findings concern the frozen HTML’s content.",
+     "correctedClaim": ""
+    }
+   ]
+  },
+  {
+   "category": "quote_not_verbatim",
+   "sheet": "04",
+   "pageText": "Just thinking out loud — maybe a TikTok dance thing? Don’t hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+   "evidence": "fixtures/northlight_01/transcript_kickoff.md, [00:11:47]: \"Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.\"",
+   "why": "Strict character-level mismatch: the page substitutes U+2019 in “Don’t” for the source's ASCII apostrophe. The words and meaning match, but the repository's own citation normalization does not accept this substitution.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. WALKTHROUGH.html:804 renders U+2019 in “Don’t”; transcript_kickoff.md:21 uses U+0027. The quote fails pipeline/gates.py’s citation normalization, which preserves apostrophes. Sheet 04 explicitly promises exact, code-verifiable receipts; no applicable disclosure or house rule exempts this substitution.",
+     "correctedClaim": "Sheet 04’s TikTok quotation substitutes U+2019 for the source’s ASCII apostrophe in “Don't,” violating its stated exact-quotation standard and failing the repository’s citation matching."
+    },
+    {
+     "refuted": true,
+     "reason": "The frozen file’s hash matches. Sheet 04 uses a curly apostrophe where transcript_kickoff.md [00:11:47] uses ASCII, and pipeline/gates.py does not normalize that difference. However, this is a typographic discrepancy, not a hard fidelity failure under the reader lens: the quotation preserves every word and qualification, cites the correct speaker and timestamp, and explicitly labels the idea speculative, conditional, and low-confidence. A careful stakeholder would not be misled; the citation gate checks structured evidence, not HTML typography.",
+     "correctedClaim": ""
+    }
+   ]
+  },
+  {
+   "category": "quote_not_verbatim",
+   "sheet": "09",
+   "pageText": "For urban professionals who’ve outgrown sugary, beach-party fizz",
+   "evidence": "runs/tier3/creative/creative_brief_sonnet.md:5: \"For urban professionals who've outgrown sugary, beach-party fizz\".",
+   "why": "Strict character-level mismatch: the quoted Draft A proposition changes the source's ASCII apostrophe to U+2019.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "The frozen file’s SHA-256 matches. Comparing WALKTHROUGH.html:1185 with creative_brief_sonnet.md:5 confirms the sole difference is ASCII apostrophe U+0027 becoming typographic U+2019. The entire proposition otherwise matches exactly. This is a typographic normalization with no change to wording, meaning, or attribution; classifying it as a HARD fidelity failure is inflated.",
+     "correctedClaim": ""
+    },
+    {
+     "refuted": true,
+     "reason": "The frozen file’s SHA-256 matches. Sheet 09 (HTML line 1185) reproduces the proposition from creative_brief_sonnet.md:5 with only a typographic apostrophe substitution: ASCII ' becomes U+2019 via &rsquo;. The wording, meaning, and Draft A attribution are unchanged. The character-level mismatch exists, but it would not mislead a careful stakeholder and does not constitute a HARD fidelity failure.",
+     "correctedClaim": ""
+    }
+   ]
+  },
+  {
+   "category": "accessibility_blocker",
+   "sheet": "All — mobile navigation",
+   "pageText": "01 / 10 · Contents",
+   "evidence": "The mobile ticks retain `min-width: 32px` (line 435), requiring 320px collectively. Line 464 gives the folio `flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis`. The navigation also reserves space for Back, Next, padding and gaps.",
+   "why": "At 390px, the ticks exceed the ruler's available width, shrinking the folio's text area to zero. This is a CSS-derived clipping finding; screenshots were unavailable. Keep the folio outside the scrolling ticks or give it a nonshrinking width.",
+   "auditor": "audit_ux",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "Hash matches. The CSS supports a clipping defect, but the accessibility_blocker severity is overstated: every sheet also contains a separate Contents button, Back/Next remain outside the scrolling ruler, and navigation buttons retain accessible labels. Navigation is not blocked. Two attempts to render at 390×844 failed because Chrome exited with code 134, so visual clipping remains unconfirmed.",
+     "correctedClaim": ""
+    }
+   ]
+  },
+  {
+   "category": "broken_interaction",
+   "sheet": "All — swipe navigation",
+   "pageText": "swipe horizontally or tap Next",
+   "evidence": "Line 1503 navigates when `Math.abs(dx) > 60 && Math.abs(dy) < 40`, using only touchstart and touchend coordinates. There is no touchmove handler. Executing the extracted handlers with start (250,200), intermediate vertical movement to (240,340), and end (170,220) advanced sheet 2 to 3.",
+   "why": "A gesture containing vertical scrolling can still turn the sheet if it returns near its starting height. Cancel swipe eligibility once vertical movement exceeds the threshold or scrolling occurs. Ordinary vertical gestures and gestures starting inside ledger tables were correctly excluded.",
+   "auditor": "audit_ux",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "Hash matches. The extracted handlers reproduce sheet 2→3, but that test omits native scrolling behavior. Line 1505 clears swipe eligibility on touchcancel; including cancellation keeps sheet 2 active. Missing touchmove tracking alone does not establish a hard scrolling failure. Chrome could not launch in the sandbox, leaving real-touch behavior unverified; under your uncertainty rule, the hard-failure claim is refuted.",
+     "correctedClaim": ""
+    },
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. Executing this file’s handlers reproduces sheet 2 → 3 for the cited gesture: the 140px intermediate vertical movement is ignored because only endpoints are checked. Ledger exclusions and touchcancel work, but neither cancels eligibility based on vertical movement. This is a navigation defect, unrelated to the disclosed discrepancies or house rules.",
+     "correctedClaim": "The swipe handler can unintentionally advance a sheet after substantial vertical movement when the gesture ends more than 60px horizontally and less than 40px vertically from its start without a touchcancel event."
+    }
+   ]
+  }
+ ],
+ "tasks": {
+  "task_cmo": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "Brief Builder turns scattered client documents into a sourced Greek and English brief, highlighting disagreements and questions. For the agency, it aims to reduce preparation work; for me, it makes disputed commitments and missing answers easier to spot before creative work begins. This synthetic run passed 17 defined checks, preserved evidence and exposed three conflicts. It demonstrated a controlled drafting process, not proven savings or reliable everyday performance: the creative drafts still introduced errors. People confirm the facts, resolve disagreements, sign off and judge creative ideas. Nothing creative was delivered. I would support the conditional pilot to measure usefulness, review effort and actual costs.",
+   "missing": [
+    "No essential information was missing for this explanation. Actual savings, operating costs and everyday reliability remain unproven, as the sheets acknowledge."
+   ],
+   "confusions": [
+    "“a schema-validated edit in v1” — I cannot tell what practical task the account lead must perform or whether technical help is needed.",
+    "“question precision >80%, draft survival >70%” — these pilot success measures are not explained on the visible sheet.",
+    "“the two garbled terms were flagged, never repaired” followed by “the finished documents print the glossary term” — I had to infer that the original transcript stays unchanged while the draft uses the proposed term."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+   },
+   "fixes": [
+    "Replace “a schema-validated edit in v1” with “in this version, the account lead must edit the underlying brief file; the review page only displays the decisions”.",
+    "Replace “question precision >80%, draft survival >70%” with “over 80% of flagged questions judged relevant by the lead; over 70% of draft text retained without edits”.",
+    "Replace “the two garbled terms were flagged, never repaired” with “the original transcript was preserved; two garbled terms were flagged, and the drafts used the proposed glossary terms with citations”.",
+    "Replace “Re-baseline the changed routing before week 1.” with “Measure time and usage again before week 1 because the AI reading process has changed.”"
+   ]
+  },
+  "task_cfo": {
+   "hashMismatch": false,
+   "passed": false,
+   "answer": "Stage-one tokens: Haiku 4.5=533,641; Sonnet 5=165,820+285,359=451,179; total=984,820. Creative adds 86,441 Sonnet and 63,473 Opus 4.8: total=1,134,734. Monthly: 984,820×15=14,772,300; one creative draft gives 15,724,395–16,068,915. Returned hours: [120−(20 assembling+30 reviewing)]×(15×12)/60=210/year; ×€19–20=€3,990–4,200 gross. Baseline, volume, rate and target attention are assumptions, not demonstrated savings. Approve four weeks: two leads, six retrospective projects, S0–S1, agency workspace, creative shadow. Before week 1, operator remeasures routing; management/operator validate subscription capacity/terms. Week-4 live use depends on retrospective targets: precision >80%, survival >70%, review <30 minutes, Greek quality and adoption. Exact release conditions and spending authority remain unclear.",
+   "missing": [
+    "Pilot budget, spending ceiling, implementation/support effort and subscription cost; net benefit cannot be calculated.",
+    "A Greek-quality pass threshold and a clear distinction between week-4 release criteria and month-2 adoption targets.",
+    "An unequivocal mandatory stop rule and explicit approval gate for month-2 default rollout.",
+    "Measured review time and validation of the 50-minute attention target; the graded review was not timed."
+   ],
+   "confusions": [
+    "“Stop rule, recommended: if weeks 2–3 miss the targets, week 4 does not go live.” Is this binding or merely proposed?",
+    "“Greek naturalness rated 1–5 with EL/EN edit comparison” gives a measurement method but no passing score.",
+    "“at least 3 further leads request onboarding in month 2” cannot determine whether week 4 may go live.",
+    "“Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.” Capacity and routing are elsewhere required before week 1, while no cost-estimation owner or approval ceiling is specified."
+   ],
+   "scores": {
+    "clarity": 7,
+    "completeness": 7,
+    "concision": 6
+   },
+   "fixes": [
+    "Change “Pilot effort and operating costs are still to be estimated.” to specify an estimation owner, deadline, spending ceiling and financial approval gate.",
+    "Change “Stop rule, recommended:” to state explicitly whether the rule is mandatory, and name the week-4 release decision owner.",
+    "Change “Greek naturalness rated 1–5 with EL/EN edit comparison” to include a passing threshold; separate week-4 criteria from month-2 adoption measures.",
+    "Change “from month 2 new projects start from a draft by default” to specify whether rollout requires a successful pilot and separate sponsor approval."
+   ]
+  },
+  "task_creative": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "(a) Evidence: signed audience 25–40 urban professionals; launch 15 September 2026; production budget “in the eighties,” excluding media, without confirmed units or total; zero-sugar permission, brand constraints and requested video/key visuals. (b) Hypothesis: proposition, audience psychology, tone, reasons to believe and illustrative artwork; packaging remains undefined. (c) Strike “Greek-made,” €80–85k and the dance retraction; judge guilt wording against the health-claim ban. Choose A/B/neither, resolve six blockers—ingredients, video details, visual uses, TikTok-first scope, KPIs, milestones—and record creative approval. Creative remains evaluation-only in this version. (d) Specs are provisional traffic-table lookups: the gate guarantees token membership, not deliverable suitability, platform currency, layout safety or production readiness; traffic must confirm.",
+   "missing": [],
+   "confusions": [
+    "“Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.” This mixes a future creative approval with the completed account sign-off and leaves the scope of week-4 live use unclear.",
+    "“Feel: confident, refreshed, quietly proud it’s Greek” repeats an origin-adjacent suggestion beside the explicit rejection of “Greek-made”; its intended boundary is unclear."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+   },
+   "fixes": [
+    "Replace “Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.” with “Creative approval is pending: record the named lead’s choice and corrections. Week-4 client-brief use does not authorize creative delivery; creative stays in shadow in v1.”",
+    "Replace “quietly proud it’s Greek” with “quietly premium”; retain Greek identity or origin language only after confirming its factual basis.",
+    "Replace “The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.” with “The drafts combine signed-off evidence with creative hypotheses. Three errors require correction, one claim needs judgement, and six open items still block production.”"
+   ]
+  },
+  "task_engineer": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "This synthetic run passed 17 checks; that proves fixture coverage, not general correctness. Code enforces readiness, schemas, exact anchors, glossary, sensitivity, sign-off and spec-token checks; it groups conflict candidates. Models classify, flag garbles, extract, verify, recognise contradictions, synthesise, render and draft creative. Failed extraction/synthesis/render gates allow one repair, then stop. Humans record resolutions and signoff in brief.json; brief_review.html displays them, toggles languages and copies questions, but does not save decisions or sign. Checks cannot establish semantic support, natural Greek, complete questions or appropriate spec rows; creative errors remain review work. Creative stays shadow-only. Before week 1, the operator must rerun usage/time measurements under Sonnet extraction plus verifier; management/operator must validate subscription capacity and terms.",
+   "missing": [],
+   "confusions": [
+    "“every line carrying its citation” sounds broader than the later limitation to “this run’s rendered claim lines”.",
+    "“every fact cites a brief entry” initially sounds like factual validation, despite the unsupported creative claims identified on the same sheet."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+   },
+   "fixes": [
+    "Replace “every line carrying its citation” with “this run’s claim lines carrying source tags; tags do not establish semantic support”.",
+    "Replace “every fact cites a brief entry” with “factual claims carry brief-entry tags, but unsupported claims can still pass into the draft”.",
+    "Replace “a schema-validated edit in v1” with “a schema-validated edit to brief.json in v1; the review page does not save resolutions or signatures”."
+   ]
+  }
+ },
+ "judges": 3,
+ "averages": {
+  "concision": 7.0,
+  "completeness": 8.0,
+  "clarity": 7.67,
+  "storyline": 8.0,
+  "product_framing": 8.0,
+  "visual_design": 8.0,
+  "fact_fidelity": 8.0,
+  "ux": 7.0,
+  "finale": 7.0
+ },
+ "deltas": {
+  "concision": 0.67,
+  "completeness": 0.0,
+  "clarity": 0.0,
+  "storyline": -0.33,
+  "product_framing": -0.67,
+  "visual_design": 0.33,
+  "fact_fidelity": -0.67,
+  "ux": -0.67,
+  "finale": -0.67
+ },
+ "below8": [
+  "concision",
+  "completeness",
+  "clarity",
+  "storyline",
+  "product_framing",
+  "visual_design",
+  "fact_fidelity",
+  "ux",
+  "finale"
+ ],
+ "regressions": [
+  "product_framing",
+  "fact_fidelity",
+  "ux",
+  "finale"
+ ],
+ "detail": {
+  "concision": [
+   {
+    "aspect": "concision",
+    "score": 7,
+    "why": "Ten sheets meet the limit, but repeated summaries and sheet 9’s roughly 768 words outside collapsed details weaken presentation discipline.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#ch09 .brief",
+      "change": "Keep the proposition, short A/B comparison and creative-lead decision visible; place the insight, extended rationale, specifications and readiness checklist in expandable reference sections."
+     },
+     {
+      "sheet": "01",
+      "quote": "#ch01 .takeaways",
+      "change": "Remove this repeated summary: the headline, opening paragraph and metric tiles already communicate its three points."
+     }
+    ]
+   },
+   {
+    "aspect": "concision",
+    "score": 7,
+    "why": "Ten sheets meet the limit, but sheet 9 has roughly 770 words outside disclosures, and several summaries repeat the evidence immediately below.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#ch09 .ab",
+      "change": "Keep the A/B propositions and creative-lead decision visible; move the duplicated blocker list and procedural text into the existing readiness disclosure."
+     },
+     {
+      "sheet": "10",
+      "quote": "#ch10 .takeaways",
+      "change": "Remove this three-point preview because the numbered decisions immediately repeat it."
+     },
+     {
+      "sheet": "01",
+      "quote": "#ch01 .takeaways",
+      "change": "Remove the repeated summary bullets; the opening paragraph, evidence tiles and role legend already communicate these points."
+     }
+    ]
+   },
+   {
+    "aspect": "concision",
+    "score": 7,
+    "why": "Ten sheets meet the limit, but repeated explanations slow the presentation and sheet 9 contains approximately 756 words outside collapsed details.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#ch09 .brief",
+      "change": "Keep the proposition, A/B choice, channel table and decision request visible; move the expanded insight, tone and readiness recap into details."
+     },
+     {
+      "sheet": "07",
+      "quote": "The same three contradictions from sheet 05, now each with a person’s decision.",
+      "change": "Remove this takeaway: the title, margin and three resolution blocks already communicate it."
+     },
+     {
+      "sheet": "10",
+      "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+      "change": "Remove this repeated campaign-budget recap from the pilot decision sheet."
+     }
+    ]
+   }
+  ],
+  "completeness": [
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The essential evidence, deliverables, usage, risks and owners are present, but the approval request leaves pilot effort and operating-cost estimation without an explicit owner or deadline.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Pilot effort and operating costs are still to be estimated.",
+      "change": "Add a visible action assigning management and the operator to estimate pilot effort, subscription and support costs before live-use approval."
+     },
+     {
+      "sheet": "10",
+      "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+      "change": "Add the six-project retrospective sample and the week-4 stop rule beside these targets so the sponsor can understand the approval conditions without opening the ledger."
+     }
+    ]
+   },
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The essential evidence, deliverables, usage, timing and human responsibilities are covered, but the pilot ask leaves operating-cost estimation and workspace-term confirmation without explicit completion criteria.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Pilot effort and operating costs are still to be estimated.",
+      "change": "Assign management and the operator to estimate setup, training, maintenance and subscription costs in week 1, with sponsor acceptance before retrospective work starts."
+     },
+     {
+      "sheet": "10",
+      "quote": "Validate subscription capacity",
+      "change": "Expand the decision to confirm both capacity and the agency workspace’s processing, retention and contractual terms; identify evidence required before client data enters the pilot."
+     }
+    ]
+   },
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The evidence, deliverables, usage, timings and human responsibilities are covered, but the CFO still lacks an assigned action to price the pilot and its ongoing support.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Pilot effort and operating costs are still to be estimated.",
+      "change": "Turn this ledger caveat into a visible decision action: management and the operator estimate setup, training, subscription and maintenance effort before pilot spending is approved."
+     },
+     {
+      "sheet": "10",
+      "quote": "Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready.",
+      "change": "Add the concrete consequence from the cited report: the second fixture retained a superseded launch date despite passing the conflict check, so reviewers must verify meaning as well as citations."
+     }
+    ]
+   }
+  ],
+  "clarity": [
+   {
+    "aspect": "clarity",
+    "score": 8,
+    "why": "The AI/code/people distinction is strong, but several executive-facing phrases retain technical shorthand or awkward wording.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+      "change": "Use ‘Over 80% of questions judged useful; over 70% of draft text retained; under 30 minutes of review,’ followed by the language and adoption measures."
+     },
+     {
+      "sheet": "09",
+      "quote": "Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.",
+      "change": "Replace with ‘The creative lead must record a named evaluation before week 4; creative output remains in shadow mode.’"
+     }
+    ]
+   },
+   {
+    "aspect": "clarity",
+    "score": 8,
+    "why": "The AI/code/people distinction is strong, but unexplained evaluation shorthand and one awkward approval sentence interrupt otherwise accessible language.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+      "change": "Use: 'Targets: leads judge over 80% of questions useful, retain over 70% of draft text, and review each draft in under 30 minutes; also assess Greek quality and voluntary reuse.'"
+     },
+     {
+      "sheet": "09",
+      "quote": "Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.",
+      "change": "Use: 'Name the creative lead and record their evaluation before week 4; creative remains in shadow mode.'"
+     },
+     {
+      "sheet": "10",
+      "quote": "exam-green is not lead-ready",
+      "change": "Use: 'Passing automated checks does not make a brief ready for an account lead to approve.'"
+     }
+    ]
+   },
+   {
+    "aspect": "clarity",
+    "score": 7,
+    "why": "The AI/code/people distinction is strong, but technical terminology and compressed metric labels still make the CMO work harder than necessary.",
+    "fixes": [
+     {
+      "sheet": "07",
+      "quote": "The account lead writes each resolution into brief.json (conflicts[n].resolution, resolved_by) and the sign-off block (status, signed_by, signed_ts, edits_summary): a schema-validated edit in v1, a one-page runbook by week 1 (PRD §8).",
+      "change": "Use plain language in the margin: the lead manually records decisions and approval in the master file using a runbook; put field names and validation mechanics in the ledger."
+     },
+     {
+      "sheet": "10",
+      "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+      "change": "Explain the measures here: over 80% of questions judged useful, over 70% of draft text retained, and under 30 minutes reviewing."
+     }
+    ]
+   }
+  ],
+  "storyline": [
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The answer-first opening and evidence-to-decision sequence work, but the last two titles dilute their takeaways with qualifications and an unsupported deadline promise.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+      "change": "Replace with ‘Creative drafts still need a creative lead: three corrections and one judgement call.’"
+     },
+     {
+      "sheet": "10",
+      "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+      "change": "Replace with ‘Approve a conditional four-week pilot; confirm capacity and operating costs before live use,’ aligning the title with the actual decision gates."
+     }
+    ]
+   },
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The answer-first opening and evidence sequence work, but the creative headline softens its own finding and the closing headline promises more than its action list assigns.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+      "change": "Use: 'Creative drafts still need a creative lead: three errors to strike and one claim to judge.'"
+     },
+     {
+      "sheet": "10",
+      "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+      "change": "Use: 'Approve a conditional four-week pilot, with capacity and operating costs confirmed in week 1.'"
+     }
+    ]
+   },
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The answer-first opening and evidence-to-decision sequence work, but the creative takeaway is convoluted and the closing title promises more certainty than its actions establish.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+      "change": "Replace with a direct takeaway: “The shadow drafts need three corrections and a creative lead’s decision.”"
+     },
+     {
+      "sheet": "10",
+      "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+      "change": "Replace with “Approve a conditional pilot; confirm capacity and operating effort before it starts,” matching the stated pre-week-1 actions."
+     }
+    ]
+   }
+  ],
+  "product_framing": [
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a clear promise, anatomy and human gate, but its operating principles and practical handover are less prominent than its internal pipeline.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+      "change": "Move this compact principles statement out of the ledger and place it beside the pipeline."
+     },
+     {
+      "sheet": "02",
+      "quote": "Code checks citations and gates the run; static review pages support command-line operation.",
+      "change": "Replace with a concrete workflow: the operator runs the folder, the account lead reviews and records approval, and two trained brief champions take over by week 4."
+     }
+    ]
+   },
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a clear name, anatomy, outputs and operating model, but its business benefit and distinctive principles sit behind the implementation story.",
+    "fixes": [
+     {
+      "sheet": "01",
+      "quote": "Brief Builder turns a client’s pile of documents into a Greek and English brief.",
+      "change": "Add the intended benefit: reducing preparation time and making brief quality more consistent, explicitly presented as pilot goals."
+     },
+     {
+      "sheet": "02",
+      "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+      "change": "Move this compact principles line out of the ledger and place it directly below the pipeline diagram."
+     }
+    ]
+   },
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a clear identity, anatomy, outputs and operating boundaries, but its business promise and everyday workflow receive less prominence than its implementation.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "The thin layer",
+      "change": "Move the code-size and agent-count explanation into the ledger and use this margin for the daily workflow: assemble files, operator runs, lead reviews and records approval, creative lead evaluates."
+     },
+     {
+      "sheet": "01",
+      "quote": "Brief Builder turns a client’s pile of documents into a Greek and English brief.",
+      "change": "Add the business purpose immediately: more consistent briefs across account leads, with reduced preparation time as a pilot target."
+     }
+    ]
+   }
+  ],
+  "visual_design": [
+   {
+    "aspect": "visual_design",
+    "score": 8,
+    "why": "The source defines a distinctive, coherent editorial system, but oversized supporting elements and an uneven creative composition weaken hierarchy; full rendered inspection was unavailable.",
+    "fixes": [
+     {
+      "sheet": "01",
+      "quote": ".legend li",
+      "change": "Reduce the 24px role legend to a compact horizontal key on desktop, retaining a stacked version on phones."
+     },
+     {
+      "sheet": "09",
+      "quote": ".plate.pack",
+      "change": "Integrate the can into a deliberate desktop composition with the square and vertical artwork instead of placing a 40%-width plate alone on a second row."
+     }
+    ]
+   },
+   {
+    "aspect": "visual_design",
+    "score": 8,
+    "why": "The paper, receipt and red-pen system is distinctive and coherent, but the source-defined layout gives long headlines and narrow creative panels excessive visual weight.",
+    "fixes": [
+     {
+      "sheet": "02–10",
+      "quote": ".title.action",
+      "change": "Edit takeaway titles to roughly 12–18 words and tune their measure to support two or three lines, preserving more space for evidence."
+     },
+     {
+      "sheet": "09",
+      "quote": ".plate-row",
+      "change": "Compose the square artwork, portrait adaptation and can as one deliberate desktop grouping instead of placing the can alone in a second row; retain a stacked mobile layout."
+     },
+     {
+      "sheet": "09",
+      "quote": ".plate.p916",
+      "change": "Move the long technical caption beneath the artwork group so it does not form a narrow column of prose under the portrait image."
+     }
+    ]
+   },
+   {
+    "aspect": "visual_design",
+    "score": 8,
+    "why": "The source defines a coherent editorial system with restrained colour and clear role markings, although long headings and the small mobile portrait treatment weaken hierarchy.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "Nine steps, three roles: six are AI, two are plain code, and the one that releases the work is a person.",
+      "change": "Shorten the heading to “AI drafts, code checks, and a person releases the work”; let the numbered diagram carry the step count."
+     },
+     {
+      "sheet": "09",
+      "quote": ".plate.p916",
+      "change": "At phone widths, enlarge the portrait plate beyond the current 56% width so its wordmark and mock-up label remain comfortably readable."
+     }
+    ]
+   }
+  ],
+  "fact_fidelity": [
+   {
+    "aspect": "fact_fidelity",
+    "score": 8,
+    "why": "Headline tokens, model IDs, timings, costs, checks and sign-off match the artifacts, but small residual claims misdescribe the artwork and equate agent attempts with individual model calls.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+      "change": "Replace ‘ring, leaf’ with the actual wind stroke and bubbles, and limit any clearance claim to applications that have been measured."
+     },
+     {
+      "sheet": "10",
+      "quote": "Nine model calls (four documents, one sent back once).",
+      "change": "Use ‘Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried).’ Apply the same terminology in the ledger."
+     }
+    ]
+   },
+   {
+    "aspect": "fact_fidelity",
+    "score": 8,
+    "why": "Headline tokens, model IDs, timings, checks and sign-off match the artifacts, but two provenance descriptions are broader or older than the content they describe.",
+    "fixes": [
+     {
+      "sheet": "01",
+      "quote": "Every quote is clipped verbatim from the four source documents",
+      "change": "Use: 'Source quotations reproduce the four input documents; output excerpts are identified separately.'"
+     },
+     {
+      "sheet": "09",
+      "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+      "change": "Replace the obsolete ring-and-leaf description with the actual wind stroke and bubbles, and scope any clearance statement to the specific artwork checked."
+     }
+    ]
+   },
+   {
+    "aspect": "fact_fidelity",
+    "score": 8,
+    "why": "Headline totals, model IDs, timings and the 17 checks match the artifacts, but two smaller statements need correction or clearer attribution.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+      "change": "Replace the stale ring-and-leaf description with the actual wind stroke and bubbles, and limit the clear-space assertion to applications that have been checked."
+     },
+     {
+      "sheet": "07",
+      "quote": "a one-page runbook by week 1 (PRD §8)",
+      "change": "Label week 1 as a proposed earlier deadline; PRD §8 specifies champion training on the runbook by week 4."
+     }
+    ]
+   }
+  ],
+  "ux": [
+   {
+    "aspect": "ux",
+    "score": 7,
+    "why": "Navigation, focus handling and offline dependencies are thoughtfully implemented, but phone ordering separates important qualifications from the content they explain and the mobile contents control competes with ten progress ticks.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": ".margin { order: 2; }",
+      "change": "Keep the ‘Three strikes, one call’ warning immediately before the creative proposition on phones rather than after the entire creative brief."
+     },
+     {
+      "sheet": "All",
+      "quote": ".ruler .tick",
+      "change": "Hide progress ticks below 700px and reserve the centre navigation area for a stable sheet counter and Contents button."
+     }
+    ]
+   },
+   {
+    "aspect": "ux",
+    "score": 7,
+    "why": "Inline assets, valid local links, keyboard controls and dialog focus handling are sound, but mobile CSS can squeeze Contents and sends important role and correction notes below the main content.",
+    "fixes": [
+     {
+      "sheet": "All, mobile",
+      "quote": ".ruler .tick",
+      "change": "Hide the ten progress ticks below 700px and reserve the middle navigation column for a readable, adequately sized Contents button."
+     },
+     {
+      "sheet": "02–10, mobile",
+      "quote": ".margin { order: 2; }",
+      "change": "Keep role stamps and essential warnings immediately below the headline; move only supplementary marginal notes after the body."
+     },
+     {
+      "sheet": "All, mobile",
+      "quote": ".next span.lbl { display: none; }",
+      "change": "Retain a visible Next label on phones while hiding only the destination title."
+     }
+    ]
+   },
+   {
+    "aspect": "ux",
+    "score": 7,
+    "why": "Offline assets, keyboard controls, focus handling and return navigation are implemented, but mobile CSS crowds the contents control and places crucial creative warnings after the entire sheet.",
+    "fixes": [
+     {
+      "sheet": "All, phone",
+      "quote": ".ruler .fol",
+      "change": "Keep Contents outside the horizontally scrolling tick strip, or hide ticks on phones; ten minimum-width ticks currently compete with a contents button allowed to shrink nearly to its padding."
+     },
+     {
+      "sheet": "09, phone",
+      "quote": ".margin { order: 2; }",
+      "change": "Place the “Three strikes, one call” warning directly before the creative draft on small screens instead of after the long body."
+     }
+    ]
+   }
+  ],
+  "finale": [
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The artwork is appealing, honestly labelled and uses the supplied specifications, but the can infringes wordmark clearance and the vertical execution knowingly leaves the brand lockup in the caption zone.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#kv-packaging img",
+      "change": "Increase the gaps above and below the wordmark to at least one wordmark height; the inspected raster places both the yellow symbol and category line too close."
+     },
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Provide that dedicated vertical composition now, raising the lockup while retaining the mock-up label and provisional specification caveat."
+     }
+    ]
+   },
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The wind-and-fizz identity and can are appealing and honestly labelled, but the can crowds the mandated wordmark clearance and the portrait adaptation knowingly leaves the lockup in the caption zone.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#kv-packaging .plate.pack img",
+      "change": "Increase the space above and below the wordmark to at least its height; the inspected can places both the yellow mark and category line too close."
+     },
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Create that dedicated portrait composition now, raising the lockup and fitting the mock-up label fully within the frame; retain the provisional-spec disclosure."
+     },
+     {
+      "sheet": "09",
+      "quote": "Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday — zero sugar, nothing to feel guilty about.",
+      "change": "Keep the recorded draft, but attach the unsupported-origin correction and health-claim review note directly to this proposition so they remain visible beside it on mobile."
+     }
+    ]
+   },
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The wind-and-fizz artwork and can make the output tangible with honest mock-up labels, but the can breaches wordmark clearance and the portrait crop knowingly leaves the lockup in the caption zone.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": ".plate.pack img",
+      "change": "Increase separation above and below the can’s wordmark to at least one wordmark height; the inspected image places both the yellow mark and category line too close."
+     },
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Show the dedicated portrait layout with the lockup raised, retaining the provisional-spec and illustration labels."
+     }
+    ]
+   }
+  ]
+ },
+ "softIssues": {
+  "audit_fidelity": [
+   {
+    "sheet": "02, 07",
+    "issue": "The one-page runbook is described as a week-1 deliverable attributed to PRD §8. That section specifies champions trained on the runbook by week 4, without assigning the runbook a week-1 deadline.",
+    "fix": "Label week 1 as the walkthrough's proposed deadline."
+   },
+   {
+    "sheet": "10",
+    "issue": "The 5:45 single-document full-run timing omits that this demonstration used an explicitly logged override of the production input gate, as disclosed in docs/EVIDENCE.md.",
+    "fix": "Add “demo profile; production input gate overridden” beside that timing."
+   },
+   {
+    "sheet": "08",
+    "issue": "Phone rendering remains unverified: Chrome exited with code 134 before producing the requested screenshot. The three summary rows exist in the HTML.",
+    "fix": "Confirm their rendered layout at 390×844 in a working browser before accepting the phone regression check."
+   }
+  ],
+  "audit_ux": [
+   {
+    "sheet": "All — incomplete rendered verification",
+    "issue": "Chrome aborted with SIGABRT for every requested render: sheets 1, 2, 8, 9 and 10 at both 1440px and 390px. No screenshots could be inspected; browser interaction checks remain unverified.",
+    "fix": "Repeat the rendering and interaction audit in a working Chrome environment before accepting this candidate."
+   },
+   {
+    "sheet": "08 — previous failure",
+    "issue": "The previous summary-row defect is fixed in source: lines 1070–1072 contain mark, id, text and res elements, matching the mobile grid rules. Visual confirmation across 320–560px remains unavailable.",
+    "fix": "Render sheet 08 at 320px, 390px and 560px and confirm descriptions and pass labels remain separate."
+   }
+  ]
+ },
+ "agentsMissing": [],
+ "brief": {
+  "hypothesis": "Restrict this pass to 12 text-only corrections on sheets 02, 07, 09 and 10 so readers can distinguish implemented checks, human approvals and proposed pilot conditions without changing exhibits or layout.",
+  "items": [
+   {
+    "n": 1,
+    "sheet": "02",
+    "change": "Before: “Built as four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into each AI step”. After: “Built around four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into their respective client-brief agents; classification and creative-shadow use separate inline instructions”. Preserve the remainder of the sentence.",
+    "source": "Verified wrong_fact; audit_fidelity and both confirming votes."
+   },
+   {
+    "n": 2,
+    "sheet": "09",
+    "change": "Before: “every spec-shaped token must appear byte-for-byte in config/channel_specs.json (PRD DR-7)”. After: “Checks normalized resolution and aspect-ratio tokens against config/channel_specs.json; exempts ratio-shaped values with denominators 10–59; does not validate duration or file-type tokens. PRD DR-7 describes the intended policy.” Before: “the gate only checks that each spec token exists in the table, not that the row fits the deliverable.” After: “the gate checks normalized dimensions and some ratios, not durations, file types or whether the row fits the deliverable.”",
+    "source": "Verified unsupported_guarantee; audit_fidelity and both confirming votes."
+   },
+   {
+    "n": 3,
+    "sheet": "09",
+    "change": "Before: “The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.” After: “The shadow drafts need three corrections and a creative lead’s decision.”",
+    "source": "task_creative; judges 1, 2 and 3, storyline."
+   },
+   {
+    "n": 4,
+    "sheet": "09",
+    "change": "Before: “Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.” After: “Creative approval is pending: the named creative lead records a choice and corrections before week 4. Client-brief live use does not authorize creative delivery; creative stays in shadow in v1.”",
+    "source": "task_creative; judges 1, 2 and 3, clarity."
+   },
+   {
+    "n": 5,
+    "sheet": "02, 07",
+    "change": "On 02, before: “a schema-validated edit in v1; a one-page runbook is a week-1 deliverable (PRD §8).” After: “a manual, schema-validated edit in v1; the review page does not save decisions or signatures. This walkthrough proposes the runbook before week 1; PRD §8 specifies champion training by week 4.” On 07, before: “The account lead writes each resolution into brief.json (conflicts[n].resolution, resolved_by) and the sign-off block (status, signed_by, signed_ts, edits_summary): a schema-validated edit in v1, a one-page runbook by week 1 (PRD §8).” After: “In v1, the account lead manually records decisions and approval in brief.json; the review page only displays them. This walkthrough proposes a runbook before week 1; PRD §8 specifies champion training by week 4.” Preserve the technical field names already in the ledgers.",
+    "source": "task_cmo; task_engineer; judge3 clarity and fact_fidelity; audit_fidelity soft issue."
+   },
+   {
+    "n": 6,
+    "sheet": "10",
+    "change": "Before: “Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.” After: “Approve a conditional four-week pilot; confirm capacity, costs and a spending ceiling before it starts.”",
+    "source": "Judges 1, 2 and 3, storyline; task_cfo."
+   },
+   {
+    "n": 7,
+    "sheet": "10",
+    "change": "In both the visible decision and ledger, before: “Validate subscription capacity: measure the plan’s usage window against roughly 15 M tokens a month before week 1 (15 M under the graded routing; higher under the 30 July routing until decision 2 re-measures it); the PRD’s API-terms assumption is superseded by the client’s subscription direction and stays unresolved.” After: “Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved.” Before: “Pilot effort and operating costs are still to be estimated.” After: “Pilot effort and operating costs remain unestimated; the proposed pre-week-1 financial gate is decision 3.”",
+    "source": "task_cfo; judges 1, 2 and 3, completeness."
+   },
+   {
+    "n": 8,
+    "sheet": "10",
+    "change": "Before: “Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.” After: “Weeks 2–3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft. Proposed Greek threshold: each of the six Greek drafts scores at least 4/5 for naturalness, with EL/EN edits compared. Both pilot leads must choose voluntary reuse. Proposed mandatory gate: missed targets block week-4 live use; the named sponsor records the release decision. Month-2 adoption is tracked separately.” In the ledger, replace the paragraph beginning “Targets: open-question precision above 80%” with this same text followed by “Month-2 adoption target: at least three further leads request onboarding.”",
+    "source": "task_cmo; task_cfo; judges 1, 2 and 3, clarity; judge1 completeness."
+   },
+   {
+    "n": 9,
+    "sheet": "10",
+    "change": "Before: “Stop rule, recommended: if weeks 2–3 miss the targets, week 4 does not go live. After the pilot a named sponsor signs the report; from month 2 new projects start from a draft by default.” After: “Proposed binding pilot condition: if weeks 2–3 miss any release target, week 4 does not go live. The executive sponsor named at kickoff records the week-4 release decision. Default use from month 2 requires a successful pilot report and separate sponsor approval; month-2 onboarding requests are an adoption measure, not a week-4 release criterion.”",
+    "source": "task_cfo; judge1 completeness."
+   },
+   {
+    "n": 10,
+    "sheet": "10",
+    "change": "Before: “A brief takes an account lead about two hours today (PRD A1); the target is fifty minutes (§2).” After: “The assumed baseline is two hours per brief (PRD A1); fifty minutes is an unvalidated attention target (§2): twenty assembling and thirty reviewing. The graded review was not timed; the pilot must measure both tasks.”",
+    "source": "task_cfo missing measured review time and validation of the attention target; frozen sheet 07 explicitly discloses the untimed review."
+   },
+   {
+    "n": 11,
+    "sheet": "10",
+    "change": "In the visible metric and ledger, before: “Nine model calls (four documents, one sent back once)”. After: “Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried)”. Preserve the usage figures and following punctuation.",
+    "source": "judge1 fact_fidelity; clarifies the usage evidence underlying task_cfo’s capacity decision."
+   },
+   {
+    "n": 12,
+    "sheet": "10",
+    "change": "Before: “One document: about 4 minutes to classify and extract, 5:45 for a full run.” After: “One document: about 4 minutes to classify and extract; 5:45 for a full run under a demo profile with the production input gate overridden.”",
+    "source": "audit_fidelity soft issue; qualifies the timing evidence relevant to task_cfo."
+   }
+  ],
+  "mustKeep": [
+   "Frozen source: WALKTHROUGH.html, SHA-256 3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d. No files edited; rendered verification is not claimed.",
+   "At most ten sheets; unchanged blockquotes and mark.cited; zero external resources; existing palette rules; thin-space thousands; action titles at most 24 words; takeaways at most 20 words; visible-word ceilings of 650 per sheet and 750 on sheet 09.",
+   "Synthetic-project disclosure, four input documents, nine-step pipeline, AI/code/person roles, static review pages and command-line operation, two champions trained by week 4, and human sign-off before creative generation.",
+   "Readiness refusal without the RFP; substantive-source, money and date checks; S0–S1 pilot restriction; unresolved subscription workspace terms rather than an asserted deployment guarantee.",
+   "Thirty-three cited extracted facts; exact-anchor checks; preserved original transcript, two flagged garbles and glossary proposals; retry evidence; later extraction model and second-reader changes kept separate from graded results.",
+   "All three paired conflict exhibits and their human resolutions: audience 25–40 urban professionals, launch 15 September 2026, production budget in the eighties excluding media; total budget remains unresolved. Preserve source budget quotations without promoting them to an approved total.",
+   "One master brief, 25 entries, three conflicts, ten questions, EL/EN excerpts, nine protected terms, five of seven fields evidenced and 4% low confidence; ready for review does not mean ready to send.",
+   "Named account-lead sign-off by Christos Maragkoudakis on 24 July 2026, actual recorded edits and unresolved media total; review was not timed; the model cannot write the signature.",
+   "17/17 applies to the defined checks on one synthetic project; sealed answer key, detailed checks and all three sheet-08 summary rows remain. Citation tags do not establish semantic support, and glossary checks do not establish Greek naturalness.",
+   "Creative A/B propositions and model identities, pending creative choice, three documented errors and health-claim judgement, six production blockers, settled facts and nonblocking questions; all shadow-mode and no-delivery labels remain.",
+   "Provisional channel-spec table and traffic-team confirmation requirement; row-suitability limitation; square, portrait and packaging exhibits with mock-up, crop, caption-zone and pipeline-text-only disclosures.",
+   "Measured usage: 0.98 M stage-one tokens, 1.13 M with creative A/B, roughly 15 M monthly at 15 briefs; later transcript extraction 598 743 versus 295 774 tokens; routing must be remeasured before capacity planning.",
+   "33-minute summed stage timing versus 25.2-minute continuous capture; refusal in three of ten supervised runs; second fixture 15/17 then 16/17 and its semantic limitations.",
+   "Two-hour assumed baseline, fifty-minute target, 180 briefs annually, 210-hour annual savings target and €4.0–4.2k gross labour value at €19–20/hour remain explicitly conditional; usage stays in tokens, and net savings remain unknown.",
+   "Four-week pilot, six retrospective projects across two leads, weeks 2–3 evaluation, conditional week-4 client-brief use, useful-question/text-retention/review-time measures, Greek review and voluntary adoption. New cutoff, ceiling and approval requirements must remain labelled as proposals.",
+   "Existing navigation, contents, disclosures, keyboard and touch behavior remain; phone rendering and sheet-08 row separation at 320, 390 and 560 pixels require successful browser verification before acceptance."
+  ]
+ }
+}

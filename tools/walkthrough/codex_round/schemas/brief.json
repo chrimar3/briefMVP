@@ -1,0 +1,47 @@
+{
+ "type": "object",
+ "properties": {
+  "hypothesis": {
+   "type": "string"
+  },
+  "items": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "n": {
+      "type": "integer"
+     },
+     "sheet": {
+      "type": "string"
+     },
+     "change": {
+      "type": "string"
+     },
+     "source": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "n",
+     "sheet",
+     "change",
+     "source"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "mustKeep": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "required": [
+  "hypothesis",
+  "items",
+  "mustKeep"
+ ],
+ "additionalProperties": false
+}

@@ -1,0 +1,20 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "This synthetic run passed 17 checks; that proves fixture coverage, not general correctness. Code enforces readiness, schemas, exact anchors, glossary, sensitivity, sign-off and spec-token checks; it groups conflict candidates. Models classify, flag garbles, extract, verify, recognise contradictions, synthesise, render and draft creative. Failed extraction/synthesis/render gates allow one repair, then stop. Humans record resolutions and signoff in brief.json; brief_review.html displays them, toggles languages and copies questions, but does not save decisions or sign. Checks cannot establish semantic support, natural Greek, complete questions or appropriate spec rows; creative errors remain review work. Creative stays shadow-only. Before week 1, the operator must rerun usage/time measurements under Sonnet extraction plus verifier; management/operator must validate subscription capacity and terms.",
+  "missing": [],
+  "confusions": [
+    "“every line carrying its citation” sounds broader than the later limitation to “this run’s rendered claim lines”.",
+    "“every fact cites a brief entry” initially sounds like factual validation, despite the unsupported creative claims identified on the same sheet."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “every line carrying its citation” with “this run’s claim lines carrying source tags; tags do not establish semantic support”.",
+    "Replace “every fact cites a brief entry” with “factual claims carry brief-entry tags, but unsupported claims can still pass into the draft”.",
+    "Replace “a schema-validated edit in v1” with “a schema-validated edit to brief.json in v1; the review page does not save resolutions or signatures”."
+  ]
+}

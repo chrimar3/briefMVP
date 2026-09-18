@@ -1,0 +1,20 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "(a) Evidence: signed audience 25–40 urban professionals; launch 15 September 2026; production budget “in the eighties,” excluding media, without confirmed units or total; zero-sugar permission, brand constraints and requested video/key visuals. (b) Hypothesis: proposition, audience psychology, tone, reasons to believe and illustrative artwork; packaging remains undefined. (c) Strike “Greek-made,” €80–85k and the dance retraction; judge guilt wording against the health-claim ban. Choose A/B/neither, resolve six blockers—ingredients, video details, visual uses, TikTok-first scope, KPIs, milestones—and record creative approval. Creative remains evaluation-only in this version. (d) Specs are provisional traffic-table lookups: the gate guarantees token membership, not deliverable suitability, platform currency, layout safety or production readiness; traffic must confirm.",
+  "missing": [],
+  "confusions": [
+    "“Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.” This mixes a future creative approval with the completed account sign-off and leaves the scope of week-4 live use unclear.",
+    "“Feel: confident, refreshed, quietly proud it’s Greek” repeats an origin-adjacent suggestion beside the explicit rejection of “Greek-made”; its intended boundary is unclear."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.” with “Creative approval is pending: record the named lead’s choice and corrections. Week-4 client-brief use does not authorize creative delivery; creative stays in shadow in v1.”",
+    "Replace “quietly proud it’s Greek” with “quietly premium”; retain Greek identity or origin language only after confirming its factual basis.",
+    "Replace “The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.” with “The drafts combine signed-off evidence with creative hypotheses. Three errors require correction, one claim needs judgement, and six open items still block production.”"
+  ]
+}

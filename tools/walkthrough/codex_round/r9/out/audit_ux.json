@@ -1,0 +1,32 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d",
+  "hardFailures": [
+    {
+      "category": "accessibility_blocker",
+      "sheet": "All — mobile navigation",
+      "pageText": "01 / 10 · Contents",
+      "evidence": "The mobile ticks retain `min-width: 32px` (line 435), requiring 320px collectively. Line 464 gives the folio `flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis`. The navigation also reserves space for Back, Next, padding and gaps.",
+      "why": "At 390px, the ticks exceed the ruler's available width, shrinking the folio's text area to zero. This is a CSS-derived clipping finding; screenshots were unavailable. Keep the folio outside the scrolling ticks or give it a nonshrinking width."
+    },
+    {
+      "category": "broken_interaction",
+      "sheet": "All — swipe navigation",
+      "pageText": "swipe horizontally or tap Next",
+      "evidence": "Line 1503 navigates when `Math.abs(dx) > 60 && Math.abs(dy) < 40`, using only touchstart and touchend coordinates. There is no touchmove handler. Executing the extracted handlers with start (250,200), intermediate vertical movement to (240,340), and end (170,220) advanced sheet 2 to 3.",
+      "why": "A gesture containing vertical scrolling can still turn the sheet if it returns near its starting height. Cancel swipe eligibility once vertical movement exceeds the threshold or scrolling occurs. Ordinary vertical gestures and gestures starting inside ledger tables were correctly excluded."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "All — incomplete rendered verification",
+      "issue": "Chrome aborted with SIGABRT for every requested render: sheets 1, 2, 8, 9 and 10 at both 1440px and 390px. No screenshots could be inspected; browser interaction checks remain unverified.",
+      "fix": "Repeat the rendering and interaction audit in a working Chrome environment before accepting this candidate."
+    },
+    {
+      "sheet": "08 — previous failure",
+      "issue": "The previous summary-row defect is fixed in source: lines 1070–1072 contain mark, id, text and res elements, matching the mobile grid rules. Visual confirmation across 320–560px remains unavailable.",
+      "fix": "Render sheet 08 at 320px, 390px and 560px and confirm descriptions and pass labels remain separate."
+    }
+  ]
+}

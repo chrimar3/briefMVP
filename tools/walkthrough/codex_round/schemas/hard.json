@@ -1,0 +1,81 @@
+{
+ "type": "object",
+ "properties": {
+  "hashMismatch": {
+   "type": "boolean"
+  },
+  "digestSeen": {
+   "type": "string"
+  },
+  "hardFailures": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "category": {
+      "type": "string",
+      "enum": [
+       "wrong_arithmetic",
+       "wrong_fact",
+       "unsupported_guarantee",
+       "missing_exhibit",
+       "broken_interaction",
+       "quote_not_verbatim",
+       "accessibility_blocker"
+      ]
+     },
+     "sheet": {
+      "type": "string"
+     },
+     "pageText": {
+      "type": "string"
+     },
+     "evidence": {
+      "type": "string"
+     },
+     "why": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "category",
+     "sheet",
+     "pageText",
+     "evidence",
+     "why"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "softIssues": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "sheet": {
+      "type": "string"
+     },
+     "issue": {
+      "type": "string"
+     },
+     "fix": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "sheet",
+     "issue",
+     "fix"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "required": [
+  "hashMismatch",
+  "digestSeen",
+  "hardFailures",
+  "softIssues"
+ ],
+ "additionalProperties": false
+}

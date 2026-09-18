@@ -1,0 +1,184 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 7,
+      "why": "Ten sheets meet the limit, but sheet 9 has roughly 770 words outside disclosures, and several summaries repeat the evidence immediately below.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#ch09 .ab",
+          "change": "Keep the A/B propositions and creative-lead decision visible; move the duplicated blocker list and procedural text into the existing readiness disclosure."
+        },
+        {
+          "sheet": "10",
+          "quote": "#ch10 .takeaways",
+          "change": "Remove this three-point preview because the numbered decisions immediately repeat it."
+        },
+        {
+          "sheet": "01",
+          "quote": "#ch01 .takeaways",
+          "change": "Remove the repeated summary bullets; the opening paragraph, evidence tiles and role legend already communicate these points."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The essential evidence, deliverables, usage, timing and human responsibilities are covered, but the pilot ask leaves operating-cost estimation and workspace-term confirmation without explicit completion criteria.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Pilot effort and operating costs are still to be estimated.",
+          "change": "Assign management and the operator to estimate setup, training, maintenance and subscription costs in week 1, with sponsor acceptance before retrospective work starts."
+        },
+        {
+          "sheet": "10",
+          "quote": "Validate subscription capacity",
+          "change": "Expand the decision to confirm both capacity and the agency workspace’s processing, retention and contractual terms; identify evidence required before client data enters the pilot."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 8,
+      "why": "The AI/code/people distinction is strong, but unexplained evaluation shorthand and one awkward approval sentence interrupt otherwise accessible language.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Targets: question precision >80%, draft survival >70%, review <30 minutes; Greek-language quality and voluntary adoption.",
+          "change": "Use: 'Targets: leads judge over 80% of questions useful, retain over 70% of draft text, and review each draft in under 30 minutes; also assess Greek quality and voluntary reuse.'"
+        },
+        {
+          "sheet": "09",
+          "quote": "Signed as the account lead’s was: in the run, by a named person, due before week 4 goes live.",
+          "change": "Use: 'Name the creative lead and record their evaluation before week 4; creative remains in shadow mode.'"
+        },
+        {
+          "sheet": "10",
+          "quote": "exam-green is not lead-ready",
+          "change": "Use: 'Passing automated checks does not make a brief ready for an account lead to approve.'"
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence sequence work, but the creative headline softens its own finding and the closing headline promises more than its action list assigns.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "The creative drafts stayed inside the signed-off facts and the spec table, except three things to strike and one call for the creative lead.",
+          "change": "Use: 'Creative drafts still need a creative lead: three errors to strike and one claim to judge.'"
+        },
+        {
+          "sheet": "10",
+          "quote": "Approve the four-week pilot: usage is measured in tokens, the cost of running it is not yet, and week 1 settles both.",
+          "change": "Use: 'Approve a conditional four-week pilot, with capacity and operating costs confirmed in week 1.'"
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a clear name, anatomy, outputs and operating model, but its business benefit and distinctive principles sit behind the implementation story.",
+      "fixes": [
+        {
+          "sheet": "01",
+          "quote": "Brief Builder turns a client’s pile of documents into a Greek and English brief.",
+          "change": "Add the intended benefit: reducing preparation time and making brief quality more consistent, explicitly presented as pilot goals."
+        },
+        {
+          "sheet": "02",
+          "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+          "change": "Move this compact principles line out of the ledger and place it directly below the pipeline diagram."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 8,
+      "why": "The paper, receipt and red-pen system is distinctive and coherent, but the source-defined layout gives long headlines and narrow creative panels excessive visual weight.",
+      "fixes": [
+        {
+          "sheet": "02–10",
+          "quote": ".title.action",
+          "change": "Edit takeaway titles to roughly 12–18 words and tune their measure to support two or three lines, preserving more space for evidence."
+        },
+        {
+          "sheet": "09",
+          "quote": ".plate-row",
+          "change": "Compose the square artwork, portrait adaptation and can as one deliberate desktop grouping instead of placing the can alone in a second row; retain a stacked mobile layout."
+        },
+        {
+          "sheet": "09",
+          "quote": ".plate.p916",
+          "change": "Move the long technical caption beneath the artwork group so it does not form a narrow column of prose under the portrait image."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "Headline tokens, model IDs, timings, checks and sign-off match the artifacts, but two provenance descriptions are broader or older than the content they describe.",
+      "fixes": [
+        {
+          "sheet": "01",
+          "quote": "Every quote is clipped verbatim from the four source documents",
+          "change": "Use: 'Source quotations reproduce the four input documents; output excerpts are identified separately.'"
+        },
+        {
+          "sheet": "09",
+          "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Replace the obsolete ring-and-leaf description with the actual wind stroke and bubbles, and scope any clearance statement to the specific artwork checked."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 7,
+      "why": "Inline assets, valid local links, keyboard controls and dialog focus handling are sound, but mobile CSS can squeeze Contents and sends important role and correction notes below the main content.",
+      "fixes": [
+        {
+          "sheet": "All, mobile",
+          "quote": ".ruler .tick",
+          "change": "Hide the ten progress ticks below 700px and reserve the middle navigation column for a readable, adequately sized Contents button."
+        },
+        {
+          "sheet": "02–10, mobile",
+          "quote": ".margin { order: 2; }",
+          "change": "Keep role stamps and essential warnings immediately below the headline; move only supplementary marginal notes after the body."
+        },
+        {
+          "sheet": "All, mobile",
+          "quote": ".next span.lbl { display: none; }",
+          "change": "Retain a visible Next label on phones while hiding only the destination title."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The wind-and-fizz identity and can are appealing and honestly labelled, but the can crowds the mandated wordmark clearance and the portrait adaptation knowingly leaves the lockup in the caption zone.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#kv-packaging .plate.pack img",
+          "change": "Increase the space above and below the wordmark to at least its height; the inspected can places both the yellow mark and category line too close."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Create that dedicated portrait composition now, raising the lockup and fitting the mock-up label fully within the frame; retain the provisional-spec disclosure."
+        },
+        {
+          "sheet": "09",
+          "quote": "Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday — zero sugar, nothing to feel guilty about.",
+          "change": "Keep the recorded draft, but attach the unsupported-origin correction and health-claim review note directly to this proposition so they remain visible beside it on mobile."
+        }
+      ]
+    }
+  ],
+  "overall": "Strong evidence-led product story, but not ready to ship unchanged: tighten repetition, simplify mobile navigation and finish the creative adaptations. Hash matched before and after review; no repository files changed. Browser rendering was blocked by the environment, so layout scores rely on HTML/CSS/SVG inspection and direct viewing of the embedded can."
+}
