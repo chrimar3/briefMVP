@@ -1,541 +1,58 @@
-<title>A Brief With Receipts</title>
-<style>
-:root {
-  color-scheme: light;
-  --paper: #F1F2EC;
-  --bar: #E5E9DF;
-  --rule: #C9CFC1;
-  --ink: #1A1A18;
-  --pencil: #5A5D55;
-  --pencil-2: #A2A69C;
-  --red: #C8102E;
-  --white: #FFFFFF;
-  --serif: Charter, "Bitstream Charter", Cambria, Georgia, "Noto Serif", "Liberation Serif", serif;
-  --receipt: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
-  --label: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
-  --ledger: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
-  --nav-h: 76px;
-}
-* { box-sizing: border-box; }
-html { background: var(--paper); }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font: 400 18px/28px var(--serif);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-html.js .sheet:not(.active) { display: none; }
-html:not(.js) .nav { display: none; }
-a { color: var(--ink); }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-/* ---------- desk ---------- */
-.desk { max-width: 1440px; margin: 0 auto; padding: 24px 48px calc(var(--nav-h) + 56px); }
-.runhead {
-  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px;
-  padding: 8px 0 12px; border-bottom: 1px solid var(--rule);
-  font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil);
-}
-.runhead b { color: var(--ink); font-weight: 700; }
-
-/* ---------- sheet ---------- */
-.sheet { display: grid; grid-template-columns: minmax(200px, 3fr) minmax(0, 9fr); column-gap: 48px; padding-top: 32px; }
-.sheet.active { animation: lay 220ms ease-out both; }
-@keyframes lay { from { transform: translateY(10px); } to { transform: none; } }
-.margin { border-right: 1px solid var(--rule); padding-right: 24px; display: flex; flex-direction: column; gap: 24px; align-self: start; position: sticky; top: 24px; }
-.folio { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
-.folio button {
-  font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--ink);
-  background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
-}
-.stamps { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
-.stamp {
-  display: inline-flex; align-items: center; gap: 10px; padding: 6px 10px;
-  border: 1.5px solid var(--ink); font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink);
-  background: transparent;
-}
-.stamp.ai { border-color: var(--pencil); color: var(--pencil); }
-.stamp.people { border-color: var(--red); color: var(--red); }
-.stamp.pending { border-style: dashed; }
-.sq { width: 10px; height: 10px; flex: none; border: 1.5px solid currentColor; }
-.sq.hatch { border-color: var(--ink); background: repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 4px); }
-.sq.fill { background: currentColor; }
-.marginalia { margin: 0; font: 400 15px/22px var(--serif); color: var(--pencil); }
-.marginalia.mono { font: 400 13px/20px var(--ledger); }
-.marginalia .lbl { display: block; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-bottom: 4px; }
-.bigcount { font: 400 64px/1 var(--serif); letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
-.bigcount small { font-size: 22px; color: var(--pencil); }
-
-.body { min-width: 0; }
-.title:focus { outline: none; }
-.title:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-.title { margin: 0 0 20px; font: 400 44px/48px var(--serif); letter-spacing: -0.01em; text-wrap: balance; max-width: 18ch; }
-.title .el { display: block; font-size: 22px; line-height: 30px; color: var(--pencil); margin-top: 8px; letter-spacing: 0; }
-.cover .title { font-size: 48px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; max-width: 24ch; }
-.cover .title .el { font-weight: 400; font-size: 26px; line-height: 34px; }
-.narr { margin: 0 0 32px; max-width: 62ch; }
-.narr + .narr { margin-top: -16px; }
-.slide-head .promise { margin: 12px 0 0; color: var(--pencil); }
-a.repo { color: var(--ink); text-decoration-color: var(--pencil-2); text-underline-offset: 3px; }
-.hero { margin: 0 0 32px; }
-.sub { margin: 40px 0 12px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); padding-top: 12px; border-top: 1px solid var(--rule); }
-.note { margin: 12px 0 0; font: 400 15px/22px var(--serif); color: var(--pencil); max-width: 62ch; }
-.note.red { color: var(--red); font-style: italic; }
-.mono { font-family: var(--ledger); font-size: 13px; line-height: 20px; }
-.cite { font: 400 13px/20px var(--ledger); color: var(--ink); }
-.cite .dim { color: var(--pencil); }
-
-/* ---------- clippings ---------- */
-.clip { margin: 0; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 20px 24px; }
-.clip blockquote { margin: 0; font: 400 18px/28px var(--serif); color: var(--ink); overflow-wrap: anywhere; }
-.clip figure.inner, .receipt figure.inner { margin: 0; }
-.clip figcaption { margin-top: 14px; display: flex; flex-direction: column; gap: 4px; }
-.clip .gloss { font: 400 13px/20px var(--ledger); color: var(--pencil); }
-mark.cited { background: none; color: inherit; box-shadow: inset 0 0 0 1px var(--ink); padding: 1px 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-mark.flag { background: none; color: inherit; text-decoration: underline; text-decoration-color: var(--pencil); text-decoration-thickness: 2px; text-underline-offset: 5px; position: relative; }
-.active mark.flag { animation: ulin 320ms ease-out both; }
-.active mark.flag:nth-of-type(2) { animation-delay: 120ms; }
-@keyframes ulin { from { text-decoration-color: transparent; } to { text-decoration-color: var(--pencil); } }
-.sic { font: 400 12px/16px var(--label); letter-spacing: 0.1em; color: var(--pencil); text-transform: uppercase; vertical-align: super; margin-left: 2px; }
-.clips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-.clip .kind { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; }
-
-/* machine output block */
-.machine { margin: 16px 0 0; border-top: 1px solid var(--rule); padding-top: 14px; }
-.machine .lbl { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin: 0 0 6px; }
-.machine p { margin: 0; }
-.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 16px; font: 400 13px/20px var(--ledger); margin: 8px 0 0; }
-.kv dt { color: var(--pencil); margin: 0; }
-.kv dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
-
-/* ---------- conflict pairs ---------- */
-.pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin-bottom: 16px; }
-.pair .clip { position: relative; }
-.vs { align-self: center; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
-.resolve { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 12px; font: 400 15px/22px var(--serif); color: var(--pencil); padding: 6px 0 0; }
-.resolve .line { flex: 1; border-bottom: 1px solid var(--ink); min-height: 22px; }
-.resolve .line.written { color: var(--red); font-style: italic; border-bottom-color: var(--red); padding: 0 8px 2px; }
-.resolve .init { color: var(--red); font: 700 13px/16px var(--label); letter-spacing: 0.12em; }
-.conflict-block { margin-bottom: 40px; }
-.conflict-block h3 { margin: 0 0 12px; font: 400 22px/28px var(--serif); }
-.conflict-block h3 span { font: 400 13px/20px var(--ledger); color: var(--pencil); margin-left: 12px; }
-.circled::after {
-  content: ""; position: absolute; inset: -6px -8px; pointer-events: none;
-  border: 2.5px solid var(--red); border-radius: 48% 52% 50% 50% / 55% 45% 55% 45%; transform: rotate(-1.5deg);
-}
-.active .circled::after { animation: pen 600ms ease-out both; animation-delay: 500ms; }
-@keyframes pen { from { opacity: 0.35; } to { opacity: 1; } }
-
-/* ---------- ledger tables (code material) ---------- */
-.ledger-table { width: 100%; border-collapse: collapse; font: 400 13.5px/21px var(--ledger); font-variant-numeric: tabular-nums; }
-.ledger-table th, .ledger-table td { text-align: left; padding: 6px 12px; height: 32px; border-top: 1px solid var(--rule); vertical-align: top; }
-.ledger-table th { font-weight: 400; color: var(--pencil); }
-.ledger-table tr:nth-child(odd) td { background: var(--bar); }
-.ledger-table td.r, .ledger-table th.r { text-align: right; white-space: nowrap; }
-.ledger-table td.ok::before { content: "\2713\00a0"; }
-.ledger-table td.x::before { content: "\2717\00a0"; }
-.ledger-wrap { overflow-x: auto; border-bottom: 1px solid var(--rule); }
-.verdict { margin: 16px 0 0; padding: 12px 16px; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); font: 700 15px/22px var(--receipt); }
-.verdict.stop { display: flex; gap: 16px; align-items: flex-start; }
-.stopstamp { flex: none; padding: 6px 10px; border: 1.5px solid var(--ink); font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; background: var(--ink); color: var(--paper); }
-
-/* ---------- exam ---------- */
-.exam { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
-.exam li { display: grid; grid-template-columns: 28px 64px 1fr auto; gap: 12px; align-items: center; min-height: 32px; padding: 6px 12px; border-top: 1px solid var(--rule); font: 400 13px/20px var(--ledger); }
-.exam li:nth-child(odd) { background: var(--bar); }
-.exam .id { color: var(--pencil); }
-.exam .res { color: var(--ink); text-align: right; }
-.exam .mark { width: 18px; height: 18px; display: block; }
-.exam .mark path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: square; stroke-dasharray: 24; stroke-dashoffset: 0; }
-.active .exam .mark path { animation: draw 200ms ease-out both; animation-delay: calc(var(--i) * 60ms); }
-@keyframes draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
-.exam .tier { grid-column: 1 / -1; padding: 8px 0 2px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); background: none !important; border-top: 0; }
-
-/* ---------- brief skeleton ---------- */
-.toc { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
-.toc li { display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--rule); }
-.toc .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
-.toc .c { font: 400 13px/20px var(--ledger); color: var(--ink); text-align: right; white-space: nowrap; }
-.toc .hole { font: 700 15px/22px var(--receipt); color: var(--ink); }
-.qs { margin: 0; padding: 0; list-style: none; counter-reset: q; }
-.qs li { position: relative; padding: 14px 0 14px 48px; border-top: 1px solid var(--rule); counter-increment: q; }
-.qs li::before { content: counter(q, decimal-leading-zero); position: absolute; left: 0; top: 16px; font: 400 13px/20px var(--ledger); color: var(--pencil); }
-.qs .field { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); display: block; margin-bottom: 4px; }
-.qs .q { font: 600 16px/24px var(--receipt); background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 12px 16px; margin: 8px 0 0; display: block; }
-.qs .why { display: block; margin-top: 8px; font-size: 15px; line-height: 22px; color: var(--pencil); }
-
-/* ---------- facing pages ---------- */
-.facing { display: grid; grid-template-columns: 1.04fr 1px 1fr; gap: 0 32px; }
-.facing .gutter { background: var(--rule); }
-.facing .page { background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 24px 28px; }
-.facing h3 { margin: 0 0 4px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
-.facing h4 { margin: 20px 0 8px; font: 400 20px/28px var(--serif); }
-.facing h4:first-of-type { margin-top: 8px; }
-.facing p, .facing li { font: 400 16px/25px var(--serif); margin: 0 0 8px; }
-.facing ul { margin: 0; padding-left: 20px; }
-.facing .hole { font: 700 15px/22px var(--receipt); }
-.gl { text-decoration: underline; text-decoration-color: var(--pencil-2); text-decoration-thickness: 1px; text-underline-offset: 4px; }
-.facing .cite { display: inline; margin-left: 6px; }
-
-/* ---------- sign-off ---------- */
-.signoff { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--rule); }
-.landed { display: inline-block; padding: 12px 18px; border: 2.5px solid var(--red); color: var(--red); font: 700 22px/26px var(--label); letter-spacing: 0.18em; text-transform: uppercase; }
-.active .landed { animation: land 320ms cubic-bezier(.2,.9,.3,1.2) both; animation-delay: 700ms; }
-@keyframes land { from { opacity: 0.35; transform: scale(1.12); } to { opacity: 1; transform: scale(1); } }
-.signrec { margin: 0; max-width: 52ch; }
-.signrec .red { color: var(--red); font-style: italic; }
-
-/* ---------- receipts (extraction) ---------- */
-.receipt { background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 20px 24px; margin-bottom: 24px; }
-.receipt blockquote { margin: 0; font: 400 18px/28px var(--serif); }
-.receipt figcaption { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
-.attempts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-.attempt { border-top: 1px solid var(--rule); padding-top: 10px; }
-.attempt .n { font: 400 40px/1 var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.attempt .n small { font-size: 14px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
-.attempt .d { font: 400 13px/20px var(--ledger); color: var(--pencil); margin-top: 4px; }
-
-/* ---------- creative brief ---------- */
-.plate-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-.plate { position: relative; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule), 0 12px 24px -18px rgba(0,0,0,.35); padding: 18px; }
-.plate.p11 { width: 52%; }
-.plate.p916 { width: calc(52% * 9 / 16); }
-.plate svg { display: block; width: 100%; height: auto; }
-.plate.pack { width: 40%; margin-top: 8px; }
-.plate.pack img { display: block; width: 100%; height: auto; }
-.plate .cm { position: absolute; width: 14px; height: 14px; border-color: var(--ink); border-style: solid; border-width: 0; }
-.plate .cm.tl { top: 4px; left: 4px; border-top-width: 1px; border-left-width: 1px; }
-.plate .cm.tr { top: 4px; right: 4px; border-top-width: 1px; border-right-width: 1px; }
-.plate .cm.bl { bottom: 4px; left: 4px; border-bottom-width: 1px; border-left-width: 1px; }
-.plate .cm.br { bottom: 4px; right: 4px; border-bottom-width: 1px; border-right-width: 1px; }
-.slug { margin: 10px 0 0; font: 400 13px/20px var(--ledger); color: var(--ink); }
-.slug .dim { color: var(--pencil); }
-.swatches { display: flex; gap: 24px; flex-wrap: wrap; margin: 8px 0 12px; font: 400 13px/20px var(--ledger); }
-.swatch { display: flex; align-items: center; gap: 10px; }
-.swatch i { width: 28px; height: 28px; border: 1px solid var(--rule); display: block; }
-.callouts { margin: 12px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; font: 400 15px/22px var(--serif); color: var(--ink); }
-.callouts .dim { font: 400 12px/18px var(--ledger); color: var(--pencil); }
-.callouts li::before { content: "\2014\00a0"; }
-.brief { margin: 56px auto 0; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 40px 48px; max-width: 66ch; }
-.brief .bh { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: baseline; border-bottom: 1px solid var(--rule); padding-bottom: 16px; margin-bottom: 8px; }
-.brief .bh h3 { margin: 0; font: 700 26px/32px var(--serif); letter-spacing: -0.01em; }
-.brief h4 { margin: 32px 0 10px; font: 400 22px/28px var(--serif); display: flex; gap: 12px; align-items: baseline; }
-.brief h4 .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
-.brief p, .brief li { margin: 0 0 10px; font-size: 17px; line-height: 27px; }
-.brief ul { margin: 0; padding-left: 20px; }
-.brief .smp { font-size: 24px; line-height: 34px; font-weight: 700; letter-spacing: -0.01em; }
-.brief .cite { display: inline; margin-left: 6px; font-size: 12px; }
-.brief .pencil { color: var(--pencil); font-size: 15px; line-height: 22px; }
-.brief .tfd dt { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-top: 12px; }
-.brief .tfd dd { margin: 4px 0 0; }
-.spec { width: 100%; border-collapse: collapse; font: 400 13px/20px var(--ledger); }
-.spec th, .spec td { text-align: left; padding: 8px 12px 8px 0; border-top: 1px solid var(--rule); vertical-align: top; }
-.spec th { font-weight: 400; color: var(--pencil); }
-.spec tr:last-child td { border-bottom: 1px solid var(--rule); }
-.check { list-style: none; margin: 0; padding: 0; }
-.check li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 8px 0; border-top: 1px solid var(--rule); }
-.check .box { width: 14px; height: 14px; border: 1.5px solid var(--ink); margin-top: 6px; }
-.check .box.red { border-color: var(--red); position: relative; }
-.check .box.red::after { content: ""; position: absolute; inset: -5px; border: 2px solid var(--red); border-radius: 50% 45% 55% 50% / 50% 55% 45% 50%; transform: rotate(-3deg); }
-.check .red-i { color: var(--red); font-style: italic; }
-.ab { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); }
-
-/* ---------- closing ---------- */
-.numbers { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
-.numbers li { display: grid; grid-template-columns: minmax(180px, 1fr) 2fr; gap: 24px; align-items: baseline; padding: 14px 12px; border-top: 1px solid var(--rule); }
-.numbers li:nth-child(odd) { background: var(--bar); }
-.numbers .big { font: 400 40px/44px var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.numbers .big small { font-size: 16px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
-.numbers .big.q { font: 600 20px/28px var(--receipt); letter-spacing: 0; }
-.numbers .what { margin: 0; font-size: 16px; line-height: 25px; }
-.numbers .what .cite { display: block; margin-top: 2px; }
-.lastline { margin: 40px 0 0; font: 400 44px/48px var(--serif); color: var(--red); letter-spacing: -0.01em; }
-
-/* ---------- ledger band (technical layer) ---------- */
-.ledger { margin-top: 40px; border-top: 1px solid var(--rule); }
-.ledger summary { list-style: none; cursor: pointer; display: flex; justify-content: flex-start; gap: 16px; flex-wrap: wrap; padding: 12px 0; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
-.ledger summary::-webkit-details-marker { display: none; }
-.ledger summary .key { margin-left: auto; color: var(--pencil); font-weight: 400; letter-spacing: 0.1em; }
-.ledger summary::before { content: "+"; margin-right: 10px; font-family: var(--ledger); }
-.ledger[open] summary::before { content: "\2013"; }
-.ledger .ledger-table th { font-weight: 400; }
-.ledger .foot { margin: 8px 0 0; font: 400 13px/20px var(--ledger); color: var(--pencil); }
-
-/* ---------- cover ---------- */
-.legend { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--rule); }
-.legend li { display: grid; grid-template-columns: 24px 1fr; gap: 16px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); font: 400 24px/32px var(--serif); }
-.legend .sq { margin-top: 0; width: 12px; height: 12px; }
-.legend .sq.people { border-color: var(--red); background: var(--red); }
-.legend .red, .legend .red .g { color: var(--red); }
-.blockers { margin: 4px 0 12px; padding-left: 20px; }
-.blockers li { font: 400 15px/22px var(--serif); padding: 2px 0; }
-.decision-record { margin: 8px 0 16px; padding-left: 22px; font: 400 14px/21px var(--serif); color: var(--ink); }
-.decision-record > li { margin: 6px 0; }
-.legend small { display: block; font-size: 15px; line-height: 22px; color: var(--pencil); }
-.howto { font-size: 15px; line-height: 22px; color: var(--pencil); max-width: 62ch; }
-.howto kbd { font: 400 12px/16px var(--ledger); border: 1px solid var(--rule); padding: 1px 6px; background: var(--white); }
-
-/* ---------- navigation ---------- */
-.nav {
-  position: fixed; left: 0; right: 0; bottom: 0; height: var(--nav-h); z-index: 20;
-  background: var(--paper); border-top: 1px solid var(--rule);
-}
-.nav-in { max-width: 1440px; margin: 0 auto; padding: 0 48px; height: 100%; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
-.back { justify-self: start; background: none; border: 0; padding: 12px 0; cursor: pointer; font: 400 17px/24px var(--serif); color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
-.back:disabled { color: var(--pencil-2); text-decoration: none; cursor: default; }
-.ruler { display: flex; align-items: center; gap: 0; }
-.ruler .fol { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); margin-right: 16px; white-space: nowrap; }
-.ruler .tick { position: relative; width: 44px; height: 44px; background: none; border: 0; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.ruler .tick i { display: block; width: 1px; height: 16px; background: var(--rule); }
-.ruler .tick.done i { width: 1px; background: transparent; }
-.ruler .tick.done i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 9px; border: solid var(--ink); border-width: 0 1.5px 1.5px 0; transform: translate(-40%, -60%) rotate(45deg); }
-.ruler .tick.cur i { width: 10px; height: 10px; background: var(--ink); }
-.ruler .tick .tip { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 700 11px/16px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: var(--white); border: 1px solid var(--rule); padding: 4px 8px; display: none; }
-.ruler .tick:hover .tip, .ruler .tick:focus-visible .tip { display: block; }
-.next {
-  white-space: nowrap;
-  justify-self: end; background: var(--ink); color: var(--paper); border: 0; cursor: pointer;
-  padding: 14px 22px; font: 400 15px/20px var(--label); display: inline-flex; gap: 12px; align-items: center;
-}
-.next b { font-weight: 700; white-space: nowrap; }
-.next:hover { filter: brightness(0.85); }
-.next:focus-visible { outline: 2px solid var(--paper); outline-offset: -4px; box-shadow: 0 0 0 2px var(--ink); }
-.next .arrow { font-family: var(--serif); }
-
-/* ---------- contents overlay ---------- */
-.contents { position: fixed; inset: 0 0 var(--nav-h) 0; z-index: 30; background: var(--paper); overflow: auto; padding: 32px 48px; }
-.contents-in { max-width: 1440px; margin: 0 auto; }
-.contents h2 { margin: 0 0 8px; font: 400 44px/48px var(--serif); letter-spacing: -0.01em; }
-.contents .close { float: right; background: none; border: 1.5px solid var(--ink); padding: 8px 14px; font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
-.contents ol { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--rule); }
-.contents li { border-bottom: 1px solid var(--rule); }
-.contents li button { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: baseline; padding: 12px 12px; font: 400 20px/28px var(--serif); color: var(--ink); }
-.contents li button:hover { background: var(--white); }
-.contents li.cur button { background: var(--bar); }
-.contents .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
-.contents .roles { display: flex; gap: 8px; align-items: center; }
-.contents .what { display: block; font-size: 15px; line-height: 22px; color: var(--pencil); }
-
-/* ---------- consulting anatomy: slide head, takeaways, tiles, columns ---------- */
-.slide-head { grid-column: 1 / -1; padding-bottom: 22px; border-bottom: 1px solid var(--rule); margin-bottom: 28px; }
-.kicker { margin: 0 0 12px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); display: flex; gap: 6px 16px; flex-wrap: wrap; align-items: baseline; }
-.kicker .num { color: var(--ink); }
-.kicker .el { text-transform: none; letter-spacing: 0; font: 400 14px/16px var(--serif); }
-.title.action { margin: 0; font-size: 32px; line-height: 40px; max-width: 40ch; }
-.cover .kicker { margin-bottom: 20px; }
-.takeaways { list-style: none; margin: 0 0 32px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 28px; }
-.takeaways li { font-size: 16px; line-height: 24px; padding-top: 10px; border-top: 2px solid var(--ink); }
-.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 0 0 36px; }
-.tile { border-top: 2px solid var(--ink); padding-top: 12px; }
-.tile .big { font: 400 52px/1 var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.tile .big small { font-size: 18px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
-.tile p { margin: 8px 0 0; font-size: 15px; line-height: 22px; color: var(--pencil); }
-.tile .cite { display: block; margin-top: 2px; }
-.cols3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
-.cols2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
-.col h3 { margin: 0 0 8px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); padding-top: 12px; border-top: 1px solid var(--rule); }
-.col p, .col li { font-size: 16px; line-height: 24px; margin: 0 0 8px; }
-.col ul { margin: 0; padding-left: 18px; }
-.flow { list-style: none; margin: 0 0 36px; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 0; align-items: stretch; }
-.flow li { display: flex; align-items: stretch; }
-.flow li + li::before { content: ""; width: 16px; height: 1px; background: var(--ink); margin: 26px 4px 0; flex: none; }
-.flow .node { border: 1.5px solid var(--ink); padding: 8px 12px; min-width: 128px; max-width: 168px; display: grid; align-content: start; gap: 2px; background: var(--white); }
-.flow .node.ai { border-color: var(--pencil); }
-.flow .node.code { background: repeating-linear-gradient(45deg, var(--bar) 0 2px, var(--white) 2px 9px); }
-.flow .node.people { border-color: var(--red); border-width: 2px; }
-.flow .node.doc { border-style: dashed; border-color: var(--pencil); background: transparent; }
-.flow .n { font: 400 12px/16px var(--ledger); color: var(--pencil); }
-.flow .name { font: 700 13px/18px var(--label); letter-spacing: 0.02em; color: var(--ink); }
-.flow .who { font: 700 10px/14px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--pencil); margin-top: 2px; }
-.flow .node.people .who { color: var(--red); }
-.pair.single { grid-template-columns: 1fr; }
-.limits { list-style: none; margin: 0 0 8px; padding: 0; border-bottom: 1px solid var(--rule); }
-.limits li { padding: 10px 0; border-top: 1px solid var(--rule); font-size: 16px; line-height: 24px; }
-.limits .cite { display: block; margin-top: 2px; }
-.decisions { list-style: none; margin: 0; padding: 0; counter-reset: d; }
-.decisions > li { position: relative; padding: 14px 0 14px 52px; border-top: 1px solid var(--rule); counter-increment: d; font-size: 17px; line-height: 26px; }
-.decisions > li:last-child { border-bottom: 1px solid var(--rule); }
-.decisions > li::before { content: counter(d); position: absolute; left: 0; top: 13px; width: 30px; height: 30px; border: 1.5px solid var(--red); color: var(--red); font: 700 13px/28px var(--label); text-align: center; }
-.decisions .cite { display: block; margin-top: 2px; }
-.limits li, .decisions li, .qs .why, .qs .q, .numbers .what { max-width: 68ch; }
-.ledger .foot.head { font-weight: 700; margin-top: 16px; }
-.cover .tile .big { font-size: 42px; }
-.ask { margin: 0 0 20px; padding: 12px 16px; border-left: 3px solid var(--red); font-size: 19px; line-height: 26px; }
-.principles { margin: 8px 0 0; font: 400 17px/26px var(--serif); color: var(--ink); }
-.jump { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.callouts s { text-decoration-color: var(--red); }
-.marks { margin: 24px 0 0; font: 400 15px/24px var(--serif); color: var(--pencil); max-width: 70ch; }
-.marks .g { color: var(--pencil); }
-#ch10 .sub { margin-top: 56px; }
-.nav.dim { opacity: 0.35; }
-.sub-list { margin: 8px 0 6px; padding-left: 18px; }
-.sub-list li { counter-increment: none; padding: 4px 0; border: 0; font-size: 16px; line-height: 24px; }
-.decisions .sub-list li::before { content: none; }
-.ab .lastline { font-size: 26px; line-height: 32px; margin-top: 24px; }
-.limits li { padding: 12px 0 14px; }
-.decisions > li { padding: 16px 0 16px 52px; }
-.repo.offline { text-decoration: none; color: var(--pencil); }
-.repo.offline::after { content: " (opens from the repository folder)"; font: 400 12px/16px var(--ledger); }
-.contents li.group { border-bottom: 0; padding: 20px 12px 6px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
-
-/* ---------- ten-sheet edition: glyph marks, flow rows, gate band ---------- */
-.g { width: 14px; height: 14px; display: inline-block; vertical-align: -2px; flex: none; }
-.stamp .g { width: 13px; height: 13px; }
-.legend li { grid-template-columns: 20px 1fr; }
-.legend .g { width: 16px; height: 16px; color: var(--pencil); margin-top: 8px; }
-.legend li:nth-child(2) .g { color: var(--ink); }
-.legend .red { color: var(--red); display: inline-flex; }
-.legend .red .g { color: var(--red); }
-.sq.people { border-color: var(--red); background: var(--red); }
-.stage-lbl { margin: 0 0 8px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
-.flow { margin: 0 0 16px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 20px; }
-.flow li { position: relative; }
-.flow li + li::before { position: absolute; left: -19px; top: 26px; width: 18px; margin: 0; }
-.flow li { flex: 1 1 0; min-width: 0; }
-.flow .node { width: 100%; min-width: 0; max-width: none; }
-.flow .what { font: 400 13px/18px var(--serif); color: var(--pencil); }
-.flow .node.doc .name { color: var(--pencil); }
-.gate-band { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; border: 2px solid var(--red); padding: 10px 14px; margin: 4px 0 20px; background: var(--white); }
-.gate-band .n { font: 400 12px/16px var(--ledger); color: var(--pencil); }
-.gate-band .name { font: 700 13px/18px var(--label); letter-spacing: 0.02em; color: var(--red); text-transform: uppercase; }
-.gate-band .what { font: 400 14px/20px var(--serif); color: var(--ink); flex: 1 1 24ch; }
-.gate-band .who { font: 700 10px/14px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); }
-.nav .fol { background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; padding: 12px 0; }
-.cover .tiles { margin-top: 8px; }
-.cover .cols3 { margin-bottom: 8px; }
-.body > .clip { margin-bottom: 24px; }
-
-/* ---------- responsive ---------- */
-@media (max-width: 1240px) {
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 1000px) {
-  .clips { grid-template-columns: 1fr; }
-  .desk { padding-left: 24px; padding-right: 24px; }
-  .sheet { grid-template-columns: 1fr; }
-  .margin { position: static; border-right: 0; border-bottom: 1px solid var(--rule); padding: 0 0 16px; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
-  .marginalia { flex-basis: 100%; }
-  .bigcount { font-size: 40px; }
-  .title { font-size: 34px; line-height: 38px; }
-  .title.action { font-size: 28px; line-height: 36px; }
-  .takeaways, .tiles, .cols3, .cols2 { grid-template-columns: 1fr; }
-  .flow { display: flex; flex-direction: column; }
-  .flow li + li::before { position: static; width: 1px; height: 14px; margin: 0 0 0 24px; }
-  .sheet { display: flex; flex-direction: column; }
-  .margin { order: 2; }
-  .body { order: 1; }
-  .brief p, .brief li { font-size: 16px; line-height: 25px; }
-  .callouts { grid-template-columns: 1fr; }
-  .ruler .tick { width: 32px; min-width: 32px; }
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cover .title { font-size: 48px; line-height: 50px; }
-  .pair { grid-template-columns: 1fr; }
-  .vs { justify-self: start; }
-  .facing { grid-template-columns: 1fr; gap: 24px; }
-  .facing .gutter { display: none; }
-  .plate.p11, .plate.p916 { width: 100%; }
-  .plate.p916 { width: 56%; }
-  .plate.pack { width: 56%; }
-  .brief { padding: 24px; }
-  .nav-in { padding: 0 16px; gap: 12px; grid-template-columns: auto minmax(0, 1fr) auto; }
-  .ruler { min-width: 0; overflow-x: auto; padding: 4px 0; }
-  .ruler .fol { margin-right: 8px; }
-  .ruler .tick { width: 24px; }
-  .ruler .tick .tip { display: none !important; }
-  .next { padding: 12px 14px; }
-  .next span.lbl { display: none; }
-  .contents { padding: 24px 16px; }
-  .contents li button { grid-template-columns: 40px 1fr; }
-  .contents .roles { display: none; }
-  .numbers li { grid-template-columns: 1fr; gap: 8px; }
-}
-@media (max-width: 600px) {
-  .cover .title { font-size: 34px; line-height: 38px; }
-  .cover .title .el { font-size: 20px; line-height: 27px; }
-  .ruler .tick { width: 28px; height: 44px; }
-  .ruler .fol { border: 1.5px solid var(--ink); padding: 8px 10px; text-decoration: none; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-  .cover.sheet { display: flex; flex-direction: column; }
-  .cover .margin { order: 2; }
-  .cover .body { order: 1; }
-}
-@media (max-width: 700px) {
-  .plate.pack { width: 100%; }
-  .ruler { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .ruler .tick { width: 26px; }
-  #next-title { display: none; }
-  .next .arrow { font-size: 20px; }
-}
-@media (max-width: 560px) {
-  .exam li { grid-template-columns: 28px 1fr; }
-  .exam .id { display: none; }
-  .exam .res { grid-column: 2; text-align: left; color: var(--pencil); }
-  .toc li { grid-template-columns: 32px 1fr; }
-  .toc .c { grid-column: 2; text-align: left; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-}
-@media print {
-  html.js .sheet:not(.active) { display: grid; }
-  .ledger-wrap { overflow: visible; }
-  .desk { padding: 0 0 24px; max-width: none; }
-  .nav, .contents { display: none !important; }
-  .sheet { break-before: page; }
-  .margin { position: static; }
-}
-</style>
-<script>document.documentElement.classList.add('js');</script>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Brief Builder — a conditional pilot</title><style>:root{color-scheme:light;--paper:#F1F2EC;--ink:#1A1A18;--pencil:#5A5D55;--rule:#C9CFC1;--bar:#E5E9DF;--white:#FFFFFF;--red:#C8102E;--serif:Charter,Cambria,Georgia,serif;--label:system-ui,Arial,sans-serif;--ledger:ui-monospace,Menlo,Consolas,monospace;--nav-h:5rem;--nav-clearance:5rem}
+*{box-sizing:border-box}html{background:var(--paper);scroll-padding-bottom:calc(var(--nav-clearance) + 2rem)}body{margin:0;background:var(--paper);color:var(--ink);font:1.125rem/1.75rem var(--serif);-webkit-font-smoothing:antialiased}a{color:inherit;text-underline-offset:.2em}button{font:inherit;color:inherit;cursor:pointer}button,a,summary{-webkit-tap-highlight-color:transparent}button,summary{min-height:2.75rem}button{background:none;border:1px solid var(--pencil);padding:.5rem .75rem}button:disabled{color:var(--pencil);cursor:default}a,button,summary{touch-action:manipulation}:focus-visible{outline:2px solid var(--ink);outline-offset:3px}[hidden]{display:none!important}.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.skip{position:fixed;top:-6rem;left:1rem;background:var(--white);padding:.75rem;z-index:50}.skip:focus{top:1rem}.desk{max-width:80rem;margin:auto;padding:1.5rem 3rem calc(var(--nav-clearance) + 4rem)}.runhead{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1.5rem;border-bottom:1px solid var(--pencil);padding:0 0 1rem;font:.875rem/1.3125rem var(--label);color:var(--pencil)}.runhead b{color:var(--ink)}.reading-controls{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:1rem 0 2rem;font:.875rem/1.3125rem var(--label)}.reading-controls span{margin-left:auto;color:var(--pencil)}html:not(.js) .reading-controls,html:not(.js) .nav,html:not(.js) .open-contents{display:none}.sheet{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:0 1.5rem;margin:0 0 4rem;scroll-margin-top:1.5rem}html.js:not(.read-all) .sheet:not(.active){display:none}.slide-head{grid-column:1/-1;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--pencil)}.kicker{font:600 .875rem/1.3125rem var(--label);letter-spacing:.07em;text-transform:uppercase;color:var(--pencil);margin:0 0 1rem}.title.action{font:400 2.25rem/2.625rem var(--serif);letter-spacing:-.02em;max-width:38ch;margin:0;text-wrap:balance}.implication{max-width:62ch;margin:1rem 0 0;font:1.125rem/1.75rem var(--serif)}.sheet-tools{grid-column:1/-1;margin-bottom:1rem}.folio{font:.875rem/1.3125rem var(--label);color:var(--pencil)}.folio button{border:0;padding:.5rem 0;text-decoration:underline;text-underline-offset:.25em}.implications{grid-column:1/-1}.takeaways{list-style:none;padding:0;margin:0 0 2rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem}.takeaways li{border-top:2px solid var(--ink);padding-top:.75rem;font:1rem/1.5rem var(--serif)}.body{grid-column:1/10;min-width:0}.margin{grid-column:10/-1;min-width:0;align-self:start;border-left:1px solid var(--rule);padding-left:1.5rem;color:var(--pencil)}.margin:empty{display:none}.marginalia{margin:0 0 1.5rem;font:1rem/1.5rem var(--serif)}.lbl{display:block;font:600 .875rem/1.3125rem var(--label);margin-bottom:.5rem}.bigcount{font:2.75rem/3rem var(--serif);color:var(--ink);margin-bottom:1rem}.bigcount small{display:block;font:1rem/1.5rem var(--label)}p{max-width:62ch}.narr{margin:0 0 1.5rem}.note,.howto,.pencil{font:1rem/1.5rem var(--serif);color:var(--pencil);margin:1rem 0}.sub{font:400 1.375rem/1.75rem var(--serif);margin:2rem 0 1rem}.sub:first-child{margin-top:0}.hero{margin:0 0 1.5rem}.cite,.mono,.source-path{font:.875rem/1.3125rem var(--ledger);overflow-wrap:anywhere}.cite{color:var(--pencil)}.dim{color:var(--pencil)}.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;margin:0 0 2rem}.tile{border-top:2px solid var(--ink);padding-top:1rem}.tile .big{font:2.75rem/3rem var(--serif);font-variant-numeric:tabular-nums}.tile .big small{font:1rem/1.5rem var(--label)}.tile p{font:1rem/1.5rem var(--serif);margin:.5rem 0}.tile .cite{display:block}.legend{display:flex;flex-wrap:wrap;gap:1rem;list-style:none;padding:1rem 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font:.875rem/1.3125rem var(--label)}.legend li{display:flex;align-items:center;gap:.5rem}.g{width:1rem;height:1rem;display:inline-block;vertical-align:middle}.legend .red{color:var(--ink)}.clips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}.clip,.receipt{background:var(--white);border:1px solid var(--rule);padding:1.5rem;margin:0}.receipt{margin-bottom:1.5rem}.clip blockquote,.receipt blockquote{font:1.125rem/1.75rem var(--serif);margin:0;overflow-wrap:anywhere}.inner{margin:0}.clip figcaption,.receipt figcaption{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}.gloss{font:.875rem/1.3125rem var(--ledger);color:var(--pencil)}.kind{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;margin-bottom:1rem;font:.875rem/1.3125rem var(--label);color:var(--pencil)}mark.cited{background:none;color:inherit;outline:1px solid var(--pencil);box-decoration-break:clone;-webkit-box-decoration-break:clone}mark.flag{color:inherit;background:none;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}.sic{font:.75rem/1rem var(--label);vertical-align:super;margin-left:.15rem}.machine{border-top:1px solid var(--rule);margin-top:1rem;padding-top:1rem}.machine p{margin:0}.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.25rem 1rem;font:.875rem/1.3125rem var(--ledger)}.kv dt{color:var(--pencil)}.kv dd{margin:0;overflow-wrap:anywhere}.stage-lbl{font:600 .875rem/1.3125rem var(--label);margin:1.5rem 0 .75rem}.flow{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.75rem;padding:0;margin:0 0 1rem}.flow li{min-width:0}.node{display:flex;flex-direction:column;gap:.25rem;height:100%;border:1px solid var(--pencil);padding:.75rem;background:var(--white)}.node.doc{background:none;border-style:dashed}.node.code{background:var(--bar)}.node .n{font:.875rem/1.3125rem var(--ledger)}.node .name{font:600 .875rem/1.3125rem var(--label)}.node .what{font:1rem/1.5rem var(--serif)}.node .who{font:.875rem/1.3125rem var(--label);color:var(--pencil);margin-top:auto;padding-top:.5rem}.gate-band{display:flex;flex-wrap:wrap;gap:.5rem 1rem;padding:1rem;border:2px solid var(--ink);background:var(--bar);font:1rem/1.5rem var(--serif)}.gate-band .name{font-weight:bold}.gate-band .who{font:.875rem/1.3125rem var(--label)}.verdict{border:1px solid var(--pencil);background:var(--white);padding:1rem;font:1rem/1.5rem var(--ledger);margin:1rem 0}.verdict.stop{display:flex;gap:1rem;align-items:start}.stopstamp{background:var(--ink);color:var(--white);padding:.25rem .5rem;font:600 .875rem/1.3125rem var(--label)}.conflict-block{margin:0 0 2rem}.conflict-block h3{font:1.375rem/1.75rem var(--serif);margin:0 0 1rem}.conflict-block h3 span{display:block;font:.875rem/1.3125rem var(--ledger);color:var(--pencil);margin-top:.5rem}.pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem}.pair.single{grid-template-columns:1fr}.vs{align-self:center;font:.875rem/1.3125rem var(--label)}.resolve{display:flex;align-items:baseline;gap:.75rem;grid-column:1/-1;font:1rem/1.5rem var(--serif)}.resolve .line{flex:1;min-height:1.5rem;border-bottom:1px solid var(--pencil)}.resolve .written{color:var(--red);border-color:var(--red);padding:0 0 .5rem;font-style:italic}.resolve .init{font:600 .875rem/1.3125rem var(--label);color:var(--red)}.facing{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}.gutter{display:none}.page{background:var(--white);border:1px solid var(--rule);padding:1.5rem}.page h3{font:.875rem/1.3125rem var(--label);color:var(--pencil);margin:0 0 1rem}.page h4{font:1.375rem/1.75rem var(--serif);margin:1.5rem 0 .75rem}.page p,.page li{font:1.125rem/1.75rem var(--serif)}.page ul{padding-left:1.25rem}.page .cite{display:block;margin:.5rem 0}.signoff{border-top:1px solid var(--rule);padding-top:1.5rem}.landed{display:inline-block;border:2px solid var(--red);color:var(--red);padding:.75rem 1rem;font:600 1.125rem/1.75rem var(--label)}.signrec .red{color:var(--red)}.signrec{font:1rem/1.5rem var(--serif)}.exam{list-style:none;padding:0;margin:0}.exam li{display:grid;grid-template-columns:1.25rem 4rem minmax(0,1fr) auto;gap:.75rem;padding:1rem;border-top:1px solid var(--rule);font:1rem/1.5rem var(--serif)}.exam li:nth-child(odd){background:var(--bar)}.exam .id,.exam .res{font:.875rem/1.3125rem var(--ledger)}.exam .res{max-width:20ch}.exam .mark{width:1.125rem;height:1.125rem}.exam .mark path{fill:none;stroke:var(--ink);stroke-width:2}.exam .tier{display:block;background:none!important;font:600 .875rem/1.3125rem var(--label)}.ab{margin-bottom:1.5rem}.cols2,.cols3{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}.col h3{font:600 .875rem/1.3125rem var(--label);border-top:1px solid var(--pencil);padding-top:1rem;margin:0 0 .75rem}.col p{margin:0 0 .75rem}.col ul{padding-left:1.25rem}.lastline{font:1.375rem/1.75rem var(--serif);margin:1.5rem 0}.blockers{padding-left:1.25rem;columns:2;column-gap:2rem}.blockers li{break-inside:avoid;margin-bottom:.5rem}.corrections{padding:1rem 1.5rem;border:1px solid var(--pencil);font:1rem/1.5rem var(--serif);max-width:none}.brief{margin:1.5rem 0 2rem}.bh{border-bottom:1px solid var(--rule);padding-bottom:1rem}.bh h3{font:1.375rem/1.75rem var(--serif);margin:0 0 .5rem}.brief h4{font:1.375rem/1.75rem var(--serif);margin:1.5rem 0 .75rem}.brief h4 .n{font:.875rem/1.3125rem var(--ledger);color:var(--pencil)}.brief p{margin:.75rem 0}.brief .pencil{font:1rem/1.5rem var(--serif)}.plate-row{display:flex;align-items:flex-start;gap:1.5rem;margin:1.5rem 0}.plate{padding:1rem;border:1px solid var(--rule);background:var(--white)}.plate.p11{width:59%}.plate.p916{width:calc(59% * 9 / 16)}.plate.pack{width:59%}.plate svg,.plate img{display:block;width:100%;height:auto}.cm{display:none}.slug{font:.875rem/1.3125rem var(--ledger);margin:.75rem 0 0;overflow-wrap:anywhere}.check{list-style:none;padding:0}.check li{display:flex;gap:.75rem;padding:.75rem 0;border-top:1px solid var(--rule)}.box{width:1rem;height:1rem;border:1px solid var(--pencil);flex:none;margin-top:.25rem}.red-i,.box.red{color:var(--red);border-color:var(--red)}.numbers{list-style:none;padding:0;margin:0}.numbers li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:1.5rem;padding:1rem;border-top:1px solid var(--rule)}.numbers li:nth-child(odd){background:var(--bar)}.numbers .big{font:2.75rem/3rem var(--serif);font-variant-numeric:tabular-nums}.numbers .big small{display:block;font:1rem/1.5rem var(--label)}.numbers .what{font:1rem/1.5rem var(--serif);margin:0}.decisions{list-style:none;padding:0;counter-reset:decision;margin:0}.decisions > li {counter-increment:decision;position:relative;padding:1rem 0 1rem 3rem;border-top:1px solid var(--pencil)}.decisions > li:before{content:counter(decision);position:absolute;left:0;top:1rem;width:2rem;height:2rem;border:1px solid var(--pencil);text-align:center;font:600 1rem/2rem var(--label)}.decisions .cite{display:block;margin-top:.5rem}.sub-list{padding-left:1.25rem;margin:.75rem 0;font:1rem/1.5rem var(--serif)}.sub-list li{margin:.5rem 0}.limits{list-style:none;padding:0;margin:0}.limits li{border-top:1px solid var(--rule);padding:.75rem 0;font:1rem/1.5rem var(--serif)}.limits .cite{display:block}.ledgers{grid-column:1/-1;margin-top:2rem;min-width:0}.ledger{border-top:1px solid var(--pencil);margin:0 0 1rem}.ledger summary{cursor:pointer;padding:.75rem 0;font:600 .875rem/1.3125rem var(--label)}.ledger[open]{padding-bottom:1.5rem}.ledger[open] summary{margin-bottom:1rem}.ledger .foot{font:.875rem/1.3125rem var(--ledger);max-width:90ch;color:var(--pencil);margin:1rem 0}.ledger .foot.head{font-weight:600}.ledger-wrap{overflow:auto;max-width:100%;margin:.75rem 0}.ledger-table,.spec{width:100%;border-collapse:collapse;font:.875rem/1.3125rem var(--ledger);font-variant-numeric:tabular-nums}.ledger-table th,.ledger-table td,.spec th,.spec td{border-top:1px solid var(--rule);padding:.75rem;text-align:left;vertical-align:top;overflow-wrap:anywhere}.ledger-table th,.spec th{font-weight:600;color:var(--pencil)}.ledger-table tr:nth-child(even){background:var(--bar)}.ledger-table caption,.spec caption{font:600 1rem/1.5rem var(--label);text-align:left;padding:.75rem 0}.ledger-table .r{text-align:right;white-space:nowrap}.ledger-table .ok:before{content:'✓ '}.ledger-table .x:before{content:'× '}.supporting{margin-top:1.5rem}.supporting .receipt{max-width:62ch}.attempts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem}.attempt .n{font:2.75rem/3rem var(--serif)}.attempt .n small{font:1rem/1.5rem var(--label)}.attempt .d{font:.875rem/1.3125rem var(--ledger)}.toc,.qs,.callouts{padding-left:1.25rem}.toc li{padding:.75rem;border-top:1px solid var(--rule);display:flex;gap:1rem;flex-wrap:wrap}.toc .c{margin-left:auto}.qs li{padding:1rem 0}.qs .field,.qs .why,.qs .q{display:block}.qs .field{font-weight:bold}.qs .q{padding:1rem;background:var(--white);margin-top:.5rem}.nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--paper);border-top:1px solid var(--pencil);padding-bottom:env(safe-area-inset-bottom)}.nav-in{max-width:80rem;margin:auto;display:grid;grid-template-columns:1fr auto 1fr;gap:1.5rem;align-items:center;padding:.75rem 3rem;min-height:var(--nav-h)}.back{justify-self:start;border:0;text-decoration:underline}.next{justify-self:end;background:var(--ink);color:var(--white);display:flex;gap:.75rem;font:.875rem/1.3125rem var(--label)}.next:focus-visible{outline-offset:3px}.ruler{display:flex;align-items:center;gap:.25rem}.fol{font:.875rem/1.3125rem var(--label)}.nav .tick{width:2.75rem;height:2.75rem;border:0;padding:0;font:.875rem/1.3125rem var(--ledger)}.tick[aria-current]{background:var(--ink);color:var(--white)}.contents{position:fixed;inset:0;z-index:30;background:var(--paper);overflow:auto;padding:3rem}.contents-in{max-width:62rem;margin:auto}.contents h2{font:2.25rem/2.625rem var(--serif);margin:0}.contents .close{float:right}.contents ol{list-style:none;padding:0;clear:both}.contents li{border-top:1px solid var(--rule)}.contents li a{display:grid;grid-template-columns:3rem 1fr;padding:1rem;gap:1rem;text-decoration:none}.contents li a:hover{background:var(--white)}.contents .n{font:.875rem/1.75rem var(--ledger);color:var(--pencil)}.offline-contents{padding:1rem}.offline-contents a{display:block;padding:.5rem}
+@media(min-width:1024px){#ch02 .body{grid-column:1/-1}#ch02 .margin{grid-column:10/-1}.cover .body{grid-column:1/10}.nav .tick{display:none}}
+@media(min-width:640px) and (max-width:1023px){.desk{padding-left:1.5rem;padding-right:1.5rem}.body{grid-column:1/-1}.margin{grid-column:1/-1;border-left:0;border-top:1px solid var(--rule);padding:1rem 0;display:flex;gap:1.5rem}.margin>*{flex:1}.flow{grid-template-columns:repeat(3,minmax(0,1fr))}.nav-in{padding-left:1.5rem;padding-right:1.5rem}.takeaways{grid-template-columns:repeat(2,minmax(0,1fr))}.nav .tick{display:none}}
+@media(max-width:639px){.desk{padding:1rem 1rem calc(var(--nav-clearance) + 2rem)}.runhead{gap:.5rem}.reading-controls{margin:1rem 0 1.5rem}.reading-controls span{display:none}.sheet{display:block;margin-bottom:3rem}.title.action{font-size:1.75rem;line-height:2.125rem;max-width:38ch}.slide-head{margin-bottom:.5rem}.sheet-tools{margin-bottom:1rem}.takeaways{grid-template-columns:1fr;gap:.75rem;margin-bottom:1.5rem}.body{min-width:0}.margin{border-left:0;border-top:1px solid var(--rule);padding:1rem 0;margin-top:1.5rem}.tiles,.clips,.cols2,.cols3,.facing,.numbers li,.attempts{grid-template-columns:1fr}.tile .big{font-size:2.75rem}.clip,.receipt,.page{padding:1rem}.flow{grid-template-columns:1fr;gap:.75rem}.node{display:grid;grid-template-columns:1.5rem minmax(0,1fr)}.node .what,.node .who{grid-column:2}.node .who{padding-top:0}.pair{grid-template-columns:1fr;gap:.75rem}.vs{font-weight:600}.resolve{flex-wrap:wrap}.resolve .line{min-width:60%}.resolve .line.written{flex-basis:100%;order:3}.resolve .init{margin-left:auto}.kv{grid-template-columns:1fr}.kv dd{margin-bottom:.5rem}.exam li{grid-template-columns:1.125rem minmax(0,1fr);gap:.5rem .75rem}.exam .id{display:block;grid-column:2;font-weight:bold}.exam li>span:not(.id){grid-column:2}.exam .res{max-width:none}.blockers{columns:1}.corrections{padding:1rem}.plate-row{gap:1rem;flex-wrap:wrap}.plate.p11,.plate.pack{width:100%}.plate.p916{width:75%}.numbers .big{font-size:2.75rem}.ledger-table,.spec{min-width:38rem}.ledger .cols2{display:block}.ledger-wrap{border:1px solid var(--pencil)}.ledger .exam{min-width:0}.nav-in{display:flex;flex-wrap:wrap;gap:.5rem;padding:.75rem 1rem;justify-content:space-between}.nav-in .ruler{flex:1 1 10rem}.nav-in .next{margin-left:auto}.nav-in .fol{max-width:100%;overflow-wrap:anywhere}.nav .tick,#next-title{display:none}.ruler{min-width:0;justify-content:center}.fol{padding:.5rem;font-size:.875rem}.next{padding:.5rem .75rem}.back{padding:.5rem 0}.contents{padding:1.5rem 1rem}.contents li a{padding:.75rem 0;grid-template-columns:2rem 1fr}.contents h2{font-size:1.75rem}.title,.implication,p,li{overflow-wrap:break-word}.stage-lbl{margin-top:1.5rem}.verdict.stop{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@page{size:A4 portrait;margin:12mm}
+@media print{html,body{font-size:11pt;line-height:1.45;background:white}.desk{padding:0;max-width:none}.runhead{font-size:9pt}.nav,.contents,.reading-controls,.sheet-tools,.skip,.offline-contents{display:none!important}.sheet,html.js:not(.read-all) .sheet:not(.active){display:block;break-before:page;margin:0 0 1rem}.sheet:first-of-type{break-before:auto}.slide-head{padding-top:0}.title.action{font-size:24pt;line-height:1.15}.implication{font-size:11pt}.margin{border-left:0;border-top:1px solid var(--rule);padding:1rem 0}.takeaways li,.note,.marginalia,.numbers .what,.page p,.page li,.node .what,.resolve,.signrec,.corrections,.limits li,.sub-list{font-size:11pt;line-height:1.45}.cite,.slug,.gloss,.ledger .foot,.ledger-table,.spec,.kind,.kicker,.lbl{font-size:9pt;line-height:1.4}.clip blockquote,.receipt blockquote{font-size:11pt;line-height:1.5}.ledgers{margin-top:1rem}details> :not(summary){display:block!important}details::details-content{display:block!important;content-visibility:visible!important;height:auto!important;overflow:visible!important}.ledger-wrap{overflow:visible;border:0}.ledger-table,.spec{min-width:0;table-layout:fixed}.ledger-table .r{white-space:normal}.ledger-table td,.ledger-table th,.spec td,.spec th{padding:.4rem;overflow-wrap:anywhere}.ledger-table thead{display:table-header-group}tr,.clip,.receipt,.plate{break-inside:avoid}h1,h2,h3,h4,summary{break-after:avoid}p{orphans:3;widows:3}.plate-row{break-inside:avoid}.plate.pack{width:45%}.flow{grid-template-columns:repeat(3,minmax(0,1fr))}.pair{grid-template-columns:1fr auto 1fr}.exam li{break-inside:avoid}.numbers .big{font-size:24pt;line-height:1.2}.ledger summary{font-size:11pt}.decisions > li{break-inside:avoid}}
+</style></head><body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="g-pencil" viewBox="0 0 16 16"><path d="M2.5 13.5l1-4 7-7 3 3-7 7-4 1z M9.5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
     <symbol id="g-rule" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 8.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
     <symbol id="g-nib" viewBox="0 0 16 16"><path d="M8 1.5l4.5 6.5L8 14.5 3.5 8z M8 8v6.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
   </defs>
-</svg>
+</svg><main class="desk" id="main" tabindex="-1"><div class="runhead"><span><b>Northlight Communications</b> · Brief Builder</span><span>Synthetic project · northlight_01 · graded 24 July 2026</span></div>
+<div class="reading-controls"><button id="read-all" type="button" aria-pressed="false">Read all sheets</button><button id="expand-ledgers" type="button" aria-pressed="false">Expand ledgers</button><span>Evidence walkthrough · 10 sheets</span></div><section class="sheet cover" id="ch01" data-n="1" aria-labelledby="t01">
+<header class="slide-head"><p class="kicker">01 / The decision · Brief Builder</p><h1 class="title action" id="t01" tabindex="-1">Approve a conditional four-week pilot to test whether cited drafts reduce briefing effort.</h1><p class="implication">Live use in week 4 depends on the retrospective. Cost and workspace terms remain unresolved; the sponsor owns the conditions.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">01 / 10 &middot; Contents</button></div></div>
 
-<div class="desk">
-  <div class="runhead">
-    <span><b>Northlight Communications</b> &middot; Brief Builder</span>
-    <span>Project northlight_01 &middot; Meltemi Fizz launch &middot; graded run <b>runs/tier3</b> &middot; 2026-07-24</span>
-    <span>Synthetic project &middot; no real client data</span>
-  </div>
-
-  <!-- ============ 01 COVER + EXECUTIVE SUMMARY ============ -->
-  <section class="sheet cover" id="ch01" data-n="1" aria-labelledby="t01">
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">01 / 10 &middot; Contents</button></div>
-      <p class="marginalia"><span class="lbl">What this is</span>One finished run of the pipeline on a synthetic project, shown in ten sheets. Every quote is clipped verbatim from the four source documents; every number carries the file it came from.</p>
-      <p class="marginalia"><span class="lbl">The answer first</span>This sheet is the summary. Sheet 02 is the product; sheets 03&ndash;09 the evidence; sheet 10 the decisions.</p>
-    </aside>
-    <div class="body">
+<div class="body">
       
-      <p class="kicker"><span class="num">Brief Builder</span><span>Cited drafts &middot; gaps as questions &middot; people decide</span><span>One graded run &middot; synthetic data</span></p>
-      <h1 class="title" id="t01" tabindex="-1">Brief Builder drafts the brief with receipts; people decide.<span class="el" lang="el">Ένα brief με αποδείξεις</span></h1>
-<p class="ask">Approve a four-week pilot, with live use in week 4 conditional on the retrospective results. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p>
-      <p class="narr">Brief Builder turns a client&rsquo;s pile of documents into a Greek and English brief. In this run, claim lines show their sources, disagreements sit side by side, gaps become questions, and a person signs before anything moves. On the graded run it drafted a brief ready for review that passed all 17 checks and left every decision to a person.</p>
-<ul class="takeaways"><li>The model drafts; an account lead signs before the creative stage starts.</li><li>Three seeded contradictions stay visible until a person resolves them.</li><li>The exam measures this synthetic project; the pilot tests everyday usefulness.</li></ul>
+      
+      
+
+      <p class="narr">Brief Builder turns a client’s documents into a Greek and English brief: claims carry receipts, disagreements remain visible, and gaps become questions.</p>
+
 
 
 <div class="tiles">
-        <div class="tile"><div class="big">17<small>/ 17</small></div><p>Passes the 17 defined checks on one synthetic project. <span class="cite"><button type="button" class="jump" data-go="8">sheet 08</button></span></p></div>
-        <div class="tile"><div class="big">0.98<small>M tokens</small></div><p>One brief used about a million tokens; a token is roughly three-quarters of a word the model reads or writes. At 15 briefs a month that is about 15 million, the figure to hold against a plan&rsquo;s usage window. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
-        <div class="tile"><div class="big">33<small>min</small></div><p>The graded run&rsquo;s stages, including the repair and the creative A/B; a continuous capture on 29 July ran the same pipeline in 25.2, with one pass re-rolled. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
-        <div class="tile"><div class="big">3<small>conflicts</small></div><p>All three shown with both sides cited; none decided by the machine. <span class="cite"><button type="button" class="jump" data-go="5">sheet 05</button> &middot; <button type="button" class="jump" data-go="7">07</button></span></p></div>
+        <div class="tile"><div class="big">17<small>/ 17</small></div><p>Passes the 17 defined checks on one synthetic project. <span class="cite"><a class="jump" href="#ch08">sheet 08</a></span></p></div>
+        <div class="tile"><div class="big">0.98<small>M tokens</small></div><p>Stage-one usage. Tokens are units of text processed; counts include cached text. Capacity must be re-measured under the changed routing. <span class="cite"><a class="jump" href="#ch10">sheet 10</a></span></p></div>
+        <div class="tile"><div class="big">33<small>min</small></div><p>The graded run&rsquo;s stages, including the repair and the creative A/B; a continuous capture on 29 July ran the same pipeline in 25.2, with one pass re-rolled. <span class="cite"><a class="jump" href="#ch10">sheet 10</a></span></p></div>
+        <div class="tile"><div class="big">3<small>conflicts</small></div><p>All three shown with both sides cited; none decided by the machine. <span class="cite"><a class="jump" href="#ch05">sheet 05</a> &middot; <a class="jump" href="#ch07">07</a></span></p></div>
       </div>
 <ul class="legend">
         <li><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg><span>Pencil = AI drafts</span></li>
         <li><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg><span>Rule = code checks</span></li>
         <li><span class="red"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg></span><span>Red pen = people decide</span></li>
       </ul>
-      <p class="howto">Keys: &larr; &rarr; turn, C contents, Home / End; swipe horizontally or tap Next. Expand ledgers for detail.</p>
+      <p class="howto">Executive route: <a href="#ch01">01 · Decision</a> → <a href="#ch02">02 · Operation</a> → <a href="#ch10">10 · Conditions</a>. Read the evidence on sheets 03–09.</p>
       
 
-<details class="ledger">
-        <summary><span>Ledger &mdash; sources for this sheet</span></summary>
-<div class="cols2">
+
+    </div>
+<aside class="margin">
+      
+      <p class="marginalia"><span class="lbl">What this is</span>One finished run of the pipeline on a synthetic project, shown in ten sheets. Every quote is clipped verbatim from the four source documents; every number carries the file it came from.</p>
+      <p class="marginalia"><span class="lbl">The answer first</span>This sheet is the summary. Sheet 02 is the product; sheets 03&ndash;09 the evidence; sheet 10 the decisions.</p>
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-01">
+        <summary><span>Ledger &mdash; sources for this sheet</span></summary><ul class="takeaways"><li>The model drafts; an account lead signs before the creative stage starts.</li><li>Three seeded contradictions stay visible until a person resolves them.</li><li>The exam measures this synthetic project; the pilot tests everyday usefulness.</li></ul>
+<p class="foot">Stage one: 0.53 M Haiku 4.5 and 0.45 M Sonnet 5; 56% cache reads, 27% cache writes. Source: run_manifest.json.</p><div class="cols2">
         <div class="col">
           <h3>What it is</h3>
           <p>A two-stage pipeline. Stage one reads the client&rsquo;s documents and drafts the brief with receipts; an account lead signs. Stage two, only after sign-off, drafts a creative brief in shadow mode (drafted for evaluation, never delivered) for a creative lead to judge.</p>
@@ -549,35 +66,21 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           </ul>
         </div>
       </div>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>figure</th><th>source</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">figure</th><th scope="col">source</th></tr></thead>
           <tr><td>17 / 17 checks</td><td>runs/tier3/harness_report.json &middot; verdict PASS</td></tr>
           <tr><td>0.98 M tokens, stage one</td><td>runs/tier3/run_manifest.json usage fields (cache reads 56% &middot; cache writes 27% &middot; output 16% &middot; fresh input 0.3%) &middot; docs/COST_MODEL.md (PRD assumptions A1, A4)</td></tr>
           <tr><td>33 min of stage time &middot; 25.2 min continuous capture</td><td>docs/EVIDENCE.md &middot; 2026-07-29 capture, 25.2 min wall clock</td></tr>
           <tr><td>3 contradictions, 0 machine-resolved</td><td>runs/tier3/brief.json &rsaquo; conflicts[3], each status resolved_by_human</td></tr>
         </table></div>
-      </details>
-    </div>
-  </section>
-  <!-- ============ 02 THE PRODUCT ============ -->
-  <section class="sheet" id="ch02" data-n="2" aria-labelledby="t02">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">02</span><span>The product</span><span class="el" lang="el">Το προϊόν</span></p>
-      <h1 class="title action" id="t02" tabindex="-1">Nine steps, three roles: six are AI, two are plain code, and the one that releases the work is a person.</h1>
+      </details></div>
+</section>
+<section class="sheet" id="ch02" data-n="2" aria-labelledby="t02">
+<header class="slide-head"><p class="kicker">02 / The operating boundary · Brief Builder</p><h1 class="title action" id="t02" tabindex="-1">Nine steps prepare the work; a person authorizes the move into shadow creative.</h1><p class="implication">Six AI steps, two plain-code steps, one person. Static review pages support command-line operation; the signature controls the handover.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">02 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
       
-      
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">02 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
-        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
-        <span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span>
-      </div>
-      <p class="marginalia"><span class="lbl">The thin layer</span>Four plain-text rule files (a few pages of plain English handed to the model unchanged every run), seven agents and about 2&thinsp;500 non-blank lines, counted across the eight pipeline modules in the ledger below. The rules are the proprietary part; the models can change.</p>
-    </aside>
-    <div class="body">
-      <ul class="takeaways"><li>AI reads each source, extracts evidence and drafts both documents from one master record.</li><li>Code checks citations and gates the run; static review pages support command-line operation.</li><li>The account lead records decisions and signs the brief object; the creative lead evaluates the shadow draft.</li></ul>
       <p class="stage-lbl">Stage 1 &middot; the client brief &middot; extraction, synthesis and render are gated: sent back once, then stop</p>
       <ol class="flow" aria-label="Stage 1, steps 1 to 4">
         <li><span class="node doc"><span class="n">in</span><span class="name">Input folder</span><span class="what">four documents</span><span class="who">documents</span></span></li>
@@ -602,9 +105,16 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       
       
       
-<p class="note"><b>Where the documents go</b>, as the PRD assumes it: the agency&rsquo;s own workspace under a data-processing agreement, EU processing, zero retention; only clients at the two lowest sensitivity tiers in the pilot, and the runner refuses higher tiers before drafting. The subscription direction leaves the commercial terms to confirm before week 1 (decision 3). <span class="cite">docs/PRD.md &sect;8&ndash;9 &middot; pipeline/gates.py</span></p>
-<details class="ledger">
-        <summary><span>Ledger &mdash; where each part lives</span></summary>
+<p class="note"><b>Where the documents go</b>, as the PRD assumes it: the agency&rsquo;s own workspace under a data-processing agreement, EU processing, zero retention; S0–S1 clients only in the pilot, and the runner refuses higher tiers before drafting. The subscription direction leaves the commercial terms to confirm before week 1 (decision 3). <span class="cite">docs/PRD.md &sect;8&ndash;9 &middot; pipeline/gates.py</span></p>
+
+    <p class="note"><b>Operating owners.</b> The AI specialist operates; two champions train by week 4. Traffic owns the spec table, a pilot stub requiring confirmation. Account lead records resolutions/signature in the brief object; creative lead evaluates. <span class="cite">PRD §8</span></p></div>
+<aside class="margin">
+      
+      
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-02">
+        <summary><span>Ledger &mdash; where each part lives</span></summary><ul class="takeaways"><li>AI reads each source, extracts evidence and drafts both documents from one master record.</li><li>Code checks citations and gates the run; static review pages support command-line operation.</li><li>The account lead records decisions and signs the brief object; the creative lead evaluates the shadow draft.</li></ul>
 <p class="foot">brief_review.html is a review view: it shows resolutions and the signature already recorded in brief.json, offers a language toggle and copyable questions. The account lead writes each resolution into brief.json (conflicts[n].resolution and resolved_by) and the sign-off block (signoff: status, signed_by, signed_ts, edits_summary), a manual, schema-validated edit in v1; the review page does not save decisions or signatures. This walkthrough proposes the runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p>
 <p class="foot">Both documents are written from one master record; whether the Greek reads like agency Greek still needs a person&rsquo;s review (PRD &sect;7).</p>
 <p class="principles">Ask, don&rsquo;t guess &middot; Surface, don&rsquo;t resolve &middot; Flag, don&rsquo;t correct &middot; Look up, don&rsquo;t invent &middot; Sign, don&rsquo;t send</p>
@@ -638,8 +148,8 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           </ul>
         </div>
       </div>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>part</th><th>location</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">part</th><th scope="col">location</th></tr></thead>
           <tr><td>rule files</td><td>skills/SOURCES.md &middot; SYNTHESIS.md &middot; TRANSLATION.md &middot; TRANSCRIPTS.md</td></tr>
           <tr><td>agents (one per AI step)</td><td>.claude/agents/ &middot; classify, fidelity-check, extract, verify-extract, synthesize, render, creative-shadow</td></tr>
           <tr><td>orchestration and gates</td><td>pipeline/ &middot; runner.py, gates.py, extraction.py, conflicts.py, stages.py, creative.py, agents.py, diagnostics.py</td></tr>
@@ -648,45 +158,29 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>grader (frozen)</td><td>eval/harness.py &middot; the only code allowed to read the answer key</td></tr>
         </table></div>
         <p class="foot">Built around four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into their respective client-brief agents; classification and creative-shadow use separate inline instructions, with small models where the task is following a set form and larger ones where judgement is needed; routing is a human decision.</p>
-      </details>
-    </div>
-  </section>
-  <!-- ============ 03 INPUTS + GATE ============ -->
-  <section class="sheet" id="ch03" data-n="3" aria-labelledby="t03">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">03</span><span>Inputs and readiness</span><span class="el" lang="el">Έγγραφα και έλεγχος επάρκειας</span></p>
-      <h1 class="title action" id="t03" tabindex="-1">Plain code confirmed four documents were enough to draft from before any model read a word.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">03 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
-        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
-      </div>
-      <p class="marginalia"><span class="lbl">Watch three numbers</span>The audience, the budget and the launch date each appear more than once in this pile. They do not agree.</p>
+      <div class="supporting"><p class="marginalia"><span class="lbl">The thin layer</span>Four plain-text rule files (a few pages of plain English handed to the model unchanged every run), seven agents and about 2&thinsp;500 non-blank lines, counted across the eight pipeline modules in the ledger below. The rules are the proprietary part; the models can change.</p></div></details></div>
+</section>
+<section class="sheet" id="ch03" data-n="3" aria-labelledby="t03">
+<header class="slide-head"><p class="kicker">03 / Inputs and readiness · Brief Builder</p><h1 class="title action" id="t03" tabindex="-1">The readiness gate checks the input folder before AI classification.</h1><p class="implication">Sufficient inputs proceed to classification. A missing RFP stops the run before a model drafts.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">03 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
       
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>RFP, kickoff transcript, email thread and a brand-guideline excerpt: all synthetic, nothing real.</li>
-        <li>Four checks, no AI: the RFP present, two documents that can carry a commitment, money and a date mentioned.</li>
-        <li>Without the RFP the run stops with a request; a small model then classifies: advertising creative, high confidence, S1.</li>
-      </ul>
 <div class="hero clips">
         <figure class="clip">
           <div class="kind"><span>RFP &middot; rfp_meltemi</span><span>2026-06-28</span></div>
           <blockquote lang="el">Gen Z, ηλικίες 18&ndash;24, με έμφαση στα αστικά κέντρα.</blockquote>
-          <figcaption><span class="cite">&sect;3 Κοινό-στόχος <span class="dim">&middot; Meltemi Beverages S.A.</span></span><span class="gloss">gloss &mdash; &ldquo;Gen Z, ages 18&ndash;24, with emphasis on urban centres.&rdquo;</span></figcaption>
+          <figcaption><span class="cite">&sect;3 Κοινό-στόχος <span class="dim">&middot; Meltemi Beverages S.A.</span></span><span class="gloss">interpretation &mdash; &ldquo;Gen Z, ages 18&ndash;24, with emphasis on urban centres.&rdquo;</span></figcaption>
         </figure>
         <figure class="clip">
           <div class="kind"><span>Transcript &middot; transcript_kickoff</span><span>2026-07-10</span></div>
           <blockquote lang="el">Και να το πω καθαρά: το RFP που σας στείλαμε λέει Gen Z, αλλά honestly, our buyer is 25 to 40, urban professionals.</blockquote>
-          <figcaption><span class="cite">[00:03:41] &middot; DIMITRIS <span class="dim">(Meltemi, CMO)</span></span><span class="gloss">gloss &mdash; &ldquo;And let me say it plainly: the RFP we sent you says Gen Z, but honestly, our buyer is 25 to 40, urban professionals.&rdquo;</span></figcaption>
+          <figcaption><span class="cite">[00:03:41] &middot; DIMITRIS <span class="dim">(Meltemi, CMO)</span></span><span class="gloss">interpretation &mdash; &ldquo;And let me say it plainly: the RFP we sent you says Gen Z, but honestly, our buyer is 25 to 40, urban professionals.&rdquo;</span></figcaption>
         </figure>
         <figure class="clip">
           <div class="kind"><span>Email thread &middot; emails_thread</span><span>2026-07-11 to 07-15</span></div>
           <blockquote lang="el">Σημαντικό: το board μετέθεσε το launch για 15 Σεπτεμβρίου &mdash; θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών.</blockquote>
-          <figcaption><span class="cite">Message 2 &middot; 2026-07-14 18:22 &middot; Dimitris <span class="dim">(Meltemi)</span></span><span class="gloss">gloss &mdash; &ldquo;Important: the board moved the launch to 15 September &mdash; they want to catch the end of the soft-drinks season.&rdquo;</span></figcaption>
+          <figcaption><span class="cite">Message 2 &middot; 2026-07-14 18:22 &middot; Dimitris <span class="dim">(Meltemi)</span></span><span class="gloss">interpretation &mdash; &ldquo;Important: the board moved the launch to 15 September &mdash; they want to catch the end of the soft-drinks season.&rdquo;</span></figcaption>
         </figure>
         <figure class="clip">
           <div class="kind"><span>Background &middot; background_brand_guidelines</span><span>2026-03-02</span></div>
@@ -699,13 +193,25 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <div class="verdict stop"><span class="stopstamp">Stopped</span><span>insufficient input &mdash; the system will not draft. missing source(s): rfp. Request this from the client and re-run.</span></div>
 
 
-<details class="ledger">
-        <summary><span>Ledger &mdash; inputs, gate and classification</span></summary>
+
+    <p class="note"><b>Four checks, no AI:</b> RFP present; at least two substantive sources; money mentioned; date mentioned. With sufficient input, classification is advertising creative, high confidence, S1 (second-lowest sensitivity tier). <span class="cite">run_manifest.json; classification.json</span></p></div>
+<aside class="margin">
+      
+      
+      <p class="marginalia"><span class="lbl">Watch three numbers</span>The audience, the budget and the launch date each appear more than once in this pile. They do not agree.</p>
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-03">
+        <summary><span>Ledger &mdash; inputs, gate and classification</span></summary><ul class="takeaways">
+        <li>RFP, kickoff transcript, email thread and a brand-guideline excerpt: all synthetic, nothing real.</li>
+        <li>Four checks, no AI: the RFP present, two documents that can carry a commitment, money and a date mentioned.</li>
+        <li>Missing RFP: STOP. Sufficient input: advertising creative, high confidence, S1 (second-lowest sensitivity tier).</li>
+      </ul>
 <p class="marginalia"><span class="lbl">Rule</span>No brief ever rests on a single source, and never on a folder that never mentioned a budget. Refusal is the product working.</p>
 <h2 class="sub">The gate&rsquo;s verdict, in the code&rsquo;s own words</h2>
 <div class="hero">
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>check</th><th>found</th><th class="r">result</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">check</th><th scope="col">found</th><th scope="col" class="r">result</th></tr></thead>
           <tr><td>required source type present: rfp</td><td>rfp_meltemi</td><td class="r ok">pass</td></tr>
           <tr><td>substantive sources (rfp, transcript, email_thread) &mdash; need 2</td><td>3 &middot; background does not count</td><td class="r ok">pass</td></tr>
           <tr><td>a mention of money in any of the four documents</td><td>&ldquo;προϋπολογισμός&rdquo; and &euro;90 000 (RFP) &middot; &ldquo;media spend&rdquo; (transcript)</td><td class="r ok">pass</td></tr>
@@ -713,23 +219,23 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         </table></div>
         <p class="verdict">input sufficient &mdash; 4 source(s), 3 substantive: background, email_thread, rfp, transcript</p>
       </div>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>source_id</th><th>source_type</th><th>source_date</th><th>language</th><th>bytes</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">source_id</th><th scope="col">source_type</th><th scope="col">source_date</th><th scope="col">language</th><th scope="col">bytes</th></tr></thead>
           <tr><td>rfp_meltemi</td><td>rfp</td><td>2026-06-28</td><td>el</td><td class="r">1 584</td></tr>
           <tr><td>transcript_kickoff</td><td>transcript</td><td>2026-07-10</td><td>el + en (mixed)</td><td class="r">3 632</td></tr>
           <tr><td>emails_thread</td><td>email_thread</td><td>2026-07-15 (latest message)</td><td>el</td><td class="r">1 726</td></tr>
           <tr><td>background_brand_guidelines</td><td>background</td><td>2026-03-02</td><td>en</td><td class="r">1 045</td></tr>
         </table></div>
-        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds an answer key reserved for the harness by policy and excluded from automatic source discovery; runtime agents retain Read access to its containing directory.</p>
+        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds a sealed answer key the pipeline cannot open.</p>
       
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">kind</th><th scope="col">model</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>1 readiness_gate</td><td>deterministic &middot; pipeline/gates.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>run_manifest.json &rsaquo; steps[0].verdict</td></tr>
         </table></div>
         <p class="foot">Thresholds live in code, not in a prompt: REQUIRED_SOURCE_TYPES = ("rfp",) &middot; MIN_SUBSTANTIVE_SOURCES = 2 &middot; budget and timeline signal patterns. Covered by the automated test suite.</p>
       
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>2 classification</td><td>classify</td><td>claude-haiku-4-5-20251001</td><td class="r">28 677</td><td class="r">34 s</td><td>classification.json &middot; 3 evidence citations</td></tr>
         </table></div>
         <div class="machine">
@@ -744,39 +250,24 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           </div>
         <p class="foot">Tiers S0&ndash;S3 are set per client at onboarding (PRD design rule 11). S0/S1 run on the standard cloud API; S2 needs restricted access; S3 needs EU residency and zero-retention terms, or stays out. The pilot enforces S0&ndash;S1 at run time: pipeline/gates.py refuses S2&ndash;S3 before drafting, and exam check T2.2 re-checks it afterwards.</p>
       
-      </details>
-    </div>
-  </section>
-  <!-- ============ 04 READING WITH RECEIPTS ============ -->
-  <section class="sheet" id="ch04" data-n="4" aria-labelledby="t04">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">04</span><span>Reading with receipts</span><span class="el" lang="el">Ανάγνωση με αποδείξεις</span></p>
-      <h1 class="title action" id="t04" tabindex="-1">Thirty-three facts carry word-for-word receipts; the two garbled terms were flagged, never repaired.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">04 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
-      </div>
-      <div class="bigcount">33<small> facts, all cited</small></div>
-      <p class="marginalia"><span class="lbl">Two rules</span>Pencil may annotate a transcript; it may never rewrite what a person said. Every fact quotes the exact words; if code cannot find them in the source, the fact is not there.</p>
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>Each document is read on its own by a model allowed to record evidence and nothing else.</li>
-        <li>Every fact quotes the exact words and code checks the quote exists; one document was sent back once.</li>
-        <li>The transcriber garbled two English terms; the machine flags and proposes; the finished documents print the glossary term, flag cited.</li>
-      </ul>
+      </details></div>
+</section>
+<section class="sheet" id="ch04" data-n="4" aria-labelledby="t04">
+<header class="slide-head"><p class="kicker">04 / Evidence fidelity · Brief Builder</p><h1 class="title action" id="t04" tabindex="-1">Thirty-three facts retain receipts; garbled terms stay flagged.</h1><p class="implication">Exact quotations are checked by code. The transcript was sent back once; the two garbles remain evidence, not silent repairs.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">04 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
+      
       <h2 class="sub">Listening without correcting</h2>
 <div class="hero clips">
 
         <div class="clip"><figure class="inner">
           <blockquote lang="el">Το <mark class="flag">κι βίζουαλ</mark><span class="sic">sic</span> πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι.</blockquote>
-          <figcaption><span class="cite">transcript_kickoff &middot; [00:06:02] &middot; DIMITRIS</span><span class="gloss">gloss &mdash; &ldquo;The [key visual] has to shout summer, but premium summer.&rdquo;</span></figcaption>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:06:02] &middot; DIMITRIS</span><span class="gloss">interpretation &mdash; &ldquo;The [key visual] has to shout summer, but premium summer.&rdquo;</span></figcaption>
           </figure><div class="machine"><p class="lbl">Pencil note in the margin of the transcript</p><p class="mono">[FIDELITY: glossary-match "key visual", confidence high]</p></div>
         </div>
       </div>
-      <h2 class="sub">What the machine wrote, with its receipt &mdash; the repair record and the second reader are in the extraction ledger</h2>
+      <h2 class="sub">Extracted facts and their receipts</h2>
 <div class="hero">
         <div class="receipt"><figure class="inner">
           <blockquote lang="el">Κοιτάξτε, <mark class="cited">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</mark>.</blockquote>
@@ -792,9 +283,31 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             </dl>
           </div>
         </div>
-        <div class="receipt"><figure class="inner">
+        
+      </div>
+
+
+    </div>
+<aside class="margin">
+      
+      
+      <div class="bigcount">33<small> facts, all cited</small></div>
+      <p class="marginalia"><span class="lbl">Two rules</span>Pencil may annotate a transcript; it may never rewrite what a person said. Every fact quotes the exact words; if code cannot find them in the source, the fact is not there.</p>
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-04">
+        <summary><span>Ledger &mdash; fidelity check</span></summary><ul class="takeaways">
+        <li>Each document is read on its own by a model allowed to record evidence and nothing else.</li>
+        <li>Every fact quotes the exact words and code checks the quote exists; one document was sent back once.</li>
+        <li>Two garbles stay flagged; renders print the glossary term with the flag cited.</li>
+      </ul>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
+          <tr><td>3 fidelity_check</td><td>fidelity-check</td><td>claude-haiku-4-5-20251001</td><td class="r">26 911</td><td class="r">52 s</td><td>fidelity/transcript_kickoff.report.json &middot; transcript_kickoff.annotated.md</td></tr>
+        </table></div>
+        <p class="foot">Instructions injected verbatim from skills/TRANSCRIPTS.md: English terms collapsed into Greek letters, speaker labels lost or merged, a summary passed off as a transcript. The glossary is per client (glossary/meltemi.json, 9 protected terms).</p>
+      <div class="supporting"><div class="receipt"><figure class="inner">
           <blockquote lang="en">Just thinking out loud &mdash; maybe a TikTok dance thing? Don&rsquo;t hold me to it, <span lang="el">δεν το έχουμε συζητήσει καν μέσα</span>.</blockquote>
-          <figcaption><span class="cite">transcript_kickoff &middot; [00:11:47] &middot; DIMITRIS</span><span class="gloss">gloss &mdash; &ldquo;&hellip;we haven&rsquo;t even discussed it internally.&rdquo;</span></figcaption>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:11:47] &middot; DIMITRIS</span><span class="gloss">interpretation &mdash; &ldquo;&hellip;we haven&rsquo;t even discussed it internally.&rdquo;</span></figcaption>
           </figure><div class="machine">
             <p class="lbl">Extracted fact &mdash; deliverable</p>
             <dl class="kv">
@@ -803,26 +316,16 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
               <dt>confidence</dt><dd>low</dd>
             </dl>
           </div>
-        </div>
-      </div>
-<details class="ledger">
-        <summary><span>Ledger &mdash; fidelity check</span></summary>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
-          <tr><td>3 fidelity_check</td><td>fidelity-check</td><td>claude-haiku-4-5-20251001</td><td class="r">26 911</td><td class="r">52 s</td><td>fidelity/transcript_kickoff.report.json &middot; transcript_kickoff.annotated.md</td></tr>
-        </table></div>
-        <p class="foot">Instructions injected verbatim from skills/TRANSCRIPTS.md: English terms collapsed into Greek letters, speaker labels lost or merged, a summary passed off as a transcript. The glossary is per client (glossary/meltemi.json, 9 protected terms).</p>
-      </details>
-<details class="ledger">
+        </div></div></details><details class="ledger" id="ledger-05">
         <summary><span>Ledger &mdash; extraction</span></summary>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>gate violations</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">gate violations</th></tr></thead>
           <tr><td>4 extraction &middot; background_brand_guidelines</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">55 710</td><td class="r">136 s</td><td>0</td></tr>
           <tr><td>4 extraction &middot; emails_thread</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">57 299</td><td class="r">153 s</td><td>0</td></tr>
           <tr><td>4 extraction &middot; rfp_meltemi</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">69 270</td><td class="r">219 s</td><td>0</td></tr>
           <tr><td>4 extraction &middot; transcript_kickoff, attempt 1</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">50 560</td><td class="r">114 s</td><td>3 &middot; 2 quotes not verbatim, 1 silent garble repair (forbidden by the extraction rules)</td></tr>
           <tr><td>4 extraction &middot; transcript_kickoff, attempt 2</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">245 214</td><td class="r">192 s</td><td>0</td></tr>
-          <tr><td>4b verify-extract (validated 29 July, adopted 30 July; shown from runs/routing-validate-01)</td><td>verify-extract</td><td>claude-sonnet-5, chosen because this extract carried figures and garbling</td><td class="r">44 695</td><td class="r">86 s</td><td>not in the graded totals &mdash; 1 issue reported</td></tr>
+          
         </table></div>
               <p class="foot head">Four documents, five attempts</p>
 <div class="attempts">
@@ -832,35 +335,19 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <div class="attempt"><div class="n">10<small>facts</small></div><div class="d">transcript_kickoff &middot; 2 attempts &mdash; sent back once for two non-verbatim quotes and one silent garble repair</div></div>
       </div>
       <p class="foot">The repair removed a merged metro idea/retraction quote and a silent garble correction. Graded extraction used Haiku, without a second reader. Since 30 July, Sonnet extracts; an independent verifier reports omissions without editing (Sonnet for risky extracts, Haiku otherwise). It found the audience correction missing as a contradiction. Rules: skills/SOURCES.md; schema and citation gates: pipeline/gates.py.</p>
-      </details>
-    </div>
-  </section>
+      </details><details class="ledger" id="ledger-06"><summary>Later verifier · not in the graded totals</summary><div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table"><caption>Validated 29 July; adopted 30 July · separate comparison</caption><thead><tr><th scope="col">Step / date</th><th scope="col">Agent</th><th scope="col">Model / reason</th><th scope="col">Tokens</th><th scope="col">Time</th><th scope="col">Result</th></tr></thead><tr><td>4b verify-extract (validated 29 July, adopted 30 July; shown from runs/routing-validate-01)</td><td>verify-extract</td><td>claude-sonnet-5, chosen because this extract carried figures and garbling</td><td class="r">44 695</td><td class="r">86 s</td><td>not in the graded totals &mdash; 1 issue reported</td></tr></table></div></details></div>
+</section>
 <section class="sheet" id="ch05" data-n="5" aria-labelledby="t05">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">05</span><span>Conflict pass</span><span class="el" lang="el">Διασταύρωση πηγών</span></p>
-      <h1 class="title action" id="t05" tabindex="-1">Three contradictions were surfaced with both sides cited, and the decision line was left blank.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">05 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
-        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
-      </div>
-      <div class="bigcount">3<small> contradictions</small></div>
-      <p class="marginalia"><span class="lbl">Design rule: only people resolve</span>Conflicts are surfaced, never auto-resolved (PRD design rule 10). The line for the decision is left blank on purpose. Sheet 07 returns to these three lines with the red pen in them.</p>
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>Code lines up every field where two documents speak: seven of them.</li>
-        <li>Synthesis recognises the three that truly contradict and carries both sides into the brief.</li>
-        <li>Audience, budget and launch date each need a decision.</li>
+<header class="slide-head"><p class="kicker">05 / Unresolved conflicts · Brief Builder</p><h1 class="title action" id="t05" tabindex="-1">Three contradictions remain open until a person decides.</h1><p class="implication">Audience, budget and launch date each need a human decision. Both source positions remain visible.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">05 / 10 &middot; Contents</button></div></div>
 
-      </ul>
+<div class="body">
+      
       <div class="hero">
         <div class="conflict-block">
           <h3>Audience <span>rfp_meltemi &sect;3 &middot; transcript_kickoff 00:03:41</span></h3>
           <div class="pair">
-            <figure class="clip"><blockquote lang="el"><mark class="cited">Gen Z, ηλικίες 18&ndash;24, με έμφαση στα αστικά κέντρα</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Gen Z, ages 18&ndash;24, urban centres</span></figcaption></figure>
+            <figure class="clip"><blockquote lang="el"><mark class="cited">Gen Z, ηλικίες 18&ndash;24, με έμφαση στα αστικά κέντρα</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">interpretation &mdash; Gen Z, ages 18&ndash;24, urban centres</span></figcaption></figure>
             <div class="vs">against</div>
             <figure class="clip"><blockquote lang="en">&hellip;honestly, <mark class="cited">our buyer is 25 to 40, urban professionals</mark>.</blockquote><figcaption><span class="cite">Kickoff &middot; DIMITRIS (CMO) &middot; 2026-07-10</span><span class="gloss">later in the same breath: the previous agency wrote Gen Z into the positioning and it stayed</span></figcaption></figure>
             <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
@@ -869,55 +356,52 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <div class="conflict-block">
           <h3>Budget <span>rfp_meltemi &sect;6 &middot; transcript_kickoff 00:14:32</span></h3>
           <div class="pair">
-            <figure class="clip"><blockquote lang="el">Συνολικός προϋπολογισμός <mark class="cited">&euro;90.000, συμπεριλαμβανομένου του media</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Total budget &euro;90 000, including media</span></figcaption></figure>
+            <figure class="clip"><blockquote lang="el">Συνολικός προϋπολογισμός <mark class="cited">&euro;90.000, συμπεριλαμβανομένου του media</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">interpretation &mdash; Total budget &euro;90 000, including media</span></figcaption></figure>
             <div class="vs">against</div>
-            <figure class="clip"><blockquote lang="el"><mark class="cited">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</mark></blockquote><figcaption><span class="cite">Kickoff &middot; ANNA (CFO) &middot; 2026-07-10</span><span class="gloss">gloss &mdash; somewhere around eighty, maybe eighty-five, but without the media spend</span></figcaption></figure>
+            <figure class="clip"><blockquote lang="el"><mark class="cited">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</mark></blockquote><figcaption><span class="cite">Kickoff &middot; ANNA (CFO) &middot; 2026-07-10</span><span class="gloss">interpretation &mdash; somewhere around eighty, maybe eighty-five, but without the media spend</span></figcaption></figure>
             <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
           </div>
         </div>
         <div class="conflict-block">
           <h3>Launch date <span>rfp_meltemi &sect;5 &middot; emails_thread Message 2 &middot; two of four recorded positions</span></h3>
           <div class="pair">
-            <figure class="clip"><blockquote lang="el">Launch την <mark class="cited">πρώτη εβδομάδα του Οκτωβρίου 2026</mark>, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Launch in the first week of October 2026, to make it into the points of sale in time</span></figcaption></figure>
+            <figure class="clip"><blockquote lang="el">Launch την <mark class="cited">πρώτη εβδομάδα του Οκτωβρίου 2026</mark>, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">interpretation &mdash; Launch in the first week of October 2026, to make it into the points of sale in time</span></figcaption></figure>
             <div class="vs">against</div>
-            <figure class="clip"><blockquote lang="el"><mark class="cited">το board μετέθεσε το launch για 15 Σεπτεμβρίου</mark></blockquote><figcaption><span class="cite">Email &middot; Dimitris &middot; 2026-07-14 18:22</span><span class="gloss">gloss &mdash; the board moved the launch to 15 September. At the kickoff four days earlier the date was still &ldquo;somewhere in autumn, to be finalised by the board&rdquo; [00:17:03]</span></figcaption></figure>
+            <figure class="clip"><blockquote lang="el"><mark class="cited">το board μετέθεσε το launch για 15 Σεπτεμβρίου</mark></blockquote><figcaption><span class="cite">Email &middot; Dimitris &middot; 2026-07-14 18:22</span><span class="gloss">interpretation &mdash; the board moved the launch to 15 September. At the kickoff four days earlier the date was still &ldquo;somewhere in autumn, to be finalised by the board&rdquo; [00:17:03]</span></figcaption></figure>
             <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
           </div>
         </div>
       </div>
       <p class="note">The same three lines return on sheet 07 with a person&rsquo;s writing in them.</p>
-      <details class="ledger">
-        <summary><span>Ledger &mdash; what ran</span></summary>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th>record</th></tr>
+      
+    </div>
+<aside class="margin">
+      
+      
+      <div class="bigcount">3<small> contradictions</small></div>
+      <p class="marginalia"><span class="lbl">Design rule: only people resolve</span>Conflicts are surfaced, never auto-resolved (PRD design rule 10). The line for the decision is left blank on purpose. Sheet 07 returns to these three lines with the red pen in them.</p>
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-07">
+        <summary><span>Ledger &mdash; what ran</span></summary><ul class="takeaways">
+        <li>Code lines up every field where two documents speak: seven of them.</li>
+        <li>Synthesis recognises the three that truly contradict and carries both sides into the brief.</li>
+        <li>Audience, budget and launch date each need a decision.</li>
+
+      </ul>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">kind</th><th scope="col">model</th><th scope="col" class="r">tokens</th><th scope="col">record</th></tr></thead>
           <tr><td>5 conflict_pass</td><td>deterministic &middot; pipeline/conflicts.py</td><td>none</td><td class="r">0</td><td>conflict_candidates.json &middot; 7 candidate fields: objectives, audiences, key_messages, deliverables, timeline, budget, mandatories &middot; 0 internal conflicts</td></tr>
           <tr><td>6 synthesis (conflict objects)</td><td>model &middot; skills/SYNTHESIS.md rule 4</td><td>claude-sonnet-5</td><td class="r">see next sheet</td><td>brief.json &rsaquo; conflicts[3], each position with source_id, location, anchor, speaker</td></tr>
         </table></div>
         <p class="foot">Exam check T3.1 requires all three seeded contradictions detected with citations to both sources; X3 requires no invented or resolved total in the brief object or either render; quoting the RFP budget as a conflict position is legitimate. Since 29 July a deterministic check also polices retractions within one source (the metro idea withdrawn at 00:08:34); it post-dates this graded run.</p>
-      </details>
-    </div>
-  </section>
-  <!-- ============ 06 THE BRIEF ============ -->
-  <section class="sheet" id="ch06" data-n="6" aria-labelledby="t06">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">06</span><span>The brief</span><span class="el" lang="el">Το brief</span></p>
-      <h1 class="title action" id="t06" tabindex="-1">One master record holds 25 cited entries, 3 conflicts and 10 questions; both documents come from it, with Greek reviewed by a person.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">06 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
-        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
-      </div>
-      <p class="marginalia"><span class="lbl">Readiness, recomputed by code</span>Five of seven fields have evidence behind them (policy floor: five) and 4% of entries (1 of 25) are low-confidence, so the verdict is ready for review, not ready to send.</p>
-      <p class="marginalia"><span class="lbl">Glossary</span>Nine protected terms (Meltemi Fizz, key visual, brand awareness, launch, media spend, KPI, OOH (out-of-home: posters, billboards), single-minded proposition, Meltemi Beverages) must survive character-exact in both languages.</p>
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>Audience is contested and the budget has no unit, so both are questions, not entries.</li>
-        <li>Two renderings share one master record; whether the Greek reads like agency Greek is a pilot metric.</li>
-        <li>Code recomputes readiness from policy: 5 of 7 fields evidenced, 4% low confidence, ready for review.</li>
-      </ul>
+      </details></div>
+</section>
+<section class="sheet" id="ch06" data-n="6" aria-labelledby="t06">
+<header class="slide-head"><p class="kicker">06 / One bilingual record · Brief Builder</p><h1 class="title action" id="t06" tabindex="-1">One master record supports both languages; Greek quality still needs review.</h1><p class="implication">25 cited entries, 3 conflicts, 10 questions. No translation step: Greek and English are rendered from the same object.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">06 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
+      
 
       
       <h2 class="sub">The same sections on both pages</h2>
@@ -946,9 +430,22 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           
         </div>
       </div>
-<p class="note">The extract shows two of the four key messages. Full documents in the repository: <a class="repo" href="runs/tier3/brief_en.html" target="_blank" rel="noopener">brief_en.html</a> &middot; <a class="repo" href="runs/tier3/brief_el.html" target="_blank" rel="noopener">brief_el.html</a> &middot; <a class="repo" href="runs/tier3/brief_review.html" target="_blank" rel="noopener">brief_review.html</a>, a review view with recorded resolutions and signature, language toggle and copyable questions. The account lead records decisions in the brief object itself (how: sheet 07).</p>
-<details class="ledger">
-        <summary><span>Ledger &mdash; synthesis</span></summary>
+<p class="note">The extract shows two of four key messages. Source paths: runs/tier3/brief_en.html, brief_el.html and brief_review.html. Embedded extracts are shown here; complete source documents remain in the repository.</p>
+
+
+    <p class="note">Greek register is a pilot metric; code cannot judge natural agency Greek. <span class="cite">PRD §7</span></p></div>
+<aside class="margin">
+      
+      
+      <p class="marginalia"><span class="lbl">Readiness, recomputed by code</span>Five of seven fields have evidence behind them (policy floor: five) and 4% of entries (1 of 25) are low-confidence, so the verdict is ready for review, not ready to send.</p>
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-08">
+        <summary><span>Ledger &mdash; synthesis</span></summary><ul class="takeaways">
+        <li>Audience is contested and the budget has no unit, so both are questions, not entries.</li>
+        <li>Two renderings share one master record; whether the Greek reads like agency Greek is a pilot metric.</li>
+        <li>Code recomputes readiness from policy: 5 of 7 fields evidenced, 4% low confidence, ready for review.</li>
+      </ul>
 <p class="foot">Both documents are written from one master record; whether the Greek reads like agency Greek still needs a person&rsquo;s review (PRD &sect;7). T2.4 checks citation tags, not semantic support; glossary checks do not measure naturalness.</p>
 <h2 class="sub">Two of the ten questions, as the account lead would send them</h2>
 <ol class="qs">
@@ -968,40 +465,26 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li><span class="n">&mdash;</span><span>Open questions for the client</span><span class="c">10</span></li>
         </ul>
       </div>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>6 synthesis</td><td>synthesize</td><td>claude-sonnet-5</td><td class="r">165 820</td><td class="r">305 s</td><td>brief.json &middot; 25 entries &middot; 3 conflicts &middot; 10 open questions &middot; validates against schema/brief_schema.json</td></tr>
         </table></div>
-        <p class="foot">Synthesis works over the compact extracts, not the raw documents (skills/SYNTHESIS.md). The runner computes the readiness block from the brief using config/readiness_policy.json; T2.6 checks the stored block against the harness&rsquo;s independent recomputation. Thresholds: at least 5 of 7 fields evidenced, at most 40% low-confidence entries.</p>
-      </details>
-<details class="ledger">
+        <p class="foot">Synthesis works over the compact extracts, not the raw documents (skills/SYNTHESIS.md). The readiness block is recomputed by code from config/readiness_policy.json and must match what the model wrote (exam check T2.6). Thresholds: at least 5 of 7 fields evidenced, at most 40% low-confidence entries.</p>
+      <div class="supporting"><p class="marginalia"><span class="lbl">Glossary</span>Nine protected terms (Meltemi Fizz, key visual, brand awareness, launch, media spend, KPI, OOH (out-of-home: posters, billboards), single-minded proposition, Meltemi Beverages) must survive character-exact in both languages.</p></div></details><details class="ledger" id="ledger-09">
         <summary><span>Ledger &mdash; render</span></summary>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>7 render</td><td>render</td><td>claude-sonnet-5 &middot; full reasoning budget (the low-effort cap on render was adopted on 25 July, after this run)</td><td class="r">285 359</td><td class="r">554 s</td><td>brief_el.md (13 970 chars) &middot; brief_en.md (12 643 chars) &middot; typeset copies brief_el.html, brief_en.html</td></tr>
         </table></div>
         <p class="foot">Instructions: skills/TRANSLATION.md and the client glossary. Deterministic gates after render: this run&rsquo;s rendered claim lines carry tags naming known sources (T2.4), glossary terms character-exact in both renders (T2.5). Citation presence alone does not prove a claim is supported.</p>
-      </details>
-    </div>
-  </section>
+      </details></div>
+</section>
 <section class="sheet" id="ch07" data-n="7" aria-labelledby="t07">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">07</span><span>Sign-off</span><span class="el" lang="el">Υπογραφή</span></p>
-      <h1 class="title action" id="t07" tabindex="-1">The account lead resolved all three conflicts in red and signed; the budget stays without a total.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">07 / 10 &middot; Contents</button></div>
-      <div class="stamps"><span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span></div>
-      <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each.</p>
-      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
-      <p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary); the review page only displays them. This walkthrough proposes a runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p>
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>The same three contradictions from sheet 05, now each with a person&rsquo;s decision.</li>
-        <li>What was decided is carried into the creative brief in red; what stayed open stays a question.</li>
-        <li>The account lead records resolutions and the signature in the brief object itself.</li>
-      </ul>
+<header class="slide-head"><p class="kicker">07 / Human sign-off · Brief Builder</p><h1 class="title action" id="t07" tabindex="-1">A named account lead resolves three conflicts and signs the record.</h1><p class="implication">The account lead records resolutions and signature in brief.json. brief_review.html displays those recorded decisions.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">07 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
+      
       <div class="hero">
         <div class="conflict-block">
           <h3>Audience</h3>
@@ -1024,48 +507,60 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         </div>
         <div class="signoff">
           <span class="landed">Signed off</span>
-          <p class="signrec"><span class="red">Signed off by Christos Maragkoudakis (account lead), 2026-07-24.</span> Edits made: reviewed both renders; no edits to extracted entries. Resolved the three cross-source conflicts to the authority/recency-correct positions (audiences 25&ndash;40; production budget in the eighties excluding media; launch 15 September). Media budget total left as an open question by design. Review time was not timed on this run; it is the first pilot measurement (target: under 30 minutes of account-lead attention, PRD &sect;7).</p>
+          <p class="signrec"><span class="red">Signed off by Christos Maragkoudakis (account lead), 2026-07-24.</span> Edits made: reviewed both renders; no edits to extracted entries. Resolved the three cross-source conflicts to the authority/recency-correct positions (audiences 25&ndash;40; production budget in the eighties excluding media; launch 15 September). Media budget total left as an open question by design. Review was untimed. The &lt;30-minute review target needs definition agreement: PRD §7 measures time-to-first-draft attention. Sponsor to reconcile before measurement.</p>
         </div>
       </div>
 
-      <details class="ledger">
-        <summary><span>Ledger &mdash; what ran</span></summary>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th>record</th></tr>
+      
+    </div>
+<aside class="margin">
+      
+      
+      <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each.</p>
+      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-10">
+        <summary><span>Ledger &mdash; what ran</span></summary><ul class="takeaways">
+        <li>The same three contradictions from sheet 05, now each with a person&rsquo;s decision.</li>
+        <li>What was decided is carried into the creative brief in red; what stayed open stays a question.</li>
+        <li>The account lead records resolutions and the signature in the brief object itself.</li>
+      </ul>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">kind</th><th scope="col">model</th><th scope="col" class="r">tokens</th><th scope="col">record</th></tr></thead>
           <tr><td>8 human sign-off</td><td>human action &middot; not a pipeline step</td><td>none</td><td class="r">0</td><td>brief.json &rsaquo; signoff {status: signed_off, signed_by, signed_ts, edits_summary} &middot; conflicts[n].status: resolved_by_human</td></tr>
         </table></div>
               <p class="foot">On provenance: in the synthetic project the account lead on the call is &ldquo;Eleni&rdquo;, a fictional persona. The graded run was signed off by the repository&rsquo;s author acting as account lead; the record above is quoted from the run.</p>
         <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model never writes that field.</p>
-      </details>
-    </div>
-  </section>
+      <div class="supporting"><p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary); the review page only displays them. This walkthrough proposes a runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p></div></details></div>
+</section>
 <section class="sheet" id="ch08" data-n="8" aria-labelledby="t08">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">08</span><span>The exam</span><span class="el" lang="el">Η εξέταση</span></p>
-      <h1 class="title action" id="t08" tabindex="-1">All 17 machine checks passed against an answer key committed before the pipeline ran.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">08 / 10 &middot; Contents</button></div>
-      <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
-      <p class="marginalia"><span class="lbl">Frozen</span>Answer key committed on 24 July 2026 at 00:27:26, sixteen hours before the run started; the grader was frozen after the first tier. Harness-only use is a policy restriction.</p>
-    </aside>
-    <div class="body">
+<header class="slide-head"><p class="kicker">08 / Evaluation scope · Brief Builder</p><h1 class="title action" id="t08" tabindex="-1">Seventeen checks passed on one synthetic project; usefulness remains to be tested.</h1><p class="implication">Citation presence does not prove semantic support or natural Greek. The pilot must test usefulness beyond these checks.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">08 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
       <p class="verdict">17/17: passes the 17 defined checks on one synthetic project.</p>
-      <ul class="takeaways">
-        <li>The grader was frozen early; harness-only answer-key use is policy, not enforced file isolation.</li>
-        <li>Every trap seeded in this project was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
-        <li>Every check is a yes or a no; none is an opinion.</li>
-      </ul>
-      <p class="note">The answer key is excluded from automatic source discovery, but runtime agents retain Read access to its containing directory. This does not establish that any agent read it.</p>
+      
       <p class="note">T1 = the evidence layer, T2 = the brief and both documents, T3 = the seeded traps, X = traps that must stay out.</p>
       
       <div class="hero"><ul class="exam">
         <li><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1</span><span>Evidence layer, 4 checks: shape, exact citations and two flagged garbles.</span><span class="res">pass</span></li>
         <li><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2</span><span>Brief and both documents, 6 checks: structure, sensitivity, citations, glossary and readiness.</span><span class="res">pass</span></li>
-        <li><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3 / X</span><span>Seeded traps, 7 checks: contradictions and gaps found; retraction, speculation and budget traps contained.</span><span class="res">pass</span></li>
+        <li><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3+X</span><span>Seeded traps, 7 checks: contradictions and gaps found; retraction, speculation and budget traps contained.</span><span class="res">pass</span></li>
       </ul></div>
-      <details class="ledger">
-        <summary><span>Ledger &mdash; what ran</span></summary>
+      
+    </div>
+<aside class="margin">
+      
+      
+      <p class="marginalia"><span class="lbl">Frozen</span>Answer key written 23 July and committed at 00:27 on 24 July, sixteen hours before the run started; the grader, frozen after the first tier, is the only code that may open it.</p>
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-11">
+        <summary><span>Ledger &mdash; what ran</span></summary><ul class="takeaways">
+        <li>The grader was frozen early; it is the only code that can open the sealed answer key.</li>
+        <li>Every trap seeded in this project was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
+        <li>Checks return pass or fail; human review still judges support and Greek register.</li>
+      </ul>
 <p class="foot">Both documents are written from one master record; whether the Greek reads like agency Greek still needs a person&rsquo;s review. Citation tags do not establish semantic support; PRD &sect;7 measures Greek register in the pilot.</p>
 <div class="hero">
         <ul class="exam">
@@ -1080,7 +575,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li style="--i:7"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.3</span><span>Both the Greek and the English documents exist</span><span class="res">el 13 970 &middot; en 12 643 chars</span></li>
           <li style="--i:8"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.4</span><span>This run&rsquo;s claim lines carry tags naming known sources</span><span class="res">all claim lines cited</span></li>
           <li style="--i:9"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.5</span><span>Protected glossary terms are intact in both documents</span><span class="res">intact</span></li>
-          <li style="--i:10"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.6</span><span>The runner&rsquo;s stored readiness block matches the harness&rsquo;s independent recomputation</span><span class="res">5 / 0.04 / 10 / ready_for_review</span></li>
+          <li style="--i:10"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.6</span><span>The readiness verdict, recomputed by code, matches the model&rsquo;s</span><span class="res">5 / 0.04 / 10 / ready_for_review</span></li>
           <li class="tier">Tier 3 &middot; the seeded traps</li>
           <li style="--i:11"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.1</span><span>All seeded contradictions found, both sides cited</span><span class="res">3/3</span></li>
           <li style="--i:12"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.2</span><span>Seeded gaps surfaced as questions for the client</span><span class="res">4/4 found, 3 required</span></li>
@@ -1088,40 +583,71 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li style="--i:14"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.4</span><span>No value anywhere in the brief without a citation</span><span class="res">pass</span></li>
           <li style="--i:15"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X1</span><span>The withdrawn metro idea is not a deliverable</span><span class="res">pass</span></li>
           <li style="--i:16"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X2</span><span>The speculative TikTok dance is marked conditional</span><span class="res">1 entry, conditional</span></li>
-          <li style="--i:17"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X3</span><span>No invented or resolved total in the brief or either render</span><span class="res">pass</span></li>
+          <li style="--i:17"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X3</span><span>no invented or resolved total in the brief or either render</span><span class="res">pass</span></li>
         </ul>
       </div>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>grader</th><th>kind</th><th>input</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">grader</th><th scope="col">kind</th><th scope="col">input</th><th scope="col">record</th></tr></thead>
           <tr><td>eval/harness.py</td><td>deterministic &middot; frozen after Tier 1</td><td>runs/tier3 against fixtures/northlight_01/answer_key.json</td><td>harness_report.json &middot; verdict PASS &middot; passed 17, failed 0, skipped 0</td></tr>
         </table></div>
         <p class="foot">Second fixture: runs/voreas_prep_report.md. Live rehearsal: docs/EVIDENCE.md.</p>
-      </details>
-    </div>
-  </section>
+      </details></div>
+</section>
 <section class="sheet" id="ch09" data-n="9" aria-labelledby="t09">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">09</span><span>Creative brief, shadow</span><span class="el" lang="el">Δημιουργικό (σκιά)</span></p>
-      <h1 class="title action" id="t09" tabindex="-1">The shadow drafts need three corrections and a creative lead&rsquo;s decision.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">09 / 10 &middot; Contents</button></div>
-      <div class="stamps">
-        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
-        <span class="stamp people pending"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide &mdash; awaiting creative lead</span>
-      </div>
-      <p class="marginalia"><span class="lbl">Three strikes, one call</span>Draft B&rsquo;s &ldquo;Greek-made&rdquo; is an origin claim no source supports; Draft A&rsquo;s budget line, &ldquo;Production budget: &lsquo;in the eighties&rsquo; <mark class="flag">(&euro;80&ndash;85k)</mark>&rdquo;, turns the words into a total the brief never states (creative_brief_sonnet.md, line 64). Draft B also calls the TikTok dance &ldquo;floated speculatively and retracted&rdquo;; it was speculative, while metro posters were retracted. Draft B&rsquo;s &ldquo;nothing to feel guilty about&rdquo; runs close to the ban on health claims: the creative lead&rsquo;s call.</p>
-      <p class="marginalia"><span class="lbl">Shadow mode</span>Signed-off input; evaluation only, nothing delivered.</p>
-      
-    </aside>
-    <div class="body">
-      <ul class="takeaways">
-        <li>AI proposes creative direction; factual claims carry references requiring verification.</li>
-        <li>Channel specs are looked up from the traffic team&rsquo;s table, never generated.</li>
-        <li>Six open items still block a creative team; three facts are settled in red.</li>
-      </ul>
+<header class="slide-head"><p class="kicker">09 / Creative review · Brief Builder</p><h1 class="title action" id="t09" tabindex="-1">Shadow creative needs three corrections and a creative lead’s judgement.</h1><p class="implication">A or B, or neither: a creative lead must evaluate the shadow drafts. Owner and decision date remain unassigned.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">09 / 10 &middot; Contents</button></div></div>
 
-      <div class="hero">
+<div class="body">
+      
+
+      
+
+      
+
+      
+    <div class="ab">
+          <p class="pencil">A/B on identical input: both flag the natural-ingredients claim as unusable until the ingredient list arrives and keep the TikTok dance out; A positions the brand, B makes a product claim.</p>
+          <div class="cols2">
+            <div class="col"><h3>Draft A &middot; claude-sonnet-5</h3><p>&ldquo;For urban professionals who&rsquo;ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.&rdquo;</p></div>
+            <div class="col"><h3>Draft B &middot; claude-opus-4-8</h3><p>&ldquo;Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.&rdquo;</p></div>
+          </div>
+          <p class="lastline">Creative lead: A or B, or neither?</p>
+          <p class="pencil">Six blocking open items from the brief:</p>
+          <ul class="blockers">
+            <li>Approved ingredient list before natural-ingredients copy.</li>
+            <li>Video quantities, durations and formats.</li>
+            <li>Key-visual quantities, uses and contexts.</li>
+            <li>Meaning and scope of &ldquo;TikTok-first&rdquo;.</li>
+            <li>Launch success metrics / KPIs.</li>
+            <li>Production milestones against 15 September.</li>
+          </ul>
+          <p class="pencil">Creative approval is pending: the named creative lead records a choice and corrections before week 4. Client-brief live use does not authorize creative delivery; creative stays in shadow in v1.</p>
+          <div class="resolve"><span>chosen by:</span><span class="line"></span><span>(creative lead)</span></div>
+        </div><p class="corrections"><b>Three corrections and one judgement call.</b> Draft B&rsquo;s &ldquo;Greek-made&rdquo; is an origin claim no source supports; Draft A&rsquo;s budget line, &ldquo;Production budget: &lsquo;in the eighties&rsquo; <mark class="flag">(&euro;80&ndash;85k)</mark>&rdquo;, turns the words into a total the brief never states (creative_brief_sonnet.md, line 64). Draft B also calls the TikTok dance &ldquo;floated speculatively and retracted&rdquo;; it was speculative, while metro posters were retracted. Draft B&rsquo;s &ldquo;nothing to feel guilty about&rdquo; runs close to the ban on health claims: the creative lead&rsquo;s call.</p><article class="brief" aria-label="Creative brief draft">
+        <div class="bh"><h3>Creative Brief (draft) &mdash; Meltemi Fizz launch</h3><span class="cite">Draft B &middot; claude-opus-4-8 &middot; shadow mode</span></div>
+        
+
+        <h4><span class="n">2</span>Core insight &mdash; creative hypothesis, not audience research</h4>
+        <p>The 25&ndash;40 urban professional has quietly outgrown the sugary soft drink, but doesn&rsquo;t want to be lectured about health to feel good about a daily refreshment. A drink they reach for on an ordinary afternoon is a small act of self-respect &mdash; modern, unfussy, and theirs.</p>
+        
+
+        <h4><span class="n">3&ndash;6</span>Feel, tone, reasons to believe <span class="pencil">&mdash; condensed</span></h4>
+        <p>Feel: confident, refreshed, quietly proud it&rsquo;s Greek and genuinely premium, never beach-party. Tone: confident modern Greek with English category terms; humour yes, sarcasm about competitors no. Reasons to believe: zero sugar (permitted on-label); natural ingredients only once the approved list arrives. <span class="cite">[key_messages; mandatories; open_questions/mandatories]</span></p>
+
+        
+
+        
+
+        <h4><span class="n">7</span>Deliverables &amp; channel specs</h4>
+        <p>The brief asks for video and key visuals, TikTok-first; quantities and durations are undecided, and the table&rsquo;s technical specs are provisional. <span class="cite">[deliverables; mandatories; open_questions/deliverables]</span></p>
+        <p class="pencil">Demo spec table: values are a pilot stub and need the traffic team&rsquo;s confirmation before delivery; the gate checks normalized dimensions and some ratios, not durations, file types or whether the row fits the deliverable. <span class="cite">config/channel_specs.json _stub_notice</span></p>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="spec">
+          <thead><tr><th scope="col">Deliverable (from the brief)</th><th scope="col">Spec (from the table, not generated)</th><th scope="col">Row</th></tr></thead>
+          <tr><td>Primary launch video &mdash; TikTok</td><td>In-feed video &middot; 9:16 &middot; 1080x1920 &middot; 9-60s &middot; MP4</td><td>[spec: tiktok_infeed_video]</td></tr>
+          <tr><td>Key visual &mdash; digital master</td><td>Key visual &mdash; digital master &middot; 1:1 &middot; 2048x2048 &middot; PNG</td><td>[spec: key_visual_digital_master]</td></tr>
+        </table></div>
+
+</article><div class="hero">
         <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
           <defs>
             <g id="kv-art">
@@ -1155,62 +681,19 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           </div>
         </div>
         <p class="slug"><span class="dim">Slug:</span> MOCK-UP &middot; SHADOW MODE &middot; evaluation draft, not for delivery. One drawing, two crops, and one packaging application from an image model; the pipeline emits text only. The mark is the meltemi, the north wind, one stroke that releases the fizz; &ldquo;zero sugar&rdquo; stays a written claim.</p>
-                      </div>
-
-      <article class="brief" aria-label="Creative brief draft">
-        <div class="bh"><h3>Creative Brief (draft) &mdash; Meltemi Fizz launch</h3><span class="cite">Draft B &middot; claude-opus-4-8 &middot; shadow mode</span></div>
-        
-
-        <h4><span class="n">1</span>Single-minded proposition <span class="pencil">&mdash; the one thing the campaign must say</span></h4>
-        <p class="smp">Meltemi Fizz is the <mark class="flag">Greek-made</mark> sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.</p>
-        <p class="pencil">A candidate, not a client line: the brief records no agreed proposition. <span class="cite">[key_messages; open_questions/key_messages]</span></p>
-
-        <h4><span class="n">2</span>Core insight &mdash; creative hypothesis, not audience research</h4>
-        <p>The 25&ndash;40 urban professional has quietly outgrown the sugary soft drink, but doesn&rsquo;t want to be lectured about health to feel good about a daily refreshment. A drink they reach for on an ordinary afternoon is a small act of self-respect &mdash; modern, unfussy, and theirs.</p>
-        
-
-        <h4><span class="n">3&ndash;6</span>Feel, tone, reasons to believe <span class="pencil">&mdash; condensed</span></h4>
-        <p>Feel: confident, refreshed, quietly proud it&rsquo;s Greek and genuinely premium, never beach-party. Tone: confident modern Greek with English category terms; humour yes, sarcasm about competitors no. Reasons to believe: zero sugar (permitted on-label); natural ingredients only once the approved list arrives. <span class="cite">[key_messages; mandatories; open_questions/mandatories]</span></p>
-
-        <div class="ab">
-          <p class="pencil">A/B on identical input: both flag the natural-ingredients claim as unusable until the ingredient list arrives and keep the TikTok dance out; A positions the brand, B makes a product claim.</p>
-          <div class="cols2">
-            <div class="col"><h3>Draft A &middot; claude-sonnet-5</h3><p>&ldquo;For urban professionals who&rsquo;ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.&rdquo;</p></div>
-            <div class="col"><h3>Draft B &middot; claude-opus-4-8</h3><p>&ldquo;Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.&rdquo;</p></div>
-          </div>
-          <p class="lastline">Creative lead: record A/B/neither, three factual corrections and health-claim decision. Approval covers shadow evaluation only.</p>
-          <p class="pencil">Six blocking open items from the brief:</p>
-          <ul class="blockers">
-            <li>Approved ingredient list before natural-ingredients copy.</li>
-            <li>Video quantities, durations and formats.</li>
-            <li>Key-visual quantities, uses and contexts.</li>
-            <li>Meaning and scope of &ldquo;TikTok-first&rdquo;.</li>
-            <li>Launch success metrics / KPIs.</li>
-            <li>Production milestones against 15 September.</li>
-          </ul>
-          <p class="pencil">Creative approval is pending: the named creative lead records a choice and corrections before week 4. Client-brief live use does not authorize creative delivery; creative stays in shadow in v1.</p>
-          <div class="resolve"><span>chosen by:</span><span class="line"></span><span>(creative lead)</span></div>
-        </div>
-
-        
-
-        <h4><span class="n">7</span>Deliverables &amp; channel specs</h4>
-        <p>The brief asks for video and key visuals, TikTok-first; quantities and durations are undecided, and the table&rsquo;s technical specs are provisional. <span class="cite">[deliverables; mandatories; open_questions/deliverables]</span></p>
-        <p class="pencil">Demo spec table: values are a pilot stub and need the traffic team&rsquo;s confirmation before delivery; the gate checks normalized dimensions and some ratios, not durations, file types or whether the row fits the deliverable. <span class="cite">config/channel_specs.json _stub_notice</span></p>
-        <div class="ledger-wrap"><table class="spec">
-          <tr><th>Deliverable (from the brief)</th><th>Spec (from the table, not generated)</th><th>Row</th></tr>
-          <tr><td>Primary launch video &mdash; TikTok</td><td>In-feed video &middot; 9:16 &middot; 1080x1920 &middot; 9-60s &middot; MP4</td><td>[spec: tiktok_infeed_video]</td></tr>
-          <tr><td>Key visual &mdash; digital master</td><td>Key visual &mdash; digital master &middot; 1:1 &middot; 2048x2048 &middot; PNG</td><td>[spec: key_visual_digital_master]</td></tr>
-        </table></div>
-
-        <h4><span class="n">8</span>Readiness checklist</h4>
-        <p class="pencil">Settled by the account lead at sign-off</p>
-        <ul class="check">
-          <li><span class="box red"></span><span><span class="red-i">Audience: 25&ndash;40 urban professionals.</span> <span class="cite">[conflicts/audiences &middot; resolved_by_human]</span></span></li>
-          <li><span class="box red"></span><span><span class="red-i">Launch date: 15 September 2026.</span> <span class="cite">[conflicts/timeline &middot; resolved_by_human]</span></span></li>
-          <li><span class="box red"></span><span><span class="red-i">Production budget: &ldquo;in the eighties&rdquo;, excluding media spend.</span> <span class="cite">[conflicts/budget &middot; resolved_by_human]</span></span></li>
-        </ul>
-        <details class="ledger"><summary><span>Still open &mdash; six items a creative team cannot start without, and three that do not block</span></summary>
+                      </div></div>
+<aside class="margin">
+      
+      
+      
+      
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-12"><summary><span>Still open &mdash; six items a creative team cannot start without, and three that do not block</span></summary><ul class="takeaways">
+        <li>Proposition, insight, tone and reasons to believe are the model&rsquo;s; every fact cites a brief entry.</li>
+        <li>Channel specs are looked up from the traffic team&rsquo;s table, never generated.</li>
+        <li>Six open items still block a creative team; three facts are settled in red.</li>
+      </ul>
         <p class="pencil">A creative team cannot start without &mdash; still open, carried from the brief</p>
         <ul class="check">
           <li><span class="box"></span><span>Approved ingredient list &mdash; required before any copy uses the &ldquo;φυσικά συστατικά&rdquo; claim. <span class="cite">[open_questions/mandatories]</span></span></li>
@@ -1222,53 +705,50 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         </ul>
         <p class="pencil">Open but not blocking first creative: the media-inclusive total budget (deliberately unresolved) &middot; the named approver &middot; the proposition itself, which is a shadow-mode candidate.</p>
 
-                </details>
+                <div class="supporting">        <h4><span class="n">1</span>Single-minded proposition <span class="pencil">&mdash; the one thing the campaign must say</span></h4>
+        <p class="smp">Meltemi Fizz is the <mark class="flag">Greek-made</mark> sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.</p>
+        <p class="pencil">A candidate, not a client line: the brief records no agreed proposition. <span class="cite">[key_messages; open_questions/key_messages]</span></p>
 
-      </article>
+        <h4><span class="n">8</span>Readiness checklist</h4>
+        <p class="pencil">Settled by the account lead at sign-off</p>
+        <ul class="check">
+          <li><span class="box red"></span><span><span class="red-i">Audience: 25&ndash;40 urban professionals.</span> <span class="cite">[conflicts/audiences &middot; resolved_by_human]</span></span></li>
+          <li><span class="box red"></span><span><span class="red-i">Launch date: 15 September 2026.</span> <span class="cite">[conflicts/timeline &middot; resolved_by_human]</span></span></li>
+          <li><span class="box red"></span><span><span class="red-i">Production budget: &ldquo;in the eighties&rdquo;, excluding media spend.</span> <span class="cite">[conflicts/budget &middot; resolved_by_human]</span></span></li>
+        </ul>
+        
 
-      <details class="ledger">
+      </div></details><details class="ledger" id="ledger-13">
         <summary><span>Ledger &mdash; what ran</span></summary>
-<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; references indicate claimed provenance, not verified support</p><p class="pencil">Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.</p><p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; every fact cites a brief entry, open question or conflict</p><p class="pencil">Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.</p><p class="pencil">Source for full sections 3–6 and further spec rows (not embedded): <span class="source-path">runs/tier3/creative/creative_brief_opus.md</span>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">step</th><th scope="col">agent</th><th scope="col">model id as recorded</th><th scope="col" class="r">tokens</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>9 creative_shadow &middot; arm A</td><td>creative-shadow</td><td>claude-sonnet-5</td><td class="r">86 441</td><td class="r">90 s</td><td>creative/creative_brief_sonnet.md &middot; 6 994 chars</td></tr>
           <tr><td>9 creative_shadow &middot; arm B</td><td>creative-shadow</td><td>claude-opus-4-8</td><td class="r">63 473</td><td class="r">110 s</td><td>creative/creative_brief_opus.md &middot; 8 525 chars</td></tr>
           <tr><td>spec-match gate</td><td>deterministic &middot; pipeline/creative.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>Checks normalized resolution and aspect-ratio tokens against config/channel_specs.json; exempts ratio-shaped values with denominators 10&ndash;59; does not validate duration or file-type tokens. PRD DR-7 describes the intended policy.</td></tr>
         </table></div>
-        <div class="swatches">
-          <div class="swatch"><i style="background:#1B4F8A"></i>Aegean Blue #1B4F8A</div>
-          <div class="swatch"><i style="background:#F5C518"></i>Citrus Yellow #F5C518</div>
-          <div class="swatch"><i style="background:#FFFFFF"></i>White</div>
-          <span class="dim">&mdash; two brand colours and white; flat fills only</span>
-        </div>
+        
         <ul class="callouts">
           <li>No health or weight-loss claim <span class="dim">[no-gos]</span></li>
           <li>No competitor comparison <span class="dim">[no-gos]</span></li>
           <li>&ldquo;Zero sugar&rdquo; is the one claim on the artwork, written in the line, not drawn <span class="dim">[claims]</span></li>
           <li><s>&ldquo;&phi;&upsilon;&sigma;&iota;&kappa;&alpha;&#769; &sigma;&upsilon;&sigma;&tau;&alpha;&tau;&iota;&kappa;&alpha;&#769;&rdquo; (natural ingredients)</s> withheld until the approved ingredient list arrives <span class="dim">[claims &middot; open question]</span></li>
           <li>The meltemi is the north wind: one stroke that becomes fizz names the brand and the category; no beach, no party, no bar <span class="dim">[no-gos &middot; premium summer]</span></li>
-          <li>The artwork uses a yellow wind stroke, two white bubbles and the full product name. The guidelines require one wordmark height of clear space; the crops keep it, while packaging compliance remains unverified. <span class="dim">[logo clear space &middot; TikTok-first]</span></li>
+          <li>Clear space of one wordmark height kept free on every side of the name; wind stroke, bubbles and name sit in the central column so the 9:16 crop clips nothing <span class="dim">[logo clear space &middot; TikTok-first]</span></li>
           <li>The 9:16 is a crop, not a TikTok-first idea: the pipeline supplies the facts and the spec; the idea is the creative team&rsquo;s <span class="dim">[mock-up]</span></li>
         </ul>
         <p class="foot">Checked by the author against Brand Guidelines v3.1 (name in Latin script in full, flat fills in the two brand colours and white, claims, category no-gos, tone); the pipeline emits text only, so this is not a machine guarantee. Wordmark set in a system face; no logo file supplied. The key visual on this sheet is an illustration drawn for this walkthrough from the brief&rsquo;s mandatories and specs; the pipeline itself produces text only (PRD non-goal: no live creative delivery). A production image would replace it under the same rules.</p>
-      </details>
-    </div>
-  </section>
+      <p class="foot">Artwork palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518, white; flat fills only.</p></details></div>
+</section>
 <section class="sheet" id="ch10" data-n="10" aria-labelledby="t10">
-    <header class="slide-head">
-      <p class="kicker"><span class="num">10</span><span>Numbers and decisions</span><span class="el" lang="el">Αριθμοί και αποφάσεις</span></p>
-      <h1 class="title action" id="t10" tabindex="-1">Approve a conditional four-week pilot; confirm capacity, costs and a spending ceiling before it starts.</h1>
-    </header>
-    <aside class="margin">
-      <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">10 / 10 &middot; Contents</button></div>
-      <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
+<header class="slide-head"><p class="kicker">10 / Pilot conditions · Brief Builder</p><h1 class="title action" id="t10" tabindex="-1">Approve the pilot conditionally; resolve operating cost and capacity before commitment.</h1><p class="implication">The capacity case is a target, not measured savings. Plan, spending ceiling, training and operator effort remain unpriced.</p></header>
+<div class="sheet-tools"><div class="folio"><button type="button" class="open-contents" aria-label="Open contents">10 / 10 &middot; Contents</button></div></div>
+
+<div class="body">
       
-    </aside>
-    <div class="body">
-      <ul class="takeaways"><li>Approve a conditional pilot; measure quality, review time and adoption.</li><li>Re-baseline the changed routing before week 1.</li><li>Validate subscription capacity against measured usage.</li></ul>
             <h2 class="sub">Decisions needed</h2>
       <ol class="decisions">
-        <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results.
+        <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results. Alternative: defer until capacity and terms are confirmed.
           <ul class="sub-list"><li>Weeks 2&ndash;3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft. Greek naturalness rated 1&ndash;5, with EL/EN edits compared; the sponsor must confirm a release threshold before week 1 (docs/pilot/SCORECARD.md leaves it unset). Both pilot leads must choose voluntary reuse. Proposed mandatory gate: missed targets block week-4 live use; the named sponsor records the release decision. Month-2 adoption is tracked separately.</li></ul>
           <span class="cite">Sponsor &middot; PRD &sect;7&ndash;8; protocol in ledger.</span></li>
         <li>Re-baseline usage and time under the 30 July routing before week 1: larger extraction model plus second reader. <span class="cite">Operator &middot; routing-validate-01.</span></li>
@@ -1291,10 +771,17 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <li>Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready. <span class="cite">runs/voreas_prep_report.md</span></li>
       </ul>
       <p class="note">The budget stays &laquo;κάπου στα ογδόντα&raquo;: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it. <span class="cite">transcript_kickoff 00:14:32 &middot; check X3</span></p>
-      <p class="lastline">People decide. <button type="button" class="jump" data-go="1">Back to the summary</button></p>
-      <details class="ledger">
-        <summary><span>Ledger &mdash; the whole run</span></summary>
-<h2 class="sub">Measured usage and assumed labour</h2><ul class="numbers">
+      <p class="note"><a href="#ch01">Return to the decision on sheet 01</a>.</p>
+      
+    </div>
+<aside class="margin">
+      
+      
+      
+    </aside>
+<div class="ledgers"><details class="ledger" id="ledger-14">
+        <summary><span>Ledger &mdash; the whole run</span></summary><ul class="takeaways"><li>Approve a conditional pilot; measure quality, review time and adoption.</li><li>Re-baseline the changed routing before week 1.</li><li>Validate subscription capacity against measured usage.</li></ul>
+<p class="foot">Attention definitions require sponsor agreement: PRD §7 concerns time to first draft, while the review target here is &lt;30 minutes. The 50-minute total-attention target is separate. Week 1 establishes the baseline.</p><h2 class="sub">Measured usage and assumed labour</h2><ul class="numbers">
           <li><span class="big">0.98<small>M tokens, stage one</small></span><p class="what">Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried): 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields</span></p></li>
           <li><span class="big">~15<small>M tokens a month</small></span><p class="what">0.98 M per brief at about 15 briefs a month (PRD A2); about 16 M with one creative draft each. The figure to hold against a plan&rsquo;s usage window.<span class="cite">docs/PRD.md &sect;4 A2</span></p></li>
           <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today. Target: about 210 account-lead hours a year, worth &euro;4.0&ndash;4.2k before operating costs &mdash; (120 &minus; 50) minutes saved per brief &times; 180 briefs a year &divide; 60 = 210 hours, &times; &euro;19&ndash;20 an hour; baseline, volume and rate are PRD assumptions A1, A2, A4, validated in week 1. Pilot effort and operating costs remain unestimated; the proposed pre-week-1 financial gate is decision 3.<span class="cite">docs/COST_MODEL.md &sect;3 &middot; PRD A1, A2, A4</span></p></li>
@@ -1320,189 +807,124 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 
       </ul>
 <p class="foot">The PRD&rsquo;s two named risks: confidentiality of regulated clients (per-client tiers, S0&ndash;S1 in the pilot) and a confident citation to garbage (fidelity gate, word-for-word citation checks). <span class="cite">docs/PRD.md &sect;9</span></p>
-        <div class="ledger-wrap"><table class="ledger-table">
-          <tr><th>stage</th><th>model id as recorded</th><th class="r">time</th><th>record</th></tr>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table">
+          <thead><tr><th scope="col">stage</th><th scope="col">model id as recorded</th><th scope="col" class="r">time</th><th scope="col">record</th></tr></thead>
           <tr><td>classification</td><td>claude-haiku-4-5-20251001</td><td class="r">34 s</td><td>classification.json</td></tr>
           <tr><td>transcript fidelity</td><td>claude-haiku-4-5-20251001</td><td class="r">52 s</td><td>fidelity/</td></tr>
           <tr><td>extraction, 4 sources incl. one repair</td><td>claude-haiku-4-5-20251001 (graded run) &middot; claude-sonnet-5 + verifier since 2026-07-30</td><td class="r">13.6 min</td><td>extracts/ &middot; diagnostics/repair_log.jsonl</td></tr>
           <tr><td>synthesis</td><td>claude-sonnet-5</td><td class="r">5.1 min</td><td>brief.json</td></tr>
           <tr><td>bilingual render</td><td>claude-sonnet-5</td><td class="r">9.2 min</td><td>brief_el.md &middot; brief_en.md</td></tr>
           <tr><td>creative shadow, A/B</td><td>claude-sonnet-5 &middot; claude-opus-4-8</td><td class="r">3.3 min</td><td>creative/</td></tr>
-          <tr><td>transcript extraction under the 30 July routing (runs/routing-validate-01)</td><td>claude-sonnet-5, two passes (91 918 and 462 130 tokens) + second reader (44 695)</td><td class="r">598 743 tokens</td><td>against 295 774 on the graded run</td></tr>
+          
         </table></div>
-        <p class="foot"><b>Dollars, for readers on API terms:</b> de-duplicated, the graded run cost $3.55 ($2.81 stage one); <a class="repo" href="docs/EVIDENCE.md" target="_blank" rel="noopener">docs/EVIDENCE.md</a> quotes the raw $4.29 because the manifest records each creative arm twice.</p>
+        <div class="ledger-wrap" role="region" tabindex="0" aria-label="Evidence table; scroll horizontally if needed"><table class="ledger-table"><caption>Usage comparison · tokens, not time</caption><thead><tr><th scope="col">Stage</th><th scope="col">Model / attempts</th><th scope="col">Tokens</th><th scope="col">Comparison</th></tr></thead><tr><td>transcript extraction under the 30 July routing (runs/routing-validate-01)</td><td>claude-sonnet-5, two passes (91 918 and 462 130 tokens) + second reader (44 695)</td><td class="r">598 743 tokens</td><td>against 295 774 on the graded run</td></tr></table></div><p class="foot"><b>Dollars, for readers on API terms:</b> de-duplicated, the graded run cost $3.55 ($2.81 stage one); <span class="source-path">docs/EVIDENCE.md</span> quotes the raw $4.29 because the manifest records each creative arm twice.</p>
         <p class="foot"><b>Why 33 min and 25.2 min:</b> the graded pack was assembled across resumed legs (run_manifest.json marks every stage-one step from_earlier_run); the 29 July capture ran continuously. Render effort was capped on 25 July and a within-source retraction check added on 29 July; neither is in the graded numbers.</p>
-        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, runs/routing-validate-01, docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
-      </details>
-    </div>
-  </section>
-</div>
-
-<!-- ============ CONTENTS OVERLAY ============ -->
-<div class="contents" id="contents" role="dialog" aria-modal="true" aria-labelledby="contents-h" hidden>
-  <div class="contents-in">
-    <button type="button" class="close" id="contents-close">Close</button>
-    <h2 id="contents-h">Contents</h2>
-    <p class="howto">Ten sheets in three parts. Pick one, or press Escape to return. Keys: &larr; &rarr; turn &middot; Home / End &middot; C contents &middot; Esc close. Marks: pencil = AI drafts &middot; rule = code checks &middot; red pen = people decide.</p>
-    <ol id="contents-list"></ol>
-  </div>
-</div>
-
-<!-- ============ NAVIGATION ============ -->
-<nav class="nav" aria-label="Sheet navigation">
-  <div class="nav-in">
-    <button type="button" class="back" id="back" aria-keyshortcuts="ArrowLeft">Back</button>
-    <div class="ruler" id="ruler" role="group" aria-label="Progress"><button type="button" class="fol open-contents" id="fol" aria-label="Open contents">01 / 10 &middot; Contents</button></div>
-    <button type="button" class="next" id="next" aria-keyshortcuts="ArrowRight"><span class="lbl">Begin</span><b id="next-title">The product</b><span class="arrow" aria-hidden="true">&rarr;</span></button>
-  </div>
-</nav>
-<div class="vh" aria-live="polite" id="announce"></div>
-
-<script>
-(function () {
+        <p class="foot"><b>Source paths:</b> runs/tier3, harness_report.json, docs/COST_MODEL.md, runs/routing-validate-01, docs/EVIDENCE.md and fixtures/northlight_01. All essential exhibits are embedded; full unseen drafts are not included. Synthetic data throughout.</p>
+      </details></div>
+</section></main><div class="contents" id="contents" role="dialog" aria-modal="true" aria-labelledby="contents-h" hidden><div class="contents-in"><button class="close" id="contents-close" type="button">Close</button><h2 id="contents-h">Contents</h2><p>Decision → operating boundary → evidence → pilot conditions.</p><ol id="contents-list"><li><a href="#ch01"><span class="n">01</span><span>The decision</span></a></li><li><a href="#ch02"><span class="n">02</span><span>The operating boundary</span></a></li><li><a href="#ch03"><span class="n">03</span><span>Inputs and readiness</span></a></li><li><a href="#ch04"><span class="n">04</span><span>Evidence fidelity</span></a></li><li><a href="#ch05"><span class="n">05</span><span>Unresolved conflicts</span></a></li><li><a href="#ch06"><span class="n">06</span><span>One bilingual record</span></a></li><li><a href="#ch07"><span class="n">07</span><span>Human sign-off</span></a></li><li><a href="#ch08"><span class="n">08</span><span>Evaluation scope</span></a></li><li><a href="#ch09"><span class="n">09</span><span>Creative review</span></a></li><li><a href="#ch10"><span class="n">10</span><span>Pilot conditions</span></a></li></ol></div></div>
+<nav class="nav" aria-label="Sheet navigation"><div class="nav-in"><button class="back" id="back" type="button">Back</button><div class="ruler" id="ruler"><button class="fol open-contents" id="fol" type="button">01 / 10 &middot; Contents</button></div><button class="next" id="next" type="button"><span>Next</span><b id="next-title">The operating boundary</b><span aria-hidden="true">→</span></button></div></nav><div class="vh" aria-live="polite" id="announce"></div>
+<noscript><nav class="offline-contents" aria-label="All sheets"><h2>All sheets</h2><ol><li><a href="#ch01"><span class="n">01</span><span>The decision</span></a></li><li><a href="#ch02"><span class="n">02</span><span>The operating boundary</span></a></li><li><a href="#ch03"><span class="n">03</span><span>Inputs and readiness</span></a></li><li><a href="#ch04"><span class="n">04</span><span>Evidence fidelity</span></a></li><li><a href="#ch05"><span class="n">05</span><span>Unresolved conflicts</span></a></li><li><a href="#ch06"><span class="n">06</span><span>One bilingual record</span></a></li><li><a href="#ch07"><span class="n">07</span><span>Human sign-off</span></a></li><li><a href="#ch08"><span class="n">08</span><span>Evaluation scope</span></a></li><li><a href="#ch09"><span class="n">09</span><span>Creative review</span></a></li><li><a href="#ch10"><span class="n">10</span><span>Pilot conditions</span></a></li></ol></nav></noscript><script>(function () {
+  'use strict';
   var CH = [
-    { g: 'Overview', t: 'Brief Builder', w: 'The answer first: what it is, what this run proved, what it never does', r: [] },
-    { g: 'Overview', t: 'The product', w: 'The whole pipeline, what you get, how it is built, who touches it', r: ['ai', 'code', 'people'] },
-    { g: 'The run, sheet by sheet', t: 'Inputs and readiness', w: 'Four documents; code checks there is enough to work with; the job is classified', r: ['code', 'ai'] },
-    { g: 'The run, sheet by sheet', t: 'Reading with receipts', w: 'Garbles flagged, never fixed; every fact with its word-for-word receipt', r: ['ai', 'code'] },
-    { g: 'The run, sheet by sheet', t: 'Conflicts', w: 'Three contradictions, both sides quoted, nothing resolved', r: ['code', 'ai'] },
-    { g: 'The run, sheet by sheet', t: 'The brief', w: 'One object, ten questions, rendered in Greek and English', r: ['ai', 'code'] },
-    { g: 'The run, sheet by sheet', t: 'Sign-off', w: 'A person resolves the conflicts and signs', r: ['people'] },
-    { g: 'The run, sheet by sheet', t: 'The exam', w: 'Seventeen machine checks against a sealed key', r: ['code'] },
-    { g: 'The run, sheet by sheet', t: 'Creative brief', w: 'The shadow draft and its key visual', r: ['ai', 'people'] },
-    { g: 'Numbers and decisions', t: 'Numbers and decisions', w: 'What it costs, what it replaces, what must be decided', r: ['code'] }
+    { t: 'The decision' },
+    { t: 'The operating boundary' },
+    { t: 'Inputs and readiness' },
+    { t: 'Evidence fidelity' },
+    { t: 'Unresolved conflicts' },
+    { t: 'One bilingual record' },
+    { t: 'Human sign-off' },
+    { t: 'Evaluation scope' },
+    { t: 'Creative review' },
+    { t: 'Pilot conditions' }
   ];
-  var N = CH.length, cur = 1, scrollPos = {};
-  var sheets = [].slice.call(document.querySelectorAll('.sheet'));
-  var ruler = document.getElementById('ruler'), fol = document.getElementById('fol');
-  var back = document.getElementById('back'), next = document.getElementById('next');
-  var nextTitle = document.getElementById('next-title'), nextLbl = next.querySelector('.lbl');
-  var announce = document.getElementById('announce');
-  var contents = document.getElementById('contents'), list = document.getElementById('contents-list');
-  var lastFocus = null;
-
-  function pad(n) { return (n < 10 ? '0' : '') + n; }
-
-  // ruler ticks
-  var ticks = [];
-  for (var i = 1; i <= N; i++) {
-    var b = document.createElement('button');
-    b.type = 'button'; b.className = 'tick'; b.setAttribute('aria-label', 'Sheet ' + i + ' of ' + N + ': ' + CH[i - 1].t);
-    b.innerHTML = '<i></i><span class="tip">' + pad(i) + ' ' + CH[i - 1].t + '</span>';
-    b.addEventListener('click', (function (n) { return function () { go(n); }; })(i));
-    ruler.appendChild(b); ticks.push(b);
+  var root=document.documentElement, sheets=Array.from(document.querySelectorAll('.sheet'));
+  var main=document.getElementById('main'),nav=document.querySelector('.nav');
+  var contents=document.getElementById('contents'),list=document.getElementById('contents-list');
+  var back=document.getElementById('back'),next=document.getElementById('next'),fol=document.getElementById('fol');
+  var nextTitle=document.getElementById('next-title'),announce=document.getElementById('announce');
+  var all=document.getElementById('read-all'),expand=document.getElementById('expand-ledgers');
+  var cur=1,opener=null,allMode=false,positions={},printing=false,lastURL='',restoring=false;
+  function pad(n){return String(n).padStart(2,'0');}
+  function targetFromHash(){
+    var hash=decodeURIComponent(location.hash.slice(1)),legacy=/^(?:ch)?(\d{1,2})$/.exec(hash);
+    if(legacy)return document.getElementById('ch'+pad(Math.max(1,Math.min(10,+legacy[1]))));
+    return document.getElementById(hash)||sheets[0];
   }
-
-  // contents list
-  var lastGroup = null;
-  for (var j = 1; j <= N; j++) {
-    if (CH[j - 1].g !== lastGroup) {
-      var gh = document.createElement('li'); gh.className = 'group'; gh.textContent = CH[j - 1].g; list.appendChild(gh); lastGroup = CH[j - 1].g;
-    }
-    var li = document.createElement('li');
-    var roles = CH[j - 1].r.map(function (r) {
-      if (r === 'ai') return '<svg class="g" style="color:var(--pencil)" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>';
-      if (r === 'code') return '<svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>';
-      return '<svg class="g" style="color:var(--red)" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>';
-    }).join('');
-    li.innerHTML = '<button type="button"><span class="n">' + pad(j) + '</span><span>' + CH[j - 1].t + '<span class="what">' + CH[j - 1].w + '</span></span><span class="roles">' + roles + '</span></button>';
-    li.querySelector('button').addEventListener('click', (function (n) { return function () { closeContents(); go(n, true); }; })(j));
-    list.appendChild(li);
+  function paint(){
+    sheets.forEach(function(s,i){s.classList.toggle('active',i+1===cur);});
+    fol.textContent=pad(cur)+' / 10 · Contents';back.disabled=cur===1;
+    nextTitle.textContent=cur===10?'The decision':CH[cur].t;
+    next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t);
+    list.querySelectorAll('a').forEach(function(a,i){if(i+1===cur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    announce.textContent='Sheet '+cur+' of 10: '+CH[cur-1].t;
   }
-
-  function render(focusTitle, push) {
-    sheets.forEach(function (s) { s.classList.toggle('active', +s.getAttribute('data-n') === cur); });
-    ticks.forEach(function (t, k) {
-      var n = k + 1;
-      t.classList.toggle('cur', n === cur);
-      t.classList.toggle('done', n < cur);
-      if (n === cur) t.setAttribute('aria-current', 'step'); else t.removeAttribute('aria-current');
+  function reveal(target){
+    var sheet=target.closest('.sheet');if(sheet)cur=+sheet.dataset.n;
+    var d=target.closest('details');if(d)d.open=true;
+    paint();
+  }
+  function save(){if(restoring||printing)return;positions[location.hash]=window.scrollY;try{history.replaceState({y:window.scrollY},'',location.href);}catch(e){}}
+  function navigate(target,focus){
+    save();var hash='#'+target.id;
+    if(location.hash!==hash)history.pushState({y:0},'',hash);
+    lastURL=location.href;reveal(target);
+    requestAnimationFrame(function(){
+      if(target.matches('.sheet')){if(allMode)target.scrollIntoView();else window.scrollTo(0,0);if(focus)target.querySelector('h1').focus({preventScroll:true});}
+      else{target.scrollIntoView({block:'start'});if(focus){if(target.matches('details'))target.querySelector('summary').focus({preventScroll:true});else target.focus({preventScroll:true});}}
+      save();
     });
-    fol.textContent = pad(cur) + ' / ' + N + ' \u00b7 Contents' + (window.innerWidth < 700 ? ' \u00b7 ' + CH[cur - 1].t : '');
-    fol.setAttribute('aria-label', 'Open contents');
-    next.setAttribute('aria-label', cur === N ? 'Back to the cover' : 'Next sheet: ' + CH[cur].t);
-    back.disabled = cur === 1;
-    if (cur === N) { nextLbl.textContent = 'Back to'; nextTitle.textContent = 'the cover'; }
-    else { nextLbl.textContent = cur === 1 ? 'Begin' : 'Next'; nextTitle.textContent = CH[cur].t; }
-    [].slice.call(list.querySelectorAll('li:not(.group)')).forEach(function (li, k) { li.classList.toggle('cur', k + 1 === cur); });
-    announce.textContent = 'Sheet ' + cur + ' of ' + N + ': ' + CH[cur - 1].t;
-    try { if (push) history.pushState(null, '', '#' + pad(cur)); else history.replaceState(null, '', '#' + pad(cur)); } catch (e) {}
-    window.scrollTo(0, scrollPos[cur] || 0);
-    if (focusTitle) { var h = document.getElementById('t' + pad(cur)); if (h) h.focus({ preventScroll: true }); }
   }
-
-  function go(n, focusTitle, push) {
-    if (n < 1) n = 1; if (n > N) n = N;
-    if (n === cur) { render(focusTitle !== false, false); return; }
-    scrollPos[cur] = window.scrollY;
-    cur = n; render(focusTitle !== false, push !== false);
-  }
-
-  function setInert(on) {
-    [].slice.call(document.querySelectorAll('.desk, .nav')).forEach(function (el) {
-      if ('inert' in el) el.inert = on; else if (on) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+  function restore(){
+    if(lastURL===location.href)return;
+    lastURL=location.href;restoring=true;var target=targetFromHash();reveal(target);
+    requestAnimationFrame(function(){
+      var y=history.state&&history.state.y;
+      if(typeof y==='number')window.scrollTo(0,y);
+      else if(positions[location.hash]!==undefined)window.scrollTo(0,positions[location.hash]);
+      else if(!target.matches('.sheet')||allMode)target.scrollIntoView();else window.scrollTo(0,0);
+      restoring=false;
     });
-    document.querySelector('.nav').classList.toggle('dim', on);
   }
-  function openContents() {
-    lastFocus = document.activeElement; contents.hidden = false;
-    setInert(true); document.body.style.overflow = 'hidden';
-    var curBtn = list.querySelector('li.cur button') || list.querySelector('button');
-    if (curBtn) curBtn.focus();
-  }
-  function closeContents() {
-    contents.hidden = true;
-    setInert(false); document.body.style.overflow = '';
-    if (lastFocus && lastFocus.focus) lastFocus.focus();
-  }
-
-  back.addEventListener('click', function () { go(cur - 1); });
-  next.addEventListener('click', function () { go(cur === N ? 1 : cur + 1); });
-  [].slice.call(document.querySelectorAll('.open-contents')).forEach(function (b) { b.addEventListener('click', openContents); });
-  document.getElementById('contents-close').addEventListener('click', closeContents);
-
-  document.addEventListener('keydown', function (e) {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
-    var tag = (e.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea') return;
-    if (e.target.closest && e.target.closest('.ledger-wrap')) return;
-    if (!contents.hidden) {
-      if (e.key === 'Escape') { e.preventDefault(); closeContents(); }
-      else if (e.key === 'Tab') {
-        var f = contents.querySelectorAll('button'), first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
+  function openContents(){opener=document.activeElement;contents.hidden=false;main.inert=true;nav.inert=true;document.querySelector('.skip').inert=true;document.body.style.overflow='hidden';(list.querySelector('[aria-current]')||list.querySelector('a')).focus();}
+  function closeContents(){contents.hidden=true;main.inert=false;nav.inert=false;document.querySelector('.skip').inert=false;document.body.style.overflow='';if(opener)opener.focus({preventScroll:true});}
+  document.querySelectorAll('.open-contents').forEach(function(b){b.addEventListener('click',openContents);});
+  document.getElementById('contents-close').addEventListener('click',closeContents);
+  document.addEventListener('click',function(e){
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    var a=e.target.closest('a[href^="#"]');if(!a)return;var target=document.getElementById(a.hash.slice(1));if(!target)return;
+    e.preventDefault();if(!contents.hidden)closeContents();navigate(target,true);
+  });
+  back.addEventListener('click',function(){navigate(sheets[Math.max(0,cur-2)],true);});
+  next.addEventListener('click',function(){navigate(sheets[cur===10?0:cur],true);});
+  all.addEventListener('click',function(){allMode=!allMode;root.classList.toggle('read-all',allMode);all.setAttribute('aria-pressed',String(allMode));all.textContent=allMode?'Read one sheet':'Read all sheets';sheets[cur-1].scrollIntoView();save();});
+  expand.addEventListener('click',function(){var on=expand.getAttribute('aria-pressed')!=='true';document.querySelectorAll('details').forEach(function(d){d.open=on;});expand.setAttribute('aria-pressed',String(on));expand.textContent=on?'Collapse ledgers':'Expand ledgers';});
+  document.addEventListener('keydown',function(e){
+    if(!contents.hidden){
+      if(e.key==='Escape'){e.preventDefault();closeContents();return;}
+      if(e.key==='Tab'){var f=Array.from(contents.querySelectorAll('button,a')),first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
       return;
     }
-    if (e.key === 'ArrowRight') { e.preventDefault(); go(cur === N ? 1 : cur + 1); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
-    else if (e.key === 'Home') { e.preventDefault(); go(1); }
-    else if (e.key === 'End') { e.preventDefault(); go(N); }
-    else if (e.key === 'c' || e.key === 'C') { e.preventDefault(); openContents(); }
+    if(e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,textarea,select,[contenteditable],summary,.ledger-wrap'))return;
+    if(nav.contains(e.target)&&(e.key==='c'||e.key==='C')){e.preventDefault();openContents();return;}
+    if(e.target.closest('button,a'))return;
+    var n=null;if(e.key==='ArrowRight')n=cur===10?1:cur+1;else if(e.key==='ArrowLeft')n=Math.max(1,cur-1);
+    if(n!==null){e.preventDefault();navigate(sheets[n-1],true);}
   });
-
-  window.addEventListener('hashchange', function () {
-    var m = /^#(\d{1,2})$/.exec(location.hash);
-    if (m && +m[1] !== cur) go(+m[1], false, false);
-  });
-  [].slice.call(document.querySelectorAll('.jump')).forEach(function (b) { if (/^\d+$/.test(b.textContent.trim())) b.setAttribute('aria-label', 'Go to sheet ' + b.textContent.trim()); b.addEventListener('click', function () { go(+b.getAttribute('data-go')); }); });
-  [].slice.call(document.querySelectorAll('.ledger-wrap')).forEach(function (w) { w.setAttribute('tabindex', '0'); w.setAttribute('role', 'region'); w.setAttribute('aria-label', 'Table, scrolls sideways'); });
-  var opened = [];
-  window.addEventListener('beforeprint', function () { opened = []; [].slice.call(document.querySelectorAll('details')).forEach(function (el) { if (!el.open) { el.open = true; opened.push(el); } }); });
-  window.addEventListener('afterprint', function () { opened.forEach(function (el) { el.open = false; }); opened = []; });
-  var tx = null, ty = null;
-  document.addEventListener('touchstart', function (e) { tx = ty = null; if (!contents.hidden || e.target.closest('.ledger-wrap, .ruler, button, a, summary, input, textarea, select') || e.touches.length !== 1) return; tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
-  document.addEventListener('touchend', function (e) { if (tx === null || !contents.hidden) return; var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = ty = null; if (Math.abs(dx) > 60 && Math.abs(dy) < 40) go(dx < 0 ? (cur === N ? 1 : cur + 1) : cur - 1); }, { passive: true });
-
-  document.addEventListener('touchcancel', function () { tx = ty = null; }, { passive: true });
-
-  // initial sheet: the hash if present, else the cover
-  var start = 1, m0 = /^#(\d{1,2})$/.exec(location.hash);
-  if (m0) start = +m0[1];
-  if (location.protocol === 'file:') { [].slice.call(document.querySelectorAll('a.repo')).forEach(function (a) { a.title = 'Opens only when this file sits in the repository root'; a.classList.add('offline'); }); }
-  window.addEventListener('resize', function () { fol.textContent = pad(cur) + ' / ' + N + ' \u00b7 Contents' + (window.innerWidth < 700 ? ' \u00b7 ' + CH[cur - 1].t : ''); });
-  go(start, false, false);
+  var tx=null,ty=null;
+  document.addEventListener('touchstart',function(e){tx=ty=null;if(!contents.hidden||e.touches.length!==1||e.target.closest('button,a,summary,input,textarea,select,[contenteditable],.ledger-wrap,.nav'))return;tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;tx=ty=null;if(Math.abs(dx)>70&&Math.abs(dy)<40)navigate(sheets[dx<0?(cur===10?0:cur):Math.max(0,cur-2)],true);},{passive:true});
+  document.addEventListener('touchcancel',function(){tx=ty=null;},{passive:true});
+  var closed=[];
+  window.addEventListener('beforeprint',function(){printing=true;closed=Array.from(document.querySelectorAll('details:not([open])'));closed.forEach(function(d){d.open=true;});});
+  window.addEventListener('afterprint',function(){closed.forEach(function(d){d.open=false;});closed=[];printing=false;});
+  window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
+  var timer;window.addEventListener('scroll',function(){clearTimeout(timer);timer=setTimeout(save,100);},{passive:true});
+  function reserveNavigation(){root.style.setProperty('--nav-clearance',nav.getBoundingClientRect().height+'px');}
+  if('ResizeObserver' in window)new ResizeObserver(reserveNavigation).observe(nav);
+  window.addEventListener('resize',reserveNavigation);
+  // Establish a usable active sheet before enabling single-sheet visibility.
+  var initial=targetFromHash();reveal(initial);root.classList.add('js');reserveNavigation();lastURL=location.href;
+  if('scrollRestoration' in history)history.scrollRestoration='manual';
+  requestAnimationFrame(function(){if(history.state&&typeof history.state.y==='number')window.scrollTo(0,history.state.y);else if(!initial.matches('.sheet'))initial.scrollIntoView();else window.scrollTo(0,0);});
 })();
-</script>
-
+</script></body></html>

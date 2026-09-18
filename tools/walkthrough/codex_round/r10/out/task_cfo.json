@@ -1,0 +1,27 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "Graded tokens: Haiku 533,641 + Sonnet 451,179 = 984,820; creative adds Sonnet 86,441 + Opus 63,473 = 1,134,734. Monthly: 984,820×15=14,772,300; one creative draft gives 15.72–16.07M. Assumed annual capacity returned: [120−(20 assembling+30 reviewing)]×180÷60=210 hours; ×€19–20=€3,990–4,200 gross, not cash savings. Validate assumptions in week 1. Approve four weeks, two leads×three retrospective projects, S0–S1, agency workspace, creative shadow only. Before starting: remeasure routing/time, confirm capacity/terms, estimate costs, sponsor-approved ceiling. Week-4 release requires >80% useful questions, >70% unchanged text, <30-minute reviews, sponsor-set Greek threshold, both leads’ voluntary reuse, and sponsor decision. Month-2 default use needs successful reporting and separate approval.",
+  "missing": [
+    "Setup, training, subscription, maintenance and support estimates and the spending ceiling remain unset; net savings cannot yet be calculated.",
+    "Full-run usage and time under the changed routing, subscription capacity and workspace terms remain unconfirmed.",
+    "The Greek-naturalness release threshold awaits sponsor confirmation before week 1.",
+    "The 120-minute baseline, 50-minute attention target, annual volume and hourly rate need validation; graded human review was not timed."
+  ],
+  "confusions": [
+    "“about 16 M with one creative draft each” does not specify the model. Both alternatives round to 16M: Sonnet gives 16,068,915 monthly tokens; Opus gives 15,724,395.",
+    "“Measured, not estimated” is too broad beside assumed labour and projected monthly usage, although the following explanation narrows it to recorded counts and times.",
+    "“docs/COST_MODEL.md §3 quotes ~€5–6k a year” introduces a competing figure; the page correctly reconciles it to €3,990–4,200."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “about 16 M with one creative draft each” with “15.72 M with one Opus draft per brief, or 16.07 M with one Sonnet draft, under graded routing.”",
+    "Replace “Measured, not estimated” with “Recorded run usage; projected volume and labour benefits.”",
+    "Replace “0.53 M on Haiku 4.5, 0.45 M on Sonnet 5” with “533,641 on Haiku 4.5 + 451,179 on Sonnet 5 = 984,820 tokens.”",
+    "Replace “worth €4.0–4.2k” with “equivalent to €3,990–4,200 of released staff capacity, not demonstrated cash savings.”"
+  ]
+}

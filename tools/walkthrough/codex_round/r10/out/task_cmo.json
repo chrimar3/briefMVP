@@ -1,0 +1,21 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "Brief Builder turns our documents into a sourced Greek and English brief for the agency, exposing disagreements and turning missing information into questions. For me, it makes our instructions easier to check and shows which decisions we still owe the agency. This synthetic run passed all 17 defined checks, caught the planted problems and produced a reviewable brief. It did not prove everyday reliability or time savings; the creative drafts still contained errors. People resolve contradictions, confirm budgets and claims, review language, sign the brief and judge creative work. A conditional pilot must establish usefulness, review effort and costs before live use; creative delivery remains outside v1.",
+  "missing": [],
+  "confusions": [
+    "“Re-baseline the changed routing before week 1.” I needed the later explanation to understand that a changed AI setup requires fresh measurements.",
+    "“In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary)” makes the approval process difficult to picture without technical knowledge.",
+    "“Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready.” The jargon obscures an important reliability limitation."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “Re-baseline the changed routing before week 1.” with “Measure time and usage again with the updated AI setup before week 1.”",
+    "Replace “The account lead records resolutions and the signature in the brief object itself.” with “The account lead must manually update the underlying brief file with decisions and approval; the review page only displays them.”",
+    "Replace “Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready.” with “A second test project passed 15 of 17 checks, then 16 after another attempt. Passing automated checks does not establish that a draft is ready for an account lead to use.”"
+  ]
+}

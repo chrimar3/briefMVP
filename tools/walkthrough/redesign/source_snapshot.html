@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A Brief With Receipts</title>
 <style>
 :root {
@@ -487,6 +492,9 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
   .margin { position: static; }
 }
 </style>
+
+</head>
+<body>
 <script>document.documentElement.classList.add('js');</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -720,7 +728,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>emails_thread</td><td>email_thread</td><td>2026-07-15 (latest message)</td><td>el</td><td class="r">1 726</td></tr>
           <tr><td>background_brand_guidelines</td><td>background</td><td>2026-03-02</td><td>en</td><td class="r">1 045</td></tr>
         </table></div>
-        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds an answer key reserved for the harness by policy and excluded from automatic source discovery; runtime agents retain Read access to its containing directory.</p>
+        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds a sealed answer key the pipeline cannot open.</p>
       
         <div class="ledger-wrap"><table class="ledger-table">
           <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
@@ -972,7 +980,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
           <tr><td>6 synthesis</td><td>synthesize</td><td>claude-sonnet-5</td><td class="r">165 820</td><td class="r">305 s</td><td>brief.json &middot; 25 entries &middot; 3 conflicts &middot; 10 open questions &middot; validates against schema/brief_schema.json</td></tr>
         </table></div>
-        <p class="foot">Synthesis works over the compact extracts, not the raw documents (skills/SYNTHESIS.md). The runner computes the readiness block from the brief using config/readiness_policy.json; T2.6 checks the stored block against the harness&rsquo;s independent recomputation. Thresholds: at least 5 of 7 fields evidenced, at most 40% low-confidence entries.</p>
+        <p class="foot">Synthesis works over the compact extracts, not the raw documents (skills/SYNTHESIS.md). The readiness block is recomputed by code from config/readiness_policy.json and must match what the model wrote (exam check T2.6). Thresholds: at least 5 of 7 fields evidenced, at most 40% low-confidence entries.</p>
       </details>
 <details class="ledger">
         <summary><span>Ledger &mdash; render</span></summary>
@@ -1042,21 +1050,20 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <section class="sheet" id="ch08" data-n="8" aria-labelledby="t08">
     <header class="slide-head">
       <p class="kicker"><span class="num">08</span><span>The exam</span><span class="el" lang="el">Η εξέταση</span></p>
-      <h1 class="title action" id="t08" tabindex="-1">All 17 machine checks passed against an answer key committed before the pipeline ran.</h1>
+      <h1 class="title action" id="t08" tabindex="-1">All 17 machine checks passed against an answer key sealed before the pipeline ran.</h1>
     </header>
     <aside class="margin">
       <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">08 / 10 &middot; Contents</button></div>
       <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
-      <p class="marginalia"><span class="lbl">Frozen</span>Answer key committed on 24 July 2026 at 00:27:26, sixteen hours before the run started; the grader was frozen after the first tier. Harness-only use is a policy restriction.</p>
+      <p class="marginalia"><span class="lbl">Frozen</span>Answer key written 23 July and committed at 00:27 on 24 July, sixteen hours before the run started; the grader, frozen after the first tier, is the only code that may open it.</p>
     </aside>
     <div class="body">
       <p class="verdict">17/17: passes the 17 defined checks on one synthetic project.</p>
       <ul class="takeaways">
-        <li>The grader was frozen early; harness-only answer-key use is policy, not enforced file isolation.</li>
+        <li>The grader was frozen early; it is the only code that can open the sealed answer key.</li>
         <li>Every trap seeded in this project was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
         <li>Every check is a yes or a no; none is an opinion.</li>
       </ul>
-      <p class="note">The answer key is excluded from automatic source discovery, but runtime agents retain Read access to its containing directory. This does not establish that any agent read it.</p>
       <p class="note">T1 = the evidence layer, T2 = the brief and both documents, T3 = the seeded traps, X = traps that must stay out.</p>
       
       <div class="hero"><ul class="exam">
@@ -1080,7 +1087,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li style="--i:7"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.3</span><span>Both the Greek and the English documents exist</span><span class="res">el 13 970 &middot; en 12 643 chars</span></li>
           <li style="--i:8"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.4</span><span>This run&rsquo;s claim lines carry tags naming known sources</span><span class="res">all claim lines cited</span></li>
           <li style="--i:9"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.5</span><span>Protected glossary terms are intact in both documents</span><span class="res">intact</span></li>
-          <li style="--i:10"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.6</span><span>The runner&rsquo;s stored readiness block matches the harness&rsquo;s independent recomputation</span><span class="res">5 / 0.04 / 10 / ready_for_review</span></li>
+          <li style="--i:10"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.6</span><span>The readiness verdict, recomputed by code, matches the model&rsquo;s</span><span class="res">5 / 0.04 / 10 / ready_for_review</span></li>
           <li class="tier">Tier 3 &middot; the seeded traps</li>
           <li style="--i:11"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.1</span><span>All seeded contradictions found, both sides cited</span><span class="res">3/3</span></li>
           <li style="--i:12"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.2</span><span>Seeded gaps surfaced as questions for the client</span><span class="res">4/4 found, 3 required</span></li>
@@ -1116,7 +1123,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
     </aside>
     <div class="body">
       <ul class="takeaways">
-        <li>AI proposes creative direction; factual claims carry references requiring verification.</li>
+        <li>Proposition, insight, tone and reasons to believe are the model&rsquo;s; every fact cites a brief entry.</li>
         <li>Channel specs are looked up from the traffic team&rsquo;s table, never generated.</li>
         <li>Six open items still block a creative team; three facts are settled in red.</li>
       </ul>
@@ -1178,7 +1185,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             <div class="col"><h3>Draft A &middot; claude-sonnet-5</h3><p>&ldquo;For urban professionals who&rsquo;ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.&rdquo;</p></div>
             <div class="col"><h3>Draft B &middot; claude-opus-4-8</h3><p>&ldquo;Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.&rdquo;</p></div>
           </div>
-          <p class="lastline">Creative lead: record A/B/neither, three factual corrections and health-claim decision. Approval covers shadow evaluation only.</p>
+          <p class="lastline">Creative lead: A or B, or neither?</p>
           <p class="pencil">Six blocking open items from the brief:</p>
           <ul class="blockers">
             <li>Approved ingredient list before natural-ingredients copy.</li>
@@ -1228,7 +1235,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 
       <details class="ledger">
         <summary><span>Ledger &mdash; what ran</span></summary>
-<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; references indicate claimed provenance, not verified support</p><p class="pencil">Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.</p><p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
+<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; every fact cites a brief entry, open question or conflict</p><p class="pencil">Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.</p><p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
         <div class="ledger-wrap"><table class="ledger-table">
           <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
           <tr><td>9 creative_shadow &middot; arm A</td><td>creative-shadow</td><td>claude-sonnet-5</td><td class="r">86 441</td><td class="r">90 s</td><td>creative/creative_brief_sonnet.md &middot; 6 994 chars</td></tr>
@@ -1247,7 +1254,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li>&ldquo;Zero sugar&rdquo; is the one claim on the artwork, written in the line, not drawn <span class="dim">[claims]</span></li>
           <li><s>&ldquo;&phi;&upsilon;&sigma;&iota;&kappa;&alpha;&#769; &sigma;&upsilon;&sigma;&tau;&alpha;&tau;&iota;&kappa;&alpha;&#769;&rdquo; (natural ingredients)</s> withheld until the approved ingredient list arrives <span class="dim">[claims &middot; open question]</span></li>
           <li>The meltemi is the north wind: one stroke that becomes fizz names the brand and the category; no beach, no party, no bar <span class="dim">[no-gos &middot; premium summer]</span></li>
-          <li>The artwork uses a yellow wind stroke, two white bubbles and the full product name. The guidelines require one wordmark height of clear space; the crops keep it, while packaging compliance remains unverified. <span class="dim">[logo clear space &middot; TikTok-first]</span></li>
+          <li>Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing <span class="dim">[logo clear space &middot; TikTok-first]</span></li>
           <li>The 9:16 is a crop, not a TikTok-first idea: the pipeline supplies the facts and the spec; the idea is the creative team&rsquo;s <span class="dim">[mock-up]</span></li>
         </ul>
         <p class="foot">Checked by the author against Brand Guidelines v3.1 (name in Latin script in full, flat fills in the two brand colours and white, claims, category no-gos, tone); the pipeline emits text only, so this is not a machine guarantee. Wordmark set in a system face; no logo file supplied. The key visual on this sheet is an illustration drawn for this walkthrough from the brief&rsquo;s mandatories and specs; the pipeline itself produces text only (PRD non-goal: no live creative delivery). A production image would replace it under the same rules.</p>
@@ -1506,3 +1513,5 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 })();
 </script>
 
+</body>
+</html>

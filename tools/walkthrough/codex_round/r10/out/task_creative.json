@@ -1,0 +1,21 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "(a) Signed-off evidence: audience 25–40 urban professionals; launch 15 September 2026; production budget “in the eighties,” excluding media, without a confirmed total; zero-sugar permission and brand constraints.\n(b) Hypotheses: proposition, audience psychology, feel, tone, reasons to believe and illustrated execution.\n(c) Strike unsupported “Greek-made,” €80–85k and the dance’s supposed retraction. Judge guilt language against the health-claim ban; choose A/B/neither. Resolve ingredients, video requirements, visual requirements, TikTok-first scope, KPIs and milestones. Record corrections and choice before week 4; creative remains shadow-only throughout v1.\n(d) Specs provide provisional table values. Code checks normalized dimensions and some ratios—not durations, file types, deliverable suitability or artwork compliance. Traffic must confirm them before delivery.",
+  "missing": [],
+  "confusions": [
+    "“Proposition, insight, tone and reasons to believe are the model’s; every fact cites a brief entry.” Citation sounds like evidence assurance despite the explicitly unsupported origin claim.",
+    "“Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.” This overstates provenance for a draft with three acknowledged factual corrections."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “every fact cites a brief entry” with “factual statements carry brief-entry tags; those tags do not establish support, as the three corrections demonstrate.”",
+    "Replace “Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.” with “Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.”",
+    "Replace “quietly proud it’s Greek” with “quietly confident”; this removes another origin implication beside the flagged “Greek-made” claim.",
+    "Replace “Creative lead: A or B, or neither?” with “Creative lead: record A, B or neither, the three factual corrections and the health-claim decision. This approves shadow evaluation only.”"
+  ]
+}

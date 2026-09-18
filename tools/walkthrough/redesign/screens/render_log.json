@@ -1,0 +1,21 @@
+[
+  {
+    "sheet": 1,
+    "viewport": [
+      1440,
+      2400
+    ],
+    "command": [
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+      "--headless=new",
+      "--disable-gpu",
+      "--hide-scrollbars",
+      "--user-data-dir=./chrome",
+      "--window-size=1440,2400",
+      "--screenshot=./screens/s01-1440.png",
+      "file:///Users/chrism/AI-transformation-assignment/brief-builder/tools/walkthrough/redesign/WALKTHROUGH_v2.html#1"
+    ],
+    "exit_code": -6,
+    "stderr": ""
+  }
+]

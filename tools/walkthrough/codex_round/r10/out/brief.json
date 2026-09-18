@@ -1,0 +1,99 @@
+{
+  "hypothesis": "Target decision clarity in the verified frozen WALKTHROUGH.html through at most 12 text, disclosure and responsive-layout changes that correct both hard failures and expose essential qualifications, without changing evidence quotations or artwork.",
+  "items": [
+    {
+      "n": 1,
+      "sheet": "06 and 08",
+      "change": "Before: “The readiness block is recomputed by code from config/readiness_policy.json and must match what the model wrote (exam check T2.6).” After: “The runner computes the readiness block from the brief using config/readiness_policy.json; T2.6 checks the stored block against the harness’s independent recomputation.” Before: “The readiness verdict, recomputed by code, matches the model’s”. After: “The runner’s stored readiness block matches the harness’s independent recomputation”.",
+      "source": "Verified wrong_fact hard failure; both audit votes."
+    },
+    {
+      "n": 2,
+      "sheet": "03 and 08",
+      "change": "Sheet 03 before: “The fixture also holds a sealed answer key the pipeline cannot open.” After: “The fixture also holds an answer key reserved for the harness by policy and excluded from automatic source discovery; runtime agents retain Read access to its containing directory.” Sheet 08 takeaway before: “The grader was frozen early; it is the only code that can open the sealed answer key.” After: “The grader was frozen early; harness-only answer-key use is policy, not enforced file isolation.” Insert immediately after #ch08 .takeaways: <p class=\"note\">The answer key is excluded from automatic source discovery, but runtime agents retain Read access to its containing directory. This does not establish that any agent read it.</p> Replace #t08 text with “All 17 machine checks passed against an answer key committed before the pipeline ran.” Replace the text following the Frozen label with “Answer key committed on 24 July 2026 at 00:27:26, sixteen hours before the run started; the grader was frozen after the first tier. Harness-only use is a policy restriction.”",
+      "source": "Verified unsupported_guarantee hard failure; both audit votes; audit_fidelity timestamp issue."
+    },
+    {
+      "n": 3,
+      "sheet": "09",
+      "change": "Before: “Proposition, insight, tone and reasons to believe are the model’s; every fact cites a brief entry.” After: “AI proposes the creative direction; factual claims carry references that still require verification.” Before: “condensed from creative_brief_opus.md · 8 525 chars · every fact cites a brief entry, open question or conflict”. After: “condensed from creative_brief_opus.md · 8 525 chars · references indicate claimed provenance, not verified support”. Before: “Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.” After: “Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.” Before: “Creative lead: A or B, or neither?” After: “Creative lead: record A, B or neither, the three factual corrections and the health-claim decision. This approves shadow evaluation only.”",
+      "source": "task_creative; judge2 fact_fidelity; judge3 finale."
+    },
+    {
+      "n": 4,
+      "sheet": "09",
+      "change": "Before: “Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing”. After: “The artwork uses a yellow wind stroke, two white bubbles and the full product name. One wordmark height of clear space is required; compliance across the crops and packaging remains unverified.” Preserve the existing citation span.",
+      "source": "All three judges’ fact_fidelity findings; audit_ux."
+    },
+    {
+      "n": 5,
+      "sheet": "09",
+      "change": "DOM change within #ch09 .brief: wrap the consecutive nodes from the h4 numbered “2” through the paragraph following the h4 numbered “3–6” in a closed <details class=\"ledger\"><summary><span>Creative rationale — hypothesis and supporting detail</span></summary>…</details>. Wrap the consecutive nodes from the h4 numbered “8” through the existing “Still open” details in a second closed <details class=\"ledger\"><summary><span>Readiness detail — settled decisions and open items</span></summary>…</details>. Preserve all wrapped content verbatim. Leave the proposition, A/B comparison, six-item blockers list, approval status and two-row specification table visible.",
+      "source": "judge1, judge2 and judge3 concision."
+    },
+    {
+      "n": 6,
+      "sheet": "09, phone",
+      "change": "Append after the existing responsive rules: @media (max-width: 1000px) { #ch09 > .margin { order: 0; } #ch09 > .body { order: 1; } } This places the existing three-corrections warning and shadow-mode notice before both artwork and draft.",
+      "source": "All three judges’ ux findings."
+    },
+    {
+      "n": 7,
+      "sheet": "All, phone",
+      "change": "Append after the existing responsive rules: @media (max-width: 700px) { .ruler .tick { display: none; } .ruler { overflow: visible; min-width: 0; } .ruler .fol { flex: 1 1 100%; width: 100%; min-width: 0; margin-right: 0; white-space: normal; overflow-wrap: anywhere; } } Preserve Back, Next, Contents and existing keyboard behavior.",
+      "source": "All three judges’ ux findings; audit_ux and audit_fidelity identify outstanding browser verification."
+    },
+    {
+      "n": 8,
+      "sheet": "01",
+      "change": "Remove #ch01 .takeaways; its three points remain represented by the title, evidence tiles and ledger. Append CSS: @media (min-width: 1001px) { #ch01 .legend { display: flex; flex-wrap: wrap; gap: 8px 24px; } #ch01 .legend li { font-size: 16px; line-height: 24px; padding: 6px 0; } #ch01 .legend .g { margin-top: 4px; } } Keep the existing stacked phone treatment.",
+      "source": "judge2 and judge3 concision; all three judges’ visual_design findings."
+    },
+    {
+      "n": 9,
+      "sheet": "02",
+      "change": "Move the existing p.principles unchanged from the ledger to immediately after the Stage 2 ol.flow. Move the entire “The thin layer” marginalia paragraph unchanged into the ledger. In its former margin position insert: <p class=\"marginalia\"><span class=\"lbl\">Operating handover</span>The specialist runs the pilot; two trained brief champions operate it by week 4 using a one-page runbook.</p> Replace the third takeaway, “The account lead records decisions and signs the brief object; the creative lead evaluates the shadow draft.”, with “The account lead manually records approval in the master brief file; the creative lead reviews an evaluation-only draft.”",
+      "source": "All three judges’ product_framing findings; judge3 clarity; task_cmo."
+    },
+    {
+      "n": 10,
+      "sheet": "06",
+      "change": "Before #t06: “One master record holds 25 cited entries, 3 conflicts and 10 questions; both documents come from it, with Greek reviewed by a person.” After: “One cited master record produces both briefs; people review the Greek and resolve the questions.” Preserve the counts in the synthesis ledger and readiness evidence.",
+      "source": "All three judges’ storyline or clarity findings."
+    },
+    {
+      "n": 11,
+      "sheet": "10",
+      "change": "Replace the contents of #ch10 .decisions > li:first-child > .sub-list with: <li>Release targets: &gt;80% useful questions; &gt;70% text retained; &lt;30 minutes reviewing each draft; both leads choose reuse.</li><li>Before week 1: sponsor confirms Greek-naturalness and conflict-catch thresholds. Missed targets block week-4 live use.</li> Preserve the full existing protocol in .decision-record. Append to its first nested .sub-list: <li>Week 1: check transcript availability. If transcripts are unavailable, retrospective work uses RFP, email and background documents while the next two or three kickoffs are recorded with consent.</li><li>Retrospective quality measurement includes conflict catch rate. Proposed owners: the two pilot leads record results; the sponsor agrees the threshold before testing.</li> Replace the adjacent visible citation text “Sponsor · PRD §7–8; protocol in ledger.” with “Sponsor · thresholds before week 1; release decision before week 4 · PRD §7–8; protocol in ledger.”",
+      "source": "All three judges’ concision; judge1 and judge3 completeness."
+    },
+    {
+      "n": 12,
+      "sheet": "10",
+      "change": "Remove the complete p.note immediately before p.lastline, beginning “The budget stays «κάπου στα ογδόντα»” and ending with the transcript/check X3 citation. Preserve the budget evidence and creative correction on sheets 05, 07 and 09.",
+      "source": "All three judges’ storyline findings."
+    }
+  ],
+  "mustKeep": [
+    "Scope: only the frozen WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed; no files edited.",
+    "At most 10 sheets; unchanged blockquotes and mark.cited; zero external resources; existing palette rules; thin-space thousands; action titles at most 24 words; takeaways at most 20 words; visible-word ceilings of 650 per sheet and 750 on sheet 09.",
+    "Product and operation: Greek and English drafts from one master record, source receipts, questions, conflicts, manual account-lead approval, static review pages, command-line operation, proposed runbook and champion handover.",
+    "Four synthetic input documents; missing-RFP stop exhibit; substantive-source, budget and timeline checks; configured S1 classification and runtime exclusion of S2–S3.",
+    "Thirty-three extracted facts; two flagged garbles; exact-quote checks; failed transcript extraction and repair; distinction between graded Haiku extraction and later Sonnet plus verifier routing.",
+    "All three paired conflict exhibits and human decisions: audience 25–40, launch 15 September, production budget in words excluding media; no inferred currency or resolved media-inclusive total.",
+    "Bilingual extracts, glossary preservation, actual client-facing questions, 25 entries, three conflicts and ten questions; five evidenced fields, 4% low confidence and ready-for-review status; readiness thresholds and corrected runner ownership.",
+    "Recorded signer/date and edits; manual brief.json approval workflow; review page only displays decisions; graded human review was not timed; human sign-off gates shadow creative.",
+    "17/17 applies to the defined checks on one synthetic project; retain all individual check results and seeded traps, including withdrawn metro posters versus conditional TikTok dance.",
+    "Citation presence does not prove semantic support; glossary checks do not prove natural Greek; automated checks do not establish complete gap detection or everyday readiness.",
+    "Creative A/B candidates, model attribution and usage; all three factual corrections; guilt-language/health-claim decision; pending creative approval; six blockers; unresolved ingredient claim; shadow-only status and in-artwork MOCK-UP labels.",
+    "Both creative crops and packaging exhibit; full product name and brand palette; two-row specification table; provisional traffic-team stub; normalized dimension and ratio checks, denominator exemptions, unchecked duration/file type and deliverable suitability.",
+    "Rule-file injection qualification: respective client-brief agents receive the four files; classification and creative-shadow use separate inline instructions.",
+    "Usage in tokens: 0.98 M stage one, 1.13 M including A/B, roughly 15 M monthly under assumed volume; recorded model breakdowns, cache proportions and creative-arm counts; later transcript usage 598 743 versus 295 774.",
+    "Timing distinctions: graded stage totals, continuous capture, repair/retry history, demo gate override, later routing changes and mandatory fresh full-run measurement before capacity planning.",
+    "Financial assumptions and limits: 120-minute baseline, unvalidated 50-minute attention target, 180 briefs/year, €19–20/hour, 210-hour target and €3 990–4 200 calculation; no demonstrated net savings; setup, training, subscription, maintenance, support and spending ceiling remain unset.",
+    "Conditional four-week pilot: two leads, three retrospective projects each, weeks 2–3 evaluation, week-4 release gate, useful-question/text-retention/review-time thresholds, Greek-language review, voluntary reuse, separate month-2 adoption and sponsor approval.",
+    "Agency-workspace and S0–S1 constraints; unresolved subscription capacity, processing, retention and contractual terms; sponsor-approved cost estimate and ceiling required before spending or client-data processing.",
+    "Reliability limits: three of ten supervised single-document runs produced nothing after two attempts; second fixture passed 15/17 then 16/17; retained audit limitations and human-review requirement.",
+    "Acceptance must include actual desktop and 320-, 390- and 560-pixel browser checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior; this review does not certify rendering."
+  ]
+}

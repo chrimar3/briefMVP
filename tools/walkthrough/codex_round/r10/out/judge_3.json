@@ -1,0 +1,174 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 7,
+      "why": "Ten sheets meet the limit, but repeated summaries and the long creative and decision sheets still demand substantial executive reading outside the reference blocks.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": ".decisions .sub-list",
+          "change": "Move the detailed pilot protocol into the existing ledger; retain a compact release-criteria line alongside the sponsor and deadline."
+        },
+        {
+          "sheet": "09",
+          "quote": "Feel, tone, reasons to believe",
+          "change": "Move this condensed section into expandable detail and remove the repeated standalone Draft B proposition, keeping the A/B comparison."
+        },
+        {
+          "sheet": "01",
+          "quote": ".takeaways",
+          "change": "Remove the cover's takeaway list: the introductory paragraph, conflict tile and role legend already communicate these points."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The deliverables, usage, timings, human responsibilities and financial conditions are covered, but the pilot plan omits a consequential input dependency and conflict-detection measurement.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Pilot protocol and decision owners",
+          "change": "Add the PRD §8 week-one transcript-availability check and fallback: retrospective work on available documents while recording subsequent kickoffs with consent."
+        },
+        {
+          "sheet": "10",
+          "quote": "Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft.",
+          "change": "Add PRD §7's conflict catch-rate measure to the detailed scorecard, with an owner and a threshold to agree before testing."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 7,
+      "why": "The role vocabulary is helpful, but technical workflow language and misplaced role labels make some passages harder for a nontechnical CMO to interpret.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "The account lead records decisions and signs the brief object; the creative lead evaluates the shadow draft.",
+          "change": "Say 'The account lead records decisions and approval in the master brief file; the creative lead reviews an evaluation-only creative draft.'"
+        },
+        {
+          "sheet": "04",
+          "quote": "#ch04 .stamps",
+          "change": "Show both AI and code badges: models perform the reading and fidelity assessment, while code checks citations."
+        },
+        {
+          "sheet": "10",
+          "quote": "Re-baseline the changed routing before week 1.",
+          "change": "Say 'Rerun the updated model setup and measure its usage and time before week 1.'"
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence-to-approval sequence work well, although several titles are overloaded and the closing budget reminder repeats an already completed argument.",
+      "fixes": [
+        {
+          "sheet": "06",
+          "quote": "One master record holds 25 cited entries, 3 conflicts and 10 questions; both documents come from it, with Greek reviewed by a person.",
+          "change": "Shorten to 'Both language versions come from one cited master brief'; keep the counts and Greek-review caveat in the supporting evidence."
+        },
+        {
+          "sheet": "10",
+          "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+          "change": "Remove this closing repetition; sheets 5, 7 and 9 already establish it, and the final sheet should finish on pilot authorization conditions."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "The product's anatomy, outputs, operating environment and human gates are explicit, but its business benefit and practical user journey receive less prominence than its implementation.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Nine steps, three roles: six are AI, two are plain code, and the one that releases the work is a person.",
+          "change": "Lead with the operational promise—consistent, traceable briefs under human control—and retain the step counts as diagram support."
+        },
+        {
+          "sheet": "02",
+          "quote": "Code checks citations and gates the run; static review pages support command-line operation.",
+          "change": "Replace with a short user journey: account lead assembles files, operator runs the tool, lead reviews and manually records approval; retain implementation detail in the ledger."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 8,
+      "why": "The source defines a coherent editorial system with restrained colour and purposeful typography, but repeated visual scaffolding and lengthy headlines weaken hierarchy.",
+      "fixes": [
+        {
+          "sheet": "01",
+          "quote": ".legend li",
+          "change": "Reduce the 24px role legend to a compact desktop row so it supports rather than competes with the headline figures."
+        },
+        {
+          "sheet": "02–10",
+          "quote": ".title.action",
+          "change": "Edit takeaway titles to roughly 12–18 words so their 32px treatment produces a consistent headline tier."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "The checked token totals, model IDs, stage timings, 17 checks and sign-off match the repository, but the artwork commentary contains a stale description and an overbroad compliance claim.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Describe the actual artwork: a yellow wind stroke, two white bubbles and the full product name; there is no leaf."
+        },
+        {
+          "sheet": "09",
+          "quote": "Clear space of one wordmark height kept free on every side of the name",
+          "change": "Limit this assertion to verified layouts or correct the can artwork first: its category line sits less than one wordmark height below the name."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 8,
+      "why": "The code provides self-contained assets, working source-link targets, keyboard navigation, focus handling and a contents dialog, but mobile navigation allocation and warning placement need improvement.",
+      "fixes": [
+        {
+          "sheet": "All, phone",
+          "quote": ".ruler .tick",
+          "change": "Hide the ten progress ticks below 700px and preserve a generously sized Contents button between Back and Next; their fixed minimum widths currently compete with Contents inside a narrow scrolling region."
+        },
+        {
+          "sheet": "09, phone",
+          "quote": ".margin { order: 2; }",
+          "change": "Place the creative-error warning immediately before the draft on narrow screens instead of after the entire body, so readers encounter the qualifications before the disputed claims."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The wind-and-fizz identity and can are appealing and honestly labelled, but the packaging misses required wordmark clearance and the vertical execution remains an acknowledged unsuitable crop.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#kv-packaging img",
+          "change": "Increase the gap between the product name and category line to at least the wordmark's height, preserving the mock-up label."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Provide that dedicated vertical layout, raising the name and claim while preserving their required clear space; retain its illustrative, shadow-mode status."
+        },
+        {
+          "sheet": "09",
+          "quote": "Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday — zero sugar, nothing to feel guilty about.",
+          "change": "Attach the existing origin-claim correction and guilt-language review note directly to this candidate wherever it appears, so the creative brief remains intelligible without consulting the sidebar."
+        }
+      ]
+    }
+  ],
+  "overall": "A credible, well-evidenced stakeholder walkthrough that needs tighter executive editing and a finished vertical creative treatment. Hash matched before and after review; no repository files were changed. Visual and UX scores are provisional: browser launches failed, so assessment used the complete HTML/CSS/JavaScript and inspected embedded can artwork, without rendered desktop or phone verification."
+}

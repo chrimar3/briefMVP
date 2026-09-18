@@ -1,0 +1,179 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 6,
+      "why": "Ten sheets satisfy the limit, but sheet 09 has roughly 766 visible words and sheet 10 repeats substantial protocol detail already available in its ledger.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#ch09 .brief",
+          "change": "Keep the proposition, A/B choice and blocking decisions visible; move the full insight, supporting sections and readiness checklist into expandable reference material."
+        },
+        {
+          "sheet": "10",
+          "quote": "#ch10 .decisions .sub-list",
+          "change": "Replace the long protocol paragraph with a compact list of release thresholds; retain measurement procedures and qualifications in the existing ledger."
+        },
+        {
+          "sheet": "01",
+          "quote": "#ch01 .takeaways",
+          "change": "Remove this repeated summary: the title, opening paragraph and four evidence tiles already communicate these points."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The required facts, deliverables, usage breakdowns and decision owners are present, but the most consequential observed failure deserves clearer presentation.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready.",
+          "change": "Name the material failures: the second fixture dropped a primary objective and asserted a superseded launch date despite passing the conflict check; connect these to the need for human review."
+        },
+        {
+          "sheet": "06",
+          "quote": "Two of the ten questions, as the account lead would send them",
+          "change": "Promote one actual client-facing question from this collapsed section into the presentation layer so stakeholders see the question deliverable alongside the bilingual extracts."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 8,
+      "why": "The AI/code/people distinction is strong, but technical phrasing and ledger jargon still interrupt otherwise plain explanations.",
+      "fixes": [
+        {
+          "sheet": "06",
+          "quote": "One master record holds 25 cited entries, 3 conflicts and 10 questions; both documents come from it, with Greek reviewed by a person.",
+          "change": "Shorten to 'One source record produces both briefs; people review the language and resolve the questions,' leaving the counts in supporting evidence."
+        },
+        {
+          "sheet": "10",
+          "quote": "Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried).",
+          "change": "Use 'Nine AI tasks and attempts, including one retry; each may involve several exchanges with the model.'"
+        },
+        {
+          "sheet": "04",
+          "quote": "What the machine wrote, with its receipt — the repair record and the second reader are in the extraction ledger",
+          "change": "Use 'An extracted fact and its source'; put the ledger pointer beside the disclosure control."
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence-to-decision sequence work well, but repeated conflict previews and a late return to the budget weaken momentum.",
+      "fixes": [
+        {
+          "sheet": "03",
+          "quote": "#ch03 .hero.clips",
+          "change": "Summarize the four input documents here and retain only the readiness example; reserve the full audience and launch quotations for sheet 05."
+        },
+        {
+          "sheet": "10",
+          "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+          "change": "Remove this closing detour because sheets 05, 07 and 09 already establish it; finish on the pilot authorization and its owners."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a clear promise, anatomy, outputs and human gates, although its operating handover and product principles are buried beneath implementation detail.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+          "change": "Move this concise principles line out of the ledger and place it directly beneath the pipeline."
+        },
+        {
+          "sheet": "02",
+          "quote": "Two brief champions, trained by week 4, run the command from a one-page runbook thereafter.",
+          "change": "Promote this handover detail into a visible operator-to-champions line so the product clearly survives its author's departure."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 7,
+      "why": "Source inspection shows a coherent editorial system and disciplined colour use, but oversized supporting copy and fragmented creative placement weaken hierarchy.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": ".plate.pack",
+          "change": "Compose the can alongside the square and vertical artwork in one deliberate desktop arrangement instead of placing a 40%-width asset on a separate row."
+        },
+        {
+          "sheet": "07",
+          "quote": ".signrec",
+          "change": "Separate the signer/date into a compact signature record and move the long edits narrative into the ledger."
+        },
+        {
+          "sheet": "01",
+          "quote": ".legend li",
+          "change": "Reduce the three 24px legend rows to a compact horizontal desktop legend, retaining a stacked phone treatment."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "The headline totals, models, timings, checks and sign-off match the artifacts, but one artwork description is stale and one blanket provenance claim overstates the evidence.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Replace 'ring, leaf' with the actual wind stroke and bubbles, and qualify the clear-space assertion until the can application also satisfies it."
+        },
+        {
+          "sheet": "09",
+          "quote": "Proposition, insight, tone and reasons to believe are the model’s; every fact cites a brief entry.",
+          "change": "Say that factual claims carry references but still require verification, consistent with the explicitly identified unsupported origin claim."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 6,
+      "why": "Navigation, focus handling, local links and dependency-free packaging are thoughtfully implemented, but the phone CSS can squeeze Contents and places essential creative corrections after the entire body.",
+      "fixes": [
+        {
+          "sheet": "All, phone",
+          "quote": ".ruler .fol",
+          "change": "Keep Contents outside the horizontally scrolling tick strip, or hide the ticks on phones; its current shrinkable width competes with ten minimum-width tick buttons."
+        },
+        {
+          "sheet": "09, phone",
+          "quote": ".margin { order: 2; }",
+          "change": "Keep the three-corrections warning before the creative draft on phones instead of moving it below the long article."
+        },
+        {
+          "sheet": "07, phone",
+          "quote": ".resolve",
+          "change": "Stack the label, resolution and initials at narrow widths so the long decision text receives the full content width."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The wind-and-fizz concept, palette, mock-up labels and cited specs are credible, but the can crowds mandatory wordmark clear space and the vertical execution remains an acknowledged unfinished crop.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": ".plate.pack img",
+          "change": "Increase the space above and below 'Meltemi Fizz' to at least one wordmark height; the embedded can image leaves noticeably smaller gaps to the symbol and descriptor."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Create that dedicated vertical composition now, raising the lockup while preserving clear space and the explicit mock-up label."
+        }
+      ]
+    }
+  ],
+  "overall": "Strong evidence and product logic; not yet unchanged-shippable because the final sheets need tighter editing and stronger mobile hierarchy. Hash verified; no repository files changed. Chrome aborted both rendering attempts, so visual and UX assessments rely on HTML/CSS/JavaScript inspection and direct inspection of the embedded can image."
+}

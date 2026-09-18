@@ -1,0 +1,9 @@
+{
+ "research_rc": 0,
+ "build_rc": 0,
+ "v2_exists": true,
+ "checks_exit": 0,
+ "checks": "{\n \"sheets\": 10,\n \"blockquotes\": 13,\n \"failures\": []\n}\n",
+ "v2_sha256": "40a1d7806e25d550ab2cb89027895f802d26ccc402fafdc96cf8a8d0e087e19e",
+ "git_status": "?? docs/DECK.md\n?? tools/walkthrough/codex_round/r10/out/\n?? tools/walkthrough/codex_round/r10/prompts/brief.md\n?? tools/walkthrough/codex_round/r10/prompts/judge_1.md\n?? tools/walkthrough/codex_round/r10/prompts/judge_2.md\n?? tools/walkthrough/codex_round/r10/prompts/judge_3.md\n?? tools/walkthrough/codex_round/r10/prompts/task_engineer.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_1_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_1_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_2_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_2_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_3_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_3_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_4_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_4_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_5_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_5_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_6_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_6_2.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_7_1.md\n?? tools/walkthrough/codex_round/r10/prompts/verify_7_2.md\n?? tools/walkthrough/codex_round/r10/report.md\n?? tools/walkthrough/codex_round/r10/result.json\n?? tools/walkthrough/redesign/\n"
+}

@@ -1,0 +1,164 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 6,
+      "why": "Ten sheets are respected, but approximately 766 visible words on sheet 9 and 458 on sheet 10 make the closing stretch substantially too dense.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#ch09 .brief",
+          "change": "Keep the proposition, A/B decision, two-row specification table and approval status visible; collapse the insight, supporting rationale and detailed checklist."
+        },
+        {
+          "sheet": "10",
+          "quote": "#ch10 .decisions .sub-list",
+          "change": "Replace the protocol paragraph with a compact release-target strip; retain the full protocol in the existing ledger."
+        },
+        {
+          "sheet": "01",
+          "quote": "#ch01 .narr",
+          "change": "Reduce to the product definition and the qualified 17/17 result; the takeaways and tiles already repeat the remaining claims."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "Outputs, usage by model, timings, human responsibilities and decision owners are covered, but the pilot omits the PRD’s transcript-availability contingency.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Pilot protocol and decision owners",
+          "change": "Add the week-1 transcript availability check and PRD §8 fallback: retrospective work uses RFP, email and background while the next two or three kickoffs are recorded with consent."
+        },
+        {
+          "sheet": "10",
+          "quote": "Approve a conditional pilot; measure quality, review time and adoption.",
+          "change": "Include conflict catch rate on retrospective cases among the quality measures, as specified in PRD §7."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 8,
+      "why": "The three-role language is accessible, but one sequencing sentence is misleading and sheet 4 visually credits only code for substantial AI work.",
+      "fixes": [
+        {
+          "sheet": "03",
+          "quote": "Without the RFP the run stops with a request; a small model then classifies: advertising creative, high confidence, S1.",
+          "change": "Replace with: “Without the RFP, the run stops and requests it. With sufficient input, AI classifies this project as advertising creative, with high confidence; its configured sensitivity tier is S1.”"
+        },
+        {
+          "sheet": "04",
+          "quote": "#ch04 .stamps",
+          "change": "Add the existing AI role stamp alongside code so extraction and fidelity assessment have the correct visible owner."
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first opening and evidence-to-decision sequence work, but some headlines carry too many messages and the ending unnecessarily returns to a resolved narrative thread.",
+      "fixes": [
+        {
+          "sheet": "06",
+          "quote": "One master record holds 25 cited entries, 3 conflicts and 10 questions; both documents come from it, with Greek reviewed by a person.",
+          "change": "Shorten to: “One cited master record produces both briefs; people judge the Greek.” Keep the counts in the evidence below."
+        },
+        {
+          "sheet": "10",
+          "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+          "change": "Remove this recap from the closing presentation layer; sheets 5, 7 and 9 already establish it."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a clear name, anatomy, outputs and human gate, but its operating principles and ownership handover are buried beneath implementation detail.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+          "change": "Move this principles line out of the ledger and place it directly beneath the pipeline."
+        },
+        {
+          "sheet": "02",
+          "quote": "Four plain-text rule files (a few pages of plain English handed to the model unchanged every run), seven agents and about 2 500 non-blank lines, counted across the eight pipeline modules in the ledger below.",
+          "change": "Move the construction counts into the ledger and use the margin for the operating handover: specialist runs the pilot; two trained champions operate it by week 4."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 7,
+      "why": "The typography, paper palette and role marks form a coherent system, but the source layout gives the creative sheet a fragmented hierarchy and disproportionate vertical length.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": ".plate.pack { width: 40%; margin-top: 8px; }",
+          "change": "Place the packaging application beside the other creative examples on desktop, with aligned captions, instead of starting a separate narrow row."
+        },
+        {
+          "sheet": "01",
+          "quote": ".legend li",
+          "change": "Make the role legend a compact desktop row; its current 24px type and three padded rows compete with the executive summary."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 8,
+      "why": "The principal counts, model IDs and de-duplicated usage match the artifacts, but the timing comparison conflates stage-one execution with a run including creative A/B.",
+      "fixes": [
+        {
+          "sheet": "01",
+          "quote": "The graded run’s stages, including the repair and the creative A/B; a continuous capture on 29 July ran the same pipeline in 25.2, with one pass re-rolled.",
+          "change": "State that 33 minutes includes creative A/B, whereas the 25.2-minute capture covers stage one with a synthesis re-roll; remove “the same pipeline” as a like-for-like comparison."
+        },
+        {
+          "sheet": "09",
+          "quote": "ring, leaf and name sit in the central column so the 9:16 crop clips nothing",
+          "change": "Replace the obsolete ring-and-leaf description with the actual wind stroke, bubbles and wordmark."
+        }
+      ]
+    },
+    {
+      "aspect": "ux",
+      "score": 7,
+      "why": "Source inspection shows comprehensive navigation and accessibility provisions, but the phone rules squeeze Contents beside ten minimum-width ticks and move essential caveats after the content.",
+      "fixes": [
+        {
+          "sheet": "All, phone",
+          "quote": ".ruler .tick",
+          "change": "Hide progress ticks below 700px and give the Contents button the available central width; ten 32px minimum-width ticks otherwise crowd it out."
+        },
+        {
+          "sheet": "09, phone",
+          "quote": ".margin { order: 2; }",
+          "change": "Keep the three corrections and shadow-mode notice before the creative artwork on phones rather than after the entire brief."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The mock-up is appealing and honestly labelled, with table-derived specs, but the can’s tagline encroaches on required wordmark clear space and the vertical execution remains an acknowledged unfinished crop.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "#kv-packaging .plate.pack img",
+          "change": "Increase separation between the wordmark and “SPARKLING TEA · ZERO SUGAR” to at least one wordmark height, as required by the brand guidelines."
+        },
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Provide that dedicated vertical layout now, raising the lockup while retaining the shadow-mode label and provisional-spec disclosure."
+        }
+      ]
+    }
+  ],
+  "overall": "Strong evidence and responsible qualification, but not ready to ship unchanged: shorten the closing sheets, clarify timing scope, and repair the phone navigation and creative spacing. Hash matched; repository unchanged. Chrome aborted before screenshots, so visual and UX assessments rely on source inspection plus direct inspection of the embedded can image."
+}

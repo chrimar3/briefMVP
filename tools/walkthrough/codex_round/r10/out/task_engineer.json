@@ -1,0 +1,19 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "This synthetic run passed 17 checks; it does not guarantee general completeness, semantic support or natural Greek. Models classify, flag garbles, extract, verify, synthesize and render; code gates inputs/outputs, groups conflict candidates, recomputes readiness and checks specs. Humans manually edit brief.json conflict resolutions/resolved_by/status and signoff status/signed_by/signed_ts/edits_summary. The review page displays records, toggles languages and copies questions; it saves nothing. Deterministic checks cover schema, exact anchors, citation tags, glossary, sensitivity, readiness and seeded traps; they miss semantic errors, duplicate/uncited questions and some spec errors. Creative remains signed-input, text-only shadow output. Before week 1, the operator must remeasure full-run tokens/time with Sonnet extraction plus verifier and update subscription capacity planning.",
+  "missing": [],
+  "confusions": [
+    "“Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” This sounds broader than the later limits on semantic support and gap detection.",
+    "“Channel specs come from the traffic team’s table, never from a model.” The later description makes clear that validation covers only dimensions and some ratios, so this initially reads as a stronger enforcement guarantee."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” with “Target: cited Greek and English drafts, detected gaps as questions, and human sign-off before shadow creative. Checks do not establish semantic support or complete gap detection.”",
+    "Replace “Channel specs come from the traffic team’s table, never from a model.” with “Models are instructed to use the traffic team’s spec table; code checks dimensions and some ratios, not durations, file types or row suitability.”"
+  ]
+}

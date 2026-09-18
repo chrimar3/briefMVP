@@ -1,0 +1,37 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b",
+  "hardFailures": [
+    {
+      "category": "accessibility_blocker",
+      "sheet": "All, at 390 px",
+      "pageText": "01 / 10 · Contents",
+      "evidence": "Line 437: '.ruler .tick { width: 32px; min-width: 32px; }'. Line 464 gives the folio 'flex: 1 1 auto; min-width: 0; overflow: hidden'. Line 448 allocates the ruler only the space remaining between Back and Next.",
+      "why": "Code-derived clipping: ten ticks require 320 px, exceeding the available mobile ruler width. The folio shrinks to its padding and border, leaving no room for its text. Give the folio a nonshrinking width or place it outside the scrolling ticks."
+    },
+    {
+      "category": "broken_interaction",
+      "sheet": "All",
+      "pageText": "swipe horizontally or tap Next",
+      "evidence": "Lines 1502–1503 record only touchstart and touchend; navigation uses 'Math.abs(dx) > 60 && Math.abs(dy) < 40'. No touchmove handler tracks vertical travel.",
+      "why": "Executing these handlers with a gesture from (300,400), through (280,180), to (210,380) advances sheet 5 to 6 despite substantial vertical travel. Cancel swipe recognition after vertical movement or page scrolling; retain the existing scrollable-table exclusion."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "01, 02, 08, 09, 10",
+      "issue": "Rendered verification remains incomplete: all ten required Chrome launches aborted without screenshots. Fallback Chromium reported sandbox 'bootstrap_check_in ... Permission denied (1100)'. No screenshots could be inspected.",
+      "fix": "Repeat desktop and phone rendering in an environment that permits Chrome to launch. Verify the folio, text bounds, stacked clips, both crops, can plate and in-crop MOCK-UP label visually."
+    },
+    {
+      "sheet": "02, 09",
+      "issue": "Both previous wording failures are fixed in this candidate: line 658 explicitly limits rule-file injection to respective client-brief agents and identifies separate inline instructions; line 1243 documents normalization, ratio exemptions and unchecked duration/file-type tokens. These confirmations are from source inspection.",
+      "fix": "Preserve these corrected qualifications."
+    },
+    {
+      "sheet": "09",
+      "issue": "Line 1257 still describes 'ring, leaf and name', whereas the SVG defines a wind stroke and two bubbles.",
+      "fix": "Update the callout to describe the actual artwork and verify its clear-space claim against both rendered crops."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "checks": {
+    "frozen_snapshot_sha256": true,
+    "blockquotes_byte_identical": true,
+    "cited_marks_byte_identical": true,
+    "key_visual_byte_identical": true,
+    "packaging_image_byte_identical": true,
+    "every_original_table_data_row_preserved": true,
+    "ten_labelled_sheets": true,
+    "ten_conclusion_titles": true,
+    "no_nested_disclosures": true,
+    "table_headers_repeat_in_print": true,
+    "table_headers_scoped": true,
+    "real_offline_links_only": true,
+    "no_external_resources": true,
+    "one_embedded_JPEG": true,
+    "exactly_three_decisions": true,
+    "seventeen_individual_checks": true,
+    "X3_exact": true,
+    "three_blank_conflict_lines": true,
+    "three_initialled_human_resolutions": true,
+    "EL_EN_two_sections_each": true,
+    "visible_word_caps": true,
+    "unmodified_checks_py_passes": true
+  },
+  "visible_words": {
+    "ch01": 233,
+    "ch02": 260,
+    "ch03": 290,
+    "ch04": 168,
+    "ch05": 294,
+    "ch06": 225,
+    "ch07": 246,
+    "ch08": 146,
+    "ch09": 631,
+    "ch10": 449
+  },
+  "bytes": 206129,
+  "source_bytes": 222002,
+  "gate": {
+    "sheets": 10,
+    "blockquotes": 13,
+    "failures": []
+  },
+  "browser_verification": "BLOCKED: Chrome aborts; Chromium reports macOS bootstrap_check_in Permission denied (1100). No screenshots produced."
+}

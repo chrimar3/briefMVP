@@ -1,0 +1,68 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b",
+  "hardFailures": [
+    {
+      "category": "missing_exhibit",
+      "sheet": "All",
+      "pageText": "",
+      "evidence": "WALKTHROUGH.html, entire file: no occurrence of “Frozen source”, “3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d”, or “rendered verification is not claimed”.",
+      "why": "The regression list explicitly requires the historical frozen-source disclosure: “Frozen source: WALKTHROUGH.html, SHA-256 3a285fde0ac54ae9a469b30fdae8968be18e467a4bf05d5ea81e075eacf5188d. No files edited; rendered verification is not claimed.” It is absent."
+    },
+    {
+      "category": "wrong_fact",
+      "sheet": "06 and 08 ledgers",
+      "pageText": "The readiness block is recomputed by code from config/readiness_policy.json and must match what the model wrote (exam check T2.6).\nThe readiness verdict, recomputed by code, matches the model’s",
+      "evidence": "skills/SYNTHESIS.md:18: “Readiness is not yours. You emit entries; the deterministic runner computes the `readiness` block. Never populate or adjust it.” pipeline/stages.py:571: `brief[\"readiness\"] = gates.compute_readiness_block(brief, readiness_policy)`. eval/harness.py:395: “The runner's readiness block must equal the harness's independent recomputation.”",
+      "why": "The runner creates the readiness block. T2.6 compares it with an independent computation, not a model-authored verdict. The same runner-owned behavior exists in the original tier-2 implementation, commit d3d591b."
+    },
+    {
+      "category": "unsupported_guarantee",
+      "sheet": "08",
+      "pageText": "The grader was frozen early; it is the only code that can open the sealed answer key.",
+      "evidence": "pipeline/runner.py:132–143, `_access_dirs`, includes `str(ctx.project_dir)`. pipeline/agents.py:45: `ALLOWED_TOOLS = (\"Read\", \"Write\")`; invoke passes these tools and each access directory through `--add-dir`. fixtures/northlight_01/answer_key.json resides inside that project directory. pipeline/gates.py, `discover_sources`, only filters source discovery through `project_dir.glob(\"*.md\")`.",
+      "why": "The repository establishes a harness-only policy and excludes the key from automatic source discovery. It does not establish the claimed exclusive ability to open the file: runtime agents receive Read access to its containing directory. This does not establish that any agent actually read it."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "04",
+      "pageText": "Just thinking out loud — maybe a TikTok dance thing? Don’t hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+      "evidence": "fixtures/northlight_01/transcript_kickoff.md:21: “[00:11:47] DIMITRIS: Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.”",
+      "why": "The quotation changes the source’s ASCII apostrophe in “Don't” to U+2019 in “Don’t”. Meaning is preserved, but the requested character-exact quotation check fails."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "09",
+      "pageText": "For urban professionals who’ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.",
+      "evidence": "runs/tier3/creative/creative_brief_sonnet.md:5: “For urban professionals who've outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.”",
+      "why": "The quoted proposition changes the source’s ASCII apostrophe in “who've” to U+2019 in “who’ve”. This is a typographic, not semantic, discrepancy."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "08 and phone navigation",
+      "issue": "Successful browser verification remains outstanding. Chrome exited with code 134 before producing the requested 390-pixel screenshot; row separation at 320, 390 and 560 pixels and keyboard/touch behavior were not successfully browser-tested.",
+      "fix": "Complete the required browser checks before acceptance. Static inspection alone cannot certify rendering or interaction."
+    },
+    {
+      "sheet": "08",
+      "issue": "The repository history confirms the answer-key commit at 2026-07-24 00:27:26, but does not independently establish the additional statement “written 23 July”.",
+      "fix": "Use the evidenced commit timestamp, or cite a repository artifact establishing the writing date."
+    },
+    {
+      "sheet": "01 and 10",
+      "issue": "The “roughly three-quarters of a word” token explanation has no identified repository source and is not a measured property of this mixed Greek/English workload.",
+      "fix": "Describe tokens as model text units without asserting a workload-specific word conversion."
+    },
+    {
+      "sheet": "01",
+      "issue": "“Every quote is clipped verbatim from the four source documents” overlooks quotations from generated briefs, translated glosses and the recorded human sign-off.",
+      "fix": "Say that source excerpts and generated-output excerpts are attributed to their respective repository artifacts."
+    },
+    {
+      "sheet": "09",
+      "issue": "The north-wind interpretation and standard 330 ml packaging description are walkthrough design choices without identified support in the supplied source documents.",
+      "fix": "Identify these explicitly as illustrative design assumptions alongside the existing mock-up disclosure."
+    }
+  ]
+}
