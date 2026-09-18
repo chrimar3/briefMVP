@@ -1,0 +1,16 @@
+Use the imagegen skill in its default built-in `image_gen` tool mode (no API key, no CLI fallback) to generate ONE packaging mock-up for the shadow-mode creative brief shown on sheet 09 of WALKTHROUGH.html. This is a synthetic demo brand (fixtures/northlight_01/); the image is a walkthrough illustration labelled as a mock-up, never a deliverable. Read fixtures/northlight_01/background_brand_guidelines.md first: its rules are hard constraints.
+
+Use case: product-mockup
+Asset type: packaging mock-up plate for a presentation sheet (1:1, 2048x2048 PNG, the key-visual master spec)
+Primary request: premium product photograph of a single glass bottle of "Meltemi Fizz" sparkling tea, zero sugar, standing on a flat surface
+Scene/backdrop: plain, evenly lit, flat light-neutral studio backdrop (a single flat tone, no gradient, no scenery)
+Subject: one clear glass bottle, upright, condensation-free, the tea inside pale amber; a paper label wrapped around the body
+Label design (flat fills only, exactly three colours: Aegean Blue #1B4F8A, Citrus Yellow #F5C518, white): the label field is Aegean Blue; a bold Citrus Yellow ring (it reads as a zero) sits above the wordmark with a single white tea-leaf shape inside the ring; the wordmark "Meltemi Fizz" in white bold sans-serif beneath the ring; the line "SPARKLING TEA · ZERO SUGAR" in Citrus Yellow small caps beneath the wordmark. Keep clear space around the wordmark of at least one wordmark-height on all sides. No other graphics, no fruit, no splashes, no bubbles drawn on the label.
+Style/medium: clean product photography, catalogue quality
+Composition/framing: centered, slight three-quarter angle, generous padding, bottle fills about 70% of the height
+Lighting/mood: soft studio softbox light, clean highlights, one controlled soft shadow, premium-everyday mood (modern Greek, confident, quiet)
+Text (verbatim, spell exactly, Latin script, never abbreviated, never transliterated): "Meltemi Fizz" (M-e-l-t-e-m-i space F-i-z-z) · "SPARKLING TEA · ZERO SUGAR" · and a small white caption in the top-left corner of the image reading "MOCK-UP · NOT FOR DELIVERY"
+Constraints: glass bottle only (no can, no slim can, no beer/seltzer/wine bottle shapes, no crown-cap beer look; a screw cap is fine); no alcohol association; no beach, party, bar, pool or spring-break cues; no people; no health or weight-loss claim; no competitor brand; no gradient backdrop; no watermark; the label's three colours are flat with no gloss gradient painted onto the artwork itself
+Avoid: extra text, extra logos, extra bottles, fruit, ice cubes, straws, glassware, sea or sky scenery
+
+Workflow: generate; then look at the result with view_image and check the verbatim text, that the ring/leaf/wordmark order is right, that it is a glass bottle and nothing reads as alcohol, beach or party. If anything is wrong, regenerate with ONE targeted change, at most three attempts in total. Copy the best result into the workspace as tools/walkthrough/kv_packaging_mockup.png (do not leave it only under ~/.codex/generated_images). Do not edit WALKTHROUGH.html or any other file. Do not run git commands that change state. Finish with a short report: the final prompt used, which attempt was chosen and why, what was still imperfect, and the saved path.

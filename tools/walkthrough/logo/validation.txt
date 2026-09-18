@@ -1,0 +1,8 @@
+dir1.svg: PASS | 1342 bytes | XML parse | exact frame/background | exactly 3 palette colours | 3 verbatim text elements | prohibited features absent | clear space | both crop bounds
+  Conservative mark bounds (x_min, y_min, x_max, y_max): (810, 240, 1734, 1238)
+dir2.svg: PASS | 1178 bytes | XML parse | exact frame/background | exactly 3 palette colours | 3 verbatim text elements | prohibited features absent | clear space | both crop bounds
+  Conservative mark bounds (x_min, y_min, x_max, y_max): (810, 236, 1736, 1350)
+dir3.svg: PASS | 1172 bytes | XML parse | exact frame/background | exactly 3 palette colours | 3 verbatim text elements | prohibited features absent | clear space | both crop bounds
+  Conservative mark bounds (x_min, y_min, x_max, y_max): (876, 216, 1656, 1300)
+Quick Look: PASS | 3 thumbnails at 1024 px + 3 at 128 px; all six visually inspected, no XML error banners.
+Small-size review: PASS | all three mark silhouettes remain distinct; required small caption/category text is not readable at 128 px.

@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Brief With Receipts</title>
+<style>
+:root {
+  color-scheme: light;
+  --paper: #F1F2EC;
+  --bar: #E5E9DF;
+  --rule: #C9CFC1;
+  --ink: #1A1A18;
+  --pencil: #5A5D55;
+  --pencil-2: #A2A69C;
+  --red: #C8102E;
+  --white: #FFFFFF;
+  --serif: Charter, "Bitstream Charter", Cambria, Georgia, "Noto Serif", "Liberation Serif", serif;
+  --receipt: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --label: "Helvetica Neue", Helvetica, Arial, "Liberation Sans", sans-serif;
+  --ledger: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+  --nav-h: 76px;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 18px/28px var(--serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+html.js .sheet:not(.active) { display: none; }
+a { color: var(--ink); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- desk ---------- */
+.desk { max-width: 1440px; margin: 0 auto; padding: 24px 48px calc(var(--nav-h) + 56px); }
+.runhead {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px;
+  padding: 8px 0 12px; border-bottom: 1px solid var(--rule);
+  font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil);
+}
+.runhead b { color: var(--ink); font-weight: 700; }
+
+/* ---------- sheet ---------- */
+.sheet { display: grid; grid-template-columns: minmax(200px, 3fr) minmax(0, 9fr); column-gap: 48px; padding-top: 32px; }
+.sheet.active { animation: lay 220ms ease-out both; }
+@keyframes lay { from { transform: translateY(10px); } to { transform: none; } }
+.margin { border-right: 1px solid var(--rule); padding-right: 24px; display: flex; flex-direction: column; gap: 24px; align-self: start; position: sticky; top: 24px; }
+.folio { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+.folio button {
+  font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--ink);
+  background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 4px;
+}
+.stamps { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.stamp {
+  display: inline-flex; align-items: center; gap: 10px; padding: 6px 10px;
+  border: 1.5px solid var(--ink); font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink);
+  background: transparent;
+}
+.stamp.ai { border-color: var(--pencil); color: var(--pencil); }
+.stamp.people { border-color: var(--red); color: var(--red); }
+.stamp.pending { border-style: dashed; }
+.sq { width: 10px; height: 10px; flex: none; border: 1.5px solid currentColor; }
+.sq.hatch { border-color: var(--ink); background: repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 4px); }
+.sq.fill { background: currentColor; }
+.marginalia { margin: 0; font: 400 15px/22px var(--serif); color: var(--pencil); }
+.marginalia.mono { font: 400 13px/20px var(--ledger); }
+.marginalia .lbl { display: block; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-bottom: 4px; }
+.bigcount { font: 400 64px/1 var(--serif); letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.bigcount small { font-size: 22px; color: var(--pencil); }
+
+.body { min-width: 0; }
+.title:focus { outline: none; }
+.title:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.title { margin: 0 0 20px; font: 400 44px/48px var(--serif); letter-spacing: -0.01em; text-wrap: balance; max-width: 18ch; }
+.title .el { display: block; font-size: 22px; line-height: 30px; color: var(--pencil); margin-top: 8px; letter-spacing: 0; }
+.cover .title { font-size: 48px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; max-width: 24ch; }
+.cover .title .el { font-weight: 400; font-size: 26px; line-height: 34px; }
+.narr { margin: 0 0 32px; max-width: 62ch; }
+.narr + .narr { margin-top: -16px; }
+.slide-head .promise { margin: 12px 0 0; color: var(--pencil); }
+a.repo { color: var(--ink); text-decoration-color: var(--pencil-2); text-underline-offset: 3px; }
+.hero { margin: 0 0 32px; }
+.sub { margin: 40px 0 12px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); padding-top: 12px; border-top: 1px solid var(--rule); }
+.note { margin: 12px 0 0; font: 400 15px/22px var(--serif); color: var(--pencil); max-width: 62ch; }
+.note.red { color: var(--red); font-style: italic; }
+.mono { font-family: var(--ledger); font-size: 13px; line-height: 20px; }
+.cite { font: 400 13px/20px var(--ledger); color: var(--ink); }
+.cite .dim { color: var(--pencil); }
+
+/* ---------- clippings ---------- */
+.clip { margin: 0; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 20px 24px; }
+.clip blockquote { margin: 0; font: 400 18px/28px var(--serif); color: var(--ink); overflow-wrap: anywhere; }
+.clip figure.inner, .receipt figure.inner { margin: 0; }
+.clip figcaption { margin-top: 14px; display: flex; flex-direction: column; gap: 4px; }
+.clip .gloss { font: 400 13px/20px var(--ledger); color: var(--pencil); }
+mark.cited { background: none; color: inherit; box-shadow: inset 0 0 0 1px var(--ink); padding: 1px 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+mark.flag { background: none; color: inherit; text-decoration: underline; text-decoration-color: var(--pencil); text-decoration-thickness: 2px; text-underline-offset: 5px; position: relative; }
+.active mark.flag { animation: ulin 320ms ease-out both; }
+.active mark.flag:nth-of-type(2) { animation-delay: 120ms; }
+@keyframes ulin { from { text-decoration-color: transparent; } to { text-decoration-color: var(--pencil); } }
+.sic { font: 400 12px/16px var(--label); letter-spacing: 0.1em; color: var(--pencil); text-transform: uppercase; vertical-align: super; margin-left: 2px; }
+.clips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.clip .kind { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-bottom: 12px; display: flex; justify-content: space-between; gap: 12px; }
+
+/* machine output block */
+.machine { margin: 16px 0 0; border-top: 1px solid var(--rule); padding-top: 14px; }
+.machine .lbl { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin: 0 0 6px; }
+.machine p { margin: 0; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 16px; font: 400 13px/20px var(--ledger); margin: 8px 0 0; }
+.kv dt { color: var(--pencil); margin: 0; }
+.kv dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+
+/* ---------- conflict pairs ---------- */
+.pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin-bottom: 16px; }
+.pair .clip { position: relative; }
+.vs { align-self: center; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+.resolve { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 12px; font: 400 15px/22px var(--serif); color: var(--pencil); padding: 6px 0 0; }
+.resolve .line { flex: 1; border-bottom: 1px solid var(--ink); min-height: 22px; }
+.resolve .line.written { color: var(--red); font-style: italic; border-bottom-color: var(--red); padding: 0 8px 2px; }
+.resolve .init { color: var(--red); font: 700 13px/16px var(--label); letter-spacing: 0.12em; }
+.conflict-block { margin-bottom: 40px; }
+.conflict-block h3 { margin: 0 0 12px; font: 400 22px/28px var(--serif); }
+.conflict-block h3 span { font: 400 13px/20px var(--ledger); color: var(--pencil); margin-left: 12px; }
+.circled::after {
+  content: ""; position: absolute; inset: -6px -8px; pointer-events: none;
+  border: 2.5px solid var(--red); border-radius: 48% 52% 50% 50% / 55% 45% 55% 45%; transform: rotate(-1.5deg);
+}
+.active .circled::after { animation: pen 600ms ease-out both; animation-delay: 500ms; }
+@keyframes pen { from { opacity: 0.35; } to { opacity: 1; } }
+
+/* ---------- ledger tables (code material) ---------- */
+.ledger-table { width: 100%; border-collapse: collapse; font: 400 13.5px/21px var(--ledger); font-variant-numeric: tabular-nums; }
+.ledger-table th, .ledger-table td { text-align: left; padding: 6px 12px; height: 32px; border-top: 1px solid var(--rule); vertical-align: top; }
+.ledger-table th { font-weight: 400; color: var(--pencil); }
+.ledger-table tr:nth-child(odd) td { background: var(--bar); }
+.ledger-table td.r, .ledger-table th.r { text-align: right; white-space: nowrap; }
+.ledger-table td.ok::before { content: "\2713\00a0"; }
+.ledger-table td.x::before { content: "\2717\00a0"; }
+.ledger-wrap { overflow-x: auto; border-bottom: 1px solid var(--rule); }
+.verdict { margin: 16px 0 0; padding: 12px 16px; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); font: 700 15px/22px var(--receipt); }
+.verdict.stop { display: flex; gap: 16px; align-items: flex-start; }
+.stopstamp { flex: none; padding: 6px 10px; border: 1.5px solid var(--ink); font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; background: var(--ink); color: var(--paper); }
+
+/* ---------- exam ---------- */
+.exam { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+.exam li { display: grid; grid-template-columns: 28px 64px 1fr auto; gap: 12px; align-items: center; min-height: 32px; padding: 6px 12px; border-top: 1px solid var(--rule); font: 400 13px/20px var(--ledger); }
+.exam li:nth-child(odd) { background: var(--bar); }
+.exam .id { color: var(--pencil); }
+.exam .res { color: var(--ink); text-align: right; }
+.exam .mark { width: 18px; height: 18px; display: block; }
+.exam .mark path { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: square; stroke-dasharray: 24; stroke-dashoffset: 0; }
+.active .exam .mark path { animation: draw 200ms ease-out both; animation-delay: calc(var(--i) * 60ms); }
+@keyframes draw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+.exam .tier { grid-column: 1 / -1; padding: 8px 0 2px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); background: none !important; border-top: 0; }
+
+/* ---------- brief skeleton ---------- */
+.toc { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+.toc li { display: grid; grid-template-columns: 40px 1fr auto; gap: 16px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--rule); }
+.toc .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
+.toc .c { font: 400 13px/20px var(--ledger); color: var(--ink); text-align: right; white-space: nowrap; }
+.toc .hole { font: 700 15px/22px var(--receipt); color: var(--ink); }
+.qs { margin: 0; padding: 0; list-style: none; counter-reset: q; }
+.qs li { position: relative; padding: 14px 0 14px 48px; border-top: 1px solid var(--rule); counter-increment: q; }
+.qs li::before { content: counter(q, decimal-leading-zero); position: absolute; left: 0; top: 16px; font: 400 13px/20px var(--ledger); color: var(--pencil); }
+.qs .field { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); display: block; margin-bottom: 4px; }
+.qs .q { font: 600 16px/24px var(--receipt); background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 12px 16px; margin: 8px 0 0; display: block; }
+.qs .why { display: block; margin-top: 8px; font-size: 15px; line-height: 22px; color: var(--pencil); }
+
+/* ---------- facing pages ---------- */
+.facing { display: grid; grid-template-columns: 1.04fr 1px 1fr; gap: 0 32px; }
+.facing .gutter { background: var(--rule); }
+.facing .page { background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 24px 28px; }
+.facing h3 { margin: 0 0 4px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+.facing h4 { margin: 20px 0 8px; font: 400 20px/28px var(--serif); }
+.facing h4:first-of-type { margin-top: 8px; }
+.facing p, .facing li { font: 400 16px/25px var(--serif); margin: 0 0 8px; }
+.facing ul { margin: 0; padding-left: 20px; }
+.facing .hole { font: 700 15px/22px var(--receipt); }
+.gl { text-decoration: underline; text-decoration-color: var(--pencil-2); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.facing .cite { display: inline; margin-left: 6px; }
+
+/* ---------- sign-off ---------- */
+.signoff { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.landed { display: inline-block; padding: 12px 18px; border: 2.5px solid var(--red); color: var(--red); font: 700 22px/26px var(--label); letter-spacing: 0.18em; text-transform: uppercase; }
+.active .landed { animation: land 320ms cubic-bezier(.2,.9,.3,1.2) both; animation-delay: 700ms; }
+@keyframes land { from { opacity: 0.35; transform: scale(1.12); } to { opacity: 1; transform: scale(1); } }
+.signrec { margin: 0; max-width: 52ch; }
+.signrec .red { color: var(--red); font-style: italic; }
+
+/* ---------- receipts (extraction) ---------- */
+.receipt { background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 20px 24px; margin-bottom: 24px; }
+.receipt blockquote { margin: 0; font: 400 18px/28px var(--serif); }
+.receipt figcaption { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.attempts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.attempt { border-top: 1px solid var(--rule); padding-top: 10px; }
+.attempt .n { font: 400 40px/1 var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.attempt .n small { font-size: 14px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
+.attempt .d { font: 400 13px/20px var(--ledger); color: var(--pencil); margin-top: 4px; }
+
+/* ---------- creative brief ---------- */
+.plate-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.plate { position: relative; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule), 0 12px 24px -18px rgba(0,0,0,.35); padding: 18px; }
+.plate.p11 { width: 52%; }
+.plate.p916 { width: calc(52% * 9 / 16); }
+.plate svg { display: block; width: 100%; height: auto; }
+.plate .cm { position: absolute; width: 14px; height: 14px; border-color: var(--ink); border-style: solid; border-width: 0; }
+.plate .cm.tl { top: 4px; left: 4px; border-top-width: 1px; border-left-width: 1px; }
+.plate .cm.tr { top: 4px; right: 4px; border-top-width: 1px; border-right-width: 1px; }
+.plate .cm.bl { bottom: 4px; left: 4px; border-bottom-width: 1px; border-left-width: 1px; }
+.plate .cm.br { bottom: 4px; right: 4px; border-bottom-width: 1px; border-right-width: 1px; }
+.slug { margin: 10px 0 0; font: 400 13px/20px var(--ledger); color: var(--ink); }
+.slug .dim { color: var(--pencil); }
+.swatches { display: flex; gap: 24px; flex-wrap: wrap; margin: 20px 0 0; font: 400 13px/20px var(--ledger); }
+.swatch { display: flex; align-items: center; gap: 10px; }
+.swatch i { width: 28px; height: 28px; border: 1px solid var(--rule); display: block; }
+.callouts { margin: 12px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; font: 400 15px/22px var(--serif); color: var(--ink); }
+.callouts .dim { font: 400 12px/18px var(--ledger); color: var(--pencil); }
+.callouts li::before { content: "\2014\00a0"; }
+.brief { margin-top: 56px; background: var(--white); border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule); padding: 40px 48px; max-width: 66ch; }
+.brief .bh { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: baseline; border-bottom: 1px solid var(--rule); padding-bottom: 16px; margin-bottom: 8px; }
+.brief .bh h3 { margin: 0; font: 700 26px/32px var(--serif); letter-spacing: -0.01em; }
+.brief h4 { margin: 32px 0 10px; font: 400 22px/28px var(--serif); display: flex; gap: 12px; align-items: baseline; }
+.brief h4 .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
+.brief p, .brief li { margin: 0 0 10px; font-size: 17px; line-height: 27px; }
+.brief ul { margin: 0; padding-left: 20px; }
+.brief .smp { font-size: 24px; line-height: 34px; font-weight: 700; letter-spacing: -0.01em; }
+.brief .cite { display: inline; margin-left: 6px; font-size: 12px; }
+.brief .pencil { color: var(--pencil); font-size: 15px; line-height: 22px; }
+.brief .tfd dt { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); margin-top: 12px; }
+.brief .tfd dd { margin: 4px 0 0; }
+.spec { width: 100%; border-collapse: collapse; font: 400 13px/20px var(--ledger); }
+.spec th, .spec td { text-align: left; padding: 8px 12px 8px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+.spec th { font-weight: 400; color: var(--pencil); }
+.spec tr:last-child td { border-bottom: 1px solid var(--rule); }
+.check { list-style: none; margin: 0; padding: 0; }
+.check li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; padding: 8px 0; border-top: 1px solid var(--rule); }
+.check .box { width: 14px; height: 14px; border: 1.5px solid var(--ink); margin-top: 6px; }
+.check .box.red { border-color: var(--red); position: relative; }
+.check .box.red::after { content: ""; position: absolute; inset: -5px; border: 2px solid var(--red); border-radius: 50% 45% 55% 50% / 50% 55% 45% 50%; transform: rotate(-3deg); }
+.check .red-i { color: var(--red); font-style: italic; }
+.ab { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); }
+
+/* ---------- closing ---------- */
+.numbers { list-style: none; margin: 0; padding: 0; border-bottom: 1px solid var(--rule); }
+.numbers li { display: grid; grid-template-columns: minmax(180px, 1fr) 2fr; gap: 24px; align-items: baseline; padding: 14px 12px; border-top: 1px solid var(--rule); }
+.numbers li:nth-child(odd) { background: var(--bar); }
+.numbers .big { font: 400 40px/44px var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.numbers .big small { font-size: 16px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
+.numbers .big.q { font: 600 20px/28px var(--receipt); letter-spacing: 0; }
+.numbers .what { margin: 0; font-size: 16px; line-height: 25px; }
+.numbers .what .cite { display: block; margin-top: 2px; }
+.lastline { margin: 40px 0 0; font: 400 44px/48px var(--serif); color: var(--red); letter-spacing: -0.01em; }
+
+/* ---------- ledger band (technical layer) ---------- */
+.ledger { margin-top: 40px; border-top: 1px solid var(--rule); }
+.ledger summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 12px 0; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+.ledger summary::-webkit-details-marker { display: none; }
+.ledger summary .key { color: var(--pencil); font-weight: 400; letter-spacing: 0.1em; }
+.ledger summary::before { content: "+"; margin-right: 10px; font-family: var(--ledger); }
+.ledger[open] summary::before { content: "\2013"; }
+.ledger .ledger-table th { font-weight: 400; }
+.ledger .foot { margin: 8px 0 0; font: 400 13px/20px var(--ledger); color: var(--pencil); }
+
+/* ---------- cover ---------- */
+.legend { list-style: none; margin: 0 0 32px; padding: 0; border-top: 1px solid var(--rule); }
+.legend li { display: grid; grid-template-columns: 24px 1fr; gap: 16px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--rule); font: 400 24px/32px var(--serif); }
+.legend .sq { margin-top: 0; width: 12px; height: 12px; }
+.legend .sq.people { border-color: var(--red); background: var(--red); }
+.legend small { display: block; font-size: 15px; line-height: 22px; color: var(--pencil); }
+.howto { font-size: 15px; line-height: 22px; color: var(--pencil); max-width: 62ch; }
+.howto kbd { font: 400 12px/16px var(--ledger); border: 1px solid var(--rule); padding: 1px 6px; background: var(--white); }
+
+/* ---------- navigation ---------- */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; height: var(--nav-h); z-index: 20;
+  background: var(--paper); border-top: 1px solid var(--rule);
+}
+.nav-in { max-width: 1440px; margin: 0 auto; padding: 0 48px; height: 100%; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
+.back { justify-self: start; background: none; border: 0; padding: 12px 0; cursor: pointer; font: 400 17px/24px var(--serif); color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+.back:disabled { color: var(--pencil-2); text-decoration: none; cursor: default; }
+.ruler { display: flex; align-items: center; gap: 0; }
+.ruler .fol { font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); margin-right: 16px; white-space: nowrap; }
+.ruler .tick { position: relative; width: 44px; height: 44px; background: none; border: 0; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.ruler .tick i { display: block; width: 1px; height: 16px; background: var(--rule); }
+.ruler .tick.done i { width: 1px; background: transparent; }
+.ruler .tick.done i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 9px; border: solid var(--ink); border-width: 0 1.5px 1.5px 0; transform: translate(-40%, -60%) rotate(45deg); }
+.ruler .tick.cur i { width: 10px; height: 10px; background: var(--ink); }
+.ruler .tick .tip { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 700 11px/16px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: var(--white); border: 1px solid var(--rule); padding: 4px 8px; display: none; }
+.ruler .tick:hover .tip, .ruler .tick:focus-visible .tip { display: block; }
+.next {
+  justify-self: end; background: var(--ink); color: var(--paper); border: 0; cursor: pointer;
+  padding: 14px 22px; font: 400 15px/20px var(--label); display: inline-flex; gap: 12px; align-items: center;
+}
+.next b { font-weight: 700; white-space: nowrap; }
+.next:hover { filter: brightness(0.85); }
+.next:focus-visible { outline: 2px solid var(--paper); outline-offset: -4px; box-shadow: 0 0 0 2px var(--ink); }
+.next .arrow { font-family: var(--serif); }
+
+/* ---------- contents overlay ---------- */
+.contents { position: fixed; inset: 0 0 var(--nav-h) 0; z-index: 30; background: var(--paper); overflow: auto; padding: 32px 48px; }
+.contents-in { max-width: 1440px; margin: 0 auto; }
+.contents h2 { margin: 0 0 8px; font: 400 44px/48px var(--serif); letter-spacing: -0.01em; }
+.contents .close { float: right; background: none; border: 1.5px solid var(--ink); padding: 8px 14px; font: 700 12px/16px var(--label); letter-spacing: 0.16em; text-transform: uppercase; cursor: pointer; }
+.contents ol { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.contents li { border-bottom: 1px solid var(--rule); }
+.contents li button { width: 100%; text-align: left; background: none; border: 0; cursor: pointer; display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: baseline; padding: 12px 12px; font: 400 20px/28px var(--serif); color: var(--ink); }
+.contents li button:hover { background: var(--white); }
+.contents li.cur button { background: var(--bar); }
+.contents .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
+.contents .roles { display: flex; gap: 8px; align-items: center; }
+.contents .what { display: block; font-size: 15px; line-height: 22px; color: var(--pencil); }
+
+/* ---------- consulting anatomy: slide head, takeaways, tiles, columns ---------- */
+.slide-head { grid-column: 1 / -1; padding-bottom: 22px; border-bottom: 1px solid var(--rule); margin-bottom: 28px; }
+.kicker { margin: 0 0 12px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); display: flex; gap: 6px 16px; flex-wrap: wrap; align-items: baseline; }
+.kicker .num { color: var(--ink); }
+.kicker .el { text-transform: none; letter-spacing: 0; font: 400 14px/16px var(--serif); }
+.title.action { margin: 0; font-size: 32px; line-height: 40px; max-width: 40ch; }
+.cover .kicker { margin-bottom: 20px; }
+.takeaways { list-style: none; margin: 0 0 32px; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 28px; }
+.takeaways li { font-size: 16px; line-height: 24px; padding-top: 10px; border-top: 2px solid var(--ink); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 0 0 36px; }
+.tile { border-top: 2px solid var(--ink); padding-top: 12px; }
+.tile .big { font: 400 52px/1 var(--serif); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.tile .big small { font-size: 18px; color: var(--pencil); margin-left: 6px; letter-spacing: 0; }
+.tile p { margin: 8px 0 0; font-size: 15px; line-height: 22px; color: var(--pencil); }
+.tile .cite { display: block; margin-top: 2px; }
+.cols3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.cols2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.col h3 { margin: 0 0 8px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); padding-top: 12px; border-top: 1px solid var(--rule); }
+.col p, .col li { font-size: 16px; line-height: 24px; margin: 0 0 8px; }
+.col ul { margin: 0; padding-left: 18px; }
+.flow { list-style: none; margin: 0 0 36px; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 0; align-items: stretch; }
+.flow li { display: flex; align-items: stretch; }
+.flow li + li::before { content: ""; width: 16px; height: 1px; background: var(--ink); margin: 26px 4px 0; flex: none; }
+.flow .node { border: 1.5px solid var(--ink); padding: 8px 12px; min-width: 128px; max-width: 168px; display: grid; align-content: start; gap: 2px; background: var(--white); }
+.flow .node.ai { border-color: var(--pencil); }
+.flow .node.code { background: repeating-linear-gradient(45deg, var(--bar) 0 2px, var(--white) 2px 9px); }
+.flow .node.people { border-color: var(--red); border-width: 2px; }
+.flow .node.doc { border-style: dashed; border-color: var(--pencil); background: transparent; }
+.flow .n { font: 400 12px/16px var(--ledger); color: var(--pencil); }
+.flow .name { font: 700 13px/18px var(--label); letter-spacing: 0.02em; color: var(--ink); }
+.flow .who { font: 700 10px/14px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--pencil); margin-top: 2px; }
+.flow .node.people .who { color: var(--red); }
+.pair.single { grid-template-columns: 1fr; }
+.limits { list-style: none; margin: 0 0 8px; padding: 0; border-bottom: 1px solid var(--rule); }
+.limits li { padding: 10px 0; border-top: 1px solid var(--rule); font-size: 16px; line-height: 24px; }
+.limits .cite { display: block; margin-top: 2px; }
+.decisions { list-style: none; margin: 0; padding: 0; counter-reset: d; }
+.decisions li { position: relative; padding: 14px 0 14px 52px; border-top: 1px solid var(--rule); counter-increment: d; font-size: 17px; line-height: 26px; }
+.decisions li:last-child { border-bottom: 1px solid var(--rule); }
+.decisions li::before { content: counter(d); position: absolute; left: 0; top: 13px; width: 30px; height: 30px; border: 1.5px solid var(--red); color: var(--red); font: 700 13px/28px var(--label); text-align: center; }
+.decisions .cite { display: block; margin-top: 2px; }
+.limits li, .decisions li, .qs .why, .qs .q, .numbers .what { max-width: 68ch; }
+.ledger .foot.head { font-weight: 700; margin-top: 16px; }
+.cover .tile .big { font-size: 42px; }
+.ask { margin: 0 0 28px; padding: 12px 16px; border-left: 3px solid var(--red); font-size: 17px; line-height: 26px; }
+.principles { margin: 8px 0 0; font: 400 17px/26px var(--serif); color: var(--ink); }
+.jump { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.callouts s { text-decoration-color: var(--red); }
+.marks { margin: 24px 0 0; font: 400 15px/24px var(--serif); color: var(--pencil); max-width: 70ch; }
+.marks .g { color: var(--pencil); }
+#ch09 .sub, #ch10 .sub { margin-top: 56px; }
+.nav.dim { opacity: 0.35; }
+.sub-list { margin: 8px 0 6px; padding-left: 18px; }
+.sub-list li { padding: 4px 0; border: 0; font-size: 16px; line-height: 24px; }
+.decisions .sub-list li::before { content: none; }
+.ab .lastline { font-size: 26px; line-height: 32px; margin-top: 24px; }
+.limits li { padding: 12px 0 14px; }
+.decisions > li { padding: 16px 0 16px 52px; }
+.repo.offline { text-decoration: none; color: var(--pencil); }
+.repo.offline::after { content: " (repository file)"; font: 400 12px/16px var(--ledger); }
+.contents li.group { border-bottom: 0; padding: 20px 12px 6px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+
+/* ---------- ten-sheet edition: glyph marks, flow rows, gate band ---------- */
+.g { width: 14px; height: 14px; display: inline-block; vertical-align: -2px; flex: none; }
+.stamp .g { width: 13px; height: 13px; }
+.legend li { grid-template-columns: 20px 1fr; }
+.legend .g { width: 16px; height: 16px; color: var(--pencil); margin-top: 8px; }
+.legend li:nth-child(2) .g { color: var(--ink); }
+.legend .red { color: var(--red); display: inline-flex; }
+.legend .red .g { color: var(--red); }
+.sq.people { border-color: var(--red); background: var(--red); }
+.stage-lbl { margin: 0 0 8px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+.flow { margin: 0 0 16px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0 20px; }
+.flow li { position: relative; }
+.flow li + li::before { position: absolute; left: -19px; top: 26px; width: 18px; margin: 0; }
+.flow li { flex: 1 1 0; min-width: 0; }
+.flow .node { width: 100%; min-width: 0; max-width: none; }
+.flow .what { font: 400 13px/18px var(--serif); color: var(--pencil); }
+.flow .node.doc .name { color: var(--pencil); }
+.gate-band { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; border: 2px solid var(--red); padding: 10px 14px; margin: 4px 0 20px; background: var(--white); }
+.gate-band .n { font: 400 12px/16px var(--ledger); color: var(--pencil); }
+.gate-band .name { font: 700 13px/18px var(--label); letter-spacing: 0.02em; color: var(--red); text-transform: uppercase; }
+.gate-band .what { font: 400 14px/20px var(--serif); color: var(--ink); flex: 1 1 24ch; }
+.gate-band .who { font: 700 10px/14px var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); }
+.nav .fol { background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; padding: 12px 0; }
+.cover .tiles { margin-top: 8px; }
+.cover .cols3 { margin-bottom: 8px; }
+.body > .clip { margin-bottom: 24px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1240px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1000px) {
+  .desk { padding-left: 24px; padding-right: 24px; }
+  .sheet { grid-template-columns: 1fr; }
+  .margin { position: static; border-right: 0; border-bottom: 1px solid var(--rule); padding: 0 0 16px; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+  .marginalia { flex-basis: 100%; }
+  .bigcount { font-size: 40px; }
+  .title { font-size: 34px; line-height: 38px; }
+  .title.action { font-size: 28px; line-height: 36px; }
+  .takeaways, .tiles, .cols3, .cols2 { grid-template-columns: 1fr; }
+  .flow { display: flex; flex-direction: column; }
+  .flow li + li::before { position: static; width: 1px; height: 14px; margin: 0 0 0 24px; }
+  .sheet { display: flex; flex-direction: column; }
+  .margin { order: 2; }
+  .body { order: 1; }
+  .brief { padding: 20px 16px; }
+  .brief p, .brief li { font-size: 16px; line-height: 25px; }
+  .callouts { grid-template-columns: 1fr; }
+  .ruler .tick { width: 32px; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cover .title { font-size: 48px; line-height: 50px; }
+  .pair { grid-template-columns: 1fr; }
+  .vs { justify-self: start; }
+  .facing { grid-template-columns: 1fr; gap: 24px; }
+  .facing .gutter { display: none; }
+  .plate.p11, .plate.p916 { width: 100%; }
+  .plate.p916 { width: 56%; }
+  .brief { padding: 24px; }
+  .nav-in { padding: 0 16px; gap: 12px; grid-template-columns: auto minmax(0, 1fr) auto; }
+  .ruler { min-width: 0; overflow-x: auto; }
+  .ruler .fol { margin-right: 8px; }
+  .ruler .tick { width: 24px; }
+  .ruler .tick .tip { display: none !important; }
+  .next { padding: 12px 14px; }
+  .next span.lbl { display: none; }
+  .contents { padding: 24px 16px; }
+  .contents li button { grid-template-columns: 40px 1fr; }
+  .contents .roles { display: none; }
+  .numbers li { grid-template-columns: 1fr; gap: 8px; }
+}
+@media (max-width: 600px) {
+  .ruler .tick { width: 28px; height: 44px; }
+  .ruler .fol { border: 1.5px solid var(--ink); padding: 8px 10px; text-decoration: none; flex: none; }
+  .cover.sheet { display: flex; flex-direction: column; }
+  .cover .margin { order: 2; }
+  .cover .body { order: 1; }
+}
+@media (max-width: 700px) {
+  .ruler { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ruler .tick { width: 26px; }
+  #next-title { display: none; }
+  .next .arrow { font-size: 20px; }
+}
+@media (max-width: 560px) {
+  .exam li { grid-template-columns: 28px 1fr; }
+  .exam .id { display: none; }
+  .exam .res { grid-column: 2; text-align: left; color: var(--pencil); }
+  .toc li { grid-template-columns: 32px 1fr; }
+  .toc .c { grid-column: 2; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media print {
+  html.js .sheet:not(.active) { display: grid; }
+  .nav, .contents { display: none !important; }
+  .sheet { break-before: page; }
+  .margin { position: static; }
+}
+</style>
+
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="g-pencil" viewBox="0 0 16 16"><path d="M2.5 13.5l1-4 7-7 3 3-7 7-4 1z M9.5 3.5l3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="g-rule" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 8.2l2.4 2.4 4.6-5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="g-nib" viewBox="0 0 16 16"><path d="M8 1.5l4.5 6.5L8 14.5 3.5 8z M8 8v6.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="desk">
+  <div class="runhead">
+    <span><b>Northlight Communications</b> &middot; Brief Builder</span>
+    <span>Project northlight_01 &middot; Meltemi Fizz launch &middot; graded run <b>runs/tier3</b> &middot; 2026-07-24</span>
+    <span>Synthetic project &middot; no real client data</span>
+  </div>
+
+  <!-- ============ 01 COVER + EXECUTIVE SUMMARY ============ -->
+  <section class="sheet cover" id="ch01" data-n="1" aria-labelledby="t01">
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">01 / 10 &middot; Contents</button></div>
+      <p class="marginalia"><span class="lbl">What this is</span>One finished run of the pipeline on a synthetic project, shown in ten sheets. Every quote is clipped verbatim from the four source documents; every number carries the file it came from.</p>
+      <p class="marginalia"><span class="lbl">The answer first</span>This sheet is the summary. Sheet 02 is the product; sheets 03&ndash;09 the evidence; sheet 10 the decisions.</p>
+    </aside>
+    <div class="body">
+      <p class="kicker"><span class="num">Brief Builder</span><span>Every claim cited &middot; every gap a question &middot; every decision human</span><span>One graded run &middot; synthetic data</span></p>
+      <h1 class="title" id="t01" tabindex="-1">Brief Builder drafts the brief with receipts; people decide.<span class="el" lang="el">Ένα brief με αποδείξεις</span></h1>
+      <p class="narr">Brief Builder turns a client&rsquo;s pile of documents into a Greek and English brief in which every claim shows its source, disagreements sit side by side, gaps become questions, and a person signs before anything moves. On the graded run it drafted a brief ready for review that passed all 17 checks and left every decision to a person.</p>
+<p class="ask">Recommendation: approve the four-week retrospective pilot, and re-baseline usage and time before week 1. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p>
+      <p class="marks">Marks: <svg class="g" style="color:var(--pencil)" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg> pencil = AI drafts &middot; <svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg> rule = code checks &middot; <svg class="g" style="color:var(--red)" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg> red pen = people decide. Keys: <kbd>&rarr;</kbd> <kbd>&larr;</kbd> turn the sheet &middot; <kbd>C</kbd> contents. On a phone: swipe, or tap Next. Each sheet ends with a collapsed ledger, the technical record.</p>
+<div class="tiles">
+        <div class="tile"><div class="big">17<small>/ 17</small></div><p>Machine checks passed against a sealed answer key. <span class="cite"><button type="button" class="jump" data-go="8">sheet 08</button></span></p></div>
+        <div class="tile"><div class="big">0.98<small>M tokens</small></div><p>Stage one of the graded run: 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 83% of it context the model had already been sent. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
+        <div class="tile"><div class="big">33<small>min</small></div><p>The graded run&rsquo;s stages, including the repair and the creative A/B; a continuous capture on 29 July ran the same pipeline in 25.2, with one pass re-rolled. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
+        <div class="tile"><div class="big">3<small>conflicts</small></div><p>All three shown with both sides cited; none decided by the machine. <span class="cite"><button type="button" class="jump" data-go="5">sheet 05</button> &middot; <button type="button" class="jump" data-go="7">07</button></span></p></div>
+      </div>
+      <div class="cols2">
+        <div class="col">
+          <h3>What it is</h3>
+          <p>A two-stage pipeline. Stage one reads the client&rsquo;s documents and drafts the brief with receipts; an account lead signs. Stage two, only after sign-off, drafts a creative brief in shadow mode (drafted for evaluation, never delivered) for a creative lead to judge.</p>
+        </div>
+        <div class="col">
+          <h3>What this run proved</h3>
+          <ul>
+            <li>Every seeded trap was caught; the full list is the exam on sheet 08.</li>
+            <li>The budget stayed &ldquo;in the eighties&rdquo; from transcript to creative brief; no total was invented.</li>
+            <li>Both languages came from one object, so nothing drifted in translation.</li>
+          </ul>
+        </div>
+      </div>
+
+<details class="ledger">
+        <summary><span>Ledger &mdash; sources for this sheet</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>figure</th><th>source</th></tr>
+          <tr><td>17 / 17 checks</td><td>runs/tier3/harness_report.json &middot; verdict PASS</td></tr>
+          <tr><td>0.98 M tokens, stage one &middot; &euro;38&ndash;40 labour</td><td>runs/tier3/run_manifest.json usage fields (fresh input + output + cache reads 56% + cache writes 27%; fresh output 16%) &middot; docs/COST_MODEL.md (PRD assumptions A1, A4)</td></tr>
+          <tr><td>25 min unattended</td><td>docs/EVIDENCE.md &middot; 2026-07-29 capture, 25.2 min wall clock</td></tr>
+          <tr><td>3 contradictions, 0 machine-resolved</td><td>runs/tier3/brief.json &rsaquo; conflicts[3], each status resolved_by_human</td></tr>
+        </table></div>
+      </details>
+    </div>
+  </section>
+  <!-- ============ 02 THE PRODUCT ============ -->
+  <section class="sheet" id="ch02" data-n="2" aria-labelledby="t02">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">02</span><span>The product</span><span class="el" lang="el">Το προϊόν</span></p>
+      <h1 class="title action" id="t02" tabindex="-1">One product, three roles: AI reads and drafts, plain code checks, people decide.</h1>
+      <p class="narr promise"><b>v1.0, pilot.</b> Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.</p>
+      <p class="principles">Ask, don&rsquo;t guess &middot; Surface, don&rsquo;t resolve &middot; Flag, don&rsquo;t correct &middot; Look up, don&rsquo;t invent &middot; Sign, don&rsquo;t send</p>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">02 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
+        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
+        <span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span>
+      </div>
+      <p class="marginalia"><span class="lbl">The thin layer</span>Four plain-text rule files (a page of plain English handed to the model unchanged every run), seven agents and about 2&thinsp;500 non-blank lines of gates and orchestration. The rules are the proprietary part; the models can change.</p>
+    </aside>
+    <div class="body">
+      <p class="stage-lbl">Stage 1 &middot; the client brief &middot; every AI step is gated: sent back once, then stop</p>
+      <ol class="flow" aria-label="Stage 1, steps 1 to 4">
+        <li><span class="node doc"><span class="n">in</span><span class="name">Input folder</span><span class="what">four documents</span><span class="who">documents</span></span></li>
+        <li><span class="node code"><span class="n">1</span><span class="name">Readiness gate</span><span class="what">enough to work with?</span><span class="who">code</span></span></li>
+        <li><span class="node ai"><span class="n">2</span><span class="name">Classify</span><span class="what">what kind of job, how sensitive</span><span class="who">AI</span></span></li>
+        <li><span class="node ai"><span class="n">3</span><span class="name">Fidelity check</span><span class="what">garbles flagged, never fixed</span><span class="who">AI</span></span></li>
+        <li><span class="node ai"><span class="n">4</span><span class="name">Extract, per document</span><span class="what">every fact with its receipt</span><span class="who">AI &middot; code gate</span></span></li>
+      </ol>
+      <ol class="flow" aria-label="Stage 1, steps 5 to 7">
+        <li><span class="node code"><span class="n">5</span><span class="name">Conflict pass</span><span class="what">disagreements, side by side</span><span class="who">code</span></span></li>
+        <li><span class="node ai"><span class="n">6</span><span class="name">Synthesize</span><span class="what">one brief object, gaps as questions</span><span class="who">AI &middot; code gate</span></span></li>
+        <li><span class="node ai"><span class="n">7</span><span class="name">Render EL + EN</span><span class="what">two languages, one object</span><span class="who">AI &middot; code gate</span></span></li>
+        <li><span class="node doc"><span class="n">out</span><span class="name">Brief EL + EN</span><span class="what">questions, conflicts, verdict</span><span class="who">documents</span></span></li>
+      </ol>
+      <div class="gate-band"><span class="n">8</span><span class="name">Sign-off</span><span class="what">The gate between stages: the account lead resolves conflicts, edits and signs; a model cannot write this field.</span><span class="who">account lead</span></div>
+      <p class="stage-lbl">Stage 2 &middot; the creative brief, shadow mode</p>
+      <ol class="flow" aria-label="Stage 2">
+        <li><span class="node ai"><span class="n">9</span><span class="name">Creative draft</span><span class="what">proposition, tone, specs from a table</span><span class="who">AI &middot; code gate</span></span></li>
+        <li><span class="node doc"><span class="n">out</span><span class="name">Creative brief draft</span><span class="what">for evaluation only</span><span class="who">shadow, not delivered</span></span></li>
+        <li><span class="node people"><span class="n">&rarr;</span><span class="name">Evaluation</span><span class="what">judges the draft, nothing ships</span><span class="who">creative lead</span></span></li>
+      </ol>
+      <p class="note">As it runs today (routing changed 30 July); sheets 03&ndash;09 narrate the 24 July run. One folder, one command: about 25 minutes of machine time, about 50 of account-lead attention as the target (20 assembling, 30 reviewing) against a two-hour baseline. <span class="cite">docs/PRD.md &sect;2</span></p>
+      <div class="cols3">
+        <div class="col">
+          <h3>What you get</h3>
+          <ul>
+            <li>The client brief in Greek and in English, every line carrying its citation, with a readiness verdict computed by code.</li>
+            <li>The open questions, written as the account lead would send them.</li>
+            <li>Every contradiction between documents, both sides quoted, waiting for a decision.</li>
+            <li>After sign-off: a creative-brief draft with channel specs, for evaluation only.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>What code refuses to let through</h3>
+          <ul>
+            <li>Every quote in the brief exists word for word in its source; a failing output is sent back once, then the run stops.</li>
+            <li>Channel specs come from the traffic team&rsquo;s table, never from a model.</li>
+            <li>Nothing passes the sign-off gate without a person; a model cannot write that field.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Who touches it, where the data goes</h3>
+          <ul>
+            <li>Data: the agency&rsquo;s own workspace under a DPA, EU processing, zero retention; pilot clients at the two lowest sensitivity tiers only. <span class="cite">docs/PRD.md &sect;8&ndash;9</span></li>
+            <li>Account lead: opens the review page, resolves the conflicts, signs; onboards each client once with a glossary and a tier. Two trained brief champions run the command from a one-page runbook after the pilot.</li>
+            <li>Creative lead: receives the shadow draft only after sign-off. Traffic team: owns the spec table. The client: receives the questions from the account lead, never from the machine.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Not in v1, by design: no UI, no mail, calendar or drive integration, no delivered creative. v1.1 takes creative live after the pilot targets; v2 replaces the folder drop with integrations. <span class="cite">docs/PRD.md &sect;3, &sect;5, &sect;8</span></p>
+<details class="ledger">
+        <summary><span>Ledger &mdash; where each part lives</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>part</th><th>location</th></tr>
+          <tr><td>rule files</td><td>skills/SOURCES.md &middot; SYNTHESIS.md &middot; TRANSLATION.md &middot; TRANSCRIPTS.md</td></tr>
+          <tr><td>agents (one per AI step)</td><td>.claude/agents/ &middot; classify, fidelity-check, extract, verify-extract, synthesize, render, creative-shadow</td></tr>
+          <tr><td>orchestration and gates</td><td>pipeline/ &middot; runner.py, gates.py, extraction.py, conflicts.py, stages.py, creative.py</td></tr>
+          <tr><td>data model</td><td>schema/brief_schema.json &middot; schema/extract_schema.json</td></tr>
+          <tr><td>policy tables</td><td>config/readiness_policy.json &middot; channel_specs.json &middot; model_routing.json &middot; glossary/&lt;client&gt;.json</td></tr>
+          <tr><td>grader (frozen)</td><td>eval/harness.py &middot; the only code allowed to read the answer key</td></tr>
+        </table></div>
+        <p class="foot">Built as four plain-text rule files (sources, synthesis, translation, transcripts) injected verbatim into each AI step, with small models where the task is following a set form and larger ones where judgement is needed; routing is a human decision.</p>
+      </details>
+    </div>
+  </section>
+  <!-- ============ 03 INPUTS + GATE ============ -->
+  <section class="sheet" id="ch03" data-n="3" aria-labelledby="t03">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">03</span><span>Inputs and readiness</span><span class="el" lang="el">Έγγραφα και έλεγχος επάρκειας</span></p>
+      <h1 class="title action" id="t03" tabindex="-1">Plain code confirmed four documents were enough to draft from before any model read a word.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">03 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
+        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
+      </div>
+      <p class="marginalia"><span class="lbl">Watch three numbers</span>The audience, the budget and the launch date each appear more than once in this pile. They do not agree.</p>
+      <p class="marginalia"><span class="lbl">Rule</span>No brief ever rests on a single source, and never on a folder that never mentioned a budget. Refusal is the product working.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>RFP, kickoff transcript, email thread and a brand-guideline excerpt: all synthetic, nothing real.</li>
+        <li>Four checks, no AI: the RFP present, two documents that can carry a commitment, money and a date mentioned.</li>
+        <li>Remove the RFP and the run stops with a request to the client; a small model then classifies the job.</li>
+      </ul>
+<div class="hero clips">
+        <figure class="clip">
+          <div class="kind"><span>RFP &middot; rfp_meltemi</span><span>2026-06-28</span></div>
+          <blockquote lang="el">Gen Z, ηλικίες 18&ndash;24, με έμφαση στα αστικά κέντρα.</blockquote>
+          <figcaption><span class="cite">&sect;3 Κοινό-στόχος <span class="dim">&middot; Meltemi Beverages S.A.</span></span><span class="gloss">gloss &mdash; &ldquo;Gen Z, ages 18&ndash;24, with emphasis on urban centres.&rdquo;</span></figcaption>
+        </figure>
+        <figure class="clip">
+          <div class="kind"><span>Transcript &middot; transcript_kickoff</span><span>2026-07-10</span></div>
+          <blockquote lang="el">Και να το πω καθαρά: το RFP που σας στείλαμε λέει Gen Z, αλλά honestly, our buyer is 25 to 40, urban professionals.</blockquote>
+          <figcaption><span class="cite">[00:03:41] &middot; DIMITRIS <span class="dim">(Meltemi, CMO)</span></span><span class="gloss">gloss &mdash; &ldquo;And let me say it plainly: the RFP we sent you says Gen Z, but honestly, our buyer is 25 to 40, urban professionals.&rdquo;</span></figcaption>
+        </figure>
+        <figure class="clip">
+          <div class="kind"><span>Email thread &middot; emails_thread</span><span>2026-07-11 to 07-15</span></div>
+          <blockquote lang="el">Σημαντικό: το board μετέθεσε το launch για 15 Σεπτεμβρίου &mdash; θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών.</blockquote>
+          <figcaption><span class="cite">Message 2 &middot; 2026-07-14 18:22 &middot; Dimitris <span class="dim">(Meltemi)</span></span><span class="gloss">gloss &mdash; &ldquo;Important: the board moved the launch to 15 September &mdash; they want to catch the end of the soft-drinks season.&rdquo;</span></figcaption>
+        </figure>
+        <figure class="clip">
+          <div class="kind"><span>Background &middot; background_brand_guidelines</span><span>2026-03-02</span></div>
+          <blockquote lang="en">Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.</blockquote>
+          <figcaption><span class="cite">&sect; Color &amp; visual <span class="dim">&middot; Brand Guidelines v3.1 (excerpt)</span></span><span class="gloss">Context only: a guideline creates no deliverable, budget or deadline on its own.</span></figcaption>
+        </figure>
+      </div>
+      <p class="sub">The gate&rsquo;s verdict, in the code&rsquo;s own words</p>
+<div class="hero">
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>check</th><th>found</th><th class="r">result</th></tr>
+          <tr><td>required source type present: rfp</td><td>rfp_meltemi</td><td class="r ok">pass</td></tr>
+          <tr><td>substantive sources (rfp, transcript, email_thread) &mdash; need 2</td><td>3 &middot; background does not count</td><td class="r ok">pass</td></tr>
+          <tr><td>a mention of money in any of the four documents</td><td>&ldquo;προϋπολογισμός&rdquo; and &euro;90.000 (RFP) &middot; &ldquo;media spend&rdquo; (transcript)</td><td class="r ok">pass</td></tr>
+          <tr><td>a mention of a date or deadline in any of the four documents</td><td>Οκτώβριος (October, RFP) &middot; 15 Σεπτεμβρίου (15 September, email)</td><td class="r ok">pass</td></tr>
+        </table></div>
+        <p class="verdict">input sufficient &mdash; 4 source(s), 3 substantive: background, email_thread, rfp, transcript</p>
+      </div>
+      <p class="sub">The same gate without the RFP</p>
+<div class="verdict stop"><span class="stopstamp">Stopped</span><span>insufficient input &mdash; the system will not draft. missing source(s): rfp. Request this from the client and re-run.</span></div>
+      <p class="sub">What kind of job it is</p>
+      <p class="narr">A small AI model then classified the job: advertising creative, confidence high, three cited passages, no question for a human; its S1 sensitivity tier comes from the client&rsquo;s onboarding record, not the documents.</p>
+
+<details class="ledger">
+        <summary><span>Ledger &mdash; inputs, gate and classification</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>source_id</th><th>source_type</th><th>source_date</th><th>language</th><th>bytes</th></tr>
+          <tr><td>rfp_meltemi</td><td>rfp</td><td>2026-06-28</td><td>el</td><td class="r">1 584</td></tr>
+          <tr><td>transcript_kickoff</td><td>transcript</td><td>2026-07-10</td><td>el + en (mixed)</td><td class="r">3 632</td></tr>
+          <tr><td>emails_thread</td><td>email_thread</td><td>2026-07-15 (latest message)</td><td>el</td><td class="r">1 726</td></tr>
+          <tr><td>background_brand_guidelines</td><td>background</td><td>2026-03-02</td><td>en</td><td class="r">1 045</td></tr>
+        </table></div>
+        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds a sealed answer key the pipeline cannot open.</p>
+      
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>1 readiness_gate</td><td>deterministic &middot; pipeline/gates.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>run_manifest.json &rsaquo; steps[0].verdict</td></tr>
+        </table></div>
+        <p class="foot">Thresholds live in code, not in a prompt: REQUIRED_SOURCE_TYPES = ("rfp",) &middot; MIN_SUBSTANTIVE_SOURCES = 2 &middot; budget and timeline signal patterns. Covered by the automated test suite.</p>
+      
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>2 classification</td><td>classify</td><td>claude-haiku-4-5-20251001</td><td class="r">28 677</td><td class="r">34 s</td><td>classification.json &middot; 3 evidence citations</td></tr>
+        </table></div>
+        <div class="machine">
+            <p class="lbl">What the classification model wrote &middot; below its confidence threshold it would ask a human and halt</p>
+            <dl class="kv">
+              <dt>project_type</dt><dd>advertising_creative</dd>
+              <dt>classification_confidence</dt><dd>high</dd>
+              <dt>sensitivity_tier</dt><dd>S1 (the second-lowest of four) &middot; tier_source: client_config</dd>
+              <dt>rationale</dt><dd>The RFP and kickoff transcript explicitly request creative work for a product launch campaign: TikTok-first strategy, video and key visual assets, social media content. This is audience-destined creative, not PR or internal comms.</dd>
+              <dt>question_for_human</dt><dd>(empty &mdash; no question needed)</dd>
+            </dl>
+          </div>
+        <p class="foot">Tiers S0&ndash;S3 are set per client at onboarding (PRD design rule 11). S0/S1 run on the standard cloud API; S2 needs restricted access; S3 needs EU residency and zero-retention terms, or stays out. The pilot enforces S0&ndash;S1 in code (exam check T2.2).</p>
+      
+      </details>
+    </div>
+  </section>
+  <!-- ============ 04 READING WITH RECEIPTS ============ -->
+  <section class="sheet" id="ch04" data-n="4" aria-labelledby="t04">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">04</span><span>Reading with receipts</span><span class="el" lang="el">Ανάγνωση με αποδείξεις</span></p>
+      <h1 class="title action" id="t04" tabindex="-1">Thirty-three facts carry word-for-word receipts; the two garbled terms were flagged, never repaired.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">04 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
+      </div>
+      <div class="bigcount">33<small> facts, all cited</small></div>
+      <p class="marginalia"><span class="lbl">Two rules</span>Pencil may annotate a transcript; it may never rewrite what a person said. Every fact quotes the exact words; if code cannot find them in the source, the fact is not there.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>Each document is read on its own by a model allowed to record evidence and nothing else.</li>
+        <li>Every fact quotes the exact words and code checks the quote exists; one document was sent back once.</li>
+        <li>The transcriber garbled two English terms; the machine flags and proposes; the finished documents print the glossary term, flag cited.</li>
+      </ul>
+      <p class="sub">Listening without correcting</p>
+<div class="hero clips">
+        <div class="clip"><figure class="inner">
+          <blockquote lang="el">Ωραία. Το βασικό για μας είναι το <mark class="flag">μπραντ αγουέρνες</mark><span class="sic">sic</span> &mdash; είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί.</blockquote>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:02:05] &middot; DIMITRIS</span><span class="gloss">gloss &mdash; &ldquo;Right. The main thing for us is the [brand awareness] &mdash; it&rsquo;s a new category for us, sparkling tea, people don&rsquo;t know us there.&rdquo;</span></figcaption>
+          </figure><div class="machine"><p class="lbl">Pencil note in the margin of the transcript</p><p class="mono">[FIDELITY: glossary-match "brand awareness", confidence high]</p></div>
+        </div>
+        <div class="clip"><figure class="inner">
+          <blockquote lang="el">Το <mark class="flag">κι βίζουαλ</mark><span class="sic">sic</span> πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι.</blockquote>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:06:02] &middot; DIMITRIS</span><span class="gloss">gloss &mdash; &ldquo;The [key visual] has to shout summer, but premium summer.&rdquo;</span></figcaption>
+          </figure><div class="machine"><p class="lbl">Pencil note in the margin of the transcript</p><p class="mono">[FIDELITY: glossary-match "key visual", confidence high]</p></div>
+        </div>
+      </div>
+      <p class="sub">What the machine wrote, with its receipt &mdash; the repair record and the second reader are in the extraction ledger</p>
+<div class="hero">
+        <div class="receipt"><figure class="inner">
+          <blockquote lang="el">Κοιτάξτε, <mark class="cited">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</mark>.</blockquote>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:14:32] &middot; ANNA</span></figcaption>
+          </figure><div class="machine">
+            <p class="lbl">Extracted fact &mdash; budget</p>
+            <dl class="kv">
+              <dt>value</dt><dd lang="el">κάπου στα ογδόντα, μπορεί ογδόντα πέντε &mdash; χωρίς το media spend</dd>
+              <dt>location</dt><dd>[00:14:32]</dd>
+              <dt>who said it</dt><dd>ANNA</dd>
+              <dt>qualifier</dt><dd>stated</dd>
+              <dt>confidence</dt><dd>medium &mdash; no unit, no currency</dd>
+            </dl>
+          </div>
+        </div>
+        <div class="receipt"><figure class="inner">
+          <blockquote lang="en">Just thinking out loud &mdash; maybe a TikTok dance thing? Don&rsquo;t hold me to it, <span lang="el">δεν το έχουμε συζητήσει καν μέσα</span>.</blockquote>
+          <figcaption><span class="cite">transcript_kickoff &middot; [00:11:47] &middot; DIMITRIS</span><span class="gloss">gloss &mdash; &ldquo;&hellip;we haven&rsquo;t even discussed it internally.&rdquo;</span></figcaption>
+          </figure><div class="machine">
+            <p class="lbl">Extracted fact &mdash; deliverable</p>
+            <dl class="kv">
+              <dt>value</dt><dd>TikTok dance (speculative: 'just thinking out loud, don't hold me to it')</dd>
+              <dt>qualifier</dt><dd>conditional</dd>
+              <dt>confidence</dt><dd>low</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+<details class="ledger">
+        <summary><span>Ledger &mdash; fidelity check</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>3 fidelity_check</td><td>fidelity-check</td><td>claude-haiku-4-5-20251001</td><td class="r">26 911</td><td class="r">52 s</td><td>fidelity/transcript_kickoff.report.json &middot; transcript_kickoff.annotated.md</td></tr>
+        </table></div>
+        <p class="foot">Instructions injected verbatim from skills/TRANSCRIPTS.md: English terms collapsed into Greek letters, speaker labels lost or merged, a summary passed off as a transcript. The glossary is per client (glossary/meltemi.json, 9 protected terms).</p>
+      </details>
+<details class="ledger">
+        <summary><span>Ledger &mdash; extraction</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>gate violations</th></tr>
+          <tr><td>4 extraction &middot; background_brand_guidelines</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">55 710</td><td class="r">136 s</td><td>0</td></tr>
+          <tr><td>4 extraction &middot; emails_thread</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">57 299</td><td class="r">153 s</td><td>0</td></tr>
+          <tr><td>4 extraction &middot; rfp_meltemi</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">69 270</td><td class="r">219 s</td><td>0</td></tr>
+          <tr><td>4 extraction &middot; transcript_kickoff, attempt 1</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">50 560</td><td class="r">114 s</td><td>3 &middot; 2 quotes not verbatim, 1 silent garble repair (forbidden by the extraction rules)</td></tr>
+          <tr><td>4 extraction &middot; transcript_kickoff, attempt 2</td><td>extract</td><td>claude-haiku-4-5-20251001</td><td class="r">245 214</td><td class="r">192 s</td><td>0</td></tr>
+          <tr><td>4b verify-extract (validated 29 July, adopted 30 July; shown from runs/routing-validate-01)</td><td>verify-extract</td><td>claude-sonnet-5, chosen because this extract carried figures and garbling</td><td class="r">44 695</td><td class="r">86 s</td><td>1 issue reported</td></tr>
+        </table></div>
+              <p class="foot head">Four documents, five attempts</p>
+<div class="attempts">
+        <div class="attempt"><div class="n">8<small>facts</small></div><div class="d">background_brand_guidelines &middot; 1 attempt</div></div>
+        <div class="attempt"><div class="n">7<small>facts</small></div><div class="d">emails_thread &middot; 1 attempt</div></div>
+        <div class="attempt"><div class="n">8<small>facts</small></div><div class="d">rfp_meltemi &middot; 1 attempt</div></div>
+        <div class="attempt"><div class="n">10<small>facts</small></div><div class="d">transcript_kickoff &middot; 2 attempts &mdash; sent back once for two non-verbatim quotes and one silent garble repair</div></div>
+      </div>
+      <p class="note">The repair is on the record. One of the two rejected quotes combined the metro-poster idea with its retraction nineteen seconds later into one line that does not exist in the transcript. It was removed, not patched. The third fault was the silent correction of a garbled term, which the extraction rules forbid.</p>
+      <p class="foot head">The second reader &mdash; added after this run</p>
+      <p class="note">This graded run had no second reader. Since 30 July a second AI session re-reads each source and its extract with no memory of the first pass and reports what word-for-word checks cannot see; it never edits. In a later run on the same transcript it found one omission: the CMO&rsquo;s audience correction recorded as a fact, not as a contradiction with the RFP.</p>
+        <p class="foot">The graded run of 24 July extracted with Haiku. By human routing decision on 30 July, extraction now runs on Sonnet with the independent verifier; the verifier is Sonnet when an extract carries risk (mandatories, figures, garbling, low confidence) and Haiku otherwise. Instructions: skills/SOURCES.md, injected verbatim. Deterministic gates: schema validation, citation verification (pipeline/gates.py).</p>
+      </details>
+    </div>
+  </section>
+<section class="sheet" id="ch05" data-n="5" aria-labelledby="t05">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">05</span><span>Conflict pass</span><span class="el" lang="el">Διασταύρωση πηγών</span></p>
+      <h1 class="title action" id="t05" tabindex="-1">Three contradictions were surfaced with both sides cited, and the decision line was left blank.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">05 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
+        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
+      </div>
+      <div class="bigcount">3<small> contradictions</small></div>
+      <p class="marginalia"><span class="lbl">Design rule: only people resolve</span>Conflicts are surfaced, never auto-resolved (PRD design rule 10). The line for the decision is left blank on purpose. Sheet 07 returns to these three lines with the red pen in them.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>Code lines up every field where two documents speak: seven of them.</li>
+        <li>Synthesis recognises the three that truly contradict and carries both sides into the brief.</li>
+        <li>Nothing on this sheet is written in red: the machine is not permitted to choose.</li>
+      </ul>
+      <div class="hero">
+        <div class="conflict-block">
+          <h3>Audience <span>rfp_meltemi &sect;3 &middot; transcript_kickoff 00:03:41</span></h3>
+          <div class="pair">
+            <figure class="clip"><blockquote lang="el"><mark class="cited">Gen Z, ηλικίες 18&ndash;24, με έμφαση στα αστικά κέντρα</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Gen Z, ages 18&ndash;24, urban centres</span></figcaption></figure>
+            <div class="vs">against</div>
+            <figure class="clip"><blockquote lang="en">&hellip;honestly, <mark class="cited">our buyer is 25 to 40, urban professionals</mark>.</blockquote><figcaption><span class="cite">Kickoff &middot; DIMITRIS (CMO) &middot; 2026-07-10</span><span class="gloss">later in the same breath: the previous agency wrote Gen Z into the positioning and it stayed</span></figcaption></figure>
+            <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
+          </div>
+        </div>
+        <div class="conflict-block">
+          <h3>Budget <span>rfp_meltemi &sect;6 &middot; transcript_kickoff 00:14:32</span></h3>
+          <div class="pair">
+            <figure class="clip"><blockquote lang="el">Συνολικός προϋπολογισμός <mark class="cited">&euro;90.000, συμπεριλαμβανομένου του media</mark>.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Total budget &euro;90,000, including media</span></figcaption></figure>
+            <div class="vs">against</div>
+            <figure class="clip"><blockquote lang="el"><mark class="cited">είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend</mark></blockquote><figcaption><span class="cite">Kickoff &middot; ANNA (CFO) &middot; 2026-07-10</span><span class="gloss">gloss &mdash; somewhere around eighty, maybe eighty-five, but without the media spend</span></figcaption></figure>
+            <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
+          </div>
+        </div>
+        <div class="conflict-block">
+          <h3>Launch date <span>rfp_meltemi &sect;5 &middot; emails_thread Message 2</span></h3>
+          <div class="pair">
+            <figure class="clip"><blockquote lang="el">Launch την <mark class="cited">πρώτη εβδομάδα του Οκτωβρίου 2026</mark>, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.</blockquote><figcaption><span class="cite">RFP &middot; 2026-06-28</span><span class="gloss">gloss &mdash; Launch in the first week of October 2026, to make it into the points of sale in time</span></figcaption></figure>
+            <div class="vs">against</div>
+            <figure class="clip"><blockquote lang="el"><mark class="cited">το board μετέθεσε το launch για 15 Σεπτεμβρίου</mark></blockquote><figcaption><span class="cite">Email &middot; Dimitris &middot; 2026-07-14 18:22</span><span class="gloss">gloss &mdash; the board moved the launch to 15 September. At the kickoff four days earlier the date was still &ldquo;somewhere in autumn, to be finalised by the board&rdquo; [00:17:03]</span></figcaption></figure>
+            <div class="resolve"><span>resolved by:</span><span class="line"></span><span>(a person)</span></div>
+          </div>
+        </div>
+      </div>
+      <details class="ledger">
+        <summary><span>Ledger &mdash; what ran</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th>record</th></tr>
+          <tr><td>5 conflict_pass</td><td>deterministic &middot; pipeline/conflicts.py</td><td>none</td><td class="r">0</td><td>conflict_candidates.json &middot; 7 candidate fields: objectives, audiences, key_messages, deliverables, timeline, budget, mandatories &middot; 0 internal conflicts</td></tr>
+          <tr><td>6 synthesis (conflict objects)</td><td>model &middot; skills/SYNTHESIS.md rule 4</td><td>claude-sonnet-5</td><td class="r">see next sheet</td><td>brief.json &rsaquo; conflicts[3], each position with source_id, location, anchor, speaker</td></tr>
+        </table></div>
+        <p class="foot">Exam check T3.1 requires all three seeded contradictions detected with citations to both sources; X3 requires that no merged or converted budget total appears anywhere. Since 29 July a deterministic check also polices retractions within one source (the metro idea withdrawn at 00:08:34); it post-dates this graded run.</p>
+      </details>
+    </div>
+  </section>
+  <!-- ============ 06 THE BRIEF ============ -->
+  <section class="sheet" id="ch06" data-n="6" aria-labelledby="t06">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">06</span><span>The brief</span><span class="el" lang="el">Το brief</span></p>
+      <h1 class="title action" id="t06" tabindex="-1">One object holds 25 cited entries, 3 conflicts and 10 questions; both languages are rendered from it, never translated.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">06 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
+        <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
+      </div>
+      <p class="marginalia"><span class="lbl">Readiness, recomputed by code</span>Five of seven fields have evidence behind them (policy floor: five) and 4% of entries (1 of 25) are low-confidence, so the verdict is ready for review, not ready to send. <span class="mono">fields_with_evidence 5 / 7 (policy floor 5) &middot; low_confidence_share 0.04 (4% of entries) &middot; open_question_count 10 &middot; verdict ready_for_review</span></p>
+      <p class="marginalia"><span class="lbl">Glossary</span>Nine protected terms (Meltemi Fizz, key visual, brand awareness, launch, media spend, KPI, OOH, single-minded proposition, Meltemi Beverages) must survive character-exact in both languages.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>Audience is contested and the budget has no unit, so both are questions, not entries.</li>
+        <li>There is no translation step, only two renderings of one object, so the languages cannot drift.</li>
+        <li>Code recomputes readiness from policy: 5 of 7 fields evidenced, 4% low confidence, ready for review.</li>
+      </ul>
+<div class="hero">
+        <ul class="toc">
+          <li><span class="n">1</span><span>Objectives</span><span class="c">3 entries</span></li>
+          <li><span class="n">2</span><span class="hole">Audiences &mdash; No confirmed entries &mdash; see Open Questions.</span><span class="c">0 entries &middot; 1 conflict</span></li>
+          <li><span class="n">3</span><span>Key messages</span><span class="c">4 entries</span></li>
+          <li><span class="n">4</span><span>Deliverables &middot; one marked <em>conditional</em> (the TikTok dance)</span><span class="c">6 entries</span></li>
+          <li><span class="n">5</span><span>Timeline</span><span class="c">2 entries &middot; 1 conflict</span></li>
+          <li><span class="n">6</span><span class="hole">Budget &mdash; No confirmed entries &mdash; see Open Questions.</span><span class="c">0 entries &middot; 1 conflict</span></li>
+          <li><span class="n">7</span><span>Mandatories &amp; no-gos</span><span class="c">10 entries</span></li>
+          <li><span class="n">&mdash;</span><span>Open questions for the client</span><span class="c">10</span></li>
+        </ul>
+      </div>
+      <p class="sub">Two of the ten questions, as the account lead would send them</p>
+<ol class="qs">
+        <li><span class="field">Budget &mdash; unreconciled figures</span><span class="why">&euro;90,000 including media in the RFP; &ldquo;around eighty, maybe eighty-five&rdquo; excluding media from the CFO, no unit given.</span><span class="q">To confirm: is the 80&ndash;85 figure in thousands of euros for production only? How is the total budget of &euro;90,000 allocated between creative production and media spend?</span></li>
+        <li><span class="field">Objectives &mdash; no KPIs defined</span><span class="why">Objectives are stated, nothing measurable is written down; the CMO confirmed it at kickoff: &ldquo;Όχι ακόμα κάτι γραμμένο&rdquo; (&ldquo;nothing written down yet&rdquo;) [00:18:52].</span><span class="q">What are the main KPIs for the launch? What is the target reach, impressions, engagement rate, or conversion target? Are there any sales or brand-awareness-shift goals you expect?</span></li>
+      </ol>
+<p class="note">The other eight are in the rendered brief: approver, audience definition, proposition, video and key-visual specs, the scope of &ldquo;TikTok-first&rdquo;, launch milestones, ingredient list.</p>
+      <p class="sub">The same sections on both pages</p>
+<div class="hero facing">
+        <div class="page" lang="el">
+          <h3>Client Brief [EL] &mdash; extract</h3>
+          <h4>2. Κοινό-Στόχος</h4>
+          <p class="hole">Δεν υπάρχουν επιβεβαιωμένες καταχωρήσεις &mdash; βλ. Ανοιχτά Ερωτήματα.</p>
+          <h4>3. Βασικά Μηνύματα</h4>
+          <ul>
+            <li>Βασικό μηνυματικό angle: αναζωογόνηση χωρίς την ενοχή της ζάχαρης &mdash; zero sugar, φυσικά υλικά.<span class="cite">[transcript_kickoff 00:06:02]</span></li>
+            <li>Οπτική κατεύθυνση: το <span class="gl">key visual</span> πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι &mdash; όχι μια γενική αίσθηση beach party.<span class="cite">[transcript_kickoff 00:06:02]</span></li>
+          </ul>
+          
+        </div>
+        <div class="gutter"></div>
+        <div class="page" lang="en">
+          <h3>Client Brief [EN] &mdash; extract</h3>
+          <h4>2. Audiences</h4>
+          <p class="hole">No confirmed entries &mdash; see Open Questions.</p>
+          <h4>3. Key Messages</h4>
+          <ul>
+            <li>Core message angle: refreshment without the sugar guilt &mdash; zero sugar, natural ingredients.<span class="cite">[transcript_kickoff 00:06:02]</span></li>
+            <li>Visual direction: the <span class="gl">key visual</span> should evoke summer, but premium summer &mdash; not a generic beach-party feel.<span class="cite">[transcript_kickoff 00:06:02]</span></li>
+          </ul>
+          
+        </div>
+      </div>
+<p class="note">The extract shows two of the four key messages. Full documents in the repository: <a class="repo" href="runs/tier3/brief_en.html" target="_blank" rel="noopener">brief_en.html</a> &middot; <a class="repo" href="runs/tier3/brief_el.html" target="_blank" rel="noopener">brief_el.html</a> &middot; <a class="repo" href="runs/tier3/brief_review.html" target="_blank" rel="noopener">brief_review.html</a>, the page the account lead opens to resolve and sign (links open from the repository folder; a forwarded copy of this file alone has no targets).</p>
+<details class="ledger">
+        <summary><span>Ledger &mdash; synthesis</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>6 synthesis</td><td>synthesize</td><td>claude-sonnet-5</td><td class="r">165 820</td><td class="r">305 s</td><td>brief.json &middot; 25 entries &middot; 3 conflicts &middot; 10 open questions &middot; validates against schema/brief_schema.json</td></tr>
+        </table></div>
+        <p class="foot">Synthesis works over the compact extracts, not the raw documents (skills/SYNTHESIS.md). The readiness block is recomputed by code from config/readiness_policy.json and must match what the model wrote (exam check T2.6). Thresholds: at least 5 of 7 fields evidenced, at most 40% low-confidence entries.</p>
+      </details>
+<details class="ledger">
+        <summary><span>Ledger &mdash; render</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>7 render</td><td>render</td><td>claude-sonnet-5 &middot; full reasoning budget (the low-effort cap on render was adopted on 25 July, after this run)</td><td class="r">285 359</td><td class="r">554 s</td><td>brief_el.md (13 970 chars) &middot; brief_en.md (12 643 chars) &middot; typeset copies brief_el.html, brief_en.html</td></tr>
+        </table></div>
+        <p class="foot">Instructions: skills/TRANSLATION.md and the client glossary. Deterministic gates after render: every rendered claim carries a resolvable citation tag (T2.4), glossary terms character-exact in both renders (T2.5), no invented figure or claim absent from the object.</p>
+      </details>
+    </div>
+  </section>
+<section class="sheet" id="ch07" data-n="7" aria-labelledby="t07">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">07</span><span>Sign-off</span><span class="el" lang="el">Υπογραφή</span></p>
+      <h1 class="title action" id="t07" tabindex="-1">The account lead resolved all three conflicts in red and signed; the budget stays without a total.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">07 / 10 &middot; Contents</button></div>
+      <div class="stamps"><span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span></div>
+      <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each; only the audience quote is shown again.</p>
+      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
+      <p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html: one page with every conflict and both quotes, a resolution line per conflict, the open questions ready to send, and the signature field.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>Two decisions follow the more recent statement; the budget follows the CFO and keeps no total.</li>
+        <li>What was decided is carried into the creative brief in red; what stayed open stays a question.</li>
+      </ul>
+      <div class="hero">
+        <div class="conflict-block">
+          <h3>Audience</h3>
+          <div class="pair single">
+            <figure class="clip circled"><blockquote lang="en">&hellip;honestly, our buyer is 25 to 40, urban professionals.</blockquote><figcaption><span class="cite">Kickoff &middot; DIMITRIS (CMO) &middot; 2026-07-10</span></figcaption></figure>
+            <div class="resolve"><span>resolved by:</span><span class="line written">25&ndash;40 urban professionals &mdash; the CMO&rsquo;s explicit correction at kickoff (00:03:41) supersedes the RFP&rsquo;s Gen Z 18&ndash;24, which the previous agency had carried over in positioning.</span><span class="init">CM</span></div>
+          </div>
+        </div>
+        <div class="conflict-block">
+          <h3>Budget</h3>
+          <div class="pair single">
+            <div class="resolve"><span>resolved by:</span><span class="line written">Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client&rsquo;s media shop and is not yet known &mdash; total including media remains unconfirmed and stays an open question.</span><span class="init">CM</span></div>
+          </div>
+        </div>
+        <div class="conflict-block">
+          <h3>Launch date</h3>
+          <div class="pair single">
+            <div class="resolve"><span>resolved by:</span><span class="line written">Launch 15 September &mdash; the board&rsquo;s decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP&rsquo;s first week of October.</span><span class="init">CM</span></div>
+          </div>
+        </div>
+        <div class="signoff">
+          <span class="landed">Signed off</span>
+          <p class="signrec"><span class="red">Signed off by Christos Maragkoudakis (account lead), 2026-07-24.</span> Edits made: reviewed both renders; no edits to extracted entries. Resolved the three cross-source conflicts to the authority/recency-correct positions (audiences 25&ndash;40; production budget in the eighties excluding media; launch 15 September). Media budget total left as an open question by design. Review time was not timed on this run; it is the first pilot measurement (target: under 30 minutes of account-lead attention, PRD &sect;7).</p>
+        </div>
+      </div>
+      <p class="note">On provenance: in the synthetic project the account lead on the call is &ldquo;Eleni&rdquo;, a fictional persona. The graded run was signed off by the repository&rsquo;s author acting as account lead; the record above is quoted from the run as written.</p>
+      <details class="ledger">
+        <summary><span>Ledger &mdash; what ran</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th>record</th></tr>
+          <tr><td>8 human sign-off</td><td>human action &middot; not a pipeline step</td><td>none</td><td class="r">0</td><td>brief.json &rsaquo; signoff {status: signed_off, signed_by, signed_ts, edits_summary} &middot; conflicts[n].status: resolved_by_human</td></tr>
+        </table></div>
+        <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model never writes that field.</p>
+      </details>
+    </div>
+  </section>
+<section class="sheet" id="ch08" data-n="8" aria-labelledby="t08">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">08</span><span>The exam</span><span class="el" lang="el">Η εξέταση</span></p>
+      <h1 class="title action" id="t08" tabindex="-1">All 17 machine checks passed against an answer key sealed before the pipeline ran.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">08 / 10 &middot; Contents</button></div>
+      <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
+      <p class="marginalia"><span class="lbl">Frozen</span>Answer key sealed 23 July, before the pipeline ran on 24 July; the grader, frozen after the first tier, is the only code that may open it.</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>The grader was frozen early; it is the only code that can open the sealed answer key.</li>
+        <li>Every seeded trap was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
+        <li>Every check is a yes or a no; none is an opinion.</li>
+      </ul>
+      <div class="hero">
+        <ul class="exam">
+          <li class="tier">Tier 1 &middot; the evidence layer</li>
+          <li style="--i:1"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1.1</span><span>Every extract has the required shape</span><span class="res">4 extracts valid</span></li>
+          <li style="--i:2"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1.2</span><span>No fact without a location and an exact quote</span><span class="res">33 items, all cited</span></li>
+          <li style="--i:3"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1.3</span><span>Every location and quote is found word for word in its source</span><span class="res">all citations resolve</span></li>
+          <li style="--i:4"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1.4</span><span>The two garbled terms are kept as spoken, with glossary proposals</span><span class="res">2/2 flagged, none fixed</span></li>
+          <li class="tier">Tier 2 &middot; the brief and both renders</li>
+          <li style="--i:5"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.1</span><span>The brief object has the required shape</span><span class="res">pass</span></li>
+          <li style="--i:6"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.2</span><span>The client&rsquo;s sensitivity tier is within the pilot&rsquo;s allowed range (S0&ndash;S1)</span><span class="res">S1</span></li>
+          <li style="--i:7"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.3</span><span>Both the Greek and the English documents exist</span><span class="res">el 13 970 &middot; en 12 643 chars</span></li>
+          <li style="--i:8"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.4</span><span>Every claim in both documents carries a citation that resolves</span><span class="res">all claim lines cited</span></li>
+          <li style="--i:9"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.5</span><span>Protected glossary terms are intact in both documents</span><span class="res">intact</span></li>
+          <li style="--i:10"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T2.6</span><span>The readiness verdict, recomputed by code, matches the model&rsquo;s</span><span class="res">5 / 0.04 / 10 / ready_for_review</span></li>
+          <li class="tier">Tier 3 &middot; the seeded traps</li>
+          <li style="--i:11"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.1</span><span>All seeded contradictions found, both sides cited</span><span class="res">3/3</span></li>
+          <li style="--i:12"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.2</span><span>Seeded gaps surfaced as questions for the client</span><span class="res">4/4 found, 3 required</span></li>
+          <li style="--i:13"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.3</span><span>Garbled terms carried as flagged citations into the brief and both documents</span><span class="res">2/2 in the brief object; renders print the glossary term, flag cited</span></li>
+          <li style="--i:14"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T3.4</span><span>No value anywhere in the brief without a citation</span><span class="res">pass</span></li>
+          <li style="--i:15"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X1</span><span>The withdrawn metro idea is not a deliverable</span><span class="res">pass</span></li>
+          <li style="--i:16"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X2</span><span>The speculative TikTok dance is marked conditional</span><span class="res">1 entry, conditional</span></li>
+          <li style="--i:17"><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">X3</span><span>No numeric budget total anywhere</span><span class="res">pass</span></li>
+        </ul>
+      </div>
+      <details class="ledger">
+        <summary><span>Ledger &mdash; what ran</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>grader</th><th>kind</th><th>input</th><th>record</th></tr>
+          <tr><td>eval/harness.py</td><td>deterministic &middot; frozen after Tier 1</td><td>runs/tier3 against fixtures/northlight_01/answer_key.json</td><td>harness_report.json &middot; verdict PASS &middot; passed 17, failed 0, skipped 0</td></tr>
+        </table></div>
+        <p class="foot">Second fixture: runs/voreas_prep_report.md. Live rehearsal: docs/EVIDENCE.md.</p>
+      </details>
+    </div>
+  </section>
+<section class="sheet" id="ch09" data-n="9" aria-labelledby="t09">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">09</span><span>Creative brief, shadow</span><span class="el" lang="el">Δημιουργικό (σκιά)</span></p>
+      <h1 class="title action" id="t09" tabindex="-1">The creative draft stayed inside the signed-off facts and the spec table, except one word, &ldquo;Greek-made&rdquo;, for the creative lead to strike.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">09 / 10 &middot; Contents</button></div>
+      <div class="stamps">
+        <span class="stamp ai"><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>AI &middot; reads &amp; drafts</span>
+        <span class="stamp people pending"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide &mdash; awaiting creative lead</span>
+      </div>
+      <p class="marginalia"><span class="lbl">One word to strike</span>&ldquo;Greek-made&rdquo; in Draft B is the model&rsquo;s upgrade of the brief&rsquo;s &ldquo;Greek brand&rdquo; positioning: an origin claim no source supports. A walkthrough note, not in the draft.</p>
+      <p class="marginalia"><span class="lbl">Shadow mode</span>Drafted only because the brief was signed off, for a creative lead to evaluate; nothing is delivered. The client&rsquo;s two brand colours appear only on this sheet.</p>
+      <p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; every fact cites a brief entry, open question or conflict</p>
+    </aside>
+    <div class="body">
+      <ul class="takeaways">
+        <li>Proposition, insight, tone and reasons to believe are the model&rsquo;s; every fact cites a brief entry.</li>
+        <li>Channel specs are looked up from the traffic team&rsquo;s table, never generated.</li>
+        <li>The key visual is an illustration made for this walkthrough from the brand mandatories; the pipeline emits text only.</li>
+      </ul>
+
+      <div class="hero">
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+          <defs>
+            <g id="kv-art">
+              <rect x="0" y="0" width="2560" height="1920" fill="#1B4F8A"/>
+              <g stroke="#FFFFFF" stroke-linecap="round" fill="none">
+                <line x1="-200" y1="520" x2="1700" y2="520" stroke-width="6"/><line x1="1700" y1="520" x2="2300" y2="520" stroke-width="6" stroke-opacity="0.3"/>
+                <line x1="-200" y1="660" x2="1700" y2="660" stroke-width="12"/><line x1="1700" y1="660" x2="2300" y2="660" stroke-width="12" stroke-opacity="0.3"/>
+                <line x1="-200" y1="920" x2="1700" y2="920" stroke-width="18"/><line x1="1700" y1="920" x2="2300" y2="920" stroke-width="18" stroke-opacity="0.3"/>
+                <line x1="-200" y1="1140" x2="1700" y2="1140" stroke-width="12"/><line x1="1700" y1="1140" x2="2300" y2="1140" stroke-width="12" stroke-opacity="0.3"/>
+                <line x1="-200" y1="1360" x2="1700" y2="1360" stroke-width="6"/><line x1="1700" y1="1360" x2="2300" y2="1360" stroke-width="6" stroke-opacity="0.3"/>
+              </g>
+              <circle cx="1280" cy="860" r="400" fill="none" stroke="#F5C518" stroke-width="130"/>
+              <path d="M1060 990 Q1330 980 1500 730 Q1230 740 1060 990 Z" fill="#FFFFFF"/>
+              <path d="M1085 975 Q1300 900 1475 745" stroke="#1B4F8A" stroke-width="8" fill="none"/>
+              <text x="800" y="120" text-anchor="start" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="26" letter-spacing="6" fill="#FFFFFF">MOCK-UP &middot; NOT FOR DELIVERY</text>
+              <text x="1280" y="1660" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="112" letter-spacing="-3" fill="#FFFFFF">Meltemi Fizz</text>
+              <text x="1280" y="1840" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="44" letter-spacing="6" fill="#F5C518">SPARKLING TEA &middot; ZERO SUGAR</text>
+            </g>
+          </defs>
+        </svg>
+        <div class="plate-row">
+          <div class="plate p11">
+            <i class="cm tl" aria-hidden="true"></i><i class="cm tr" aria-hidden="true"></i><i class="cm bl" aria-hidden="true"></i><i class="cm br" aria-hidden="true"></i>
+            <svg viewBox="320 0 1920 1920" role="img" aria-label="Key visual, square crop: on a flat Aegean Blue field, a Citrus Yellow ring reading as a zero, a white tea leaf within it, five white wind lines, the wordmark Meltemi Fizz beneath, and a corner label reading mock-up, not for delivery." xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use href="#kv-art" xlink:href="#kv-art"/></svg>
+            <p class="slug">Crop at the key-visual master spec &middot; 1:1 &middot; 2048x2048 &middot; PNG <span class="dim">[spec: key_visual_digital_master]</span></p>
+          </div>
+          <div class="plate p916">
+            <i class="cm tl" aria-hidden="true"></i><i class="cm tr" aria-hidden="true"></i><i class="cm bl" aria-hidden="true"></i><i class="cm br" aria-hidden="true"></i>
+            <svg viewBox="740 0 1080 1920" role="img" aria-label="The same artwork cropped to 9:16 for TikTok." xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use href="#kv-art" xlink:href="#kv-art"/></svg>
+            <p class="slug">Still frame at the TikTok in-feed spec &middot; 9:16 &middot; 1080x1920 &middot; 9-60s &middot; MP4; the deliverable is a video <span class="dim">[spec: tiktok_infeed_video]</span></p>
+          </div>
+        </div>
+        <p class="slug"><span class="dim">Slug:</span> MOCK-UP &middot; SHADOW MODE &middot; evaluation draft, not for delivery. One drawing, two crops, drawn for this walkthrough; the pipeline emits text only. The ring illustrates Draft B&rsquo;s &ldquo;zero sugar&rdquo;.</p>
+                      </div>
+
+      <article class="brief" aria-label="Creative brief draft">
+        <div class="bh"><h3>Creative Brief (draft) &mdash; Meltemi Fizz launch</h3><span class="cite">Draft B &middot; claude-opus-4-8 &middot; shadow mode</span></div>
+        <p class="pencil">Bracketed tags name the brief entry each fact came from; superseded positions and retracted ideas were not promoted to commitments.</p>
+
+        <h4><span class="n">1</span>Single-minded proposition <span class="pencil">&mdash; the one thing the campaign must say</span></h4>
+        <p class="smp">Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.</p>
+        <p class="pencil">A candidate, not a client line: the brief records no agreed proposition. <span class="cite">[key_messages; open_questions/key_messages]</span></p>
+
+        <h4><span class="n">2</span>Core insight</h4>
+        <p>The 25&ndash;40 urban professional has quietly outgrown the sugary soft drink, but doesn&rsquo;t want to be lectured about health to feel good about a daily refreshment. A drink they reach for on an ordinary afternoon is a small act of self-respect &mdash; modern, unfussy, and theirs.</p>
+        <p class="pencil">Audience per the resolved conflict; the &ldquo;no lecturing&rdquo; truth rests on the mandatory that bars health claims. <span class="cite">[conflicts/audiences; mandatories]</span></p>
+
+        <div class="ab">
+          <p class="pencil">A/B on identical input. Both drafts withheld the natural-ingredients claim and kept the TikTok dance out; A positions the brand, B makes a product claim.</p>
+          <div class="cols2">
+            <div class="col"><h3>Draft A &middot; claude-sonnet-5</h3><p>&ldquo;For urban professionals who&rsquo;ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.&rdquo;</p></div>
+            <div class="col"><h3>Draft B &middot; claude-opus-4-8</h3><p>&ldquo;Meltemi Fizz is the Greek-made sparkling tea that refreshes your everyday &mdash; zero sugar, nothing to feel guilty about.&rdquo;</p></div>
+          </div>
+          <p class="lastline">Creative lead: A or B, or neither?</p>
+          <p class="pencil">Recorded the way the account lead&rsquo;s was: in the run, by a named person.</p>
+          <div class="resolve"><span>chosen by:</span><span class="line"></span><span>(creative lead)</span></div>
+        </div>
+
+        <p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p>
+
+        <h4><span class="n">7</span>Deliverables &amp; channel specs</h4>
+        <p>The brief asks for video and key visuals, TikTok-first; quantities and durations are undecided, so only the technical specs are fixed. <span class="cite">[deliverables; mandatories; open_questions/deliverables]</span></p>
+        <div class="ledger-wrap"><table class="spec">
+          <tr><th>Deliverable (from the brief)</th><th>Spec (from the table, not generated)</th><th>Row</th></tr>
+          <tr><td>Primary launch video &mdash; TikTok</td><td>In-feed video &middot; 9:16 &middot; 1080x1920 &middot; 9-60s &middot; MP4</td><td>[spec: tiktok_infeed_video]</td></tr>
+          <tr><td>Key visual &mdash; digital master</td><td>Key visual &mdash; digital master &middot; 1:1 &middot; 2048x2048 &middot; PNG</td><td>[spec: key_visual_digital_master]</td></tr>
+        </table></div>
+
+        <h4><span class="n">8</span>Readiness checklist</h4>
+        <p class="pencil">Settled by the account lead at sign-off</p>
+        <ul class="check">
+          <li><span class="box red"></span><span><span class="red-i">Audience: 25&ndash;40 urban professionals.</span> <span class="cite">[conflicts/audiences &middot; resolved_by_human]</span></span></li>
+          <li><span class="box red"></span><span><span class="red-i">Launch date: 15 September 2026.</span> <span class="cite">[conflicts/timeline &middot; resolved_by_human]</span></span></li>
+          <li><span class="box red"></span><span><span class="red-i">Production budget: &ldquo;in the eighties&rdquo;, excluding media spend.</span> <span class="cite">[conflicts/budget &middot; resolved_by_human]</span></span></li>
+        </ul>
+        <details class="ledger"><summary><span>Still open &mdash; six items a creative team cannot start without, and three that do not block</span></summary>
+        <p class="pencil">A creative team cannot start without &mdash; still open, carried from the brief</p>
+        <ul class="check">
+          <li><span class="box"></span><span>Approved ingredient list &mdash; required before any copy uses the &ldquo;φυσικά συστατικά&rdquo; claim. <span class="cite">[open_questions/mandatories]</span></span></li>
+          <li><span class="box"></span><span>Video specs &mdash; number, durations and formats undecided. <span class="cite">[open_questions/deliverables]</span></span></li>
+          <li><span class="box"></span><span>Key-visual specs &mdash; quantity, use cases and contexts (social / retail / OOH / packaging) undefined. <span class="cite">[open_questions/deliverables]</span></span></li>
+          <li><span class="box"></span><span>&ldquo;TikTok-first&rdquo; scope &mdash; budget, production, distribution, or all three. <span class="cite">[open_questions/deliverables]</span></span></li>
+          <li><span class="box"></span><span>Success metrics / KPIs &mdash; none defined for the launch. <span class="cite">[open_questions/objectives]</span></span></li>
+          <li><span class="box"></span><span>Production milestones against 15 September &mdash; not yet set. <span class="cite">[open_questions/timeline]</span></span></li>
+        </ul>
+        <p class="pencil">Open but not blocking first creative: the media-inclusive total budget (deliberately unresolved) &middot; the named approver &middot; the proposition itself, which is a shadow-mode candidate.</p>
+
+                </details>
+
+      </article>
+
+      <details class="ledger">
+        <summary><span>Ledger &mdash; what ran</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>step</th><th>agent</th><th>model (resolved id)</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>9 creative_shadow &middot; arm A</td><td>creative-shadow</td><td>claude-sonnet-5</td><td class="r">86 441</td><td class="r">90 s</td><td>creative/creative_brief_sonnet.md &middot; 6 994 chars</td></tr>
+          <tr><td>9 creative_shadow &middot; arm B</td><td>creative-shadow</td><td>claude-opus-4-8</td><td class="r">63 473</td><td class="r">110 s</td><td>creative/creative_brief_opus.md &middot; 8 525 chars</td></tr>
+          <tr><td>spec-match gate</td><td>deterministic &middot; pipeline/creative.py</td><td>none</td><td class="r">0</td><td class="r">instant</td><td>every spec-shaped token must appear byte-for-byte in config/channel_specs.json (PRD DR-7)</td></tr>
+        </table></div>
+        <div class="swatches" style="margin:8px 0 12px">
+          <div class="swatch"><i style="background:#1B4F8A"></i>Aegean Blue #1B4F8A</div>
+          <div class="swatch"><i style="background:#F5C518"></i>Citrus Yellow #F5C518</div>
+          <div class="swatch"><i style="background:#FFFFFF"></i>White</div>
+          <span class="dim">&mdash; two brand colours and white; flat fills only</span>
+        </div>
+        <ul class="callouts">
+          <li>The ring is a zero: &ldquo;zero sugar&rdquo; is the one claim on the artwork <span class="dim">[claims]</span></li>
+          <li><s>&ldquo;&phi;&upsilon;&sigma;&iota;&kappa;&alpha;&#769; &sigma;&upsilon;&sigma;&tau;&alpha;&tau;&iota;&kappa;&alpha;&#769;&rdquo; (natural ingredients)</s> withheld until the approved ingredient list arrives <span class="dim">[claims &middot; open question]</span></li>
+          <li>A tea leaf names the category; the meltemi is the north wind: lines, no beach, no party, no bar <span class="dim">[no-gos &middot; premium summer]</span></li>
+          <li>Clear space of one wordmark height kept free on every side of the name; ring, leaf and name sit in the central column so the 9:16 crop clips nothing <span class="dim">[logo clear space &middot; TikTok-first]</span></li>
+          <li>The 9:16 is a crop, not a TikTok-first idea: the pipeline supplies the facts and the spec; the idea is the creative team&rsquo;s <span class="dim">[mock-up]</span></li>
+        </ul>
+        <p class="foot">Checked by the author against Brand Guidelines v3.1 (name in Latin script in full, flat fills in the two brand colours and white, claims, category no-gos, tone); the pipeline emits text only, so this is not a machine guarantee. Wordmark set in a system face; no logo file supplied. The key visual on this sheet is an illustration drawn for this walkthrough from the brief&rsquo;s mandatories and specs; the pipeline itself produces text only (PRD non-goal: no live creative delivery). A production image would replace it under the same rules.</p>
+      </details>
+    </div>
+  </section>
+<section class="sheet" id="ch10" data-n="10" aria-labelledby="t10">
+    <header class="slide-head">
+      <p class="kicker"><span class="num">10</span><span>Numbers and decisions</span><span class="el" lang="el">Αριθμοί και αποφάσεις</span></p>
+      <h1 class="title action" id="t10" tabindex="-1">Re-baseline usage, then approve the pilot: the graded run&rsquo;s 1.13 million tokens are a measurement, not a price.</h1>
+    </header>
+    <aside class="margin">
+      <div class="folio"><button type="button" class="open-contents">10 / 10 &middot; Contents</button></div>
+      <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
+      <p class="marginalia"><span class="lbl">Measured, not estimated</span>A token is roughly three-quarters of a word a model reads or writes; cached context is text it was already sent and re-reads. Counts are what the runs recorded; times are wall clock. Usage, not a price: the client will most likely run this on a subscription.</p>
+    </aside>
+    <div class="body">
+            <p class="sub">Decisions needed</p>
+      <ol class="decisions">
+        <li>Approve the four-week pilot: two account leads, three past projects each, weeks 2&ndash;3 retrospective, week 4 live, creative in shadow, S0&ndash;S1 clients, on the agency&rsquo;s own workspace, never a personal account.
+          <ul class="sub-list">
+            <li>Targets: open-question precision above 80% (flagged questions the lead judges real), draft survival above 70% (draft text the lead leaves unedited), under 30 minutes of review per draft.</li>
+            <li>Stop rule, recommended: if weeks 2&ndash;3 miss the targets, week 4 does not go live. After the pilot a named sponsor signs the report; from month 2 new projects start from a draft by default.</li>
+          </ul>
+          <span class="cite">docs/PRD.md &sect;7&ndash;8 &middot; owner: the executive sponsor named at kickoff &middot; needed before week 1</span></li>
+        <li>Re-baseline usage and time: rerun and re-measure under the 30 July routing (a larger extraction model plus a second reader), which on the transcript alone measured 598 743 tokens against 295 774. <span class="cite">config/model_routing.json &middot; runs/routing-validate-01 &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
+        <li>Choose how the models are paid for: subscription seats on the agency&rsquo;s workspace (usage windows) or API terms (per-token price, DPA and retention terms); measure headroom on the chosen one before week 1, against roughly 15 M tokens a month at 15 briefs. <span class="cite">docs/PRD.md &sect;8 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
+      </ol>
+      <p class="sub">Limits and risks</p>
+      <ul class="limits">
+        <li>On a subscription the constraint is the plan&rsquo;s usage window, not a price per brief; the demo ran on a developer subscription. The PRD&rsquo;s per-brief price applies only on API terms. <span class="cite">docs/COST_MODEL.md &sect;2, &sect;6</span></li>
+        <li>Refusals: three of ten supervised single-document runs were refused on both attempts and produced nothing; the demo retries a refused leg twice by default. <span class="cite">docs/demo_timing.md</span></li>
+        <li>Second fixture: 15/17 first, 16/17 after a re-roll; its audit found questions duplicating open conflicts and rendered without citations, which no check sees. Exam-green is not lead-ready. <span class="cite">runs/voreas_prep_report.md and addendum</span></li>
+        <li>The PRD&rsquo;s two named risks: confidentiality of regulated clients (per-client tiers, S0&ndash;S1 in the pilot) and a confident citation to garbage (fidelity gate, word-for-word citation checks). <span class="cite">docs/PRD.md &sect;9</span></li>
+      </ul>
+      <p class="sub">Evidence behind the three decisions</p>
+      <p class="note">The number to quote today: 0.98 M tokens per brief on the graded run (stage one), 1.13 M with the creative A/B. Everything below explains it.</p>
+      <div class="hero">
+        <ul class="numbers">
+          <li><span class="big">0.98<small>M tokens, stage one</small></span><p class="what">Eight model calls: 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields</span></p></li>
+          <li><span class="big">~15<small>M tokens a month</small></span><p class="what">0.98 M per brief at about 15 briefs a month (PRD A2); about 16 M with one creative draft each. The figure to hold against a plan&rsquo;s usage window.<span class="cite">docs/PRD.md &sect;4 A2</span></p></li>
+          <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today; about &euro;5&ndash;6k a year returned at 15 briefs a month, which funds the pilot.<span class="cite">docs/COST_MODEL.md &sect;3 &middot; PRD A1, A2, A4</span></p></li>
+          <li><span class="big">25.2<small>min</small></span><p class="what">The continuous 29 July capture, one pass re-rolled; the graded run&rsquo;s stages sum to 33 minutes. One document: about 4 minutes to classify and extract, 5:45 for a full run.<span class="cite">docs/EVIDENCE.md &middot; docs/demo_timing.md</span></p></li>
+        </ul>
+      </div>
+      <p class="note">The budget is still &laquo;κάπου στα ογδόντα&raquo;: no sheet, and no file in the run, turns it into a total. <span class="cite">transcript_kickoff 00:14:32 &middot; check X3</span></p>
+      <p class="lastline">People decide. <button type="button" class="jump" data-go="1">Back to the summary</button></p>
+      <details class="ledger">
+        <summary><span>Ledger &mdash; the whole run</span></summary>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>stage</th><th>model (resolved id)</th><th class="r">time</th><th>record</th></tr>
+          <tr><td>classification</td><td>claude-haiku-4-5-20251001</td><td class="r">34 s</td><td>classification.json</td></tr>
+          <tr><td>transcript fidelity</td><td>claude-haiku-4-5-20251001</td><td class="r">52 s</td><td>fidelity/</td></tr>
+          <tr><td>extraction, 4 sources incl. one repair</td><td>claude-haiku-4-5-20251001 (graded run) &middot; claude-sonnet-5 + verifier since 2026-07-30</td><td class="r">13.6 min</td><td>extracts/ &middot; diagnostics/repair_log.jsonl</td></tr>
+          <tr><td>synthesis</td><td>claude-sonnet-5</td><td class="r">5.1 min</td><td>brief.json</td></tr>
+          <tr><td>bilingual render</td><td>claude-sonnet-5</td><td class="r">9.2 min</td><td>brief_el.md &middot; brief_en.md</td></tr>
+          <tr><td>creative shadow, A/B</td><td>claude-sonnet-5 &middot; claude-opus-4-8</td><td class="r">3.3 min</td><td>creative/</td></tr>
+          <tr><td>transcript extraction under the 30 July routing (runs/routing-validate-01)</td><td>claude-sonnet-5, two passes (91 918 and 462 130 tokens) + second reader (44 695)</td><td class="r">598 743 tokens</td><td>against 295 774 on the graded run</td></tr>
+        </table></div>
+        <p class="foot"><b>Dollars, for readers on API terms:</b> de-duplicated, the graded run cost $3.55 ($2.81 stage one); <a class="repo" href="docs/EVIDENCE.md" target="_blank" rel="noopener">docs/EVIDENCE.md</a> quotes the raw $4.29 because the manifest records each creative arm twice.</p>
+        <p class="foot"><b>Why 33 min and 25.2 min:</b> the graded pack was assembled across resumed legs (run_manifest.json marks every stage-one step from_earlier_run); the 29 July capture ran continuously. Render effort was capped on 25 July and a within-source retraction check added on 29 July; neither is in the graded numbers.</p>
+        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, runs/routing-validate-01, docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
+      </details>
+    </div>
+  </section>
+</div>
+
+<!-- ============ CONTENTS OVERLAY ============ -->
+<div class="contents" id="contents" role="dialog" aria-modal="true" aria-labelledby="contents-h" hidden>
+  <div class="contents-in">
+    <button type="button" class="close" id="contents-close">Close</button>
+    <h2 id="contents-h">Contents</h2>
+    <p class="howto">Ten sheets in three parts. Pick one, or press Escape to return. Keys: &larr; &rarr; turn &middot; Home / End &middot; C contents &middot; Esc close. Marks: pencil = AI drafts &middot; rule = code checks &middot; red pen = people decide.</p>
+    <ol id="contents-list"></ol>
+  </div>
+</div>
+
+<!-- ============ NAVIGATION ============ -->
+<nav class="nav" aria-label="Sheet navigation">
+  <div class="nav-in">
+    <button type="button" class="back" id="back" aria-keyshortcuts="ArrowLeft">Back</button>
+    <div class="ruler" id="ruler" role="group" aria-label="Progress"><button type="button" class="fol open-contents" id="fol">01 / 10 &middot; Contents</button></div>
+    <button type="button" class="next" id="next" aria-keyshortcuts="ArrowRight"><span class="lbl">Begin</span><b id="next-title">The product</b><span class="arrow">&rarr;</span></button>
+  </div>
+</nav>
+<div class="vh" aria-live="polite" id="announce"></div>
+
+<script>
+(function () {
+  var CH = [
+    { g: 'Overview', t: 'Brief Builder', w: 'The answer first: what it is, what this run proved, what it never does', r: [] },
+    { g: 'Overview', t: 'The product', w: 'The whole pipeline, what you get, how it is built, who touches it', r: ['ai', 'code', 'people'] },
+    { g: 'The run, sheet by sheet', t: 'Inputs and readiness', w: 'Four documents; code checks there is enough to work with; the job is classified', r: ['code', 'ai'] },
+    { g: 'The run, sheet by sheet', t: 'Reading with receipts', w: 'Garbles flagged, never fixed; every fact with its word-for-word receipt', r: ['ai', 'code'] },
+    { g: 'The run, sheet by sheet', t: 'Conflicts', w: 'Three contradictions, both sides quoted, nothing resolved', r: ['code', 'ai'] },
+    { g: 'The run, sheet by sheet', t: 'The brief', w: 'One object, ten questions, rendered in Greek and English', r: ['ai', 'code'] },
+    { g: 'The run, sheet by sheet', t: 'Sign-off', w: 'A person resolves the conflicts and signs', r: ['people'] },
+    { g: 'The run, sheet by sheet', t: 'The exam', w: 'Seventeen machine checks against a sealed key', r: ['code'] },
+    { g: 'The run, sheet by sheet', t: 'Creative brief', w: 'The shadow draft and its key visual', r: ['ai', 'people'] },
+    { g: 'Numbers and decisions', t: 'Numbers and decisions', w: 'What it costs, what it replaces, what must be decided', r: ['code'] }
+  ];
+  var N = CH.length, cur = 1, scrollPos = {};
+  var sheets = [].slice.call(document.querySelectorAll('.sheet'));
+  var ruler = document.getElementById('ruler'), fol = document.getElementById('fol');
+  var back = document.getElementById('back'), next = document.getElementById('next');
+  var nextTitle = document.getElementById('next-title'), nextLbl = next.querySelector('.lbl');
+  var announce = document.getElementById('announce');
+  var contents = document.getElementById('contents'), list = document.getElementById('contents-list');
+  var lastFocus = null;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  // ruler ticks
+  var ticks = [];
+  for (var i = 1; i <= N; i++) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'tick'; b.setAttribute('aria-label', 'Sheet ' + i + ' of ' + N + ': ' + CH[i - 1].t);
+    b.innerHTML = '<i></i><span class="tip">' + pad(i) + ' ' + CH[i - 1].t + '</span>';
+    b.addEventListener('click', (function (n) { return function () { go(n); }; })(i));
+    ruler.appendChild(b); ticks.push(b);
+  }
+
+  // contents list
+  var lastGroup = null;
+  for (var j = 1; j <= N; j++) {
+    if (CH[j - 1].g !== lastGroup) {
+      var gh = document.createElement('li'); gh.className = 'group'; gh.textContent = CH[j - 1].g; list.appendChild(gh); lastGroup = CH[j - 1].g;
+    }
+    var li = document.createElement('li');
+    var roles = CH[j - 1].r.map(function (r) {
+      if (r === 'ai') return '<svg class="g" style="color:var(--pencil)" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg>';
+      if (r === 'code') return '<svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>';
+      return '<svg class="g" style="color:var(--red)" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>';
+    }).join('');
+    li.innerHTML = '<button type="button"><span class="n">' + pad(j) + '</span><span>' + CH[j - 1].t + '<span class="what">' + CH[j - 1].w + '</span></span><span class="roles">' + roles + '</span></button>';
+    li.querySelector('button').addEventListener('click', (function (n) { return function () { closeContents(); go(n, true); }; })(j));
+    list.appendChild(li);
+  }
+
+  function render(focusTitle, push) {
+    sheets.forEach(function (s) { s.classList.toggle('active', +s.getAttribute('data-n') === cur); });
+    ticks.forEach(function (t, k) {
+      var n = k + 1;
+      t.classList.toggle('cur', n === cur);
+      t.classList.toggle('done', n < cur);
+      if (n === cur) t.setAttribute('aria-current', 'step'); else t.removeAttribute('aria-current');
+    });
+    fol.textContent = pad(cur) + ' / ' + N + ' \u00b7 ' + (window.innerWidth < 700 ? CH[cur - 1].t : 'Contents');
+    back.disabled = cur === 1;
+    if (cur === N) { nextLbl.textContent = 'Back to'; nextTitle.textContent = 'the cover'; }
+    else { nextLbl.textContent = cur === 1 ? 'Begin' : 'Next'; nextTitle.textContent = CH[cur].t; }
+    [].slice.call(list.querySelectorAll('li:not(.group)')).forEach(function (li, k) { li.classList.toggle('cur', k + 1 === cur); });
+    announce.textContent = 'Sheet ' + cur + ' of ' + N + ': ' + CH[cur - 1].t;
+    try { if (push) history.pushState(null, '', '#' + pad(cur)); else history.replaceState(null, '', '#' + pad(cur)); } catch (e) {}
+    window.scrollTo(0, scrollPos[cur] || 0);
+    if (focusTitle) { var h = document.getElementById('t' + pad(cur)); if (h) h.focus({ preventScroll: true }); }
+  }
+
+  function go(n, focusTitle, push) {
+    if (n < 1) n = 1; if (n > N) n = N;
+    scrollPos[cur] = window.scrollY;
+    cur = n; render(focusTitle !== false, push !== false);
+  }
+
+  function setInert(on) {
+    [].slice.call(document.querySelectorAll('.desk, .nav')).forEach(function (el) {
+      if ('inert' in el) el.inert = on; else if (on) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+    });
+    document.querySelector('.nav').classList.toggle('dim', on);
+  }
+  function openContents() {
+    lastFocus = document.activeElement; contents.hidden = false;
+    setInert(true); document.body.style.overflow = 'hidden';
+    var curBtn = list.querySelector('li.cur button') || list.querySelector('button');
+    if (curBtn) curBtn.focus();
+  }
+  function closeContents() {
+    contents.hidden = true;
+    setInert(false); document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  back.addEventListener('click', function () { go(cur - 1); });
+  next.addEventListener('click', function () { go(cur === N ? 1 : cur + 1); });
+  [].slice.call(document.querySelectorAll('.open-contents')).forEach(function (b) { b.addEventListener('click', openContents); });
+  document.getElementById('contents-close').addEventListener('click', closeContents);
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    if (e.target.closest && e.target.closest('.ledger-wrap')) return;
+    if (!contents.hidden) {
+      if (e.key === 'Escape') { e.preventDefault(); closeContents(); }
+      else if (e.key === 'Tab') {
+        var f = contents.querySelectorAll('button'), first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+      return;
+    }
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(cur === N ? 1 : cur + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(1); }
+    else if (e.key === 'End') { e.preventDefault(); go(N); }
+    else if (e.key === 'c' || e.key === 'C') { e.preventDefault(); openContents(); }
+  });
+
+  window.addEventListener('hashchange', function () {
+    var m = /^#(\d{1,2})$/.exec(location.hash);
+    if (m && +m[1] !== cur) go(+m[1], false, false);
+  });
+  [].slice.call(document.querySelectorAll('.jump')).forEach(function (b) { b.addEventListener('click', function () { go(+b.getAttribute('data-go')); }); });
+  var opened = [];
+  window.addEventListener('beforeprint', function () { opened = []; [].slice.call(document.querySelectorAll('details')).forEach(function (el) { if (!el.open) { el.open = true; opened.push(el); } }); });
+  window.addEventListener('afterprint', function () { opened.forEach(function (el) { el.open = false; }); opened = []; });
+  var tx = null;
+  document.addEventListener('touchstart', function (e) { if (!contents.hidden) return; tx = e.changedTouches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) { if (tx === null || !contents.hidden) return; var dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 60) go(dx < 0 ? (cur === N ? 1 : cur + 1) : cur - 1); }, { passive: true });
+
+  // initial sheet: the hash if present, else the cover
+  var start = 1, m0 = /^#(\d{1,2})$/.exec(location.hash);
+  if (m0) start = +m0[1];
+  if (location.protocol === 'file:') { [].slice.call(document.querySelectorAll('a.repo')).forEach(function (a) { a.title = 'Opens only when this file sits in the repository root'; a.classList.add('offline'); }); }
+  window.addEventListener('resize', function () { fol.textContent = pad(cur) + ' / ' + N + ' \u00b7 ' + (window.innerWidth < 700 ? CH[cur - 1].t : 'Contents'); });
+  go(start, false, false);
+})();
+</script>
+
+</body>
+</html>

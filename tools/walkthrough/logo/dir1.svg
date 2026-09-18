@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1920">
+<rect width="2560" height="1920" fill="#1B4F8A"/>
+<text x="1280" y="150" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="44" letter-spacing="10" fill="#FFFFFF">MOCK-UP · NOT FOR DELIVERY</text>
+<path fill="#F5C518" d="M 810 1220 C 910 1100 944 900 1006 735 C 1052 614 1122 562 1198 608 C 1294 666 1220 873 1200 978 C 1260 870 1344 632 1432 576 C 1550 500 1662 590 1626 736 L 1544 1058 C 1530 1114 1554 1150 1600 1170 C 1460 1182 1412 1090 1448 950 L 1528 704 C 1544 646 1512 636 1486 678 C 1396 824 1338 1050 1238 1184 C 1198 1238 1138 1210 1138 1154 C 1138 1030 1220 740 1154 712 C 1112 694 1064 854 1040 932 C 992 1088 940 1202 810 1220 Z"/>
+<circle cx="1640" cy="434" r="60" fill="#FFFFFF"/>
+<circle cx="1700" cy="274" r="34" fill="#FFFFFF"/>
+<text x="1280" y="1660" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="112" letter-spacing="-3" fill="#FFFFFF">Meltemi Fizz</text>
+<text x="1280" y="1840" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="44" letter-spacing="6" fill="#F5C518">SPARKLING TEA · ZERO SUGAR</text>
+</svg>

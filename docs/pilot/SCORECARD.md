@@ -1,0 +1,64 @@
+# Pilot scorecard: the measurable contract
+
+The four-week pilot of `docs/PRD.md` s8, scored against s7. One row per brief goes into a copy of `docs/pilot/scorecard_template.csv`, kept outside this repository (real project identifiers, CLAUDE.md rule 4). Targets come from PRD s2 and s7 unless cited otherwise; unknown values read OWNER TO CONFIRM.
+
+Preconditions: operating account and data terms resolved (`tools/walkthrough/codex_priorities.md` item 1; PRD s8 assumes an agency-owned account, DPA, zero retention, EU processing); `tests/test_regression_voreas.py` passes with no `xfail` marks remaining, on artifacts regenerated from `fixtures/voreas_02` under `config/model_routing.json` (the suite is green today with the documented defects marked xfail; `runs/voreas-prep-02` and `-03` are gitignored, so the check needs the machine that holds them or a fresh run, and whether that evidence is committed is OWNER TO CONFIRM per the suite's docstring).
+
+## 1. Account-lead attention: three measures, not one
+
+PRD s2 sets about 50 minutes of total attention, 20 assembling plus 30 reviewing, against the 2-hour baseline of A1. PRD s7 says "target <30 min of account-lead attention"; `WALKTHROUGH.html` sheet 07 says "under 30 minutes of review per draft". PRD s7's 'time-to-first-draft ... <30 min of account-lead attention' does not say which component it counts; this scorecard reads it as the review component so that it agrees with s2 (20 + 30) and records assembly and total separately so either reading can be checked; reading OWNER TO CONFIRM. PRD s7 says under 30, so the pass rule is `review_min` < 30, not <= 30.
+
+| Measure (CSV column) | Definition, unit | Recorded by, when | Baseline | Target | Pass (median): end wk 3, 6 retro briefs / end wk 4, live |
+|---|---|---|---|---|---|
+| Assembly time (`assembly_min`) | Active minutes the lead spends locating, exporting and dropping the sources into the input folder, from the first search to the folder handed to the operator (the manual step PRD s2 counts); the pipeline run and the operator's time are excluded. | Lead, stopwatch, at drop | none separate | about 20 | <= 20 / <= 20 |
+| Review time (`review_min`) | Active minutes the lead spends on the draft, summed across sittings, from first opening the renders to writing `signoff.status = signed_off`: reading, editing, classifying questions, resolving conflicts in `brief.json`, drafting the question list for the client. Excluded: waiting for client answers, client meetings, the operator's time. Lead, stopwatch per sitting, entered at sign-off. | Lead, stopwatch, at sign-off | none separate | under 30 | <= 30 / <= 30 |
+| Total attention (`total_attention_min`) | `assembly_min + review_min` | Operator, computed | 120 (A1, validated week 1 on 5 recent projects); retro briefs also record `baseline_min`, the minutes the original brief took | about 50 | <= 50 / <= 50 |
+
+Machine time (`machine_wall_min`, `tokens_stage1`) is reported only: 25.2 min continuous capture, 33 min graded stages, 0.98 M tokens, Haiku-era routing (`docs/EVIDENCE.md`; sheets 01, 10); re-baseline pending.
+
+## 2. Quality
+
+Pass reads: end of week 3 (6 retro briefs) / end of week 4 (live).
+
+- **Draft survival** (`survival_en_pct`, `survival_el_pct`). Per language: 100 x (1 - character Levenshtein distance between the draft render and the signed-off render, divided by the character count of the draft render), floored at 0, integer. Recording step: before the lead opens anything, the operator copies `brief_en.md`, `brief_el.md` and `brief.json` from `runs/<ts>/` to `<pilot path>/<brief_id>/draft/` and treats that folder as read-only; the lead edits only copies under `<pilot path>/<brief_id>/final/`, never the run directory; after `signoff.status = signed_off` the operator runs the diff script over draft/ and final/ (script: OWNER TO CONFIRM; the repository holds no edit-distance code, and PRD s7's 'the harness tracks asymmetric edit distance' has no counterpart among the 17 checks in `runs/tier3/harness_report.json`) and writes both percentages. Survival is measured on the lead's edited render copies, never on a regenerated render. `signoff.edits_summary` carries the lead's note. Baseline none. Target >70% by pilot end (PRD s7). Pass: reported at end of week 3 / mean >70% at end of week 4. Whether survival also gates week 4 go-live (sheet 07's recommended stop rule, not the PRD) is OWNER TO CONFIRM.
+- **Question precision** (`oq_precision_pct` = `oq_real / oq_total`). During review the lead marks every entry of `open_questions` in the draft with exactly one of four classes: real (the lead would put it to the client as written or lightly reworded), duplicate (its `field` matches a conflict object present in the draft `brief.json`, whatever its status at sign-off, or it restates another question), answered_in_sources (the lead can name the source passage that answers it), not_worth_asking (none of the above and the lead would not send it). `oq_total` = count of `open_questions` in the draft; `oq_real + oq_duplicate + oq_answered_in_sources + oq_not_worth_asking = oq_total` (add the column to the CSV); `oq_precision_pct` = 100 x `oq_real` / `oq_total`, integer. Baseline none. Target >80%. Pass: mean >80% / mean >80%.
+- **Question duplicates** (`oq_duplicate`, `oq_answered_in_sources`). A question whose field matches an open conflict, a near-duplicate, or one the sources answer; counted as not real. Lead, during review. Baseline voreas_02: 4 to 5 of 16 to 17 (`runs/voreas_prep_report.md` addendum 4). Reported.
+- **Conflict catch** (`conflicts_known`, `conflicts_caught`, `conflicts_false`). Retro only. Known: contradictions the lead lists in week 1 from the project's outcome, before any draft exists (s8); `conflicts_caught` = the number of the lead's listed contradictions that appear as a conflict object in the draft with both positions cited (one listed contradiction counts once); `conflicts_false` = conflict objects in the draft the lead judges not a contradiction; a conflict object the lead did not list but accepts as real is noted in `notes` and counts in neither; operator scores after the run, lead confirms at sign-off. Fixture results: northlight_01 3/3, voreas_02 2/4 then 4/4 across rolls (`runs/voreas_prep_report.md`). Target: OWNER TO CONFIRM. A merged conflict is CE2.
+- **Critical errors** (`ce_*`, `ce_total`). Count per brief by class, below. Lead flags during review; operator confirms against run artifacts. Baseline: voreas_02 shows CE1 to CE4. Target 0. Pass: 0 across the set / 0 on live briefs.
+- **Greek register** (`el_register_1to5`). Lead rates EL naturalness 1 to 5 at sign-off; the EL versus EN edit comparison is `survival_el_pct` against `survival_en_pct`. No numeric floor in s7: OWNER TO CONFIRM. Reported, flagged when EL survival is below EN on most briefs (s7: "systematically more").
+- **Refusal rate** (`gate_repairs`, `legs_refused`, `resumes_needed`). Gate refusals repaired on retry, legs refused twice, and `--stage` resumes needed. Operator, console and `diagnostics/repair_log.jsonl`. Baseline 3 of 10 single-document runs refused, 7/10 leg pass rate, Haiku era (`docs/demo_timing.md`). Target: OWNER TO CONFIRM after re-baseline.
+- **Template conformance** (`schema_valid`). `brief.json` validates against `schema/brief_schema.json` (s7 lagging "brief consistency"). Operator. Target 100%. Pass: all / all.
+
+Critical error classes (CE1 to CE4 are documented Voreas cases, `runs/voreas_prep_report.md`; CE5 comes from `skills/SOURCES.md` rule G and harness T3.3, with a caught instance in `docs/COST_MODEL.md` s6). Counting unit: one count per occurrence in the Stage-1 `brief.json`, `brief_en.md` or `brief_el.md`; the same defect in both renders counts once; `ce_total` is the sum of the five columns. Shadow creative drafts are scored in `creative_strikes`, never here. Target 0 is this scorecard's proposal (PRD s7 has no critical-error measure; source `tools/walkthrough/codex_priorities.md` item 2), OWNER TO CONFIRM.
+
+- CE1, dropped objective: an objective a source states (transcript, RFP or email) that appears in none of `objectives`, `open_questions` or `conflicts` of the signed-off `brief.json`; the lead lists the sources' objectives at review and the operator checks each. The Voreas case (finding 1) was a garble-flagged objective; the garble is the cause, not the definition.
+- CE2, asserted resolution: a field carries one position's value as its sole entry while a conflict object on that field has `status = open` (addendum 1); countable from `brief.json`.
+- CE3, uncited rendered claim, or a claim attributed to a source that never wrote it (addendum 2).
+- CE4, invented figure: a number, total or conversion absent from the sources (finding 4; the Draft A budget total on sheet 09 is the same defect class in a creative draft and is scored under `creative_strikes`).
+- CE5, silent garble repair: a garbled token rewritten without its extraction note (`skills/SOURCES.md` rule G; harness T3.3).
+
+## 3. Adoption and lagging
+
+- **Voluntary adoption** (`initiated_by`). 2/2 pilot leads choose the tool for their next new project; at least 3 more leads request onboarding in month 2 (s2 goal 4, s7); absolute counts. Operator. Pass: n/a / 2/2 on week-4 briefs; month-2 count in the report.
+- **Shadow creative** (`creative_shadow_reviewed`, `creative_strikes`). Creative lead (OWNER TO CONFIRM) reviews the shadow draft of each signed-off brief and counts strikes; nothing delivered (s3). Baseline northlight: 3 strikes, 1 call (sheet 09). Not a pilot gate (v1.1 decision).
+- **Downstream** (`creative_rework_requests_q1`, `client_revision_rounds_q1`). Per brief, quarter 1, traffic log (s7 lagging). Baseline OWNER TO CONFIRM. Not pilot-scored.
+- **Capacity returned.** `(baseline_min - total_attention_min)` x A2 x 12 / 60, hours per year, survival-adjusted, conservative floor; operator. PRD assumptions give 210 h/yr, about EUR 4.0 to 4.2k at A4 (sheet 10); `docs/COST_MODEL.md` s3 carries EUR 5 to 6k from PRD s10, unreconciled.
+
+## 4. Pass rules and stop rule
+
+- End of week 3 (2 leads x 3 past projects): every "end wk 3" rule holds; reported-only measures are not gated.
+- Stop rule (sheet 07): if weeks 2 to 3 miss the targets, week 4 does not go live; the report is still written.
+- Immediate stop, any week: S2 or S3 material enters the system (s3, DR-11; `pipeline/gates.py` refuses S2/S3 from the client config, so this means a tier mis-set at onboarding), or any critical error reaches a client through a failed sign-off.
+- End of week 4: live briefs meet every "end wk 4" rule and 2/2 leads chose the tool.
+
+## 5. Protocol
+
+- Week 1: validate A1 to A5 (A1 on 5 recent projects); glossary built with the leads; transcript retention confirmed (s12 question 3), else Plan B prospective; each lead names 3 past S0 or S1 projects, lists their known conflicts, records `baseline_min`.
+- Weeks 2 to 3: 6 retrospective briefs. For each one the lead assembles the sources (timed, `assembly_min`), the operator runs the pipeline, the lead reviews, edits and signs off the draft as if it were live (timed, `review_min`; question classes, conflict scores, CE flags and `el_register_1to5` are recorded at that sign-off), and only then compares the signed-off draft with the brief actually written (the side-by-side of PRD s8, summarised in `notes`). The six sign-off rows are the end-of-week-3 gate set. Creative in shadow on the signed-off briefs.
+- Week 4: first real new projects, conditional on section 4; the lead owns sign-off; two brief champions trained on the one-page runbook (s8; runbook: OWNER TO CONFIRM).
+- The operator is the AI specialist (s8).
+- The executive sponsor named at kickoff signs the pilot report (s8). Sponsor, leads, champions: OWNER TO CONFIRM.
+
+## 6. The CSV
+
+One row per brief, one column per measure above, plus identifier columns. Allowed values: `row_type` EXAMPLE or PILOT; `phase` retro or live; `week` 1 to 4 (pre-pilot on the example); `lead_id` L1 or L2, the name mapping kept outside the repository; `client_tier` S0 or S1 (from the client glossary, DR-11); `initiated_by` lead, champion or operator (the adoption measure counts live rows with `initiated_by` = lead); `schema_valid`, `signed_off`, `creative_shadow_reviewed` yes or no; `baseline_min` the lead's recalled minutes for the original brief on retro rows (PRD A1 method), blank on live rows; `machine_wall_min` from `started_ts` to `finished_ts` in `run_manifest.json`, summed across resumed legs; `tokens_stage1` an integer from `python3 eval/cost_report.py runs/<ts> --tokens`; times integer minutes; shares integer percent; a cell not measured reads `not_recorded`; no cell carries any other text, comments go in `notes`. The EXAMPLE row is the northlight_01 graded run (`runs/tier3`; sheets 07, 09, 10); cells that run did not measure read `not_recorded`.

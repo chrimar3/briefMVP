@@ -1,0 +1,9 @@
+Saved [kv_can_final.png](/Users/chrism/AI-transformation-assignment/brief-builder/tools/walkthrough/kv_can_final.png), 1254 × 1254, using built-in `image_gen`.
+
+Chose **attempt 3**: closest to standard-can proportions and 70% framing. Text is correct; two crests and two bubbles are present, with no prohibited imagery.
+
+Remaining imperfections: lockup sizing and clear space still differ from the reference; background tone varies slightly. It remains a labelled mock-up, not a deliverable. No other workspace files were edited.
+
+Final prompt:
+
+> Use case: product-mockup. ONE square mock-up image. Edit Input 1 (attempt 2). ONE targeted change: correct the can format and framing to a STANDARD 330 ml soft-drink can, physically 66 mm wide x 115 mm tall, centered and occupying 70% of image height. The previous can is too tall and too large in frame. At 1254 square, the can should be approximately 505 px wide and 878 px tall including metal rims. Retain the same camera angle, plain silver top and pull tab, surface, contact shadow, soft studio light, neutral backdrop, caption, and all printed artwork. Input 2 is the authoritative final flat logo reference for preserving the two-crested yellow gesture, two rising white bubbles, white bold sans-serif "Meltemi Fizz", yellow "SPARKLING TEA · ZERO SUGAR" in that order and with reference proportions. Preserve the reference's minimum one-wordmark-height clear space. Printed inks only Aegean Blue #1B4F8A, Citrus Yellow #F5C518, white; matte finish. Small top-left image caption verbatim "MOCK-UP · NOT FOR DELIVERY". Synthetic demo brand; shadow-mode walkthrough illustration only. Plain evenly lit light-neutral backdrop, flat tone without gradient. No leaf, ring, wind lines, extra text or logos, watermark, alcohol association, beach, party, bar, pool, people, health or weight-loss claim, competitors, condensation, ice, splash, fruit, straws, glassware.

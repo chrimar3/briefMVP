@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1920">
+<rect width="2560" height="1920" fill="#1B4F8A"/>
+<text x="1280" y="150" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="44" letter-spacing="10" fill="#FFFFFF">MOCK-UP · NOT FOR DELIVERY</text>
+<path fill="#F5C518" d="M 1100 1300 L 1190 914 C 1070 909 960 858 880 758 L 930 661 C 1008 754 1104 800 1216 803 L 1255 636 C 1104 632 972 564 876 446 L 927 348 C 1014 455 1136 520 1281 523 L 1313 384 L 1427 384 L 1214 1300 Z"/>
+<circle cx="1430" cy="260" r="44" fill="#FFFFFF"/>
+<circle cx="1592" cy="420" r="64" fill="#FFFFFF"/>
+<circle cx="1536" cy="635" r="45" fill="#FFFFFF"/>
+<text x="1280" y="1660" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="112" letter-spacing="-3" fill="#FFFFFF">Meltemi Fizz</text>
+<text x="1280" y="1840" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif" font-weight="700" font-size="44" letter-spacing="6" fill="#F5C518">SPARKLING TEA · ZERO SUGAR</text>
+</svg>

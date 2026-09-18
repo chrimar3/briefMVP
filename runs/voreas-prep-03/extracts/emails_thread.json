@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-24",
+    "extraction_ts": "2026-07-26T21:29:13",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [
+    {
+      "value": "κλείδωσε τελικά 14 Φεβρουαρίου",
+      "lang": "el",
+      "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02",
+      "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**",
+      "speaker_or_author": "Nikos (Voreas)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [],
+  "mandatories": [],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "Final approval authority not yet confirmed; Nikos states it is between himself and Stella, confirmation pending",
+      "why_it_matters": "Brief cannot be finalized or advanced to next stage without knowing the authorizing person; affects governance, decision-making authority, and approval timeline",
+      "suggested_question_for_client": "Ποιος θα κάνει τελικά το approval του brief — εσείς ή η Στέλλα;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Scope and feasibility of new photography assets not yet confirmed",
+      "why_it_matters": "Photography is a critical path item with long lead times; if required for the 14 February launch, production scheduling must begin immediately",
+      "suggested_question_for_client": "Θα χρειαστεί νέα φωτογράφιση για το launch του Voreas Move, και αν ναι, μπορεί να ολοκληρωθεί ασφαλώς μέχρι 14 Φεβρουαρίου;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

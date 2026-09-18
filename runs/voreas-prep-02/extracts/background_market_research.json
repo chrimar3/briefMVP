@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "background_market_research",
+    "source_type": "background",
+    "source_date": "2026-05-30",
+    "extraction_ts": "2026-07-26T21:26:33",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [
+    {
+      "value": "Το 62% των αγοραστών της κατηγορίας δηλώνει ότι φοράει athleisure κυρίως εκτός γυμναστηρίου",
+      "lang": "mixed",
+      "location": "## Συμπεριφορά αγοραστή",
+      "anchor": "Το 62% των αγοραστών της κατηγορίας δηλώνει ότι φοράει athleisure «κυρίως εκτός γυμναστηρίου».",
+      "speaker_or_author": "Agora Insights",
+      "qualifier": "implied",
+      "confidence": "high"
+    },
+    {
+      "value": "Το 71% των premium αγορών της κατηγορίας γίνεται μετά από φυσική επαφή με το ύφασμα",
+      "lang": "mixed",
+      "location": "## Συμπεριφορά αγοραστή",
+      "anchor": "το 71% των premium αγορών της κατηγορίας γίνεται μετά από φυσική επαφή με το ύφασμα.",
+      "speaker_or_author": "Agora Insights",
+      "qualifier": "implied",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [
+    {
+      "value": "Τα launches διεθνών brands της κατηγορίας στην ελληνική αγορά κινούνται σε €300–500 χιλ. media spend ανά καμπάνια λανσαρίσματος",
+      "lang": "mixed",
+      "location": "## Benchmark επένδυσης επικοινωνίας",
+      "anchor": "**€300–500 χιλ. media spend** ανά καμπάνια λανσαρίσματος",
+      "speaker_or_author": "Agora Insights",
+      "qualifier": "implied",
+      "confidence": "medium"
+    },
+    {
+      "value": "Τα εγχώρια brands κινούνται αισθητά χαμηλότερα, χωρίς δημοσιευμένα στοιχεία",
+      "lang": "el",
+      "location": "## Benchmark επένδυσης επικοινωνίας",
+      "anchor": "Τα εγχώρια brands κινούνται αισθητά χαμηλότερα, χωρίς δημοσιευμένα στοιχεία.",
+      "speaker_or_author": "Agora Insights",
+      "qualifier": "implied",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [],
+  "open_questions": [
+    {
+      "field": "budget",
+      "gap": "Benchmark figure (€300–500k media spend) applies to international brand launches in Greece; scope of the figure (production vs. total budget vs. media-only) and applicability to Voreas not stated.",
+      "why_it_matters": "Budget sizing and channel mix strategy depend on understanding whether this benchmark is aspirational for Voreas or purely contextual competitive intelligence, and whether it covers production, media, or both.",
+      "suggested_question_for_client": "Το benchmark των 300–500 χιλ. ευρώ που αναφέρεται στη μελέτη αφορά αποκλειστικά media spend ή συνολικό production budget ή και τα δύο; Θα ήταν ένας ρεαλιστικός στόχος για τη Voreas;"
+    },
+    {
+      "field": "budget",
+      "gap": "Greek domestic brands' media spend is described as 'considerably lower' than international benchmarks, but no figures or range provided; intended positioning for Voreas (domestic tier vs. premium/international tier) not stated.",
+      "why_it_matters": "Competitive positioning directly determines budget expectations and channel strategy; lack of Greek brand benchmarks creates uncertainty about whether Voreas should follow the domestic or international spending model.",
+      "suggested_question_for_client": "Πόσο χαμηλότερα κινούνται τα ελληνικά brands — κοντά στο 50% των διεθνών ή πολύ χαμηλότερα; Και θέλετε η Voreas να ακολουθήσει το μοντέλο των ελληνικών ή των διεθνών brands;"
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Source is a 4-page excerpt from a 46-page market research report (Agora Insights, commissioned for Voreas Athletics, dated 2026-05-30).",
+    "Market context: athleisure category in Greece valued at €210 million annual retail value (2025) with 11% annual growth (2023–2025). Growth driven by consumers shifting budget from casual fashion, not overall clothing spending expansion.",
+    "Competitive landscape: International brands dominate the market. Greek brands Kinesis Wear and AeolusFit hold strongest domestic distribution positions (value and mid-market segments respectively). Premium segment for Greek brands remains substantially uncovered.",
+    "Buyer decision dynamic: In-store physical product contact is critical for premium purchases (71%); off-gym/lifestyle positioning (62%) indicates category displacement from activewear-only use.",
+    "Research methodology: Quantitative survey (n=1,204 respondents), urban centers only, February–March 2026. Figures based on retail panel estimates. Geographic scope limited to urban areas; may not represent full Greek population or smaller/rural markets.",
+    "No explicit project objectives, deliverables, timelines, or mandatory requirements are stated in this excerpt. Content is research context and background market intelligence only; it does not constitute project specifications."
+  ]
+}

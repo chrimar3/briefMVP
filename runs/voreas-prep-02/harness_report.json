@@ -1,0 +1,160 @@
+{
+  "run_id": "voreas-prep-02",
+  "run_dir": "runs/voreas-prep-02",
+  "fixture": "voreas_02",
+  "summary": {
+    "passed": 15,
+    "failed": 2,
+    "skipped": 0
+  },
+  "verdict": "FAIL",
+  "checks": [
+    {
+      "check_id": "T1.1",
+      "tier": 1,
+      "title": "Every extract validates against extract_schema.json",
+      "status": "pass",
+      "detail": "6 extract(s) valid",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.2",
+      "tier": 1,
+      "title": "Zero items with empty location or anchor",
+      "status": "pass",
+      "detail": "57 item(s), all cited",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.3",
+      "tier": 1,
+      "title": "Every location and anchor occurs verbatim in its source",
+      "status": "pass",
+      "detail": "all citations resolve",
+      "evidence": []
+    },
+    {
+      "check_id": "T1.4",
+      "tier": 1,
+      "title": "Seeded garbled terms present as-is with glossary-match proposals",
+      "status": "pass",
+      "detail": "4/4 flagged, none fixed",
+      "evidence": [
+        "T1: 'μπραντ αγουέρνες' as-is + proposal 'brand awareness'",
+        "T2: 'χίρο βίντεο' as-is + proposal 'hero video'",
+        "T3: 'ρίτεϊλ ακτιβέισον' as-is + proposal 'retail activation'",
+        "T4: 'σόσιαλ κόμερς' as-is + proposal 'social commerce'"
+      ]
+    },
+    {
+      "check_id": "T2.1",
+      "tier": 2,
+      "title": "Draft validates against brief_schema.json",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.2",
+      "tier": 2,
+      "title": "sensitivity_tier is within S0–S1",
+      "status": "pass",
+      "detail": "tier S0",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.3",
+      "tier": 2,
+      "title": "Both GR and EN renders exist",
+      "status": "pass",
+      "detail": "el=20235 chars · en=18765 chars",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.4",
+      "tier": 2,
+      "title": "Every rendered claim carries a resolvable citation tag",
+      "status": "pass",
+      "detail": "all claim lines cited",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.5",
+      "tier": 2,
+      "title": "Glossary terms character-exact in both renders",
+      "status": "pass",
+      "detail": "protected terms intact in both renders",
+      "evidence": []
+    },
+    {
+      "check_id": "T2.6",
+      "tier": 2,
+      "title": "Readiness block recomputes deterministically to the same values",
+      "status": "pass",
+      "detail": "{\"fields_with_evidence\": 7, \"low_confidence_share\": 0.0377, \"open_question_count\": 17, \"verdict\": \"ready_for_review\"}",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.1",
+      "tier": 3,
+      "title": "Seeded conflicts detected with citations to both sources",
+      "status": "fail",
+      "detail": "2/4 required (C2, C4)",
+      "evidence": [
+        "C1: not detected with both citations + signals",
+        "C3: not detected with both citations + signals",
+        "C5: not detected with both citations + signals"
+      ]
+    },
+    {
+      "check_id": "T3.2",
+      "tier": 3,
+      "title": "Seeded gaps present as open questions",
+      "status": "pass",
+      "detail": "6/6 found, 5 required (G1, G2, G3, G4, G5, G6)",
+      "evidence": []
+    },
+    {
+      "check_id": "T3.3",
+      "tier": 3,
+      "title": "Garbled terms still flagged (not fixed) in the brief and renders",
+      "status": "fail",
+      "detail": "3/4 carried through",
+      "evidence": [
+        "T1: 'μπραντ αγουέρνες' disappeared between extract and brief"
+      ]
+    },
+    {
+      "check_id": "T3.4",
+      "tier": 3,
+      "title": "Zero uncited values anywhere in the draft",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "X1",
+      "tier": 3,
+      "title": "Retracted idea is not a committed deliverable",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    },
+    {
+      "check_id": "X2",
+      "tier": 3,
+      "title": "Speculative remark carries the conditional qualifier",
+      "status": "pass",
+      "detail": "1 matching entr(ies), all conditional",
+      "evidence": []
+    },
+    {
+      "check_id": "X3",
+      "tier": 3,
+      "title": "No resolved numeric budget total in the draft or renders",
+      "status": "pass",
+      "detail": "",
+      "evidence": []
+    }
+  ]
+}

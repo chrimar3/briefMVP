@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "transcript_kickoff",
+    "source_type": "transcript",
+    "source_date": "2026-07-12",
+    "extraction_ts": "2026-07-26T21:39:07",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "δοκιμή, να μπει το προϊόν σε ντουλάπες",
+      "lang": "el",
+      "location": "[00:02:18]",
+      "anchor": "δοκιμή, να μπει το προϊόν σε ντουλάπες",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "το story είναι athleisure lifestyle — ρούχο που φοράς από το γυμναστήριο στο γραφείο· αν το πάμε καθαρά performance θα μας συγκρίνουν με τους τεχνικούς παίκτες και θα χάσουμε",
+      "lang": "mixed",
+      "location": "[00:05:47]",
+      "anchor": "το story είναι athleisure lifestyle — ρούχο που φοράς",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "γυναίκες 30–45",
+      "lang": "el",
+      "location": "[00:03:55]",
+      "anchor": "γράφει γυναίκες 30 με 45",
+      "speaker_or_author": "NIKOS (citing RFP)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "the line is unisex and our real buyer is 25 to 55",
+      "lang": "en",
+      "location": "[00:03:55]",
+      "anchor": "the line is unisex and our real buyer is 25 to 55",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "athleisure lifestyle — ρούχο που φοράς από το γυμναστήριο στο γραφείο",
+      "lang": "mixed",
+      "location": "[00:05:47]",
+      "anchor": "ρούχο που φοράς από το γυμναστήριο στο γραφείο",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "χίρο βίντεο για το λανσάρισμα",
+      "lang": "mixed",
+      "location": "[00:09:04]",
+      "anchor": "ένα χίρο βίντεο για το λανσάρισμα",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "social stuff — cutdowns, stories; formats και διάρκειες δεν έχουν καταλήξει",
+      "lang": "mixed",
+      "location": "[00:09:04]",
+      "anchor": "social stuff — cutdowns, stories, τέτοια",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο",
+      "lang": "mixed",
+      "location": "[00:10:26]",
+      "anchor": "pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "low"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "μέσα Μαρτίου",
+      "lang": "el",
+      "location": "[00:15:40]",
+      "anchor": "Χρονικά κρατάμε το «μέσα Μαρτίου» του RFP",
+      "speaker_or_author": "ELENI",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "€140.000 με το media μέσα",
+      "lang": "mixed",
+      "location": "[00:12:10]",
+      "anchor": "Το RFP λέει €140.000 με το media μέσα",
+      "speaker_or_author": "ELENI",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού — καθαρά production και αμοιβές",
+      "lang": "el",
+      "location": "[00:12:41]",
+      "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε",
+      "speaker_or_author": "MARIA",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [],
+  "open_questions": [
+    {
+      "field": "budget",
+      "gap": "Media budget amount, scope, and relationship to RFP €140k figure undefined; MARIA (CFO) states her approved budget is production+fees only (120–125k), while media spend is controlled by management with separate media agency.",
+      "why_it_matters": "Total budget scope affects deliverable scale and channel mix strategy; unclear whether €140k in RFP is production-only or inclusive of media.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: το €140.000 του RFP περιλαμβάνει το media spend; και ποιο είναι το media budget range;",
+      "linked_items": [
+        "€140.000 με το media μέσα",
+        "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε"
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "Launch timing conditionally mid-March but board is discussing seasonal factors and may shift; final confirmation expected within one month from meeting date.",
+      "why_it_matters": "Production timeline, media booking schedule, and retail coordination depend on confirmed launch window.",
+      "suggested_question_for_client": "Πότε θα έχετε τελική απόφαση από το board για το launch window; τι είναι η expected σεζόν που συζητείται;",
+      "linked_items": [
+        "μέσα Μαρτίου"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "Athleisure lifestyle positioning is NIKOS's revised thinking but has not yet been locked with the board; RFP positioning emphasized technical superiority and athletic specs, which NIKOS now believes is incorrect strategy.",
+      "why_it_matters": "Core positioning determines creative direction, messaging strategy, competitor framing, and media targeting.",
+      "suggested_question_for_client": "Μπορούμε να σχεδιάσουμε βάσει του athleisure lifestyle story, ή πρέπει πρώτα να επιβεβαιώσετε με το board;",
+      "linked_items": [
+        "το story είναι athleisure lifestyle"
+      ]
+    },
+    {
+      "field": "objectives",
+      "gap": "KPIs and success metrics are undefined. NIKOS acknowledges this gap and suggests building them in the proposal, but no targets stated for sales, awareness, trial rate, retail sell-in velocity, or other measures.",
+      "why_it_matters": "Without defined KPIs, cannot align creative and media strategy with business outcomes or measure campaign effectiveness.",
+      "suggested_question_for_client": "Ποιες είναι οι κύριες μετρήσεις επιτυχίας; Υπάρχουν targets σε brand awareness, trial conversion, ή retail velocity;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Hero video and social content specs not finalized: formats, durations, quantities, and production approach undefined. NIKOS deferred decisions to agency guidance.",
+      "why_it_matters": "Detailed format specifications drive production planning, cost estimation, platform strategy, and media buying.",
+      "suggested_question_for_client": "Για το hero video και τα social assets: ποιες είναι οι preferred διάρκειες, formats, και ποσότητα content;",
+      "linked_items": [
+        "χίρο βίντεο για το λανσάρισμα",
+        "social stuff — cutdowns, stories"
+      ]
+    },
+    {
+      "field": "audiences",
+      "gap": "RFP audience definition (women 30–45) contradicts NIKOS's stated actual market (unisex, 25–55). NIKOS attributes RFP definition to outdated research from previous product line. Formal confirmation needed.",
+      "why_it_matters": "Target audience definition drives creative conception, platform selection, media buying strategy, and influencer/talent choices.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: η σωστή target audience είναι 25–55, unisex, όχι γυναίκες 30–45 όπως λέει το RFP;",
+      "linked_items": [
+        "γυναίκες 30–45",
+        "the line is unisex and our real buyer is 25 to 55"
+      ]
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "audiences",
+      "value_a": {
+        "value": "γυναίκες 30–45",
+        "lang": "el",
+        "location": "[00:03:55]",
+        "anchor": "γράφει γυναίκες 30 με 45",
+        "speaker_or_author": "NIKOS (citing RFP)",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "value_b": {
+        "value": "the line is unisex and our real buyer is 25 to 55",
+        "lang": "en",
+        "location": "[00:03:55]",
+        "anchor": "the line is unisex and our real buyer is 25 to 55",
+        "speaker_or_author": "NIKOS",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "NIKOS states RFP audience definition is outdated research from previous product line; actual target is broader and unisex. Requires formal confirmation."
+    },
+    {
+      "field": "budget",
+      "value_a": {
+        "value": "€140.000 με το media μέσα",
+        "lang": "mixed",
+        "location": "[00:12:10]",
+        "anchor": "Το RFP λέει €140.000 με το media μέσα",
+        "speaker_or_author": "ELENI",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "value_b": {
+        "value": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού — καθαρά production και αμοιβές",
+        "lang": "el",
+        "location": "[00:12:41]",
+        "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε",
+        "speaker_or_author": "MARIA",
+        "qualifier": "stated",
+        "confidence": "medium"
+      },
+      "note": "RFP states €140k total including media; CFO approved budget is 120–125k production+fees only, with media budget held by management with separate media agency. Scope and total budget unclear."
+    }
+  ],
+  "extraction_notes": [
+    "Line [00:02:18]: 'μπραντ αγουέρνες' — fidelity annotation suggests glossary match to 'brand awareness' (confidence high).",
+    "Line [00:09:04]: 'χίρο βίντεο' — fidelity annotation suggests glossary match to 'hero video' (confidence high).",
+    "Pop-up store proposal retracted at [00:10:48] by NIKOS after cost inquiry; recorded as 'ανενεργό' (inactive) by ELENI at [00:12:10]."
+  ]
+}

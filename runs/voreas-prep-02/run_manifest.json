@@ -1,0 +1,536 @@
+{
+  "run_id": "voreas-prep-02",
+  "pipeline_version": "1.0.0",
+  "project_dir": "fixtures/voreas_02",
+  "started_ts": "2026-07-26T21:20:42",
+  "finished_ts": "2026-07-26T22:04:37",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "full",
+  "sources": [
+    {
+      "source_id": "background_brand_guidelines",
+      "source_type": "background",
+      "source_date": "2026-01-15"
+    },
+    {
+      "source_id": "background_market_research",
+      "source_type": "background",
+      "source_date": "2026-05-30"
+    },
+    {
+      "source_id": "emails_thread",
+      "source_type": "email_thread",
+      "source_date": "2026-07-24 (latest message)"
+    },
+    {
+      "source_id": "rfp_voreas",
+      "source_type": "rfp",
+      "source_date": "2026-07-05"
+    },
+    {
+      "source_id": "transcript_followup",
+      "source_type": "transcript",
+      "source_date": "2026-07-18"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "source_type": "transcript",
+      "source_date": "2026-07-12"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "background",
+          "email_thread",
+          "rfp",
+          "transcript"
+        ],
+        "substantive_count": 4,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 6 source(s), 4 substantive: background, email_thread, rfp, transcript"
+      }
+    },
+    {
+      "number": 2,
+      "name": "classification",
+      "kind": "model",
+      "agent": "classify",
+      "description": "Project type + onboarding sensitivity tier",
+      "status": "pass",
+      "classification": {
+        "output_file": "runs/voreas-prep-02/classification.json",
+        "project_type": "advertising_creative",
+        "classification_confidence": "high",
+        "sensitivity_tier": "S0",
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "classify",
+              "ok": true,
+              "session_id": "c8e8c9ba-ec70-4976-9a2b-4b33b9d3b447",
+              "model_ids": [
+                "claude-haiku-4-5-20251001"
+              ],
+              "cost_usd": 0.0502719,
+              "duration_ms": 46010,
+              "num_turns": 7,
+              "usage": {
+                "input_tokens": 33,
+                "output_tokens": 3526,
+                "cache_read_input_tokens": 30009,
+                "cache_creation_input_tokens": 14804
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "name": "fidelity_check",
+      "kind": "model",
+      "agent": "fidelity-check",
+      "description": "Transcript fidelity gate + annotation",
+      "status": "pass",
+      "fidelity": [
+        {
+          "source_id": "transcript_followup",
+          "report_file": "runs/voreas-prep-02/fidelity/transcript_followup.report.json",
+          "annotated_file": "runs/voreas-prep-02/fidelity/transcript_followup.annotated.md",
+          "verdict": "pass_with_flags",
+          "fidelity_score": "medium",
+          "tokens_flagged": 2,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "fidelity-check",
+                "ok": true,
+                "session_id": "0542f279-00b0-4892-996d-63e40837ca2b",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.07137450000000001,
+                "duration_ms": 83903,
+                "num_turns": 6,
+                "usage": {
+                  "input_tokens": 33,
+                  "output_tokens": 7488,
+                  "cache_read_input_tokens": 25615,
+                  "cache_creation_input_tokens": 15670
+                }
+              },
+              "violations": []
+            }
+          ]
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "report_file": "runs/voreas-prep-02/fidelity/transcript_kickoff.report.json",
+          "annotated_file": "runs/voreas-prep-02/fidelity/transcript_kickoff.annotated.md",
+          "verdict": "pass_with_flags",
+          "fidelity_score": "medium",
+          "tokens_flagged": 2,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "fidelity-check",
+                "ok": true,
+                "session_id": "e102d185-7ba9-4438-abc4-410d0aff234b",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.0460788,
+                "duration_ms": 55100,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 4340,
+                  "cache_read_input_tokens": 12878,
+                  "cache_creation_input_tokens": 11533
+                }
+              },
+              "violations": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "background_brand_guidelines",
+          "output_file": "runs/voreas-prep-02/extracts/background_brand_guidelines.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "de139aaa-22d9-4071-be05-6917c50b30b1",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1206007,
+                "duration_ms": 161198,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 15220,
+                  "cache_read_input_tokens": 23937,
+                  "cache_creation_input_tokens": 21041
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 14,
+          "open_question_count": 0,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "background_market_research",
+          "output_file": "runs/voreas-prep-02/extracts/background_market_research.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "56c9c092-453c-4d7d-a49d-fd73a709f7c7",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1091345,
+                "duration_ms": 159344,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 13498,
+                  "cache_read_input_tokens": 23895,
+                  "cache_creation_input_tokens": 19615
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 4,
+          "open_question_count": 2,
+          "extraction_note_count": 6
+        },
+        {
+          "source_id": "emails_thread",
+          "output_file": "runs/voreas-prep-02/extracts/emails_thread.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "890affd4-6739-4fec-a991-c1ebd2f6f43a",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1095743,
+                "duration_ms": 154519,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 13556,
+                  "cache_read_input_tokens": 24313,
+                  "cache_creation_input_tokens": 19669
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 1,
+          "open_question_count": 2,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "rfp_voreas",
+          "output_file": "runs/voreas-prep-02/extracts/rfp_voreas.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "7d040dc8-f315-445e-b8aa-02bdc0e13b43",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.13865929999999999,
+                "duration_ms": 180935,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 17746,
+                  "cache_read_input_tokens": 23963,
+                  "cache_creation_input_tokens": 23754
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 14,
+          "open_question_count": 5,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "transcript_followup",
+          "output_file": "runs/voreas-prep-02/extracts/transcript_followup.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "fcbe9d2b-ea0f-4ecd-a313-6bbcffa89294",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.1088495,
+                "duration_ms": 141919,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 13505,
+                  "cache_read_input_tokens": 24595,
+                  "cache_creation_input_tokens": 19420
+                }
+              },
+              "violations": [
+                "internal_conflicts[1].value_b: anchor 'ίσως τρέξουμε και Κύπρο... αλλά δεν έχει αποφασιστεί από το board' does not occur in the source — citations are copied from the document, never constructed",
+                "deliverables[2]: value contains glossary term 'retail activation', which never appears in Latin script in the source. If the source renders it collapsed into Greek script, keep the source's characters and add an extraction_note proposing the glossary match (SOURCES.md rule G); never repair in place."
+              ]
+            },
+            {
+              "attempt": 2,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "117cd182-71e4-4d55-913d-6b34c19417a5",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.0999198,
+                "duration_ms": 112058,
+                "num_turns": 10,
+                "usage": {
+                  "input_tokens": 73,
+                  "output_tokens": 9719,
+                  "cache_read_input_tokens": 111538,
+                  "cache_creation_input_tokens": 20049
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 13,
+          "open_question_count": 5,
+          "extraction_note_count": 4
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "output_file": "runs/voreas-prep-02/extracts/transcript_kickoff.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "9ff5bb7a-9b11-40d7-a13e-7bafc794a00b",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.12319630000000001,
+                "duration_ms": 211069,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 33,
+                  "output_tokens": 15088,
+                  "cache_read_input_tokens": 37913,
+                  "cache_creation_input_tokens": 21966
+                }
+              },
+              "violations": [
+                "objectives[0]: anchor 'το βασικό ζητούμενο είναι το μπραντ αγουέρνες — να μάθει' does not occur in the source — citations are copied from the document, never constructed",
+                "internal_conflicts[2].value_a: location '[00:05:11]' does not occur in the source — citations are copied from the document, never constructed",
+                "internal_conflicts[3].value_b: anchor 'ξεχάστε το που το είπα — το κόστος είναι εξωφρενικό' does not occur in the source — citations are copied from the document, never constructed"
+              ]
+            },
+            {
+              "attempt": 2,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "f66d37f7-6260-4289-ad56-d27611d30cf2",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.08409810000000001,
+                "duration_ms": 95035,
+                "num_turns": 16,
+                "usage": {
+                  "input_tokens": 81,
+                  "output_tokens": 7804,
+                  "cache_read_input_tokens": 123751,
+                  "cache_creation_input_tokens": 16311
+                }
+              },
+              "violations": []
+            }
+          ],
+          "item_count": 11,
+          "open_question_count": 6,
+          "extraction_note_count": 3
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "conflict_pass",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Cross-source contradictions — surfaced, never resolved",
+      "status": "pass",
+      "output_file": "runs/voreas-prep-02/conflict_candidates.json",
+      "candidate_count": 7,
+      "candidate_fields": [
+        "objectives",
+        "audiences",
+        "key_messages",
+        "deliverables",
+        "timeline",
+        "budget",
+        "mandatories"
+      ],
+      "internal_conflict_count": 4
+    },
+    {
+      "number": 6,
+      "name": "synthesis",
+      "kind": "model",
+      "agent": "synthesize",
+      "description": "Assemble the canonical brief object",
+      "status": "pass",
+      "synthesis": {
+        "output_file": "runs/voreas-prep-02/brief.json",
+        "entry_count": 53,
+        "conflict_count": 5,
+        "open_question_count": 17,
+        "readiness": {
+          "fields_with_evidence": 7,
+          "low_confidence_share": 0.0377,
+          "open_question_count": 17,
+          "verdict": "ready_for_review"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "synthesize",
+              "ok": true,
+              "session_id": "99c68f49-db16-4f2c-8ca5-e7b13fe11620",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 1.4943335999999998,
+              "duration_ms": 588067,
+              "num_turns": 11,
+              "usage": {
+                "input_tokens": 6,
+                "output_tokens": 57896,
+                "cache_read_input_tokens": 52552,
+                "cache_creation_input_tokens": 101685
+              }
+            },
+            "violations": [
+              "budget[2].content: currency-marked figure (≈300000) has no source that wrote that mark on it — rewrite the figure in words or drop the unsourced mark; do NOT strip marks that trace to a source (SYNTHESIS.md rule 5)"
+            ]
+          },
+          {
+            "attempt": 2,
+            "subagent": {
+              "agent": "synthesize",
+              "ok": true,
+              "session_id": "8b19226a-a070-4a0b-8c47-927c1814a4b5",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.6100911,
+              "duration_ms": 206240,
+              "num_turns": 4,
+              "usage": {
+                "input_tokens": 8,
+                "output_tokens": 21853,
+                "cache_read_input_tokens": 65707,
+                "cache_creation_input_tokens": 43760
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "name": "render",
+      "kind": "model",
+      "agent": "render",
+      "description": "GR + EN documents from the same object",
+      "status": "pass",
+      "render": {
+        "el_file": "runs/voreas-prep-02/brief_el.md",
+        "en_file": "runs/voreas-prep-02/brief_en.md",
+        "el_chars": 20235,
+        "en_chars": 18765,
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "render",
+              "ok": true,
+              "session_id": "bb5cdc19-0647-4325-b3e9-3ab06b9d3d4e",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.646122,
+              "duration_ms": 247337,
+              "num_turns": 7,
+              "usage": {
+                "input_tokens": 10,
+                "output_tokens": 20551,
+                "cache_read_input_tokens": 106790,
+                "cache_creation_input_tokens": 50965
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "rfp_voreas",
+    "source_type": "rfp",
+    "source_date": "2026-07-05",
+    "extraction_ts": "2026-07-26T21:31:49",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Επιτυχημένο launch της σειράς στην ελληνική αγορά, με έμφαση στην καθιέρωση της Voreas Athletics ως premium επιλογής στη νέα κατηγορία",
+      "lang": "el",
+      "location": "## 2. Στόχος",
+      "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Γυναίκες 30–45 ετών με ενεργό lifestyle",
+      "lang": "el",
+      "location": "## 4. Κοινό-στόχος",
+      "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Αθήνα και Θεσσαλονίκη (δύο μεγάλα αστικά κέντρα)",
+      "lang": "el",
+      "location": "## 4. Κοινό-στόχος",
+      "anchor": "στα δύο μεγάλα αστικά κέντρα (Αθήνα, Θεσσαλονίκη)",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "premium performance — τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα",
+      "lang": "mixed",
+      "location": "## 3. Τοποθέτηση",
+      "anchor": "**premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "τεχνική υπεροχή έναντι της κατηγορίας",
+      "lang": "el",
+      "location": "## 3. Τοποθέτηση",
+      "anchor": "την τεχνική υπεροχή έναντι της κατηγορίας",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Move Like the Wind",
+      "lang": "en",
+      "location": "## 8. Λοιπά",
+      "anchor": "το tagline **Move Like the Wind** είναι εγκεκριμένο",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Δημιουργικό υλικό για το launch: βίντεο και key visuals",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)",
+      "lang": "el",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Launch μέσα Μαρτίου 2027",
+      "lang": "mixed",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "Launch **μέσα Μαρτίου 2027**",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ώστε να συμπέσει με την ανοιξιάτικη ανανέωση των καταστημάτων και την έναρξη της σεζόν outdoor",
+      "lang": "el",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "να συμπέσει με την ανοιξιάτικη ανανέωση των καταστημάτων",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [
+    {
+      "value": "€140.000, συμπεριλαμβανομένου του media",
+      "lang": "mixed",
+      "location": "## 7. Προϋπολογισμός",
+      "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "το tagline Move Like the Wind είναι εγκεκριμένο από το ΔΣ και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "lang": "el",
+      "location": "## 8. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "speaker_or_author": "Voreas Athletics",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "deliverables",
+      "gap": "Social media and digital channels required but no specific platform selection, content pillars, or posting frequency specified.",
+      "why_it_matters": "Channel strategy and content calendar depend on understanding which platforms and cadence the client prioritizes.",
+      "suggested_question_for_client": "Ποια συγκεκριμένα κανάλια κοινωνικών μέσων θα πρέπει να ποροτιμήσουμε; Υπάρχουν ελάχιστες απαιτήσεις συχνότητας ανάρτησης;",
+      "linked_items": ["deliverables[0]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Creative materials (video and key visuals) listed without quantities, technical specifications, duration, or deliverable count.",
+      "why_it_matters": "Production scope and budget breakdown for creative development depend on number and specifications of assets.",
+      "suggested_question_for_client": "Πόσα video assets χρειάζεστε και ποια η διάρκεια; Ποιες είναι οι τεχνικές προδιαγραφές; Πόσα key visuals σε ποιούς μορφότυπους;",
+      "linked_items": ["deliverables[1]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Retail support material scope undefined: no specifications on material types, quantities, store count, or distribution method.",
+      "why_it_matters": "Production planning and execution costs for retail activation depend on scope clarity.",
+      "suggested_question_for_client": "Τι ακριβώς περιλαμβάνει το υλικό βιτρίνας; Πόσα σημεία πώλησης και πόσα σετ υλικού ανά κατάστημα;",
+      "linked_items": ["deliverables[2]"]
+    },
+    {
+      "field": "budget",
+      "gap": "Total budget €140.000 includes media spend, but allocation between production costs and media spend is not specified.",
+      "why_it_matters": "Creative scope and media strategy depend on understanding the production vs. media budget split.",
+      "suggested_question_for_client": "Ποιο ποσοστό των €140.000 είναι για production του υλικού και ποιο για media spend; Υπάρχει ελάχιστη απαίτηση media budget;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "key_messages",
+      "gap": "Technical superiority is the stated message, but no specific technical features or product benefits are detailed to substantiate it.",
+      "why_it_matters": "Message development and creative approach depend on understanding which technical attributes differentiate Voreas Move in the athleisure category.",
+      "suggested_question_for_client": "Ποιες συγκεκριμένες τεχνικές ιδιότητες του Voreas Move πρέπει να αναδείξουμε στην επικοινωνία (π.χ. υλικό, κατασκευή, λειτουργικότητα, sustainability);",
+      "linked_items": ["key_messages[1]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

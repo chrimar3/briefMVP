@@ -1,0 +1,28 @@
+{
+  "project_id": "voreas_02",
+  "client_id": "voreas_athletics",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S0",
+  "tier_source": "client_config",
+  "rationale": "Voreas Athletics is launching a product campaign for the Voreas Move athleisure line, explicitly requesting creative deliverables (hero video, key visuals) and multi-channel execution across social media, retail activation, and influencer partnerships to reach consumer audiences.",
+  "evidence": [
+    {
+      "source_id": "rfp_voreas",
+      "location": "section 5 (Απαιτήσεις καμπάνιας)",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals) · Παρουσία σε social media και ψηφιακά κανάλια · Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "[00:09:04]",
+      "anchor": "Σίγουρα ένα χίρο βίντεο για το λανσάρισμα, και μετά social stuff — cutdowns, stories"
+    },
+    {
+      "source_id": "transcript_followup",
+      "location": "[00:02:14 onwards]",
+      "anchor": "Channels: Instagram και YouTube, social commerce (shoppable posts), retail activation (βιτρίνες, stands), micro-influencers για το πρώτο κύμα, AR filter για δοκιμή χρωμάτων"
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

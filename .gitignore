@@ -25,3 +25,12 @@ reviews/*.md
 # reports is inspectable without re-running the pipeline (signed brief, renders,
 # extracts, fidelity, harness verdict, creative A/B drafts).
 !runs/tier3
+
+# Walkthrough tooling: Codex run logs and gate byproducts are regenerated, never source.
+tools/walkthrough/*.log
+tools/walkthrough/_s*.js
+
+# Evidence for tests/test_regression_voreas.py: the two Voreas prep runs (15/17 and 16/17) the
+# documented content-integrity failures were found in; small, synthetic, read-only.
+!runs/voreas-prep-02
+!runs/voreas-prep-03

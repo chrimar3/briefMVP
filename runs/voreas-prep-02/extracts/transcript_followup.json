@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "transcript_followup",
+    "source_type": "transcript",
+    "source_date": "2026-07-18",
+    "extraction_ts": "2026-07-26T21:34:51",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [
+    {
+      "value": "fitness και lifestyle profiles",
+      "lang": "mixed",
+      "location": "[00:05:05]",
+      "anchor": "fitness και lifestyle profiles",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Κυρίως Ελλάδα",
+      "lang": "el",
+      "location": "[00:10:02]",
+      "anchor": "Κυρίως Ελλάδα",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "ίσως τρέξουμε και Κύπρο — έχουμε δύο σημεία πώλησης εκεί",
+      "lang": "el",
+      "location": "[00:10:02]",
+      "anchor": "ίσως τρέξουμε και Κύπρο",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "low"
+    }
+  ],
+  "key_messages": [],
+  "deliverables": [
+    {
+      "value": "Instagram και YouTube",
+      "lang": "el",
+      "location": "[00:02:14]",
+      "anchor": "Instagram και YouTube σίγουρα",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "σόσιαλ κόμερς — shoppable posts, να αγοράζεις μέσα από το feed",
+      "lang": "mixed",
+      "location": "[00:02:14]",
+      "anchor": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς — shoppable posts",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "ρίτεϊλ ακτιβέισον — βιτρίνες, stands, ό,τι κάνει τον περαστικό να σταματήσει",
+      "lang": "mixed",
+      "location": "[00:03:47]",
+      "anchor": "Το ρίτεϊλ ακτιβέισον είναι για εμάς μισή καμπάνια",
+      "speaker_or_author": "STELLA",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "τρεις micro-influencers για το πρώτο κύμα, fitness και lifestyle profiles, να δείξουν το ρούχο σε πραγματική μέρα",
+      "lang": "mixed",
+      "location": "[00:05:05]",
+      "anchor": "θέλουμε τρεις micro-influencers για το πρώτο κύμα",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "ένα AR filter στο Instagram — να «δοκιμάζεις» χρώματα της συλλογής",
+      "lang": "mixed",
+      "location": "[00:08:10]",
+      "anchor": "Maybe και ένα AR filter στο Instagram",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "low"
+    },
+    {
+      "value": "product photography — φωτογράφιση από τον Μάιο για e-shop, αλλά δικαιώματα για διαφημιστική χρήση δεν έχουν επιβεβαιωθεί",
+      "lang": "mixed",
+      "location": "[00:12:15]",
+      "anchor": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop",
+      "speaker_or_author": "STELLA",
+      "qualifier": "implied",
+      "confidence": "medium"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "μέσα Μαρτίου",
+      "lang": "el",
+      "location": "[00:13:40]",
+      "anchor": "το χρονοδιάγραμμα παραμένει «μέσα Μαρτίου»",
+      "speaker_or_author": "ELENI, NIKOS",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Επίσημα ναι μέσα Μαρτίου. Ανεπίσημα, το board το ξανακοιτάει — θα σας πούμε γραπτώς μόλις κλείσει",
+      "lang": "el",
+      "location": "[00:14:07]",
+      "anchor": "Επίσημα ναι. Ανεπίσημα, το board το ξανακοιτάει",
+      "speaker_or_author": "NIKOS",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "brand guidelines για επιλογή micro-influencers",
+      "lang": "mixed",
+      "location": "[00:06:29]",
+      "anchor": "ξέρεις τι λένε τα guidelines",
+      "speaker_or_author": "STELLA",
+      "qualifier": "implied",
+      "confidence": "medium"
+    },
+    {
+      "value": "product photography rights πρέπει να καλύπτουν διαφημιστική χρήση",
+      "lang": "mixed",
+      "location": "[00:12:15]",
+      "anchor": "δεν ξέρω αν τα δικαιώματα καλύπτουν διαφημιστική χρήση",
+      "speaker_or_author": "STELLA",
+      "qualifier": "implied",
+      "confidence": "medium"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "deliverables",
+      "gap": "AR filter mentioned as speculative idea (speaker: 'Just thinking out loud, don't hold me to it') and not yet discussed with board — commitment status unclear.",
+      "why_it_matters": "Clarifies scope and cost of first-wave deliverables; drives implementation and resource planning.",
+      "suggested_question_for_client": "Το AR filter που ανέφερες — θέλετε να το συμπεριλάβουμε ως δέσμευση στο πρώτο κύμα, ή παραμένει under consideration;"
+    },
+    {
+      "field": "audiences",
+      "gap": "Cyprus expansion mentioned (two sales points exist there) but board has not approved; instruction given not to include in plan yet.",
+      "why_it_matters": "Clarifies definitive geographic scope, which affects audience targeting, channel investment, and campaign timeline.",
+      "suggested_question_for_client": "Έχει το board αποφασίσει εάν η Κύπρος περιλαμβάνεται στο πρώτο κύμα της καμπάνιας;"
+    },
+    {
+      "field": "deliverables",
+      "gap": "Product photography from May exists for e-shop; rights coverage for advertising channels and use unclear. STELLA committed to checking and reporting.",
+      "why_it_matters": "Determines whether to repurpose existing assets or commission new production — directly impacts budget and production timeline.",
+      "suggested_question_for_client": "Οι δικαιώματες της φωτογράφησης του Μαΐου — καλύπτουν όλα τα κανάλια διαφήμισης (social, retail) και όλες τις χρήσεις;"
+    },
+    {
+      "field": "timeline",
+      "gap": "Timeline officially mid-March but board is unofficially reviewing and may revise. NIKOS will confirm in writing once board decides.",
+      "why_it_matters": "Establishes definitive launch date and all downstream deliverable deadlines.",
+      "suggested_question_for_client": "Πότε θα λάβουμε γραπτή επιβεβαίωση από το board για το τελικό timeline;"
+    },
+    {
+      "field": "mandatories",
+      "gap": "STELLA referenced brand guidelines that must be applied to micro-influencer selection, but specific requirements or constraints not detailed.",
+      "why_it_matters": "Defines approval criteria and non-negotiables for influencer partnerships; shapes outreach and vetting process.",
+      "suggested_question_for_client": "Ποιες είναι οι κύριες απαιτήσεις ή περιορισμοί των brand guidelines σας για τους micro-influencers;"
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "timeline",
+      "value_a": {
+        "value": "μέσα Μαρτίου",
+        "lang": "el",
+        "location": "[00:14:07]",
+        "anchor": "Επίσημα ναι",
+        "speaker_or_author": "NIKOS",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "value_b": {
+        "value": "το board το ξανακοιτάει",
+        "lang": "el",
+        "location": "[00:14:07]",
+        "anchor": "Ανεπίσημα, το board το ξανακοιτάει",
+        "speaker_or_author": "NIKOS",
+        "qualifier": "conditional",
+        "confidence": "medium"
+      },
+      "note": "Official mid-March timeline is pending informal board review; revision possible. Tension between stated commitment and acknowledged uncertainty."
+    },
+    {
+      "field": "audiences",
+      "value_a": {
+        "value": "Κυρίως Ελλάδα",
+        "lang": "el",
+        "location": "[00:10:02]",
+        "anchor": "Κυρίως Ελλάδα",
+        "speaker_or_author": "NIKOS",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "value_b": {
+        "value": "ίσως τρέξουμε και Κύπρο — δεν έχει αποφασιστεί από το board. Μην το βάλετε ακόμα στο πλάνο",
+        "lang": "el",
+        "location": "[00:10:02]",
+        "anchor": "ίσως τρέξουμε και Κύπρο",
+        "speaker_or_author": "NIKOS",
+        "qualifier": "conditional",
+        "confidence": "low"
+      },
+      "note": "Geographic scope not finalized. Greece confirmed; Cyprus possible but not yet approved — planning instruction is to exclude Cyprus pending board decision."
+    }
+  ],
+  "extraction_notes": [
+    "Fidelity gate flagged 'σόσιαλ κόμερς' at [00:02:14] as glossary match for 'social commerce' (fidelity confidence: high).",
+    "Fidelity gate flagged 'ρίτεϊλ ακτιβέισον' at [00:03:47] as glossary match for 'retail activation' (fidelity confidence: high).",
+    "Inaudible segment at [00:02:14] after 'Ο επόμενος' — NIKOS mentions unnamed next channel topic to be discussed 'καιρό μέσα' (in due course) but content is not recoverable.",
+    "NIKOS noted he has already held informal discussions with two micro-influencers but no identities, status, or outcomes provided; described as 'ανεπίσημα' (off-record)."
+  ]
+}
