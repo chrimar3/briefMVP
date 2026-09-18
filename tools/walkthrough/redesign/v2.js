@@ -29,7 +29,8 @@
     sheets.forEach(function(s,i){s.classList.toggle('active',i+1===cur);});
     fol.textContent=pad(cur)+' / 10 · Contents';back.disabled=cur===1;
     nextTitle.textContent=cur===10?'The decision':CH[cur].t;
-    next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t);
+    next.querySelector('span').textContent=cur===10?'Start again':'Next';
+    next.setAttribute('aria-label',cur===10?'Start again: return to sheet 01':'Next sheet: '+CH[cur].t);
     list.querySelectorAll('a').forEach(function(a,i){if(i+1===cur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     announce.textContent='Sheet '+cur+' of 10: '+CH[cur-1].t;
   }
@@ -87,13 +88,14 @@
   });
   var tx=null,ty=null;
   document.addEventListener('touchstart',function(e){tx=ty=null;if(!contents.hidden||e.touches.length!==1||e.target.closest('button,a,summary,input,textarea,select,[contenteditable],.ledger-wrap,.nav'))return;tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchmove',function(e){if(tx!==null&&(e.touches.length!==1||Math.abs(e.touches[0].clientY-ty)>40))tx=ty=null;},{passive:true});
   document.addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;tx=ty=null;if(Math.abs(dx)>70&&Math.abs(dy)<40)navigate(sheets[dx<0?(cur===10?0:cur):Math.max(0,cur-2)],true);},{passive:true});
   document.addEventListener('touchcancel',function(){tx=ty=null;},{passive:true});
   var closed=[];
   window.addEventListener('beforeprint',function(){printing=true;closed=Array.from(document.querySelectorAll('details:not([open])'));closed.forEach(function(d){d.open=true;});});
   window.addEventListener('afterprint',function(){closed.forEach(function(d){d.open=false;});closed=[];printing=false;});
   window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
-  var timer;window.addEventListener('scroll',function(){clearTimeout(timer);timer=setTimeout(save,100);},{passive:true});
+  var timer;window.addEventListener('scroll',function(){tx=ty=null;clearTimeout(timer);timer=setTimeout(save,100);},{passive:true});
   function reserveNavigation(){root.style.setProperty('--nav-clearance',nav.getBoundingClientRect().height+'px');}
   if('ResizeObserver' in window)new ResizeObserver(reserveNavigation).observe(nav);
   window.addEventListener('resize',reserveNavigation);

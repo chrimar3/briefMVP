@@ -1,0 +1,27 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b",
+  "hardFailures": [
+    {
+      "category": "broken_interaction",
+      "sheet": "All",
+      "pageText": "Swipe navigation",
+      "evidence": "Line 916: \"if(Math.abs(dx)>70&&Math.abs(dy)<40)navigate(...)\". Lines 914–917 register touchstart, touchend and touchcancel, but no touchmove guard; line 922’s scroll handler only saves position.",
+      "why": "Only endpoint displacement is checked. Executing the extracted handlers with start (300,400), intermediate vertical movement (290,200), and release (200,380) triggers Next. Vertical movement or scrolling never invalidates the gesture. Cancel swipe eligibility once vertical movement exceeds a threshold or scrolling occurs. Starts inside .ledger-wrap are correctly excluded."
+    },
+    {
+      "category": "accessibility_blocker",
+      "sheet": "10",
+      "pageText": "Next",
+      "evidence": "Line 826: \"<span>Next</span>\". Line 858: \"next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t);\"",
+      "why": "On sheet 10, the accessible name omits the visible label “Next,” obstructing speech activation by that label. Include “Next” in the accessible name, or change both visible and accessible labels to matching return wording."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "01, 02, 08, 09, 10",
+      "issue": "Rendered verification remains incomplete: all ten requested Chrome launches at 1440 and 390 px terminated with SIGABRT before producing screenshots; Playwright also failed to launch Chrome. Consequently, clipping, overlap, mobile folio layout and rendered artwork placement are unverified. Code review confirms all four previous wording corrections are present, referenced IDs exist, Escape closes Contents, navigation includes a 10→1 return, clips stack on phones, and external resources are absent. The artwork SVG uses only the specified colours without opacity or gradients. Paper-text contrast ratios are 15.48:1, 5.96:1 and 5.23:1. This exact file contains one script block.",
+      "fix": "Repeat the screenshots and browser interaction checks in an environment where Chrome launches, retaining this exact digest. Inspect both crops, the embedded can plate and the in-crop MOCK-UP label before declaring the rendered audit complete."
+    }
+  ]
+}

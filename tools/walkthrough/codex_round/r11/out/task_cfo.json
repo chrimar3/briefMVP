@@ -1,0 +1,24 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "Stage one: Haiku 4.5 533,641 + Sonnet 5 451,179 = 984,820 tokens. Creative adds Sonnet 86,441 + Opus 4.8 63,473 = 1,134,734 total. Monthly: 984,820×15=14,772,300; one creative/brief gives 15.72–16.07M. Assumed annual capacity: [120−(20 assembling+30 reviewing)]×180÷60=210 hours; ×€19–20=€3,990–4,200 before costs. Validate assumptions in week 1. Approve four weeks, two leads×three retrospectives, S0–S1, agency workspace; creative stays shadow. Before starting: remeasure routing, confirm capacity/terms, approve costs/ceiling and Greek threshold. Week-4 release requires >80% useful questions, >70% unchanged text, <30-minute reviews, Greek threshold, both leads’ voluntary reuse, and sponsor decision. Month-2 default requires successful report/separate approval.",
+  "missing": [
+    "Actual setup, training, subscription, maintenance and support costs; approved spending ceiling; confirmed subscription capacity and workspace terms. These are explicitly deferred prerequisites, so net savings cannot yet be calculated.",
+    "A full-run usage/time baseline under the changed routing, measured assembly/review effort, an agreed attention-time definition and a Greek release threshold."
+  ],
+  "confusions": [
+    "“about 16 M with one creative draft each” does not identify the model; either displayed arm rounds to approximately 16M.",
+    "“Attention definitions require sponsor agreement: PRD §7 concerns time to first draft, while the review target here is <30 minutes.” The page discloses the mismatch, but the measurement definition remains unsettled.",
+    "“all three inputs are validated in week 1” leaves the separately stated, unvalidated 50-minute attention target less clearly covered."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 8,
+    "concision": 6
+  },
+  "fixes": [
+    "Replace “about 16 M with one creative draft each” with “15.72M with one Opus draft per brief, or 16.07M with one Sonnet draft, at 15 briefs monthly under graded routing.”",
+    "Replace “all three inputs are validated in week 1” with “Validate baseline, volume and hourly rate in week 1; measure assembly and review time during the retrospective to test the 50-minute attention target.”",
+    "Replace “Attention definitions require sponsor agreement” with “Before week 1, the sponsor must define assembly time, review time and time to first draft, and approve how each is measured.”"
+  ]
+}

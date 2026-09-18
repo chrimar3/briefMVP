@@ -1,0 +1,101 @@
+{
+  "hypothesis": "Target decision-readiness in the verified frozen candidate (SHA-256 51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b) through at most 12 localized changes: correct all six hard failures, then clarify operating responsibilities, navigation and the pilot close without changing evidence quotations or adding sheets.",
+  "items": [
+    {
+      "n": 1,
+      "sheet": "02, 07",
+      "change": "Replace every field-write-protection claim. Sheet 07 before: “Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.” After: “The model writes signoff.status as draft; synthesis validation rejects any other status. The creative stage requires signed_off, which the account lead records manually.” Ledger before: “A model never writes that field.” After: “The model writes draft status; validation rejects any other synthesis status.” Sheet 02 before: “The gate between stages: the account lead resolves conflicts, edits and signs; a model cannot write this field.” After: “The account lead manually records resolutions and approval; the creative stage requires signed_off status.” Sheet 02 ledger before: “Nothing passes the sign-off gate without a person; a model cannot write that field.” After: “Synthesis validation permits only draft status; the creative stage requires signed_off, recorded manually by the account lead.”",
+      "source": "Verified wrong_fact; both fidelity votes; task_engineer. Supplied evidence: synthesize.md:14–16 and stages.py:351–352."
+    },
+    {
+      "n": 2,
+      "sheet": "01",
+      "change": "Before: no historical review-scope exhibit. After: append this paragraph inside #ledger-01: “Prior-review provenance — Scope: only the frozen WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed; no files edited. This records the earlier review’s scope, not the identity of WALKTHROUGH_v2.html.”",
+      "source": "Verified missing_exhibit; both fidelity votes; supplied audit_fidelity.md regression item 1."
+    },
+    {
+      "n": 3,
+      "sheet": "01",
+      "change": "Before: no retained-constraints exhibit. After: append this paragraph inside #ledger-01: “Retained constraints — At most ten sheets; blockquotes and mark.cited unchanged; zero external resources; tokens as the usage figure; budget retained in words; shadow-mode labels preserved; action titles at most 24 words; takeaways at most 20 words; at most 650 visible words per sheet, except 750 on sheet 09; existing page palette and artwork palette restrictions preserved; thin-space thousands separators.”",
+      "source": "Verified missing_exhibit; both fidelity votes; supplied audit_fidelity.md regression item 2 and user constraints."
+    },
+    {
+      "n": 4,
+      "sheet": "01",
+      "change": "Before: no browser-acceptance exhibit. After: append this paragraph inside #ledger-01: “Acceptance must include actual desktop and 320-, 390- and 560-pixel browser checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior; this review does not certify rendering.” Keep this limitation explicit until actual browser checks succeed.",
+      "source": "Verified missing_exhibit; both fidelity votes; audit_ux reports unsuccessful browser launches."
+    },
+    {
+      "n": 5,
+      "sheet": "All",
+      "change": "JS: retain the existing touchstart exclusions and endpoint thresholds. Immediately after the touchstart listener add: document.addEventListener('touchmove',function(e){if(tx===null)return;if(e.touches.length!==1||Math.abs(e.touches[0].clientY-ty)>40)tx=ty=null;},{passive:true}); In the existing scroll listener, insert tx=ty=null; before clearTimeout(timer). This permanently cancels eligibility for the current gesture after vertical movement over 40 pixels or any scrolling. Acceptance: start (300,400), move (290,200), release (200,380) must not navigate; a horizontal gesture without scrolling must still navigate; ledger gestures remain excluded.",
+      "source": "Verified broken_interaction; both UX votes."
+    },
+    {
+      "n": 6,
+      "sheet": "10 / navigation",
+      "change": "JS inside paint(): before nextTitle.textContent, insert next.querySelector('span').textContent=cur===10?'Start again':'Next'; Replace next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t); with next.setAttribute('aria-label',cur===10?'Start again: return to sheet 01':'Next sheet: '+CH[cur].t); Verify the visible and accessible labels match on desktop and phones, and returning to sheet 01 restores “Next”.",
+      "source": "Verified accessibility_blocker; both UX votes; judge2 UX."
+    },
+    {
+      "n": 7,
+      "sheet": "All / read-all navigation",
+      "change": "Before: scrolling only saves position, so cur remains tied to the last selected sheet. After: add this JS listener inside the existing closure: var sheetFrame=0;window.addEventListener('scroll',function(){if(!allMode||printing||restoring||!contents.hidden||sheetFrame)return;sheetFrame=requestAnimationFrame(function(){sheetFrame=0;if(!allMode||printing||restoring||!contents.hidden)return;var line=Math.min(160,window.innerHeight*.25),n=1;sheets.forEach(function(s,i){if(s.getBoundingClientRect().top<=line)n=i+1;});if(n!==cur){cur=n;paint();}});},{passive:true}); This updates Contents, Back and Next without moving focus, scrolling the page or adding history entries. Verify ordinary scrolling, anchor navigation, history restoration and switching back to single-sheet mode.",
+      "source": "judge1, judge2 and judge3 UX."
+    },
+    {
+      "n": 8,
+      "sheet": "09",
+      "change": "Before: “Six blocking open items from the brief:” and its visible six-item list. After: one paragraph, “Before production or delivery, resolve ingredient claims and delivery scope; shadow exploration may continue. <a href=\"#ledger-12\">Review the six open items.</a>” Retain all six detailed entries in #ledger-12. Replace its summary “Still open — six items a creative team cannot start without, and three that do not block” with “Still open — six items to resolve before production or delivery, and three that do not block shadow exploration”. Replace “A creative team cannot start without — still open, carried from the brief” with “Resolve before production or delivery; shadow exploration may continue.” Replace the takeaway “Six open items still block a creative team; three facts are settled in red.” with “Six items need resolution before production or delivery; three facts are settled in red.” Replace “Owner and decision date remain unassigned.” with “Creative lead unassigned; shadow evaluation due before week 4; exact review date unset.”",
+      "source": "All three judges on concision; task_creative; judge1 clarity and judge3 finale."
+    },
+    {
+      "n": 9,
+      "sheet": "10",
+      "change": "Replace only #ch10 .decisions with three compact list items, retaining the detailed protocol, targets, cost categories and citations in #ledger-14: (1) “Authorize a conditional four-week pilot or defer. Owner: sponsor, named at kickoff. Due: before week 1. Release: week-4 live use requires every agreed quality, time and voluntary-reuse target; the sponsor records the decision. <a href=\"#ledger-14\">Targets and protocol.</a>” (2) “Measure usage and time with the model choices adopted on 30 July: a larger extraction model and a second AI checker. Owner: operator. Due: before week 1. Start condition: record the new full-run baseline.” (3) “Approve costs, capacity and workspace terms. Owners: management and operator; sponsor approves. Due: before week 1. Start condition: approved estimate, recorded spending ceiling and confirmed terms before spending or client-data processing.” Replace the closing budget example and its associated citation with: “Next: name the sponsor, operator and creative lead at kickoff; complete all three pre-start conditions before week 1.” Preserve the return link and the budget evidence on sheets 05–09.",
+      "source": "All three judges on concision and finale/storyline; task_creative on ownership."
+    },
+    {
+      "n": 10,
+      "sheet": "10",
+      "change": "Before: #ledger-14 pilot protocol proceeds directly to “Weeks 2–3: two leads review three past projects each.” After: insert immediately before that sentence: “Week 1: confirm that full transcripts are available for the historical projects. If unavailable, collect prospective kickoff transcripts while retrospective work uses the remaining sources.”",
+      "source": "All three judges on completeness; supplied PRD §8 contingency."
+    },
+    {
+      "n": 11,
+      "sheet": "02, 07",
+      "change": "Sheet 02 before: “Six AI steps, two plain-code steps, one person. Static review pages support command-line operation; the signature controls the handover.” After: “The graded-run diagram groups six AI steps, two code steps and human sign-off. Current extraction also has a verifier agent. An AI specialist runs the tool; the account lead reviews and records approval before shadow creative begins.” Sheet 07 before: “The account lead records resolutions and signature in brief.json. brief_review.html displays those recorded decisions.” After: “In v1, the account lead manually edits brief.json to record resolutions and approval. The review page displays them; it has no save or approval control.” Move the existing principles line from #ledger-02 into the visible sheet immediately after the operating-owners paragraph, unchanged: “Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send”.",
+      "source": "task_cmo and task_engineer; judge1 product framing; judge2 and judge3 manual-operation and principles requests."
+    },
+    {
+      "n": 12,
+      "sheet": "01",
+      "change": "CSS before: .legend .red{color:var(--ink)} After: .legend .red{color:var(--red)}",
+      "source": "judge1 visual design and judge2 clarity."
+    }
+  ],
+  "mustKeep": [
+    "Review identity: the examined candidate is WALKTHROUGH_v2.html with SHA-256 51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b. No files were edited and no rendering certification is claimed.",
+    "At most ten sheets; unchanged blockquotes and mark.cited; zero external resources; existing page palette; flat Aegean Blue #1B4F8A, Citrus Yellow #F5C518 and white artwork; thin-space thousands; title, takeaway and visible-word limits.",
+    "Conditional four-week pilot, alternative to defer, weeks 2–3 retrospective, two leads reviewing three past projects each, and sponsor-recorded week-4 release blocked by missed agreed targets.",
+    "Pilot targets: over 80% useful questions, over 70% retained text, proposed review time under 30 minutes, Greek naturalness rated 1–5 with EL/EN edits compared, Greek release threshold unset, and voluntary reuse by both leads. Preserve the distinction between review time, time-to-first-draft attention and the separate 50-minute attention target.",
+    "Month-2 adoption remains separate from week-4 release: at least three additional leads request onboarding; default use requires a successful pilot report and separate sponsor approval.",
+    "AI specialist operation; manual brief.json resolutions and approval; review page language toggle and copyable questions without save/approval controls; proposed pre-week-1 runbook; two champions trained by week 4; no mail, calendar or drive integration.",
+    "S0–S1 pilot restriction and runtime refusal of higher tiers. Agency workspace, DPA, EU processing and zero retention are deployment assumptions whose subscription, processing, retention and contractual terms remain unconfirmed.",
+    "Setup, training, subscription, maintenance and support costs remain unestimated. Sponsor-approved estimate and spending ceiling are proposed pre-start conditions; an unset ceiling means no start. Actual savings, total operating costs and subscription capacity remain unproven.",
+    "Usage remains in tokens: 0.98 M stage one, nine model-agent attempts rather than nine turns, 1.13 M including creative A/B, approximately 15 M monthly at 15 briefs under graded routing. Preserve model-specific usage, cache breakdown and the distinction between historical counts and future capacity.",
+    "Changed routing needs a new full-run usage/time baseline: transcript comparison 598 743 versus 295 774 tokens, including the separate verifier. Preserve graded 33-minute stage sum versus 25.2-minute continuous capture, resumed-run caveat, later changes excluded from graded totals, and overridden-gate demo timing caveat.",
+    "Financial arithmetic stays an assumption-based target: 120-minute baseline, unvalidated 50-minute attention target comprising 20 assembling plus 30 reviewing, 180 briefs annually, 210 hours and €3 990–4 200 at €19–20/hour before operating costs. Preserve the discrepancy with the cost model’s €5–6k and the requirement to validate assumptions and measure both tasks.",
+    "Four synthetic source documents, readiness checks and missing-RFP stop; background creates no commitment; 33 cited facts; two garbles preserved; extraction retry and later verifier chronology; exact-quote checks do not establish completeness.",
+    "Three conflicts retain both source receipts and human decisions: audience 25–40 urban professionals supersedes Gen Z 18–24; launch 15 September supersedes early October; production budget remains in words excluding media, with the media-inclusive total unknown. Preserve signatory, date, author-as-account-lead provenance and untimed review.",
+    "One structured brief produces Greek and English documents; preserve embedded bilingual extracts, source paths and disclosure that full documents are not embedded. Preserve 25 entries, ten questions, contested/empty audience and budget fields, five of seven evidenced fields, 4% low-confidence entries, readiness thresholds and ready-for-review status.",
+    "17/17 applies only to defined checks on one synthetic project. Preserve the full check inventory, citation-presence versus semantic-support distinction, human Greek-register assessment, answer-key chronology and policy-only access restriction, runtime Read access and absence of evidence that an agent read the key.",
+    "Second fixture 15/17 then 16/17 after a re-roll, untested duplicate/uncited questions, and three of ten supervised single-document runs producing nothing after two attempts. Exam-green remains distinct from lead-ready.",
+    "Creative A/B uses identical input: Sonnet Draft A versus Opus Draft B, both quoted propositions, three factual corrections—unsupported Greek-made origin, invented budget conversion and mistaken dance retraction—and the separate health-claim judgement. Preserve speculative dance versus retracted metro distinction.",
+    "Creative choice remains A/B/neither, with lead unassigned and evaluation due before week 4. Approval is shadow evaluation only; client-brief live use never authorizes creative delivery. Preserve all six open items and the three separately identified nonblocking items.",
+    "Traffic owns the provisional specification table; retain exact displayed rows, source tags and warnings that checks cover normalized dimensions and some ratios, not durations, file types or deliverable fit.",
+    "Artwork remains explicitly MOCK-UP, SHADOW MODE and not for delivery; pipeline emits text only. Preserve illustration/image-model provenance, packaging’s undefined scope, crop and packaging limitations, full product name, zero-sugar claim, ingredient-list dependency and health/competitor restrictions.",
+    "Keep source ledgers, protected quotations, correction warnings and existing evidence links reachable. Preserve keyboard navigation, Contents focus management and Escape, ledger gesture exclusions, history restoration, print access and no-JavaScript reading.",
+    "Add and retain the historical review-scope, constraints and browser-acceptance exhibits without presenting the historical digest as this candidate’s identity."
+  ]
+}

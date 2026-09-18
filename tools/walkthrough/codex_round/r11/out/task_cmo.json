@@ -1,0 +1,24 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "Brief Builder helps the agency turn scattered client documents into a Greek and English briefing draft, with sources, disagreements and unanswered questions visible. For me, it makes corrections easier to trace and shows what still needs my decision. This synthetic run produced cited drafts, surfaced three conflicts and passed 17 defined checks. It did not prove time savings, reliable Greek quality or readiness for client delivery; creative drafts still contained errors. People confirm client intent, settle disagreements, review wording, sign off and judge creative claims. I would support a conditional pilot, with costs and data terms settled before starting and live use dependent on measured results.",
+  "missing": [
+    "No essential information was missing for this explanation. Actual savings, total operating cost and the Greek-quality release threshold remain explicitly unproven or unresolved."
+  ],
+  "confusions": [
+    "“Static review pages support command-line operation” leaves me unsure how I would actually review or correct a brief.",
+    "“Harness-only use is a policy restriction.” I cannot interpret this without technical knowledge.",
+    "“The <30-minute review target needs definition agreement: PRD §7 measures time-to-first-draft attention.” This makes the review target on sheet 10 feel unsettled."
+  ],
+  "scores": {
+    "clarity": 7,
+    "completeness": 9,
+    "concision": 6
+  },
+  "fixes": [
+    "Replace “Static review pages support command-line operation; the signature controls the handover.” with “An AI specialist runs the tool. The account lead reviews the pages and records corrections and approval before creative drafting begins.”",
+    "Replace “Harness-only use is a policy restriction.” with “Rules prohibit the drafting AI from using the answer key, but access is not technically blocked.”",
+    "Replace “The <30-minute review target needs definition agreement: PRD §7 measures time-to-first-draft attention.” with “Before the pilot, the sponsor must settle which work counts toward the 30-minute target.”",
+    "Replace “0.98 M tokens” on sheet 01 with “Usage measured; subscription capacity still unconfirmed”, keeping the detailed counts on sheet 10."
+  ]
+}

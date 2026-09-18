@@ -600,7 +600,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <li><span class="node ai"><span class="n">7</span><span class="name">Render EL + EN</span><span class="what">two languages, one object</span><span class="who">AI &middot; code gate</span></span></li>
         <li><span class="node doc"><span class="n">out</span><span class="name">Brief EL + EN</span><span class="what">questions, conflicts, verdict</span><span class="who">documents</span></span></li>
       </ol>
-      <div class="gate-band"><span class="n">8</span><span class="name">Sign-off</span><span class="what">The gate between stages: the account lead resolves conflicts, edits and signs; a model cannot write this field.</span><span class="who">account lead</span></div>
+      <div class="gate-band"><span class="n">8</span><span class="name">Sign-off</span><span class="what">The gate between stages: the account lead resolves conflicts, edits and signs; a model can only leave it as draft.</span><span class="who">account lead</span></div>
       <p class="stage-lbl">Stage 2 &middot; the creative brief, shadow mode</p>
       <ol class="flow" aria-label="Stage 2">
         <li><span class="node ai"><span class="n">9</span><span class="name">Creative draft</span><span class="what">proposition, tone, specs from a table</span><span class="who">AI &middot; code gate</span></span></li>
@@ -634,7 +634,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <ul>
             <li>Every cited anchor in the brief object exists word for word in its source (the documents may quote in translation); a failing output is sent back once, then the run stops.</li>
             <li>Channel specs come from the traffic team&rsquo;s table, never from a model.</li>
-            <li>Nothing passes the sign-off gate without a person; a model cannot write that field.</li>
+            <li>Nothing passes the sign-off gate without a person; a model can only leave the field as draft.</li>
           </ul>
         </div>
         <div class="col">
@@ -1001,7 +1001,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">07 / 10 &middot; Contents</button></div>
       <div class="stamps"><span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span></div>
       <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each.</p>
-      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
+      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign: synthesis writes signoff.status as draft and validation rejects any other value; only a person records signed_off.</p>
       <p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary); the review page only displays them. This walkthrough proposes a runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p>
     </aside>
     <div class="body">
@@ -1043,7 +1043,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>8 human sign-off</td><td>human action &middot; not a pipeline step</td><td>none</td><td class="r">0</td><td>brief.json &rsaquo; signoff {status: signed_off, signed_by, signed_ts, edits_summary} &middot; conflicts[n].status: resolved_by_human</td></tr>
         </table></div>
               <p class="foot">On provenance: in the synthetic project the account lead on the call is &ldquo;Eleni&rdquo;, a fictional persona. The graded run was signed off by the repository&rsquo;s author acting as account lead; the record above is quoted from the run.</p>
-        <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model never writes that field.</p>
+        <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model can only write draft; signed_off is recorded by a person.</p>
       </details>
     </div>
   </section>
@@ -1501,9 +1501,11 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
   window.addEventListener('afterprint', function () { opened.forEach(function (el) { el.open = false; }); opened = []; });
   var tx = null, ty = null;
   document.addEventListener('touchstart', function (e) { tx = ty = null; if (!contents.hidden || e.target.closest('.ledger-wrap, .ruler, button, a, summary, input, textarea, select') || e.touches.length !== 1) return; tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
+  document.addEventListener('touchmove', function (e) { if (tx !== null && (e.touches.length !== 1 || Math.abs(e.touches[0].clientY - ty) > 40)) tx = ty = null; }, { passive: true });
   document.addEventListener('touchend', function (e) { if (tx === null || !contents.hidden) return; var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = ty = null; if (Math.abs(dx) > 60 && Math.abs(dy) < 40) go(dx < 0 ? (cur === N ? 1 : cur + 1) : cur - 1); }, { passive: true });
 
   document.addEventListener('touchcancel', function () { tx = ty = null; }, { passive: true });
+  window.addEventListener('scroll', function () { tx = ty = null; }, { passive: true });
 
   // initial sheet: the hash if present, else the cover
   var start = 1, m0 = /^#(\d{1,2})$/.exec(location.hash);

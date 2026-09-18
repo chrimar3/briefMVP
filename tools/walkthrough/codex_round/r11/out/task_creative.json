@@ -1,0 +1,24 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "(a) Signed-off evidence: audience 25–40 urban professionals; launch 15 September 2026; production budget “in the eighties,” excluding media, with total unconfirmed. Zero sugar is permitted; natural ingredients needs an approved list. (b) Hypotheses: both propositions, audience psychology, everyday ritual and visual concept—not research or agreed client lines. (c) Strike unsupported “Greek-made,” €80–85k conversion and mistaken dance retraction; judge guilt wording against the health-claim ban, verify references, record A/B/neither, and resolve six blockers. This approves evaluation only: v1 creative cannot leave shadow. (d) Specs are table lookups from a provisional stub. Code checks normalized dimensions and some ratios; it guarantees neither durations, file types, deliverable fit nor production readiness.",
+  "missing": [
+    "The creative reviewer and decision date remain unassigned.",
+    "Full creative drafts and further spec rows are not embedded, limiting independent verification.",
+    "A complete creative-delivery authorization process beyond v1 is not specified."
+  ],
+  "confusions": [
+    "“Owner and decision date remain unassigned.” versus “the named creative lead records a choice and corrections before week 4”: a deadline is supplied, but assignment status is unclear.",
+    "“A creative team cannot start without” is ambiguous when the sheet already presents shadow creative; it should specify production or delivery."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 8,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “Owner and decision date remain unassigned.” with “Creative lead unassigned; shadow evaluation due before week 4; exact review date unset.”",
+    "Replace “A creative team cannot start without — still open, carried from the brief” with “Resolve before production or delivery; shadow exploration may continue.”",
+    "Replace “Spec (from the table, not generated)” with “Provisional table value — traffic confirmation required”."
+  ]
+}

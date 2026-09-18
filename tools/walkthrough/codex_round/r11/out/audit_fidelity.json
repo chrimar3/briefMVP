@@ -1,0 +1,60 @@
+{
+  "hashMismatch": false,
+  "digestSeen": "51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b",
+  "hardFailures": [
+    {
+      "category": "wrong_fact",
+      "sheet": "07",
+      "pageText": "The machine cannot sign; the sign-off field is not even writable by a model.",
+      "evidence": ".claude/agents/synthesize.md:4: \"tools: Read, Write\"; :14: \"Write exactly one file: `<run_dir>/brief.json`\"; :16: \"Do not populate `signoff` beyond `{\"status\": \"draft\"}`.\" pipeline/stages.py:351–352 rejects synthesis output whose signoff.status is not 'draft'.",
+      "why": "The model writes the signoff field. The safeguard is validation of its draft status, not field-level write protection. Describe the actual validation rather than claiming the field is unwritable."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "04",
+      "pageText": "Just thinking out loud — maybe a TikTok dance thing? Don’t hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+      "evidence": "fixtures/northlight_01/transcript_kickoff.md:21: \"Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.\"",
+      "why": "Strict character-level mismatch: the quotation replaces the source's straight apostrophe with U+2019. The wording and meaning are unchanged."
+    },
+    {
+      "category": "quote_not_verbatim",
+      "sheet": "09",
+      "pageText": "For urban professionals who’ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.",
+      "evidence": "runs/tier3/creative/creative_brief_sonnet.md:5: \"For urban professionals who've outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.\"",
+      "why": "Strict character-level mismatch: “who’ve” replaces the source's “who've”. The wording and meaning are unchanged."
+    },
+    {
+      "category": "missing_exhibit",
+      "sheet": "Document-wide",
+      "pageText": "",
+      "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, regression item 1 requires: \"Scope: only the frozen WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed; no files edited.\" This statement is absent from WALKTHROUGH_v2.html, including its ledgers.",
+      "why": "The required historical review-scope exhibit is missing. It should be identified as prior-review provenance, separately from this candidate's digest."
+    },
+    {
+      "category": "missing_exhibit",
+      "sheet": "Document-wide",
+      "pageText": "",
+      "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, regression item 2 requires the retained constraints covering ten sheets, unchanged blockquotes and mark.cited, external resources, palette, thin spaces, title/takeaway limits and visible-word ceilings. No corresponding constraints statement appears in WALKTHROUGH_v2.html.",
+      "why": "The required constraints record is absent. This finding concerns its omission, not a claim that the candidate exceeds the numerical limits."
+    },
+    {
+      "category": "missing_exhibit",
+      "sheet": "Document-wide",
+      "pageText": "",
+      "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, final regression item requires: \"Acceptance must include actual desktop and 320-, 390- and 560-pixel browser checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior; this review does not certify rendering.\" No equivalent acceptance statement appears in WALKTHROUGH_v2.html.",
+      "why": "The required browser-acceptance conditions and rendering-certification limitation are missing."
+    }
+  ],
+  "softIssues": [
+    {
+      "sheet": "01",
+      "issue": "“Every quote is clipped verbatim from the four source documents” overlooks quotations from generated creative drafts and the signed record.",
+      "fix": "Limit this sentence to source-document receipts and identify generated-artifact quotations separately."
+    },
+    {
+      "sheet": "10",
+      "issue": "“A token is roughly three-quarters of a word” is an uncited heuristic, particularly imprecise for the mixed Greek/English material.",
+      "fix": "Define tokens as units of processed text without a word conversion."
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "hashMismatch": false,
+  "scores": [
+    {
+      "aspect": "concision",
+      "score": 6,
+      "why": "Ten sheets are respected, but the creative review and pilot conditions contain too much presentation-layer text for a joint CMO/CFO reading.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "Six blocking open items from the brief:",
+          "change": "Replace the visible six-item list with a one-line summary linked to the existing detailed checklist."
+        },
+        {
+          "sheet": "10",
+          "quote": "#ch10 .decisions",
+          "change": "Reduce each decision to action, owner, deadline and release condition; keep measurement procedures and cost categories in the ledger."
+        },
+        {
+          "sheet": "01",
+          "quote": "This sheet is the summary. Sheet 02 is the product; sheets 03–09 the evidence; sheet 10 the decisions.",
+          "change": "Delete this explanation because the executive route immediately above already provides the reading map."
+        }
+      ]
+    },
+    {
+      "aspect": "completeness",
+      "score": 8,
+      "why": "The essential evidence, usage, risks and decision owners are covered, but readers cannot inspect the complete deliverable and the pilot lacks its documented transcript contingency.",
+      "fixes": [
+        {
+          "sheet": "06",
+          "quote": "Embedded extracts are shown here; complete source documents remain in the repository.",
+          "change": "Embed the complete Greek and English briefs in collapsed reference sections so the standalone file contains the actual deliverable."
+        },
+        {
+          "sheet": "10",
+          "quote": "Weeks 2–3: two leads review three past projects each.",
+          "change": "Add the PRD §8 contingency to the pilot ledger: confirm transcript availability in week 1 and use the documented prospective kickoff plan if full transcripts are unavailable."
+        }
+      ]
+    },
+    {
+      "aspect": "clarity",
+      "score": 8,
+      "why": "The AI/code/people distinction is strong, but technical shorthand and competing attention-time definitions still require interpretation.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "Re-baseline usage and time under the 30 July routing before week 1: larger extraction model plus second reader.",
+          "change": "Use: “Before week 1, measure usage and time again with the model choices adopted on 30 July: a larger extraction model and a second AI checker.”"
+        },
+        {
+          "sheet": "10",
+          "quote": "under 30 minutes reviewing each draft",
+          "change": "Label this explicitly as a proposed review-time target requiring sponsor agreement, distinct from the PRD’s time-to-first-draft metric."
+        }
+      ]
+    },
+    {
+      "aspect": "storyline",
+      "score": 8,
+      "why": "The answer-first sequence and evidence-backed titles work well, but the closing sheet reopens an already demonstrated budget example instead of ending cleanly on the pilot decision.",
+      "fixes": [
+        {
+          "sheet": "10",
+          "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+          "change": "Keep this evidence on sheets 05–09 and replace the closing passage with the immediate kickoff action: assign the sponsor and operator, then complete the three pre-start conditions."
+        }
+      ]
+    },
+    {
+      "aspect": "product_framing",
+      "score": 8,
+      "why": "Brief Builder has a credible promise, operating boundary and ownership model, but its principles and manual approval mechanics are more buried than a buyer needs.",
+      "fixes": [
+        {
+          "sheet": "02",
+          "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+          "change": "Promote this compact principles line from the ledger into the visible product overview."
+        },
+        {
+          "sheet": "07",
+          "quote": "The account lead records resolutions and signature in brief.json. brief_review.html displays those recorded decisions.",
+          "change": "State plainly that v1 approval requires manually editing a structured file and that the review page has no save or approval control."
+        }
+      ]
+    },
+    {
+      "aspect": "visual_design",
+      "score": 7,
+      "why": "The source defines a coherent editorial system and restrained palette, but the creative and decision sheets leave substantial width unused while stacking lengthy material.",
+      "fixes": [
+        {
+          "sheet": "09–10",
+          "quote": ".body{grid-column:1/10;min-width:0}",
+          "change": "Give these sheets dedicated desktop layouts that use the empty sidebar area for artwork or decision ownership instead of retaining an unused quarter-width column."
+        },
+        {
+          "sheet": "09",
+          "quote": "#ch09 .hero",
+          "change": "Position the creative illustration beside the concise A/B assessment near the top, with the extended brief below or collapsed."
+        }
+      ]
+    },
+    {
+      "aspect": "fact_fidelity",
+      "score": 9,
+      "why": "The checked model IDs, 983 820 stage-one tokens, 1 134 734 total tokens, approximately 33 minutes, 17 checks and de-duplicated cost match the repository, with assumptions and known discrepancies disclosed.",
+      "fixes": []
+    },
+    {
+      "aspect": "ux",
+      "score": 8,
+      "why": "Self-contained assets, navigation, focus handling and responsive rules are thoughtfully implemented, but read-all navigation can lose correspondence with the sheet being viewed.",
+      "fixes": [
+        {
+          "sheet": "All",
+          "quote": "#read-all",
+          "change": "Update the current-sheet state as readers scroll in read-all mode so Contents, Next and Back follow the visible sheet."
+        },
+        {
+          "sheet": "All",
+          "quote": "Evidence walkthrough · 10 sheets",
+          "change": "Add a compact keyboard hint explaining left/right arrows and how to open and dismiss Contents."
+        }
+      ]
+    },
+    {
+      "aspect": "finale",
+      "score": 7,
+      "why": "The embedded can is appealing and honestly labelled, and the brief exposes its errors, but the vertical artwork knowingly leaves the brand lockup in the caption zone.",
+      "fixes": [
+        {
+          "sheet": "09",
+          "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+          "change": "Create a dedicated vertical illustration with the lockup raised into the usable area, preserving brand clear space and the mock-up label."
+        },
+        {
+          "sheet": "09",
+          "quote": "A or B, or neither: a creative lead must evaluate the shadow drafts. Owner and decision date remain unassigned.",
+          "change": "Make assigning the creative lead a kickoff action and consolidate the evaluation deadline here as before week 4."
+        }
+      ]
+    }
+  ],
+  "overall": "Credible evidence and governance; not yet ready to ship unchanged because the final two sheets need compression and clearer visual priority. Hash verified; no repository files edited. Visual and UX scores rely on source inspection and the embedded can image: both local browser-render attempts failed."
+}

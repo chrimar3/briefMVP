@@ -1,0 +1,883 @@
+{
+ "round": 11,
+ "page": "/Users/chrism/AI-transformation-assignment/brief-builder/tools/walkthrough/redesign/WALKTHROUGH_v2.html",
+ "hash": "51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b",
+ "stable": false,
+ "hashProblems": [],
+ "hardFailures": [
+  {
+   "category": "wrong_fact",
+   "sheet": "07",
+   "pageText": "The machine cannot sign; the sign-off field is not even writable by a model.",
+   "evidence": ".claude/agents/synthesize.md:4: \"tools: Read, Write\"; :14: \"Write exactly one file: `<run_dir>/brief.json`\"; :16: \"Do not populate `signoff` beyond `{\"status\": \"draft\"}`.\" pipeline/stages.py:351–352 rejects synthesis output whose signoff.status is not 'draft'.",
+   "why": "The model writes the signoff field. The safeguard is validation of its draft status, not field-level write protection. Describe the actual validation rather than claiming the field is unwritable.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The frozen file’s hash matches. Sheet 07 explicitly claims field-level write protection (line 520), reinforced by “A model never writes that field” (line 534). However, synthesize.md:14–16 instructs the model to write brief.json with signoff.status='draft'; stages.py:351–352 validates that status. The surrounding human-approval explanation does not correct this materially false description of the safeguard.",
+     "correctedClaim": "The model writes signoff.status as 'draft'; synthesis validation rejects any other status, and the creative stage requires 'signed_off', which the account lead records manually."
+    },
+    {
+     "refuted": false,
+     "reason": "The hash matches. Sheet 07 explicitly claims field-level write protection, and its ledger reinforces this with “A model never writes that field.” However, synthesize.md permits writing brief.json with signoff.status='draft'; stages.py:351–352 validates that status. The surrounding human-approval explanation does not correct this materially misleading description of the safeguard.",
+     "correctedClaim": "The model writes signoff with status 'draft'; synthesis validation rejects any other status, and human sign-off is required before the creative stage proceeds."
+    }
+   ]
+  },
+  {
+   "category": "missing_exhibit",
+   "sheet": "Document-wide",
+   "pageText": "",
+   "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, regression item 1 requires: \"Scope: only the frozen WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed; no files edited.\" This statement is absent from WALKTHROUGH_v2.html, including its ledgers.",
+   "why": "The required historical review-scope exhibit is missing. It should be identified as prior-review provenance, separately from this candidate's digest.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The candidate’s SHA-256 matches the required digest. audit_fidelity.md:3 explicitly requires the historical review-scope statement as an on-page exhibit and classifies its absence as a hard failure. The HTML, including its ledgers, contains neither the historical digest nor an equivalent review-scope statement.",
+     "correctedClaim": "WALKTHROUGH_v2.html omits the explicitly required prior-review provenance stating that only WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed and no files were edited."
+    },
+    {
+     "refuted": false,
+     "reason": "The candidate hash matches. audit_fidelity.md:3 explicitly requires the historical review-scope exhibit and classifies its omission as a hard failure. The HTML, including its ledgers, contains neither the prior filename and digest nor the no-edit statement; other provenance disclosures do not supply this required exhibit.",
+     "correctedClaim": "WALKTHROUGH_v2.html omits the explicitly required prior-review provenance stating that only WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed and no files were edited."
+    }
+   ]
+  },
+  {
+   "category": "missing_exhibit",
+   "sheet": "Document-wide",
+   "pageText": "",
+   "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, regression item 2 requires the retained constraints covering ten sheets, unchanged blockquotes and mark.cited, external resources, palette, thin spaces, title/takeaway limits and visible-word ceilings. No corresponding constraints statement appears in WALKTHROUGH_v2.html.",
+   "why": "The required constraints record is absent. This finding concerns its omission, not a claim that the candidate exceeds the numerical limits.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. audit_fidelity.md:3 explicitly requires regression item 2 to remain on the page and classifies missing items as hard failures. The HTML contains no corresponding constraints statement, including in its ledgers. This establishes an omitted required record, not a violation of the numerical limits.",
+     "correctedClaim": "The frozen WALKTHROUGH_v2.html omits the explicitly required constraints record covering sheet count, quotation preservation, external resources, palette, thin spaces, title/takeaway limits and visible-word ceilings."
+    },
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. audit_fidelity.md:3 explicitly requires regression item 2 to appear on the page and classifies its omission as a missing-exhibit hard failure. The HTML mentions ten sheets and artwork colours but contains no corresponding constraints record. This establishes an omission, not a numerical or styling violation.",
+     "correctedClaim": "WALKTHROUGH_v2.html omits the explicitly required constraints record covering sheet count, unchanged blockquotes and mark.cited, external resources, palette, thin-space separators, title and takeaway limits, and visible-word ceilings."
+    }
+   ]
+  },
+  {
+   "category": "missing_exhibit",
+   "sheet": "Document-wide",
+   "pageText": "",
+   "evidence": "tools/walkthrough/codex_round/r11/prompts/audit_fidelity.md:3, final regression item requires: \"Acceptance must include actual desktop and 320-, 390- and 560-pixel browser checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior; this review does not certify rendering.\" No equivalent acceptance statement appears in WALKTHROUGH_v2.html.",
+   "why": "The required browser-acceptance conditions and rendering-certification limitation are missing.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. audit_fidelity.md:3 explicitly requires this statement on the page and classifies its absence as a missing_exhibit hard failure. Checking the HTML’s text, including details ledgers, found no equivalent acceptance conditions or rendering-certification limitation.",
+     "correctedClaim": "WALKTHROUGH_v2.html omits the required desktop and 320-, 390- and 560-pixel browser acceptance checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior, and the statement that this review does not certify rendering."
+    },
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. audit_fidelity.md:3 explicitly requires this acceptance statement on the page and classifies its omission as missing_exhibit. Neither the visible text nor the details ledgers contains an equivalent; the page’s other limitations do not cover browser acceptance or rendering certification.",
+     "correctedClaim": "WALKTHROUGH_v2.html omits the explicitly required desktop and 320-, 390- and 560-pixel browser acceptance checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior, together with the limitation that this review does not certify rendering."
+    }
+   ]
+  },
+  {
+   "category": "broken_interaction",
+   "sheet": "All",
+   "pageText": "Swipe navigation",
+   "evidence": "Line 916: \"if(Math.abs(dx)>70&&Math.abs(dy)<40)navigate(...)\". Lines 914–917 register touchstart, touchend and touchcancel, but no touchmove guard; line 922’s scroll handler only saves position.",
+   "why": "Only endpoint displacement is checked. Executing the extracted handlers with start (300,400), intermediate vertical movement (290,200), and release (200,380) triggers Next. Vertical movement or scrolling never invalidates the gesture. Cancel swipe eligibility once vertical movement exceeds a threshold or scrolling occurs. Starts inside .ledger-wrap are correctly excluded.",
+   "auditor": "audit_ux",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "SHA-256 matches the frozen candidate. Executing its extracted handlers reproduces navigation from sheet 1 to sheet 2 for the cited gesture. Lines 915–917 contain no touchmove guard, and line 922 saves scroll position without invalidating swipe eligibility. The ledger exclusion does not protect ordinary page content; no stated house rule excuses unintended navigation.",
+     "correctedClaim": "Swipe navigation can unintentionally change sheets after substantial vertical movement because it checks only endpoint displacement and does not invalidate the gesture on vertical movement or scrolling."
+    },
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches the frozen candidate. Executing its extracted handlers reproduces navigation to sheet 2 for the cited gesture. Lines 915–917 track only endpoints; intermediate vertical movement is ignored, and line 922 saves scroll position without cancelling swipe eligibility. This can cause unintended sheet navigation while reading, so it is a functional defect.",
+     "correctedClaim": "Swipe navigation can incorrectly change sheets after substantial vertical movement because neither touchmove nor scrolling cancels eligibility when the final displacement satisfies the horizontal-swipe thresholds."
+    }
+   ]
+  },
+  {
+   "category": "accessibility_blocker",
+   "sheet": "10",
+   "pageText": "Next",
+   "evidence": "Line 826: \"<span>Next</span>\". Line 858: \"next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t);\"",
+   "why": "On sheet 10, the accessible name omits the visible label “Next,” obstructing speech activation by that label. Include “Next” in the accessible name, or change both visible and accessible labels to matching return wording.",
+   "auditor": "audit_ux",
+   "votes": [
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches the required digest. Line 826 retains visible “Next”; on sheet 10, line 858 overrides the button’s accessible name with “Return to sheet 01,” omitting “Next.” Mobile CSS hides the destination title but leaves “Next” visible. This is a concrete label mismatch, unaffected by repository disclosures or house rules. Chrome could not launch; verification rests on the frozen source.",
+     "correctedClaim": "On sheet 10, the visible “Next” button has the accessible name “Return to sheet 01,” violating label-in-name accessibility; align its visible and accessible wording."
+    },
+    {
+     "refuted": false,
+     "reason": "The SHA-256 matches. Line 826 retains visible “Next”; on sheet 10, lines 857–858 set the destination text to “The decision” and override the accessible name with “Return to sheet 01,” omitting “Next.” This is a concrete accessibility mismatch affecting activation by the visible label; no disclosure or house rule resolves it.",
+     "correctedClaim": "On sheet 10, the button visibly says “Next” but its accessible name is “Return to sheet 01”; align the visible and accessible labels to support speech activation."
+    }
+   ]
+  }
+ ],
+ "refutedClaims": [
+  {
+   "category": "quote_not_verbatim",
+   "sheet": "04",
+   "pageText": "Just thinking out loud — maybe a TikTok dance thing? Don’t hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+   "evidence": "fixtures/northlight_01/transcript_kickoff.md:21: \"Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.\"",
+   "why": "Strict character-level mismatch: the quotation replaces the source's straight apostrophe with U+2019. The wording and meaning are unchanged.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "The frozen file’s SHA-256 matches. Sheet 04 and transcript_kickoff.md:21 differ only in the apostrophe (U+2019 versus U+0027); normalizing it makes the quotations identical. The page preserves the wording, attribution and speculative status. This is a typographic discrepancy, not a substantive evidence-fidelity HARD failure; the exact-quote checks described concern extracted evidence.",
+     "correctedClaim": ""
+    },
+    {
+     "refuted": true,
+     "reason": "The frozen file’s SHA-256 matches. At HTML line 309, Don&rsquo;t renders a curly apostrophe where transcript_kickoff.md:21 uses a straight apostrophe. This is a typographic difference, not a hard fidelity failure: wording, meaning, speaker and timestamp are preserved, and the adjacent extraction explicitly labels the idea speculative, conditional and low-confidence. A careful stakeholder would not be misled.",
+     "correctedClaim": ""
+    }
+   ]
+  },
+  {
+   "category": "quote_not_verbatim",
+   "sheet": "09",
+   "pageText": "For urban professionals who’ve outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.",
+   "evidence": "runs/tier3/creative/creative_brief_sonnet.md:5: \"For urban professionals who've outgrown sugary, beach-party fizz, Meltemi Fizz turns zero-sugar refreshment into a premium, everyday ritual that only a modern Greek brand could own.\"",
+   "why": "Strict character-level mismatch: “who’ve” replaces the source's “who've”. The wording and meaning are unchanged.",
+   "auditor": "audit_fidelity",
+   "votes": [
+    {
+     "refuted": true,
+     "reason": "The SHA-256 matches the required digest. Sheet 09’s quotation (HTML line 612) and creative_brief_sonnet.md:5 differ only in one apostrophe: U+2019 versus U+0027. All other characters match. The strict character-level mismatch is real, but classifying this typographic substitution as a HARD fidelity failure is inflated: wording, meaning, and attribution are unchanged.",
+     "correctedClaim": ""
+    },
+    {
+     "refuted": true,
+     "reason": "The frozen file’s SHA-256 matches. Sheet 09 uses who&rsquo;ve (rendered “who’ve”) where creative_brief_sonnet.md:5 uses “who've”; the quoted wording is otherwise unchanged. This typographic apostrophe substitution preserves meaning and attribution and would not mislead a careful stakeholder. The character-level mismatch exists, but classifying it as a HARD fidelity failure is inflated.",
+     "correctedClaim": ""
+    }
+   ]
+  }
+ ],
+ "tasks": {
+  "task_cmo": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "Brief Builder helps the agency turn scattered client documents into a Greek and English briefing draft, with sources, disagreements and unanswered questions visible. For me, it makes corrections easier to trace and shows what still needs my decision. This synthetic run produced cited drafts, surfaced three conflicts and passed 17 defined checks. It did not prove time savings, reliable Greek quality or readiness for client delivery; creative drafts still contained errors. People confirm client intent, settle disagreements, review wording, sign off and judge creative claims. I would support a conditional pilot, with costs and data terms settled before starting and live use dependent on measured results.",
+   "missing": [
+    "No essential information was missing for this explanation. Actual savings, total operating cost and the Greek-quality release threshold remain explicitly unproven or unresolved."
+   ],
+   "confusions": [
+    "“Static review pages support command-line operation” leaves me unsure how I would actually review or correct a brief.",
+    "“Harness-only use is a policy restriction.” I cannot interpret this without technical knowledge.",
+    "“The <30-minute review target needs definition agreement: PRD §7 measures time-to-first-draft attention.” This makes the review target on sheet 10 feel unsettled."
+   ],
+   "scores": {
+    "clarity": 7,
+    "completeness": 9,
+    "concision": 6
+   },
+   "fixes": [
+    "Replace “Static review pages support command-line operation; the signature controls the handover.” with “An AI specialist runs the tool. The account lead reviews the pages and records corrections and approval before creative drafting begins.”",
+    "Replace “Harness-only use is a policy restriction.” with “Rules prohibit the drafting AI from using the answer key, but access is not technically blocked.”",
+    "Replace “The <30-minute review target needs definition agreement: PRD §7 measures time-to-first-draft attention.” with “Before the pilot, the sponsor must settle which work counts toward the 30-minute target.”",
+    "Replace “0.98 M tokens” on sheet 01 with “Usage measured; subscription capacity still unconfirmed”, keeping the detailed counts on sheet 10."
+   ]
+  },
+  "task_cfo": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "Stage one: Haiku 4.5 533,641 + Sonnet 5 451,179 = 984,820 tokens. Creative adds Sonnet 86,441 + Opus 4.8 63,473 = 1,134,734 total. Monthly: 984,820×15=14,772,300; one creative/brief gives 15.72–16.07M. Assumed annual capacity: [120−(20 assembling+30 reviewing)]×180÷60=210 hours; ×€19–20=€3,990–4,200 before costs. Validate assumptions in week 1. Approve four weeks, two leads×three retrospectives, S0–S1, agency workspace; creative stays shadow. Before starting: remeasure routing, confirm capacity/terms, approve costs/ceiling and Greek threshold. Week-4 release requires >80% useful questions, >70% unchanged text, <30-minute reviews, Greek threshold, both leads’ voluntary reuse, and sponsor decision. Month-2 default requires successful report/separate approval.",
+   "missing": [
+    "Actual setup, training, subscription, maintenance and support costs; approved spending ceiling; confirmed subscription capacity and workspace terms. These are explicitly deferred prerequisites, so net savings cannot yet be calculated.",
+    "A full-run usage/time baseline under the changed routing, measured assembly/review effort, an agreed attention-time definition and a Greek release threshold."
+   ],
+   "confusions": [
+    "“about 16 M with one creative draft each” does not identify the model; either displayed arm rounds to approximately 16M.",
+    "“Attention definitions require sponsor agreement: PRD §7 concerns time to first draft, while the review target here is <30 minutes.” The page discloses the mismatch, but the measurement definition remains unsettled.",
+    "“all three inputs are validated in week 1” leaves the separately stated, unvalidated 50-minute attention target less clearly covered."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 8,
+    "concision": 6
+   },
+   "fixes": [
+    "Replace “about 16 M with one creative draft each” with “15.72M with one Opus draft per brief, or 16.07M with one Sonnet draft, at 15 briefs monthly under graded routing.”",
+    "Replace “all three inputs are validated in week 1” with “Validate baseline, volume and hourly rate in week 1; measure assembly and review time during the retrospective to test the 50-minute attention target.”",
+    "Replace “Attention definitions require sponsor agreement” with “Before week 1, the sponsor must define assembly time, review time and time to first draft, and approve how each is measured.”"
+   ]
+  },
+  "task_creative": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "(a) Signed-off evidence: audience 25–40 urban professionals; launch 15 September 2026; production budget “in the eighties,” excluding media, with total unconfirmed. Zero sugar is permitted; natural ingredients needs an approved list. (b) Hypotheses: both propositions, audience psychology, everyday ritual and visual concept—not research or agreed client lines. (c) Strike unsupported “Greek-made,” €80–85k conversion and mistaken dance retraction; judge guilt wording against the health-claim ban, verify references, record A/B/neither, and resolve six blockers. This approves evaluation only: v1 creative cannot leave shadow. (d) Specs are table lookups from a provisional stub. Code checks normalized dimensions and some ratios; it guarantees neither durations, file types, deliverable fit nor production readiness.",
+   "missing": [
+    "The creative reviewer and decision date remain unassigned.",
+    "Full creative drafts and further spec rows are not embedded, limiting independent verification.",
+    "A complete creative-delivery authorization process beyond v1 is not specified."
+   ],
+   "confusions": [
+    "“Owner and decision date remain unassigned.” versus “the named creative lead records a choice and corrections before week 4”: a deadline is supplied, but assignment status is unclear.",
+    "“A creative team cannot start without” is ambiguous when the sheet already presents shadow creative; it should specify production or delivery."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 8,
+    "concision": 7
+   },
+   "fixes": [
+    "Replace “Owner and decision date remain unassigned.” with “Creative lead unassigned; shadow evaluation due before week 4; exact review date unset.”",
+    "Replace “A creative team cannot start without — still open, carried from the brief” with “Resolve before production or delivery; shadow exploration may continue.”",
+    "Replace “Spec (from the table, not generated)” with “Provisional table value — traffic confirmation required”."
+   ]
+  },
+  "task_engineer": {
+   "hashMismatch": false,
+   "passed": true,
+   "answer": "This run passed 17 checks on one synthetic project; it does not guarantee general completeness, supported claims or natural Greek. Models classify, flag fidelity, extract/verify, synthesize and render client/creative briefs. Code checks readiness, schemas, exact anchors, citation tags, glossary, sensitivity and limited specs; it assembles conflict candidates, while synthesis identifies contradictions. Checks miss semantic errors, duplicate/uncited questions and some spec errors. The account lead manually records resolutions and signoff in brief.json; brief_review.html displays them, toggles languages and copies questions, but saves nothing. Sign-off gates shadow creative; nothing is delivered automatically. Before week 1, the operator must rerun Sonnet extraction plus verifier, remeasure tokens/time and update subscription capacity planning; old totals are not current.",
+   "missing": [],
+   "confusions": [
+    "“Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” This sounds universal; later limitations narrow what is actually checked.",
+    "“Nothing moves past the draft without an account lead.” The precise enforced boundary appears later: entry into shadow creative requires signoff.status to equal signed_off."
+   ],
+   "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+   },
+   "fixes": [
+    "Replace “Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” with “Target: cited Greek and English briefs with gaps surfaced as questions. Checks verify defined properties; people judge support and completeness. Sign-off gates shadow creative; v1 does not send work.”",
+    "Replace “Nothing moves past the draft without an account lead.” with “The creative stage refuses to start until the account lead records sign-off in brief.json.”",
+    "Replace “Six AI steps, two plain-code steps, one person.” with “The diagram groups six AI steps, two code steps and human sign-off; current extraction also includes a verifier agent.”"
+   ]
+  }
+ },
+ "judges": 3,
+ "averages": {
+  "concision": 6.67,
+  "completeness": 8.0,
+  "clarity": 8.0,
+  "storyline": 8.0,
+  "product_framing": 8.0,
+  "visual_design": 7.33,
+  "fact_fidelity": 9.0,
+  "ux": 8.0,
+  "finale": 7.0
+ },
+ "deltas": {
+  "concision": 0.34,
+  "completeness": 0.0,
+  "clarity": 0.33,
+  "storyline": 0.0,
+  "product_framing": 0.0,
+  "visual_design": 0.0,
+  "fact_fidelity": 1.0,
+  "ux": 1.0,
+  "finale": 0.0
+ },
+ "below8": [
+  "concision",
+  "completeness",
+  "clarity",
+  "storyline",
+  "product_framing",
+  "visual_design",
+  "ux",
+  "finale"
+ ],
+ "regressions": [],
+ "detail": {
+  "concision": [
+   {
+    "aspect": "concision",
+    "score": 7,
+    "why": "Ten sheets meet the limit, but sheets 9 and 10 contain approximately 653 and 456 visible words, weakening presentation pace.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "Six blocking open items from the brief:",
+      "change": "Replace the visible six-item list with a one-line summary linking to the existing detailed checklist."
+     },
+     {
+      "sheet": "10",
+      "quote": "Decisions needed",
+      "change": "Present three compact decision rows with owner, deadline and release condition; retain the full protocol in the ledger."
+     }
+    ]
+   },
+   {
+    "aspect": "concision",
+    "score": 7,
+    "why": "The ten-sheet structure holds, but sheets 9 and 10 contain approximately 653 and 456 presentation-layer words respectively, overwhelming the otherwise disciplined pacing.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "Six blocking open items from the brief:",
+      "change": "Move this list into the existing open-items disclosure; retain one visible sentence identifying the unresolved scope and ingredient claims."
+     },
+     {
+      "sheet": "09",
+      "quote": "Three corrections and one judgement call.",
+      "change": "Present the corrections as three short annotations beside the affected draft excerpts, with the full explanation in the ledger."
+     },
+     {
+      "sheet": "10",
+      "quote": "#ch10 .decisions",
+      "change": "Reduce each decision to action, accountable owner, deadline and release condition; keep the detailed measurement protocol and cost categories in the existing ledger."
+     }
+    ]
+   },
+   {
+    "aspect": "concision",
+    "score": 6,
+    "why": "Ten sheets are respected, but the creative review and pilot conditions contain too much presentation-layer text for a joint CMO/CFO reading.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "Six blocking open items from the brief:",
+      "change": "Replace the visible six-item list with a one-line summary linked to the existing detailed checklist."
+     },
+     {
+      "sheet": "10",
+      "quote": "#ch10 .decisions",
+      "change": "Reduce each decision to action, owner, deadline and release condition; keep measurement procedures and cost categories in the ledger."
+     },
+     {
+      "sheet": "01",
+      "quote": "This sheet is the summary. Sheet 02 is the product; sheets 03–09 the evidence; sheet 10 the decisions.",
+      "change": "Delete this explanation because the executive route immediately above already provides the reading map."
+     }
+    ]
+   }
+  ],
+  "completeness": [
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The major stakeholder questions are covered, but the standalone file provides only extracts of the actual client deliverable.",
+    "fixes": [
+     {
+      "sheet": "06",
+      "quote": "Embedded extracts are shown here; complete source documents remain in the repository.",
+      "change": "Embed the complete Greek and English briefs in collapsed reference sections so recipients can inspect the deliverable without repository access."
+     },
+     {
+      "sheet": "10",
+      "quote": "Weeks 2–3: two leads review three past projects each.",
+      "change": "Add the PRD’s week-1 transcript-availability check and prospective fallback if historical full transcripts are unavailable."
+     }
+    ]
+   },
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The product, evidence, usage, timing, risks and approval conditions are covered, but stakeholders lack the PRD’s transcript contingency and an embedded complete client deliverable.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Weeks 2–3: two leads review three past projects each.",
+      "change": "Add the PRD §8 contingency to the pilot ledger: confirm full-transcript availability in week 1; otherwise collect prospective kickoffs while retrospective work uses the remaining sources."
+     },
+     {
+      "sheet": "06",
+      "quote": "Embedded extracts are shown here; complete source documents remain in the repository.",
+      "change": "Embed the complete Greek and English briefs in optional disclosures so the standalone walkthrough lets a stakeholder inspect the actual deliverable."
+     }
+    ]
+   },
+   {
+    "aspect": "completeness",
+    "score": 8,
+    "why": "The essential evidence, usage, risks and decision owners are covered, but readers cannot inspect the complete deliverable and the pilot lacks its documented transcript contingency.",
+    "fixes": [
+     {
+      "sheet": "06",
+      "quote": "Embedded extracts are shown here; complete source documents remain in the repository.",
+      "change": "Embed the complete Greek and English briefs in collapsed reference sections so the standalone file contains the actual deliverable."
+     },
+     {
+      "sheet": "10",
+      "quote": "Weeks 2–3: two leads review three past projects each.",
+      "change": "Add the PRD §8 contingency to the pilot ledger: confirm transcript availability in week 1 and use the documented prospective kickoff plan if full transcripts are unavailable."
+     }
+    ]
+   }
+  ],
+  "clarity": [
+   {
+    "aspect": "clarity",
+    "score": 8,
+    "why": "The AI/code/people distinction is clear, but several terms and inconsistent ownership statements still require interpretation.",
+    "fixes": [
+     {
+      "sheet": "03",
+      "quote": "A missing RFP stops the run before a model drafts.",
+      "change": "Expand RFP on first use as 'request for proposal (RFP)'."
+     },
+     {
+      "sheet": "09",
+      "quote": "Owner and decision date remain unassigned.",
+      "change": "Reconcile with the later deadline: 'Creative lead’s name remains unassigned; evaluation is due before week 4.'"
+     }
+    ]
+   },
+   {
+    "aspect": "clarity",
+    "score": 8,
+    "why": "The AI/code/people distinction is explicit, but unexplained technical language and an inconsistent role legend create avoidable friction for nontechnical readers.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "one brief object, gaps as questions",
+      "change": "Replace with “one structured brief, gaps as questions”; explain the JSON record only in the ledger."
+     },
+     {
+      "sheet": "02",
+      "quote": "Render EL + EN",
+      "change": "Replace with “Write Greek + English” to make the output immediately understandable."
+     },
+     {
+      "sheet": "01",
+      "quote": ".legend .red{color:var(--ink)}",
+      "change": "Use var(--red) so the icon visibly matches the accompanying “Red pen = people decide” label and later human annotations."
+     }
+    ]
+   },
+   {
+    "aspect": "clarity",
+    "score": 8,
+    "why": "The AI/code/people distinction is strong, but technical shorthand and competing attention-time definitions still require interpretation.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "Re-baseline usage and time under the 30 July routing before week 1: larger extraction model plus second reader.",
+      "change": "Use: “Before week 1, measure usage and time again with the model choices adopted on 30 July: a larger extraction model and a second AI checker.”"
+     },
+     {
+      "sheet": "10",
+      "quote": "under 30 minutes reviewing each draft",
+      "change": "Label this explicitly as a proposed review-time target requiring sponsor agreement, distinct from the PRD’s time-to-first-draft metric."
+     }
+    ]
+   }
+  ],
+  "storyline": [
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The answer-first opening and evidence-to-decision sequence work well, although some headings describe process and the final callback dilutes the pilot decision.",
+    "fixes": [
+     {
+      "sheet": "03",
+      "quote": "The readiness gate checks the input folder before AI classification.",
+      "change": "Use the supported takeaway: 'Missing essential inputs stop the run before AI drafts.'"
+     },
+     {
+      "sheet": "10",
+      "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render.",
+      "change": "Keep this evidence on sheets 5–9 and end sheet 10 with the sponsor’s decision and pre-week-1 conditions."
+     }
+    ]
+   },
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The conditional recommendation leads and the evidence supports it, but repetition and a late return to the budget example weaken the closing decision sequence.",
+    "fixes": [
+     {
+      "sheet": "01",
+      "quote": "This sheet is the summary. Sheet 02 is the product; sheets 03–09 the evidence; sheet 10 the decisions.",
+      "change": "Remove this marginal paragraph because the executive-route links already provide the same orientation."
+     },
+     {
+      "sheet": "10",
+      "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+      "change": "Remove this repeated example from the close; finish with the sponsor’s next action and the conditions required before week 1."
+     }
+    ]
+   },
+   {
+    "aspect": "storyline",
+    "score": 8,
+    "why": "The answer-first sequence and evidence-backed titles work well, but the closing sheet reopens an already demonstrated budget example instead of ending cleanly on the pilot decision.",
+    "fixes": [
+     {
+      "sheet": "10",
+      "quote": "The budget stays «κάπου στα ογδόντα»: no invented or resolved total in the brief or either render. Shadow Draft A invented one; the creative lead strikes it.",
+      "change": "Keep this evidence on sheets 05–09 and replace the closing passage with the immediate kickoff action: assign the sponsor and operator, then complete the three pre-start conditions."
+     }
+    ]
+   }
+  ],
+  "product_framing": [
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a credible promise, operating boundary and human workflow, but the current architecture and guiding principles deserve clearer presentation.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "Six AI steps, two plain-code steps, one person.",
+      "change": "Label this explicitly as the graded-run anatomy, or show the subsequently added verification step in the current-operation diagram."
+     },
+     {
+      "sheet": "02",
+      "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+      "change": "Promote this concise product-principles line from the ledger into the visible sheet."
+     }
+    ]
+   },
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a clear promise, anatomy and human boundary, but its distinctive principles and practical operating handoff are more buried than a product story warrants.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+      "change": "Promote a compact version of these principles from the ledger into the main product overview."
+     },
+     {
+      "sheet": "02",
+      "quote": "Account lead records resolutions/signature in the brief object; creative lead evaluates.",
+      "change": "State plainly that v1 requires a manual edit to brief.json and identify the proposed runbook as preparation for that handoff, making the actual operating burden visible."
+     }
+    ]
+   },
+   {
+    "aspect": "product_framing",
+    "score": 8,
+    "why": "Brief Builder has a credible promise, operating boundary and ownership model, but its principles and manual approval mechanics are more buried than a buyer needs.",
+    "fixes": [
+     {
+      "sheet": "02",
+      "quote": "Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send",
+      "change": "Promote this compact principles line from the ledger into the visible product overview."
+     },
+     {
+      "sheet": "07",
+      "quote": "The account lead records resolutions and signature in brief.json. brief_review.html displays those recorded decisions.",
+      "change": "State plainly that v1 approval requires manually editing a structured file and that the review page has no save or approval control."
+     }
+    ]
+   }
+  ],
+  "visual_design": [
+   {
+    "aspect": "visual_design",
+    "score": 7,
+    "why": "The source defines a coherent editorial system, but the creative sheet underuses desktop width and the role legend contradicts its own colour cue.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#ch09 .body",
+      "change": "Use the full desktop grid for the creative comparison and artwork rather than leaving the empty sidebar allocation."
+     },
+     {
+      "sheet": "01",
+      "quote": ".legend .red",
+      "change": "Use var(--red) instead of var(--ink) so the red-pen symbol matches its label and the later human decisions."
+     },
+     {
+      "sheet": "09",
+      "quote": "#ch09 .hero",
+      "change": "Move the artwork immediately after the A/B propositions and concise correction summary, ahead of the extended brief."
+     }
+    ]
+   },
+   {
+    "aspect": "visual_design",
+    "score": 8,
+    "why": "The serif editorial system, restrained palette and human red annotations are coherent, but the creative sheet’s narrow content column and delayed artwork weaken its hierarchy.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": ".body{grid-column:1/10;min-width:0}",
+      "change": "Add a desktop override for #ch09 .body to use the full grid width and give the creative evidence a deliberate text-and-art composition."
+     },
+     {
+      "sheet": "09",
+      "quote": "#ch09 .hero",
+      "change": "Place the principal artwork beside or immediately after the A/B propositions, ahead of the detailed brief and specification table."
+     }
+    ]
+   },
+   {
+    "aspect": "visual_design",
+    "score": 7,
+    "why": "The source defines a coherent editorial system and restrained palette, but the creative and decision sheets leave substantial width unused while stacking lengthy material.",
+    "fixes": [
+     {
+      "sheet": "09–10",
+      "quote": ".body{grid-column:1/10;min-width:0}",
+      "change": "Give these sheets dedicated desktop layouts that use the empty sidebar area for artwork or decision ownership instead of retaining an unused quarter-width column."
+     },
+     {
+      "sheet": "09",
+      "quote": "#ch09 .hero",
+      "change": "Position the creative illustration beside the concise A/B assessment near the top, with the extended brief below or collapsed."
+     }
+    ]
+   }
+  ],
+  "fact_fidelity": [
+   {
+    "aspect": "fact_fidelity",
+    "score": 9,
+    "why": "Headline tokens, model IDs, stage durations, 17 checks, conflicts and sign-off match the artifacts, while assumptions and the specified repository discrepancies are disclosed.",
+    "fixes": []
+   },
+   {
+    "aspect": "fact_fidelity",
+    "score": 9,
+    "why": "Spot-checks confirm the model IDs, 984,820 stage-one tokens, 1,134,734 total tokens, de-duplicated $3.55 cost, timings, 17 checks, quotations and recorded resolutions, with assumptions and known discrepancies appropriately disclosed.",
+    "fixes": []
+   },
+   {
+    "aspect": "fact_fidelity",
+    "score": 9,
+    "why": "The checked model IDs, 983 820 stage-one tokens, 1 134 734 total tokens, approximately 33 minutes, 17 checks and de-duplicated cost match the repository, with assumptions and known discrepancies disclosed.",
+    "fixes": []
+   }
+  ],
+  "ux": [
+   {
+    "aspect": "ux",
+    "score": 8,
+    "why": "The dependency-free source includes accessible navigation and responsive rules, but read-all mode does not synchronize navigation with the sheet being read.",
+    "fixes": [
+     {
+      "sheet": "All",
+      "quote": "#read-all",
+      "change": "Update the current sheet as the reader scrolls in read-all mode so Contents, Next and Back reflect the visible sheet."
+     },
+     {
+      "sheet": "All",
+      "quote": "Evidence walkthrough · 10 sheets",
+      "change": "Add a concise keyboard hint for Left/Right navigation and Escape to close Contents."
+     }
+    ]
+   },
+   {
+    "aspect": "ux",
+    "score": 8,
+    "why": "The source provides self-contained assets, responsive layouts, focus treatment and modal keyboard handling, but read-all navigation state and the final mobile action need refinement.",
+    "fixes": [
+     {
+      "sheet": "All",
+      "quote": "#read-all",
+      "change": "Update the current sheet and navigation labels as the reader scrolls in read-all mode; currently scrolling only saves position, leaving Next and Back tied to the previously selected sheet."
+     },
+     {
+      "sheet": "10",
+      "quote": "#next",
+      "change": "Change the visible button label to “Start again” on the final sheet; on phones the destination title is hidden, leaving an unexplained “Next” that returns to sheet 1."
+     }
+    ]
+   },
+   {
+    "aspect": "ux",
+    "score": 8,
+    "why": "Self-contained assets, navigation, focus handling and responsive rules are thoughtfully implemented, but read-all navigation can lose correspondence with the sheet being viewed.",
+    "fixes": [
+     {
+      "sheet": "All",
+      "quote": "#read-all",
+      "change": "Update the current-sheet state as readers scroll in read-all mode so Contents, Next and Back follow the visible sheet."
+     },
+     {
+      "sheet": "All",
+      "quote": "Evidence walkthrough · 10 sheets",
+      "change": "Add a compact keyboard hint explaining left/right arrows and how to open and dismiss Contents."
+     }
+    ]
+   }
+  ],
+  "finale": [
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The illustration and can are appealing and honestly labelled, but the can’s wordmark spacing and the acknowledged vertical-layout problem prevent an unchanged release.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#kv-packaging img",
+      "change": "Increase the gap between the yellow symbol and the product wordmark to at least one wordmark height, as required by the brand guidelines."
+     },
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Create that dedicated vertical composition and raise the product name and claim while retaining the mock-up and shadow-mode labels."
+     }
+    ]
+   },
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The creative is honestly labelled and the artwork respects the core palette and claim restrictions, but the can crowds the wordmark and the acknowledged TikTok caption-zone collision remains unresolved.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "#kv-packaging img",
+      "change": "Increase the gap between the yellow symbol and the product wordmark to at least one wordmark height; the current can visibly falls short of the brand’s clear-space requirement."
+     },
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Create the dedicated 9:16 composition now, raising the lockup and claim while retaining the mock-up label and provisional table-based specifications."
+     }
+    ]
+   },
+   {
+    "aspect": "finale",
+    "score": 7,
+    "why": "The embedded can is appealing and honestly labelled, and the brief exposes its errors, but the vertical artwork knowingly leaves the brand lockup in the caption zone.",
+    "fixes": [
+     {
+      "sheet": "09",
+      "quote": "9:16 still frame at the TikTok in-feed spec; the lockup sits in TikTok’s caption zone, a dedicated 9:16 layout would raise it",
+      "change": "Create a dedicated vertical illustration with the lockup raised into the usable area, preserving brand clear space and the mock-up label."
+     },
+     {
+      "sheet": "09",
+      "quote": "A or B, or neither: a creative lead must evaluate the shadow drafts. Owner and decision date remain unassigned.",
+      "change": "Make assigning the creative lead a kickoff action and consolidate the evaluation deadline here as before week 4."
+     }
+    ]
+   }
+  ]
+ },
+ "softIssues": {
+  "audit_fidelity": [
+   {
+    "sheet": "01",
+    "issue": "“Every quote is clipped verbatim from the four source documents” overlooks quotations from generated creative drafts and the signed record.",
+    "fix": "Limit this sentence to source-document receipts and identify generated-artifact quotations separately."
+   },
+   {
+    "sheet": "10",
+    "issue": "“A token is roughly three-quarters of a word” is an uncited heuristic, particularly imprecise for the mixed Greek/English material.",
+    "fix": "Define tokens as units of processed text without a word conversion."
+   }
+  ],
+  "audit_ux": [
+   {
+    "sheet": "01, 02, 08, 09, 10",
+    "issue": "Rendered verification remains incomplete: all ten requested Chrome launches at 1440 and 390 px terminated with SIGABRT before producing screenshots; Playwright also failed to launch Chrome. Consequently, clipping, overlap, mobile folio layout and rendered artwork placement are unverified. Code review confirms all four previous wording corrections are present, referenced IDs exist, Escape closes Contents, navigation includes a 10→1 return, clips stack on phones, and external resources are absent. The artwork SVG uses only the specified colours without opacity or gradients. Paper-text contrast ratios are 15.48:1, 5.96:1 and 5.23:1. This exact file contains one script block.",
+    "fix": "Repeat the screenshots and browser interaction checks in an environment where Chrome launches, retaining this exact digest. Inspect both crops, the embedded can plate and the in-crop MOCK-UP label before declaring the rendered audit complete."
+   }
+  ]
+ },
+ "agentsMissing": [],
+ "brief": {
+  "hypothesis": "Target decision-readiness in the verified frozen candidate (SHA-256 51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b) through at most 12 localized changes: correct all six hard failures, then clarify operating responsibilities, navigation and the pilot close without changing evidence quotations or adding sheets.",
+  "items": [
+   {
+    "n": 1,
+    "sheet": "02, 07",
+    "change": "Replace every field-write-protection claim. Sheet 07 before: “Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.” After: “The model writes signoff.status as draft; synthesis validation rejects any other status. The creative stage requires signed_off, which the account lead records manually.” Ledger before: “A model never writes that field.” After: “The model writes draft status; validation rejects any other synthesis status.” Sheet 02 before: “The gate between stages: the account lead resolves conflicts, edits and signs; a model cannot write this field.” After: “The account lead manually records resolutions and approval; the creative stage requires signed_off status.” Sheet 02 ledger before: “Nothing passes the sign-off gate without a person; a model cannot write that field.” After: “Synthesis validation permits only draft status; the creative stage requires signed_off, recorded manually by the account lead.”",
+    "source": "Verified wrong_fact; both fidelity votes; task_engineer. Supplied evidence: synthesize.md:14–16 and stages.py:351–352."
+   },
+   {
+    "n": 2,
+    "sheet": "01",
+    "change": "Before: no historical review-scope exhibit. After: append this paragraph inside #ledger-01: “Prior-review provenance — Scope: only the frozen WALKTHROUGH.html with SHA-256 ca5f7d8a791515ab108c3d98e17269a29438e69bd2133fd7acf32a25d08e0d8b was reviewed; no files edited. This records the earlier review’s scope, not the identity of WALKTHROUGH_v2.html.”",
+    "source": "Verified missing_exhibit; both fidelity votes; supplied audit_fidelity.md regression item 1."
+   },
+   {
+    "n": 3,
+    "sheet": "01",
+    "change": "Before: no retained-constraints exhibit. After: append this paragraph inside #ledger-01: “Retained constraints — At most ten sheets; blockquotes and mark.cited unchanged; zero external resources; tokens as the usage figure; budget retained in words; shadow-mode labels preserved; action titles at most 24 words; takeaways at most 20 words; at most 650 visible words per sheet, except 750 on sheet 09; existing page palette and artwork palette restrictions preserved; thin-space thousands separators.”",
+    "source": "Verified missing_exhibit; both fidelity votes; supplied audit_fidelity.md regression item 2 and user constraints."
+   },
+   {
+    "n": 4,
+    "sheet": "01",
+    "change": "Before: no browser-acceptance exhibit. After: append this paragraph inside #ledger-01: “Acceptance must include actual desktop and 320-, 390- and 560-pixel browser checks for navigation, exam-row separation, warning order, text bounds, artwork labels and keyboard/touch behavior; this review does not certify rendering.” Keep this limitation explicit until actual browser checks succeed.",
+    "source": "Verified missing_exhibit; both fidelity votes; audit_ux reports unsuccessful browser launches."
+   },
+   {
+    "n": 5,
+    "sheet": "All",
+    "change": "JS: retain the existing touchstart exclusions and endpoint thresholds. Immediately after the touchstart listener add: document.addEventListener('touchmove',function(e){if(tx===null)return;if(e.touches.length!==1||Math.abs(e.touches[0].clientY-ty)>40)tx=ty=null;},{passive:true}); In the existing scroll listener, insert tx=ty=null; before clearTimeout(timer). This permanently cancels eligibility for the current gesture after vertical movement over 40 pixels or any scrolling. Acceptance: start (300,400), move (290,200), release (200,380) must not navigate; a horizontal gesture without scrolling must still navigate; ledger gestures remain excluded.",
+    "source": "Verified broken_interaction; both UX votes."
+   },
+   {
+    "n": 6,
+    "sheet": "10 / navigation",
+    "change": "JS inside paint(): before nextTitle.textContent, insert next.querySelector('span').textContent=cur===10?'Start again':'Next'; Replace next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t); with next.setAttribute('aria-label',cur===10?'Start again: return to sheet 01':'Next sheet: '+CH[cur].t); Verify the visible and accessible labels match on desktop and phones, and returning to sheet 01 restores “Next”.",
+    "source": "Verified accessibility_blocker; both UX votes; judge2 UX."
+   },
+   {
+    "n": 7,
+    "sheet": "All / read-all navigation",
+    "change": "Before: scrolling only saves position, so cur remains tied to the last selected sheet. After: add this JS listener inside the existing closure: var sheetFrame=0;window.addEventListener('scroll',function(){if(!allMode||printing||restoring||!contents.hidden||sheetFrame)return;sheetFrame=requestAnimationFrame(function(){sheetFrame=0;if(!allMode||printing||restoring||!contents.hidden)return;var line=Math.min(160,window.innerHeight*.25),n=1;sheets.forEach(function(s,i){if(s.getBoundingClientRect().top<=line)n=i+1;});if(n!==cur){cur=n;paint();}});},{passive:true}); This updates Contents, Back and Next without moving focus, scrolling the page or adding history entries. Verify ordinary scrolling, anchor navigation, history restoration and switching back to single-sheet mode.",
+    "source": "judge1, judge2 and judge3 UX."
+   },
+   {
+    "n": 8,
+    "sheet": "09",
+    "change": "Before: “Six blocking open items from the brief:” and its visible six-item list. After: one paragraph, “Before production or delivery, resolve ingredient claims and delivery scope; shadow exploration may continue. <a href=\"#ledger-12\">Review the six open items.</a>” Retain all six detailed entries in #ledger-12. Replace its summary “Still open — six items a creative team cannot start without, and three that do not block” with “Still open — six items to resolve before production or delivery, and three that do not block shadow exploration”. Replace “A creative team cannot start without — still open, carried from the brief” with “Resolve before production or delivery; shadow exploration may continue.” Replace the takeaway “Six open items still block a creative team; three facts are settled in red.” with “Six items need resolution before production or delivery; three facts are settled in red.” Replace “Owner and decision date remain unassigned.” with “Creative lead unassigned; shadow evaluation due before week 4; exact review date unset.”",
+    "source": "All three judges on concision; task_creative; judge1 clarity and judge3 finale."
+   },
+   {
+    "n": 9,
+    "sheet": "10",
+    "change": "Replace only #ch10 .decisions with three compact list items, retaining the detailed protocol, targets, cost categories and citations in #ledger-14: (1) “Authorize a conditional four-week pilot or defer. Owner: sponsor, named at kickoff. Due: before week 1. Release: week-4 live use requires every agreed quality, time and voluntary-reuse target; the sponsor records the decision. <a href=\"#ledger-14\">Targets and protocol.</a>” (2) “Measure usage and time with the model choices adopted on 30 July: a larger extraction model and a second AI checker. Owner: operator. Due: before week 1. Start condition: record the new full-run baseline.” (3) “Approve costs, capacity and workspace terms. Owners: management and operator; sponsor approves. Due: before week 1. Start condition: approved estimate, recorded spending ceiling and confirmed terms before spending or client-data processing.” Replace the closing budget example and its associated citation with: “Next: name the sponsor, operator and creative lead at kickoff; complete all three pre-start conditions before week 1.” Preserve the return link and the budget evidence on sheets 05–09.",
+    "source": "All three judges on concision and finale/storyline; task_creative on ownership."
+   },
+   {
+    "n": 10,
+    "sheet": "10",
+    "change": "Before: #ledger-14 pilot protocol proceeds directly to “Weeks 2–3: two leads review three past projects each.” After: insert immediately before that sentence: “Week 1: confirm that full transcripts are available for the historical projects. If unavailable, collect prospective kickoff transcripts while retrospective work uses the remaining sources.”",
+    "source": "All three judges on completeness; supplied PRD §8 contingency."
+   },
+   {
+    "n": 11,
+    "sheet": "02, 07",
+    "change": "Sheet 02 before: “Six AI steps, two plain-code steps, one person. Static review pages support command-line operation; the signature controls the handover.” After: “The graded-run diagram groups six AI steps, two code steps and human sign-off. Current extraction also has a verifier agent. An AI specialist runs the tool; the account lead reviews and records approval before shadow creative begins.” Sheet 07 before: “The account lead records resolutions and signature in brief.json. brief_review.html displays those recorded decisions.” After: “In v1, the account lead manually edits brief.json to record resolutions and approval. The review page displays them; it has no save or approval control.” Move the existing principles line from #ledger-02 into the visible sheet immediately after the operating-owners paragraph, unchanged: “Ask, don’t guess · Surface, don’t resolve · Flag, don’t correct · Look up, don’t invent · Sign, don’t send”.",
+    "source": "task_cmo and task_engineer; judge1 product framing; judge2 and judge3 manual-operation and principles requests."
+   },
+   {
+    "n": 12,
+    "sheet": "01",
+    "change": "CSS before: .legend .red{color:var(--ink)} After: .legend .red{color:var(--red)}",
+    "source": "judge1 visual design and judge2 clarity."
+   }
+  ],
+  "mustKeep": [
+   "Review identity: the examined candidate is WALKTHROUGH_v2.html with SHA-256 51705b8f145b8758dec1fb7bd1a8ad6442cf514a421a6555a3f58d27239f006b. No files were edited and no rendering certification is claimed.",
+   "At most ten sheets; unchanged blockquotes and mark.cited; zero external resources; existing page palette; flat Aegean Blue #1B4F8A, Citrus Yellow #F5C518 and white artwork; thin-space thousands; title, takeaway and visible-word limits.",
+   "Conditional four-week pilot, alternative to defer, weeks 2–3 retrospective, two leads reviewing three past projects each, and sponsor-recorded week-4 release blocked by missed agreed targets.",
+   "Pilot targets: over 80% useful questions, over 70% retained text, proposed review time under 30 minutes, Greek naturalness rated 1–5 with EL/EN edits compared, Greek release threshold unset, and voluntary reuse by both leads. Preserve the distinction between review time, time-to-first-draft attention and the separate 50-minute attention target.",
+   "Month-2 adoption remains separate from week-4 release: at least three additional leads request onboarding; default use requires a successful pilot report and separate sponsor approval.",
+   "AI specialist operation; manual brief.json resolutions and approval; review page language toggle and copyable questions without save/approval controls; proposed pre-week-1 runbook; two champions trained by week 4; no mail, calendar or drive integration.",
+   "S0–S1 pilot restriction and runtime refusal of higher tiers. Agency workspace, DPA, EU processing and zero retention are deployment assumptions whose subscription, processing, retention and contractual terms remain unconfirmed.",
+   "Setup, training, subscription, maintenance and support costs remain unestimated. Sponsor-approved estimate and spending ceiling are proposed pre-start conditions; an unset ceiling means no start. Actual savings, total operating costs and subscription capacity remain unproven.",
+   "Usage remains in tokens: 0.98 M stage one, nine model-agent attempts rather than nine turns, 1.13 M including creative A/B, approximately 15 M monthly at 15 briefs under graded routing. Preserve model-specific usage, cache breakdown and the distinction between historical counts and future capacity.",
+   "Changed routing needs a new full-run usage/time baseline: transcript comparison 598 743 versus 295 774 tokens, including the separate verifier. Preserve graded 33-minute stage sum versus 25.2-minute continuous capture, resumed-run caveat, later changes excluded from graded totals, and overridden-gate demo timing caveat.",
+   "Financial arithmetic stays an assumption-based target: 120-minute baseline, unvalidated 50-minute attention target comprising 20 assembling plus 30 reviewing, 180 briefs annually, 210 hours and €3 990–4 200 at €19–20/hour before operating costs. Preserve the discrepancy with the cost model’s €5–6k and the requirement to validate assumptions and measure both tasks.",
+   "Four synthetic source documents, readiness checks and missing-RFP stop; background creates no commitment; 33 cited facts; two garbles preserved; extraction retry and later verifier chronology; exact-quote checks do not establish completeness.",
+   "Three conflicts retain both source receipts and human decisions: audience 25–40 urban professionals supersedes Gen Z 18–24; launch 15 September supersedes early October; production budget remains in words excluding media, with the media-inclusive total unknown. Preserve signatory, date, author-as-account-lead provenance and untimed review.",
+   "One structured brief produces Greek and English documents; preserve embedded bilingual extracts, source paths and disclosure that full documents are not embedded. Preserve 25 entries, ten questions, contested/empty audience and budget fields, five of seven evidenced fields, 4% low-confidence entries, readiness thresholds and ready-for-review status.",
+   "17/17 applies only to defined checks on one synthetic project. Preserve the full check inventory, citation-presence versus semantic-support distinction, human Greek-register assessment, answer-key chronology and policy-only access restriction, runtime Read access and absence of evidence that an agent read the key.",
+   "Second fixture 15/17 then 16/17 after a re-roll, untested duplicate/uncited questions, and three of ten supervised single-document runs producing nothing after two attempts. Exam-green remains distinct from lead-ready.",
+   "Creative A/B uses identical input: Sonnet Draft A versus Opus Draft B, both quoted propositions, three factual corrections—unsupported Greek-made origin, invented budget conversion and mistaken dance retraction—and the separate health-claim judgement. Preserve speculative dance versus retracted metro distinction.",
+   "Creative choice remains A/B/neither, with lead unassigned and evaluation due before week 4. Approval is shadow evaluation only; client-brief live use never authorizes creative delivery. Preserve all six open items and the three separately identified nonblocking items.",
+   "Traffic owns the provisional specification table; retain exact displayed rows, source tags and warnings that checks cover normalized dimensions and some ratios, not durations, file types or deliverable fit.",
+   "Artwork remains explicitly MOCK-UP, SHADOW MODE and not for delivery; pipeline emits text only. Preserve illustration/image-model provenance, packaging’s undefined scope, crop and packaging limitations, full product name, zero-sugar claim, ingredient-list dependency and health/competitor restrictions.",
+   "Keep source ledgers, protected quotations, correction warnings and existing evidence links reachable. Preserve keyboard navigation, Contents focus management and Escape, ledger gesture exclusions, history restoration, print access and no-JavaScript reading.",
+   "Add and retain the historical review-scope, constraints and browser-acceptance exhibits without presenting the historical digest as this candidate’s identity."
+  ]
+ }
+}

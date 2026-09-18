@@ -1,0 +1,20 @@
+{
+  "hashMismatch": false,
+  "passed": true,
+  "answer": "This run passed 17 checks on one synthetic project; it does not guarantee general completeness, supported claims or natural Greek. Models classify, flag fidelity, extract/verify, synthesize and render client/creative briefs. Code checks readiness, schemas, exact anchors, citation tags, glossary, sensitivity and limited specs; it assembles conflict candidates, while synthesis identifies contradictions. Checks miss semantic errors, duplicate/uncited questions and some spec errors. The account lead manually records resolutions and signoff in brief.json; brief_review.html displays them, toggles languages and copies questions, but saves nothing. Sign-off gates shadow creative; nothing is delivered automatically. Before week 1, the operator must rerun Sonnet extraction plus verifier, remeasure tokens/time and update subscription capacity planning; old totals are not current.",
+  "missing": [],
+  "confusions": [
+    "“Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” This sounds universal; later limitations narrow what is actually checked.",
+    "“Nothing moves past the draft without an account lead.” The precise enforced boundary appears later: entry into shadow creative requires signoff.status to equal signed_off."
+  ],
+  "scores": {
+    "clarity": 8,
+    "completeness": 9,
+    "concision": 7
+  },
+  "fixes": [
+    "Replace “Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.” with “Target: cited Greek and English briefs with gaps surfaced as questions. Checks verify defined properties; people judge support and completeness. Sign-off gates shadow creative; v1 does not send work.”",
+    "Replace “Nothing moves past the draft without an account lead.” with “The creative stage refuses to start until the account lead records sign-off in brief.json.”",
+    "Replace “Six AI steps, two plain-code steps, one person.” with “The diagram groups six AI steps, two code steps and human sign-off; current extraction also includes a verifier agent.”"
+  ]
+}

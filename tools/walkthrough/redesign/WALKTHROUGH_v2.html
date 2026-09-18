@@ -95,7 +95,7 @@
         <li><span class="node ai"><span class="n">7</span><span class="name">Render EL + EN</span><span class="what">two languages, one object</span><span class="who">AI &middot; code gate</span></span></li>
         <li><span class="node doc"><span class="n">out</span><span class="name">Brief EL + EN</span><span class="what">questions, conflicts, verdict</span><span class="who">documents</span></span></li>
       </ol>
-      <div class="gate-band"><span class="n">8</span><span class="name">Sign-off</span><span class="what">The gate between stages: the account lead resolves conflicts, edits and signs; a model cannot write this field.</span><span class="who">account lead</span></div>
+      <div class="gate-band"><span class="n">8</span><span class="name">Sign-off</span><span class="what">The gate between stages: the account lead resolves conflicts, edits and signs; a model can only leave it as draft.</span><span class="who">account lead</span></div>
       <p class="stage-lbl">Stage 2 &middot; the creative brief, shadow mode</p>
       <ol class="flow" aria-label="Stage 2">
         <li><span class="node ai"><span class="n">9</span><span class="name">Creative draft</span><span class="what">proposition, tone, specs from a table</span><span class="who">AI &middot; code gate</span></span></li>
@@ -136,7 +136,7 @@
           <ul>
             <li>Every cited anchor in the brief object exists word for word in its source (the documents may quote in translation); a failing output is sent back once, then the run stops.</li>
             <li>Channel specs come from the traffic team&rsquo;s table, never from a model.</li>
-            <li>Nothing passes the sign-off gate without a person; a model cannot write that field.</li>
+            <li>Nothing passes the sign-off gate without a person; a model can only leave the field as draft.</li>
           </ul>
         </div>
         <div class="col">
@@ -517,7 +517,7 @@
       
       
       <p class="marginalia"><span class="lbl">The same three contradictions</span>From sheet 05, now with a person&rsquo;s decision on each.</p>
-      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign; the sign-off field is not even writable by a model.</p>
+      <p class="marginalia"><span class="lbl">The gate between stages</span>Nothing moves past the draft without an account lead. The machine cannot sign: synthesis writes signoff.status as draft and validation rejects any other value; only a person records signed_off.</p>
       
     </aside>
 <div class="ledgers"><details class="ledger" id="ledger-10">
@@ -531,7 +531,7 @@
           <tr><td>8 human sign-off</td><td>human action &middot; not a pipeline step</td><td>none</td><td class="r">0</td><td>brief.json &rsaquo; signoff {status: signed_off, signed_by, signed_ts, edits_summary} &middot; conflicts[n].status: resolved_by_human</td></tr>
         </table></div>
               <p class="foot">On provenance: in the synthetic project the account lead on the call is &ldquo;Eleni&rdquo;, a fictional persona. The graded run was signed off by the repository&rsquo;s author acting as account lead; the record above is quoted from the run.</p>
-        <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model never writes that field.</p>
+        <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model can only write draft; signed_off is recorded by a person.</p>
       <div class="supporting"><p class="marginalia"><span class="lbl">What the account lead opens</span>brief_review.html is a review view: recorded resolutions and signature, language toggle and copyable questions. In v1, the account lead manually records decisions and approval in brief.json (conflicts[n].resolution, resolved_by; sign-off: status, signed_by, signed_ts, edits_summary); the review page only displays them. This walkthrough proposes a runbook before week 1; PRD &sect;8 specifies champion training by week 4.</p></div></details></div>
 </section>
 <section class="sheet" id="ch08" data-n="8" aria-labelledby="t08">
@@ -855,7 +855,8 @@
     sheets.forEach(function(s,i){s.classList.toggle('active',i+1===cur);});
     fol.textContent=pad(cur)+' / 10 · Contents';back.disabled=cur===1;
     nextTitle.textContent=cur===10?'The decision':CH[cur].t;
-    next.setAttribute('aria-label',cur===10?'Return to sheet 01':'Next sheet: '+CH[cur].t);
+    next.querySelector('span').textContent=cur===10?'Start again':'Next';
+    next.setAttribute('aria-label',cur===10?'Start again: return to sheet 01':'Next sheet: '+CH[cur].t);
     list.querySelectorAll('a').forEach(function(a,i){if(i+1===cur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     announce.textContent='Sheet '+cur+' of 10: '+CH[cur-1].t;
   }
@@ -913,13 +914,14 @@
   });
   var tx=null,ty=null;
   document.addEventListener('touchstart',function(e){tx=ty=null;if(!contents.hidden||e.touches.length!==1||e.target.closest('button,a,summary,input,textarea,select,[contenteditable],.ledger-wrap,.nav'))return;tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchmove',function(e){if(tx!==null&&(e.touches.length!==1||Math.abs(e.touches[0].clientY-ty)>40))tx=ty=null;},{passive:true});
   document.addEventListener('touchend',function(e){if(tx===null)return;var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;tx=ty=null;if(Math.abs(dx)>70&&Math.abs(dy)<40)navigate(sheets[dx<0?(cur===10?0:cur):Math.max(0,cur-2)],true);},{passive:true});
   document.addEventListener('touchcancel',function(){tx=ty=null;},{passive:true});
   var closed=[];
   window.addEventListener('beforeprint',function(){printing=true;closed=Array.from(document.querySelectorAll('details:not([open])'));closed.forEach(function(d){d.open=true;});});
   window.addEventListener('afterprint',function(){closed.forEach(function(d){d.open=false;});closed=[];printing=false;});
   window.addEventListener('popstate',restore);window.addEventListener('hashchange',restore);
-  var timer;window.addEventListener('scroll',function(){clearTimeout(timer);timer=setTimeout(save,100);},{passive:true});
+  var timer;window.addEventListener('scroll',function(){tx=ty=null;clearTimeout(timer);timer=setTimeout(save,100);},{passive:true});
   function reserveNavigation(){root.style.setProperty('--nav-clearance',nav.getBoundingClientRect().height+'px');}
   if('ResizeObserver' in window)new ResizeObserver(reserveNavigation).observe(nav);
   window.addEventListener('resize',reserveNavigation);
