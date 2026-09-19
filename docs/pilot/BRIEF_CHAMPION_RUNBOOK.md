@@ -6,7 +6,8 @@ a bilingual reviewer owns meaning/register checks; traffic owns deliverables/spe
 Name a second trained champion for cover. These are roles, not assumed assigned people.
 
 The repository still permits synthetic fixtures only. The operating terms decision is not
-resolved by this tooling. This runbook does not authorize real client data or live creative.
+resolved by this tooling. This runbook does not authorize real client data. Creative can proceed to delivery through
+`docs/pilot/CREATIVE_DELIVERY.md` after explicit human creative approval.
 The existing pipeline model routing is unchanged. Do not switch its models to get a pass.
 
 ## 1. Assemble once, reuse approved references
@@ -118,7 +119,7 @@ A refusal is evidence: inspect diagnostics and fix the specific cause.
 
 ## 5. Complete campaign and deliverables checks
 
-Fill `agency_inputs.json` using sourced values. Each checklist answer requires `value`,
+Use the guided commands in `CAMPAIGN_EDITING.md` to fill `agency_inputs.json` with sourced values. Each checklist answer requires `value`,
 `owner`, and `evidence` copied from canonical evidence objects. Missing answers stay blank
 and block approval. If a requirement is inapplicable, explain that with supporting evidence
 rather than inventing a campaign value.
@@ -130,8 +131,9 @@ selected row of `config/channel_specs.json`; provide `duration_seconds` for vide
 images have no duration. Dimensions from one row and format from another fail the check.
 
 Evidence presence does not prove a quantity or deadline is supported: the human reviewer must
-check those assertions. The table remains a synthetic stub; all exported handover is SHADOW
-MODE. Do not interpret a valid row as verified live platform specifications.
+check those assertions. The default table remains a synthetic stub. The brief handover is an approved review
+record, not creative release. Bind a verified traffic catalog before delivery; see
+`CREATIVE_DELIVERY.md`. Do not interpret a valid stub row as live platform verification.
 
 ## 6. Review both languages and approve the exact revision
 
@@ -176,3 +178,7 @@ Use archived original drafts and human-edited final copies for survival; do not 
 regenerated draft with itself. The scorecard validates arithmetic and reports observed sample
 sizes. It does not claim a cash saving or a pilot go/no-go from incomplete measurements.
 The benchmark exercises synthetic faults, not fresh model outputs or native Greek quality.
+
+
+For approved creative release, continue with `docs/pilot/CREATIVE_DELIVERY.md`. For ongoing
+effort/handoff recording, use `docs/pilot/EFFORT_RECORDING.md`.

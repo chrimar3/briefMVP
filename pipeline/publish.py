@@ -51,6 +51,11 @@ def shelf_prefix(run_dir):
 
 
 def publish_run(run_dir, reviews_dir=None) -> list[Path]:
+    with revisions.run_lock(run_dir):
+        return _publish_locked(run_dir, reviews_dir)
+
+
+def _publish_locked(run_dir, reviews_dir=None) -> list[Path]:
     """Copy a completed run's pages onto the shelf; return the published paths.
 
     A run without a brief page publishes nothing (empty list) — that is the normal
@@ -120,7 +125,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     try:
         published = publish_run(args.run_dir)
-    except ReviewInputError as exc:
+    except (ReviewInputError, ValueError) as exc:
         print(f"publish: {exc}", file=sys.stderr)
         return 1
     if not published:

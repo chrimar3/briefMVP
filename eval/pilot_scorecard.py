@@ -31,7 +31,7 @@ def number(row, key):
     return value
 
 
-def summarize(rows):
+def _summarize(rows):
     pilots = []
     for row in rows:
         if row.get("row_type") == "EXAMPLE":
@@ -40,6 +40,7 @@ def summarize(rows):
             raise ValueError("row_type must be EXAMPLE or PILOT")
         pilots.append(row)
     totals, real, precision_rows = 0, 0, 0
+    per_brief = []
     team_fields = ("total_attention_min", "operator_min", "strategy_min", "creative_min", "production_min")
     for row in pilots:
         for total, components in (("total_attention_min", ("assembly_min", "review_min")), ("total_team_min", team_fields)):
@@ -49,12 +50,18 @@ def summarize(rows):
                 raise ValueError(f"{total} does not equal its measured components")
         total = number(row, "oq_total")
         classes = [number(row, k) for k in CLASSES]
+        if any(v is not None and v != int(v) for v in [total] + classes):
+            raise ValueError("question class counts must be integers")
+        precision = None
         if total is not None and all(v is not None for v in classes):
             if not math.isclose(total, sum(classes)) or any(v != int(v) for v in [total] + classes):
                 raise ValueError("question class counts must be integers summing to oq_total")
             totals += total
             real += classes[0]
             precision_rows += 1
+            precision = 100 * classes[0] / total if total else None
+        per_brief.append({"brief_id": row.get("brief_id", "not_recorded"),
+                          "precision_pct": precision})
     metrics = {}
     for key in METRICS:
         values = [number(row, key) for row in pilots]
@@ -70,12 +77,31 @@ def summarize(rows):
     if any(v not in ("yes", "no") for v in accepted):
         raise ValueError("first_handoff_accepted must be yes/no/not_recorded")
     review = metrics["review_min"]
+    observed_precision = [r["precision_pct"] for r in per_brief if r["precision_pct"] is not None]
     return {"briefs": len(pilots), "metrics": metrics, "question_precision_pct": 100 * real / totals if totals else None,
+            "question_precision_per_brief": {
+                "values": per_brief, "measured": len(observed_precision),
+                "missing": len(pilots) - len(observed_precision),
+                "mean": mean(observed_precision) if observed_precision else None,
+                "median": median(observed_precision) if observed_precision else None},
             "question_precision_measured_briefs": precision_rows, "question_precision_missing_briefs": len(pilots) - precision_rows,
             "review_under_30": review["median"] < 30 if review["median"] is not None and review["missing"] == 0 else None,
             "first_handoff_acceptance_pct": 100 * accepted.count("yes") / len(accepted) if accepted else None,
             "first_handoff_measured": len(accepted), "return_reasons": rework,
             "boundary": "Descriptive measurements, not a pilot go/no-go decision or a cash-savings estimate. Baselines and owner approvals remain required."}
+
+
+def summarize(rows):
+    rows = list(rows)
+    result = _summarize(rows)
+    phases = {}
+    for row in rows:
+        if row.get("row_type") == "PILOT":
+            phase = row.get("phase")
+            phase = "not_recorded" if phase in MISSING else phase
+            phases.setdefault(phase, []).append(row)
+    result["by_phase"] = {phase: _summarize(group) for phase, group in phases.items()}
+    return result
 
 
 def survival(draft, final):

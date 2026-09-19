@@ -6,6 +6,7 @@ or permission to ingest real data. Reports are evidence checks plus human attest
 from __future__ import annotations
 
 import argparse
+from contextlib import nullcontext
 import copy
 import json
 import sys
@@ -56,6 +57,7 @@ def audit(run):
     else:
         try:
             revisions.verify_inputs(run)
+            revisions.verify_evidence(run)
         except ValueError as exc:
             problems.append(str(exc))
     extracts = extract_records(run)
@@ -115,7 +117,7 @@ def audit(run):
     else:
         problems.extend(handover.validate(inputs["deliverables"], specs, brief))
     if specs.get("_stub_notice"):
-        notices.append("Channel specs are a synthetic stub. Handover remains SHADOW MODE; no production readiness claim.")
+        notices.append("Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim.")
     attestation = revisions.load(run / "language_review.json", {})
     if (attestation.get("fingerprint") != revisions.fingerprint(run)
             or not attestation.get("actor")
@@ -126,9 +128,9 @@ def audit(run):
     result = {"fingerprint": revisions.fingerprint(run), "checked_at": revisions.timestamp(),
               "status": "blocked" if problems else "reviewed", "blockers": problems, "notices": notices,
               "coverage": records, "questions": q,
-              "boundary": "Evidence links and structure checked automatically. Semantic judgments are human attestations. Synthetic/shadow only."}
+              "boundary": "Evidence links and structure checked automatically. Semantic judgments are human attestations. Fixtures-only data; creative delivery requires separate human approval."}
     revisions.write_json(run / "agency_audit.json", result)
-    lines = ["# Agency review — SHADOW MODE", "", result["boundary"], "", f"Status: {result['status']}", ""]
+    lines = ["# Agency review", "", result["boundary"], "", f"Status: {result['status']}", ""]
     lines += [f"- {p}" for p in problems + notices]
     lines += ["", "## Fact coverage", ""] + [f"- {r['id']} · {r['field']}: {r['value']} → {', '.join(r['destinations']) or 'no destination; review exclusion if recorded'}" for r in records]
     lines += ["", "## Clarification queue", ""] + [f"- {item['id']}: {item['question']} ({(item['decision'] or {}).get('status', 'untriaged')})" for item in q]
@@ -165,6 +167,7 @@ def initialize(run, project, glossary, profile, actor):
         "baseline_origin": "runner snapshot" if prior else "human-adopted legacy evidence; source completeness review required",
         "checklist": {k: {"prompt": v, "value": "", "owner": "", "evidence": []} for k, v in profiles[profile].items()},
         "deliverables": []})
+    revisions.capture_evidence(run, {key: value["path"] for key, value in current.items()})
 
 
 def resolve(run, index, actor, resolution):
@@ -224,10 +227,10 @@ def approve(run, actor, summary):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("init", "audit", "queue", "answer", "resolve", "exclude", "attest", "approve", "diff", "handover", "apply"):
+    for name in ("init", "audit", "queue", "answer", "resolve", "exclude", "attest", "approve", "diff", "handover", "apply", "carry-decisions"):
         p = commands.add_parser(name)
         p.add_argument("run", type=Path)
-        if name in ("init", "answer", "resolve", "exclude", "attest", "approve", "apply"):
+        if name in ("init", "answer", "resolve", "exclude", "attest", "approve", "apply", "carry-decisions"):
             p.add_argument("--actor", required=True)
         if name == "init":
             p.add_argument("--project", type=Path, required=True)
@@ -240,6 +243,8 @@ def main(argv=None):
             p.add_argument("--evidence", default="")
             p.add_argument("--owner", required=True)
             p.add_argument("--priority", choices=["blocking", "nonblocking"], required=True)
+        if name == "carry-decisions":
+            p.add_argument("--parent", type=Path, required=True)
         if name == "apply":
             p.add_argument("--candidate", type=Path, required=True)
             p.add_argument("--reason", required=True)
@@ -263,52 +268,56 @@ def main(argv=None):
     p.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        if args.command == "client-pack":
-            print(client_pack.materialize(revisions.load(args.pack), args.client, args.output))
+        with revisions.run_lock(args.run) if hasattr(args, "run") else nullcontext():
+            if args.command == "client-pack":
+                print(client_pack.materialize(revisions.load(args.pack), args.client, args.output))
+                return 0
+            run = args.run.resolve()
+            if args.command == "init":
+                initialize(run, args.project, args.glossary, args.profile, args.actor)
+            elif args.command == "audit":
+                result = audit(run)
+                print(json.dumps({k: result[k] for k in ("status", "blockers", "notices")}, ensure_ascii=False, indent=2))
+                return 2 if result["blockers"] else 0
+            elif args.command in ("queue", "answer"):
+                q = clarifications.queue(read_run(run), revisions.load(run / "clarifications.json", {}))
+                if args.command == "queue":
+                    print(json.dumps(q, ensure_ascii=False, indent=2))
+                else:
+                    clarifications.record(run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority)
+            elif args.command == "carry-decisions":
+                with revisions.run_lock(args.parent):
+                    print(json.dumps(revisions.carry_decisions(args.parent, run, args.actor), indent=2))
+            elif args.command == "apply":
+                apply_candidate(run, args.candidate, args.actor, args.reason)
+            elif args.command == "resolve":
+                resolve(run, args.index, args.actor, args.text)
+            elif args.command == "exclude":
+                records = quality.coverage(read_run(run), extract_records(run))
+                if args.fact not in {r["id"] for r in records} or not args.reason.strip() or not args.actor.strip():
+                    raise ValueError("Existing fact ID, human actor and reason are required")
+                decisions = revisions.load(run / "coverage_decisions.json", {})
+                decisions[args.fact] = {"actor": args.actor, "reason": args.reason, "at": revisions.timestamp()}
+                revisions.write_json(run / "coverage_decisions.json", decisions)
+            elif args.command == "attest":
+                read_run(run)
+                if not args.actor.strip() or not args.notes.strip():
+                    raise ValueError("Named reviewer and review notes required")
+                revisions.write_json(run / "language_review.json", {"actor": args.actor, "notes": args.notes,
+                    "greek_register": args.greek_register, "checks": {k: k in args.checks for k in quality.field_review_checklist()},
+                    "fingerprint": revisions.fingerprint(run), "reviewed_at": revisions.timestamp()})
+            elif args.command == "approve":
+                approve(run, args.actor, args.summary)
+            elif args.command == "diff":
+                print(json.dumps(revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2))
+            elif args.command == "handover":
+                revisions.require_current_approval(run)
+                result = audit(run)
+                if result["blockers"]:
+                    raise ValueError("Handover blocked; inspect agency_audit.md")
+                rows = revisions.load(run / "agency_inputs.json")["deliverables"]
+                revisions.write_json(run / "handover.json", {"mode": "APPROVED BRIEF HANDOVER", "creative_release": "requires separate creative approval", "fingerprint": revisions.fingerprint(run), "deliverables": rows, "notices": result["notices"]})
             return 0
-        run = args.run.resolve()
-        if args.command == "init":
-            initialize(run, args.project, args.glossary, args.profile, args.actor)
-        elif args.command == "audit":
-            result = audit(run)
-            print(json.dumps({k: result[k] for k in ("status", "blockers", "notices")}, ensure_ascii=False, indent=2))
-            return 2 if result["blockers"] else 0
-        elif args.command in ("queue", "answer"):
-            q = clarifications.queue(read_run(run), revisions.load(run / "clarifications.json", {}))
-            if args.command == "queue":
-                print(json.dumps(q, ensure_ascii=False, indent=2))
-            else:
-                clarifications.record(run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority)
-        elif args.command == "apply":
-            apply_candidate(run, args.candidate, args.actor, args.reason)
-        elif args.command == "resolve":
-            resolve(run, args.index, args.actor, args.text)
-        elif args.command == "exclude":
-            records = quality.coverage(read_run(run), extract_records(run))
-            if args.fact not in {r["id"] for r in records} or not args.reason.strip() or not args.actor.strip():
-                raise ValueError("Existing fact ID, human actor and reason are required")
-            decisions = revisions.load(run / "coverage_decisions.json", {})
-            decisions[args.fact] = {"actor": args.actor, "reason": args.reason, "at": revisions.timestamp()}
-            revisions.write_json(run / "coverage_decisions.json", decisions)
-        elif args.command == "attest":
-            read_run(run)
-            if not args.actor.strip() or not args.notes.strip():
-                raise ValueError("Named reviewer and review notes required")
-            revisions.write_json(run / "language_review.json", {"actor": args.actor, "notes": args.notes,
-                "greek_register": args.greek_register, "checks": {k: k in args.checks for k in quality.field_review_checklist()},
-                "fingerprint": revisions.fingerprint(run), "reviewed_at": revisions.timestamp()})
-        elif args.command == "approve":
-            approve(run, args.actor, args.summary)
-        elif args.command == "diff":
-            print(json.dumps(revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2))
-        elif args.command == "handover":
-            revisions.require_current_approval(run)
-            result = audit(run)
-            if result["blockers"]:
-                raise ValueError("Handover blocked; inspect agency_audit.md")
-            rows = revisions.load(run / "agency_inputs.json")["deliverables"]
-            revisions.write_json(run / "handover.json", {"mode": "SHADOW MODE", "fingerprint": revisions.fingerprint(run), "deliverables": rows, "notices": result["notices"]})
-        return 0
     except (ValueError, OSError, KeyError, TypeError, gates.GateError) as exc:
         print(f"agency: {exc}", file=sys.stderr)
         return 2

@@ -86,7 +86,7 @@ def test_human_review_approval_handover_then_edit_invalidates(tmp_path):
     assert agency.audit(run)['blockers'] == []
     assert agency.main(['approve', str(run), '--actor', 'Synthetic lead', '--summary', 'Synthetic test only']) == 0
     assert agency.main(['handover', str(run)]) == 0
-    assert revisions.load(run / 'handover.json')['mode'] == 'SHADOW MODE'
+    assert revisions.load(run / 'handover.json')['mode'] == 'APPROVED BRIEF HANDOVER'
     (run / 'brief_en.md').write_text('Changed')
     assert agency.main(['handover', str(run)]) == 2
 

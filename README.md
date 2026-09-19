@@ -143,7 +143,7 @@ the stages is topology, not policy: `creative-shadow` refuses an unsigned brief.
 The supplemental CLI adds evidence coverage, persistent human clarification decisions,
 campaign-specific checklists, a sourced deliverables matrix, and approval bound to the
 exact revision. It uses companion records; the canonical schema and original demo gates
-remain unchanged. Creative and handover remain shadow only; fixtures-only policy remains.
+remain unchanged. Creative can be approved and released through the separate human delivery workflow; fixtures-only data policy remains.
 
 Start with [the brief champion runbook](docs/pilot/BRIEF_CHAMPION_RUNBOOK.md).
 Use `python3 -m pipeline.agency --help` for commands, `python3 eval/agency_benchmark.py`
@@ -155,3 +155,22 @@ The runner records input/configuration hashes for new runs. Changed inputs refus
 create a new run ID. Rerunning a leg archives invalidated outputs in `history/`. Published
 review bundles have project/content identifiers so parallel campaigns do not overwrite
 one another. Existing shared links retain their original revision.
+
+
+## Human-approved creative delivery (Tier 6)
+
+Creative drafts are now eligible for delivery after explicit creative-lead approval.
+The [creative delivery guide](docs/pilot/CREATIVE_DELIVERY.md) covers selection, claim
+references, reviewed traffic specifications, approval and the curated local package.
+No command automatically publishes campaigns or sends files to clients.
+
+- `python3 -m pipeline.agency_edit --help`: sourced checklist and deliverable entry.
+- `python3 -m pipeline.spec_catalog --help`: bind a reviewed, dated traffic catalog.
+- `python3 -m pipeline.delivery --help`: register, approve and release selected creative.
+- `python3 -m pipeline.effort --help`: record measured work and handoff outcomes.
+
+New runs preserve source/config evidence copies. Shared run locks protect collaborating
+operators from overwriting each other's mutations. Decision carry-forward reuses unchanged
+question triage across revisions; approvals never migrate. CI runs deterministic checks and
+frozen-evidence grading without model calls. The [owner decision](docs/OPERATING_DECISIONS.md)
+records the change from the historical shadow-only scope without rewriting the frozen PRD.

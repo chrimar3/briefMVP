@@ -72,3 +72,20 @@ companion records and a CLI around the frozen demo. See `runs/tier_5_report.md` 
 
 This is a software-rehearsal DoD. Fresh generative evaluations and an agency pilot are still
 required before claiming reliable production quality, adoption or realized time savings.
+
+## Tier 6 — Human-approved creative delivery and agency operations (2026-09-20)
+
+The owner superseded the historical shadow-only rule and authorized these ten improvements
+as one release. See `docs/OPERATING_DECISIONS.md`, the implementation plan in
+`docs/superpowers/plans/2026-09-20-agency-delivery.md` and `runs/tier_6_report.md`.
+
+- [x] Creative registration, claim checks, separate human approval and immutable local release.
+- [x] Conservative decision carry-forward, preserved evidence and shared run locks.
+- [x] Guided campaign edits, reviewed traffic catalogs and observed effort/handoff events.
+- [x] CI workflow and regression coverage: 503 pass, 7 skip, 16 historical expected failures;
+  original frozen harness 17/17 and synthetic agency benchmark 12/12.
+- [x] Independent Astra review's reproduced release-integrity blocker fixed and rechecked.
+- [x] Frozen specifications and historical designs retained; no real data or actual client send.
+
+This release enables approved delivery; it does not certify production readiness or authorize
+real data ingestion. Agency configuration, human review and pilot validation remain required.

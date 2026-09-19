@@ -1,4 +1,4 @@
-"""Structured shadow handover; traffic-owned specs, never invented platform values."""
+"""Structured brief handover; traffic-owned specs, never invented platform values."""
 from __future__ import annotations
 
 from datetime import date

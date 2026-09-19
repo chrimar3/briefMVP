@@ -62,7 +62,7 @@ STEP_SEQUENCE = (
     Step(7, "render", MODEL, "render", "GR + EN documents from the same object"),
     # Step 8 (PRD §5) is human sign-off — not a runner step. Step 9 is Stage 2, and it runs
     # ONLY on a signed-off brief, never as part of the default Stage-1 flow (DR-8).
-    Step(9, "creative_shadow", MODEL, "creative-shadow", "Shadow creative brief A/B (sonnet vs opus)"),
+    Step(9, "creative_shadow", MODEL, "creative-shadow", "Creative drafts for human review (sonnet vs opus)"),
 )
 
 #: Which steps each stage selection runs. `extraction` is the Tier-1 path: prove the
@@ -264,7 +264,9 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
 def _creative_handler(ctx: "RunContext", step: Step) -> dict:
     """Step 9 (Tier 4) — shadow creative brief A/B, sonnet vs opus, on the signed brief (DR-8)."""
     brief = ctx.artifacts["brief"]
-    results = creative.run_ab(ctx.run_dir, brief, ctx.glossary_path, _access_dirs(ctx))
+    bound_specs = revisions.load(ctx.run_dir / "input_snapshot.json", {}).get("channel_specs")
+    results = creative.run_ab(ctx.run_dir, brief, ctx.glossary_path, _access_dirs(ctx),
+                             spec_table_path=Path(bound_specs["path"]) if bound_specs else None)
     for outcome in results:
         print(
             f"      · {outcome['model_alias']:<7} → {Path(outcome['output_file']).name}"
@@ -339,7 +341,7 @@ class Runner:
         # Completed runs also land on the shareable reviews/ shelf (email / synced
         # folder distribution — mission §8). Refusals stay in runs/ for the operator.
         try:
-            published = publish.publish_run(self.run_dir)
+            published = publish._publish_locked(self.run_dir)
             if published:
                 print(f"        reviews/ shelf: {', '.join(p.name for p in published)}")
         except Exception as exc:
@@ -402,6 +404,14 @@ class Runner:
     # -- the sequence ------------------------------------------------------------
 
     def run(self) -> int:
+        try:
+            with revisions.run_lock(self.run_dir):
+                return self._run_locked()
+        except ValueError as exc:
+            print(f"[run lock] {exc}", file=sys.stderr)
+            return EXIT_GATE_ERROR
+
+    def _run_locked(self) -> int:
         self.started_ts = datetime.now().isoformat(timespec="seconds")
         self.run_dir.mkdir(parents=True, exist_ok=True)
         print(f"Brief Builder {PIPELINE_VERSION} · run {self.run_id}")
@@ -459,6 +469,9 @@ class Runner:
                       "campaign_profiles": gates.CONFIG_DIR / "campaign_profiles.json",
                       "model_routing": gates.CONFIG_DIR / "model_routing.json",
                       "readiness_policy": self.demo_profile or gates.CONFIG_DIR / "readiness_policy.json"})
+        bound = revisions.load(self.run_dir / "input_snapshot.json", {}).get("channel_specs")
+        if (self.run_dir / "agency_inputs.json").exists() and bound:
+            paths["channel_specs"] = Path(bound["path"])
         paths.update({f"skill:{p.name}": p for p in (gates.REPO_ROOT / "skills").glob("*.md")})
         try:
             revisions.prepare_run(self.run_dir, paths, self.stage)

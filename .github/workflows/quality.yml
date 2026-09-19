@@ -1,0 +1,33 @@
+name: Deterministic agency quality
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/brief-builder-ci-cache
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deterministic test dependencies
+        run: |
+          python3 -m venv .ci-venv
+          .ci-venv/bin/python -m pip install -r requirements.txt
+          echo "$PWD/.ci-venv/bin" >> "$GITHUB_PATH"
+      - name: Test gates and complete approval/release workflow
+        run: python3 -m pytest -o addopts='' -q
+      - name: Grade frozen evidence without overwriting its report
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from eval import harness
+          results = harness.grade(harness.load_run(Path('runs/tier3')))
+          assert len(results) == 17
+          assert all(result.status == 'pass' for result in results)
+          print('Frozen evidence: 17/17')
+          PY
+      - name: Exercise synthetic agency safeguards
+        run: python3 eval/agency_benchmark.py

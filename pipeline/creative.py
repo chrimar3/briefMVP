@@ -1,4 +1,8 @@
-"""Pipeline step 9 — creative-shadow (Stage 2), in shadow mode. Tier 4.
+"""Pipeline step 9 — creative drafts, with separately approved delivery (Tier 6).
+
+The historical creative-shadow agent/function name remains a compatibility identifier.
+New drafts may be released through pipeline.delivery after explicit human approval.
+The default checker mode preserves the historical Tier-4 shadow evidence contract.
 
 Stage 1 was extraction; Stage 2 is compression — a single-minded proposition, not a summary.
 It runs ONLY on a signed-off brief (DR-8: the human gate stands between the stages so a stage-1
@@ -83,15 +87,21 @@ def require_signed_off(brief: dict) -> None:
         )
 
 
-def check_creative_brief(path: Path, spec_table: dict) -> list:
+def check_creative_brief(path: Path, spec_table: dict, mode: str = "shadow") -> list:
     """Every reason the creative draft is unacceptable. The spec-match rule is the Tier-4 gate."""
     if not path.is_file():
         return [f"no creative brief written at {path}"]
     text = path.read_text(encoding="utf-8")
 
     violations = []
-    if "SHADOW MODE" not in text:
-        violations.append("missing the SHADOW MODE banner — every creative draft must declare it is not for delivery")
+    banner = "SHADOW MODE" if mode == "shadow" else "CREATIVE DRAFT"
+    if not text.splitlines() or banner not in text.splitlines()[0]:
+        violations.append(f"missing the {banner} banner — drafts require explicit review status")
+    if mode == "draft":
+        known = {row["id"] for row in spec_table.get("specs", [])}
+        for spec_id in re.findall(r"\[spec:\s*([^]\s]+)\s*\]", text):
+            if spec_id not in known:
+                violations.append(f"unknown spec reference {spec_id}")
 
     allowed = _allowed_spec_values(spec_table)
     for match in _SPEC_TOKEN_RES.findall(text) + _SPEC_TOKEN_RATIO.findall(text):
@@ -120,9 +130,9 @@ def check_creative_brief(path: Path, spec_table: dict) -> list:
 
 def build_creative_order(brief_file: Path, output_file: Path, template_dir: Path,
                          glossary_path: Path, spec_table_path: Path, model_alias: str) -> str:
-    return f"""CREATIVE-SHADOW WORK ORDER — Brief Builder pipeline step 9 (SHADOW MODE).
+    return f"""CREATIVE WORK ORDER — Brief Builder pipeline step 9 (CREATIVE DRAFT).
 
-Produce ONE creative-brief draft from a SIGNED-OFF client brief, for evaluation only. Your
+Produce ONE creative-brief draft from a SIGNED-OFF client brief for creative-lead review. Your
 governing rules are the creative-shadow instructions in your agent definition.
 
 INPUT
@@ -137,7 +147,11 @@ OUTPUT
   Write one Markdown file to exactly this path:
     {output_file}
 
-  First line MUST be the shadow-mode banner (see your rules) — this draft is never delivered.
+  First line MUST be `> CREATIVE DRAFT — requires creative-lead approval before release.`
+  You never approve or release a draft. A separate human approval workflow can release it.
+  Tag factual assertions with canonical zero-based entry references: `[brief:objectives:0]`,
+  `[brief:audiences:0]`, `[brief:mandatories:0]`, etc. Copy each mandatory verbatim.
+  Creative expression may be new; client facts must trace to these entries.
 
   Channel specs (dimensions, aspect ratios, durations, file types) come ONLY from the spec
   table, copied byte-for-byte, each tagged with the row id you used, e.g. `[spec: instagram_reel]`.
@@ -176,7 +190,7 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
                                  resolved_spec_path, model_alias)
     attempts, failed = agents.run_gated(
         "creative-shadow", order,
-        lambda: check_creative_brief(output_file, spec_table),
+        lambda: check_creative_brief(output_file, spec_table, mode="draft"),
         lambda v: agents.repair_order(
             "creative draft", v,
             f"Fix exactly these and rewrite {output_file}. Spec values must be copied from "
