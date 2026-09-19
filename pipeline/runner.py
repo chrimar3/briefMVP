@@ -29,7 +29,7 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, docview, extraction, gates, publish, review, run_review, stages
+from pipeline import agents, conflicts, creative, docview, extraction, gates, publish, review, run_review, stages, revisions
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -299,7 +299,7 @@ class Runner:
     ):
         self.project_dir = Path(project_dir).resolve()
         self.out_dir = Path(out_dir).resolve()
-        self.run_id = run_id or datetime.now().strftime("%Y%m%d-%H%M%S")
+        self.run_id = run_id or datetime.now().strftime("%Y%m%d-%H%M%S-%f")
         self.run_dir = self.out_dir / self.run_id
         self.stage = stage
         self.glossary = glossary
@@ -452,6 +452,19 @@ class Runner:
             source_filter=self.source,
             readiness_policy=readiness_policy,
         )
+
+        paths = {f"source:{s.source_id}": s.path for s in self.sources}
+        paths.update({"glossary": glossary_path,
+                      "channel_specs": gates.CONFIG_DIR / "channel_specs.json",
+                      "campaign_profiles": gates.CONFIG_DIR / "campaign_profiles.json",
+                      "model_routing": gates.CONFIG_DIR / "model_routing.json",
+                      "readiness_policy": self.demo_profile or gates.CONFIG_DIR / "readiness_policy.json"})
+        paths.update({f"skill:{p.name}": p for p in (gates.REPO_ROOT / "skills").glob("*.md")})
+        try:
+            revisions.prepare_run(self.run_dir, paths, self.stage)
+        except (ValueError, OSError) as exc:
+            print(f"[revision safety] {exc}", file=sys.stderr)
+            return EXIT_GATE_ERROR
 
         self._hydrate(ctx)
 

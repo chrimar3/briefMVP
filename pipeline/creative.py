@@ -157,6 +157,12 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
                     model_alias: str, spec_table_path: Path = None) -> dict:
     """Run the creative-shadow subagent once, on the given model, gated on its artifact."""
     require_signed_off(brief)
+    if (Path(run_dir) / "agency_inputs.json").exists():
+        from pipeline.revisions import require_current_approval
+        try:
+            require_current_approval(run_dir)
+        except ValueError as exc:
+            raise NotSignedOff(str(exc)) from exc
     spec_table = load_spec_table(spec_table_path)
     resolved_spec_path = Path(spec_table_path) if spec_table_path else gates.CONFIG_DIR / "channel_specs.json"
 

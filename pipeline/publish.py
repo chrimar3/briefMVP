@@ -1,30 +1,14 @@
-"""Publish finished review pages to the shareable `reviews/` shelf.
+"""Publish immutable review bundles identified by client, project, date and content.
 
-Distribution for the pilot is deliberately infrastructure-free (mission doc §8, owner
-decision 2026-07-30): account leads get the pages either as an emailed file or through a
-synced shared folder. This module keeps that folder tidy — after a COMPLETED run, the
-runner copies both self-contained pages here under names a non-technical reader can
-recognise at a glance:
-
-    reviews/meltemi-beverages-2026-07-24-brief.html
-    reviews/meltemi-beverages-2026-07-24-run.html
-
-Rules, deliberately boring:
-- Only completed runs publish (a brief page must exist). Refused or partial runs stay
-  in `runs/` for the operator — the shelf is the account-lead surface.
-- Same client + same date republished → overwrite. The shelf always shows the latest
-  state of that day's brief; history lives in `runs/`, not here.
-- Pure copy of already-generated pages. Nothing is rendered here, so every guarantee
-  the pages carry (deterministic view, no cost/model info) carries over verbatim.
-
-Usage:
-    python3 pipeline/publish.py runs/<id>       # copy that run's pages onto the shelf
+Repeating the same bundle is idempotent. Different campaigns or changed content
+receive distinct paths; existing shared links keep pointing at their original revision.
+The legacy demo permits draft review pages; agency-managed runs also verify input
+freshness, and signed pages require current content-bound human approval.
 """
 
 from __future__ import annotations
 
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -32,6 +16,7 @@ if __package__ in (None, ""):  # allow `python3 pipeline/publish.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline.review import ReviewInputError, _load_brief_meta  # noqa: E402
+from pipeline import revisions
 
 #: The shelf lives beside `runs/` at the repo root unless a caller says otherwise.
 DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
@@ -53,6 +38,18 @@ def _slug(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", str(value).lower()).strip("-")
 
 
+def shelf_prefix(run_dir):
+    run_dir = Path(run_dir)
+    meta = _load_brief_meta(run_dir)
+    client = _slug(meta.get("client_id", "")) or _slug(run_dir.name) or "client"
+    project = _slug(meta.get("project_id", "")) or _slug(run_dir.name) or "project"
+    date = _slug(str(meta.get("created_ts", ""))[:10]) or "undated"
+    files = [run_dir / name for name, _ in _FILES] + [run_dir / "brief.json"]
+    identity = {p.name: revisions.file_hash(p) for p in files if p.is_file()}
+    revision = revisions.digest(identity)[:16]
+    return f"{client}-{project}-{date}-{revision}"
+
+
 def publish_run(run_dir, reviews_dir=None) -> list[Path]:
     """Copy a completed run's pages onto the shelf; return the published paths.
 
@@ -62,13 +59,30 @@ def publish_run(run_dir, reviews_dir=None) -> list[Path]:
     run_dir = Path(run_dir)
     if not (run_dir / "brief_review.html").is_file():
         return []
-    meta = _load_brief_meta(run_dir)
-    client = _slug(meta.get("client_id", "")) or _slug(run_dir.name) or "client"
-    date = str(meta.get("created_ts", ""))[:10] or "undated"
+    try:
+        revisions.verify_inputs(run_dir)
+    except ValueError as exc:
+        raise ReviewInputError(str(exc)) from exc
+    if (run_dir / "agency_inputs.json").exists():
+        try:
+            brief = revisions.load(run_dir / "brief.json", {})
+            from pipeline import review, docview
+            if (run_dir / "brief_review.html").read_text(encoding="utf-8") != review.render_review(brief):
+                raise ValueError("Review page differs from canonical brief; regenerate the views")
+            for lang in ("el", "en"):
+                html = run_dir / f"brief_{lang}.html"
+                md = run_dir / f"brief_{lang}.md"
+                if html.exists() and (not md.exists() or html.read_text(encoding="utf-8") != docview.render_document(md.read_text(encoding="utf-8"), lang)):
+                    raise ValueError("Document view differs from its render; regenerate the views")
+            if brief.get("signoff", {}).get("status") == "signed_off":
+                revisions.require_current_approval(run_dir)
+        except ValueError as exc:
+            raise ReviewInputError(str(exc)) from exc
+    prefix = shelf_prefix(run_dir)
     reviews_dir = Path(reviews_dir) if reviews_dir else DEFAULT_REVIEWS_DIR
     reviews_dir.mkdir(parents=True, exist_ok=True)
     shelf_names = {
-        name: f"{client}-{date}-{suffix}"
+        name: f"{prefix}-{suffix}"
         for name, suffix in _FILES
         if (run_dir / name).is_file()
     }
@@ -83,9 +97,15 @@ def publish_run(run_dir, reviews_dir=None) -> list[Path]:
             for sibling, sibling_shelf in shelf_names.items():
                 if sibling != name:
                     text = text.replace(f'href="{sibling}"', f'href="{sibling_shelf}"')
-            target.write_text(text, encoding="utf-8")
+            data = text.encode("utf-8")
         else:
-            shutil.copyfile(source, target)
+            data = source.read_bytes()
+        try:
+            with target.open("xb") as handle:
+                handle.write(data)
+        except FileExistsError:
+            if target.read_bytes() != data:
+                raise ReviewInputError(f"Immutable publication collision: {target}")
         published.append(target)
     return published
 

@@ -56,3 +56,19 @@ Run: `python eval/harness.py runs/latest` against `fixtures/northlight_01/answer
 - Tier 0–1: one Claude Code session (Friday night). Tier 2: own session. Tier 3: own session (Saturday morning). Tier 4: optional Saturday.
 - If a Max usage window caps mid-tier: the last commit is the resume point; do not rush a tier to beat a window.
 - Hard cutoff **Saturday noon**: Tiers 0–3 not green → the deck ships without a demo and the run is abandoned. The deck stands alone by design.
+
+## Tier 5 — Agency quality and repetition reduction (authorized 2026-09-19)
+
+Scope: the ten agency improvements approved in conversation, implemented as deterministic
+companion records and a CLI around the frozen demo. See `runs/tier_5_report.md` and
+`docs/superpowers/plans/2026-09-19-agency-quality.md` for the complete acceptance record.
+
+- [x] Fact coverage, question triage, revision/approval protection, campaign checklist,
+  client reference pack, sourced shadow handover and bilingual review are test-covered.
+- [x] Three synthetic campaign fixtures and deterministic fault-injection benchmark pass.
+- [x] Champion runbook and validated team-effort/rework scorecard tooling are available.
+- [x] Full deterministic suite green; original frozen harness remains 17/17.
+- [x] Frozen files, routing and historical outputs preserved; no live data or creative delivery.
+
+This is a software-rehearsal DoD. Fresh generative evaluations and an agency pilot are still
+required before claiming reliable production quality, adoption or realized time savings.

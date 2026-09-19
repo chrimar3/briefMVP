@@ -136,3 +136,22 @@ conflict pass → synthesize → render. Stage 2 (the creative brief) never runs
 a human must set `signoff.status = "signed_off"` first, then `--stage creative` — and its
 channel specs come only from `config/channel_specs.json`, never generated. The gate between
 the stages is topology, not policy: `creative-shadow` refuses an unsigned brief.
+
+
+## Agency quality and repeat-work reduction
+
+The supplemental CLI adds evidence coverage, persistent human clarification decisions,
+campaign-specific checklists, a sourced deliverables matrix, and approval bound to the
+exact revision. It uses companion records; the canonical schema and original demo gates
+remain unchanged. Creative and handover remain shadow only; fixtures-only policy remains.
+
+Start with [the brief champion runbook](docs/pilot/BRIEF_CHAMPION_RUNBOOK.md).
+Use `python3 -m pipeline.agency --help` for commands, `python3 eval/agency_benchmark.py`
+for synthetic safeguard checks, and `python3 eval/pilot_scorecard.py <scorecard.csv>` for
+measured team effort and rework. The benchmark makes no model calls and is not evidence of
+new generative quality. The scorecard excludes example rows and keeps missing data explicit.
+
+The runner records input/configuration hashes for new runs. Changed inputs refuse reuse;
+create a new run ID. Rerunning a leg archives invalidated outputs in `history/`. Published
+review bundles have project/content identifiers so parallel campaigns do not overwrite
+one another. Existing shared links retain their original revision.

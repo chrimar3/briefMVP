@@ -4,12 +4,12 @@ Every **completed** pipeline run automatically drops its two self-contained page
 named so a non-technical reader can recognise them at a glance:
 
 ```
-meltemi-beverages-2026-07-24-brief.html   ← the brief review page (account-lead surface)
-meltemi-beverages-2026-07-24-run.html     ← the pipeline walkthrough (how it was built)
-meltemi-beverages-2026-07-24-el.html      ← the Greek brief document, typeset for reading
-meltemi-beverages-2026-07-24-en.html      ← the English brief document, typeset for reading
-meltemi-beverages-2026-07-24-el.md        ← the same Greek document as raw markdown
-meltemi-beverages-2026-07-24-en.md        ← the same English document as raw markdown
+meltemi-beverages-northlight-01-2026-07-24-<revision>-brief.html   ← the brief review page (account-lead surface)
+meltemi-beverages-northlight-01-2026-07-24-<revision>-run.html     ← the pipeline walkthrough (how it was built)
+meltemi-beverages-northlight-01-2026-07-24-<revision>-el.html      ← the Greek brief document, typeset for reading
+meltemi-beverages-northlight-01-2026-07-24-<revision>-en.html      ← the English brief document, typeset for reading
+meltemi-beverages-northlight-01-2026-07-24-<revision>-el.md        ← the same Greek document as raw markdown
+meltemi-beverages-northlight-01-2026-07-24-<revision>-en.md        ← the same English document as raw markdown
 ```
 
 The walkthrough's bottom buttons are rewritten on copy so they link the shelf names —
@@ -29,8 +29,10 @@ everything cross-links correctly inside this folder.
 ## Rules
 
 - Only completed runs publish. Refusals and partial runs stay in `runs/` for the operator.
-- Same client + same date republished → **latest wins** (overwrite). History lives in
-  `runs/`, not here.
+- Filenames include client, project, date and a content revision. Different campaigns
+  and revisions keep distinct paths; republishing identical content is idempotent.
+  Existing links remain on their original version. Share the new paths printed by the publisher.
+- Agency-managed signed pages require current approval and match the canonical brief/renders.
 - The pages are deterministic views of the run's artifacts and carry **no cost or model
   information** (mission decision §6.1).
 - **Internal only** (mission decision §6.2): briefs contain client-sensitive material —

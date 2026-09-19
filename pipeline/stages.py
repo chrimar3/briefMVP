@@ -573,6 +573,11 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
 
     gates.enforce_sensitivity_tier((brief.get("meta") or {}).get("sensitivity_tier"))
     gates.validate_brief(brief)
+    from pipeline import quality, revisions
+    revisions.write_json(Path(run_dir) / "coverage_ledger.json", {
+        "boundary": "Evidence-link accounting; human review must confirm meaning and source completeness",
+        "records": quality.coverage(brief, extracts),
+    })
 
     return {
         "output_file": str(output_file),
