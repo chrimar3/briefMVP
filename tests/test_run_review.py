@@ -17,6 +17,8 @@ import pytest
 
 from pipeline import review, run_review
 
+from review_cases import stored_run
+
 REPO = Path(__file__).resolve().parents[1]
 STORED_RUNS = ("runs/tier3", "runs/live", "runs/evidence-20260729")
 
@@ -24,7 +26,7 @@ FORBIDDEN = re.compile(r"cost|model|claude|sonnet|haiku|opus", re.IGNORECASE)
 
 
 def _collect(run: str) -> dict:
-    return run_review.collect_run(REPO / run)
+    return run_review.collect_run(stored_run(run))
 
 
 def _mini_run_dir(tmp_path, *, with_extract=True) -> Path:

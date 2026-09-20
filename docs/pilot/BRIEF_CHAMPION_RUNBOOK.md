@@ -182,3 +182,11 @@ The benchmark exercises synthetic faults, not fresh model outputs or native Gree
 
 For approved creative release, continue with `docs/pilot/CREATIVE_DELIVERY.md`. For ongoing
 effort/handoff recording, use `docs/pilot/EFFORT_RECORDING.md`.
+
+## Coordination after the first review
+
+Use `python3 -m pipeline.operations RUN [OTHER_RUN ...]` for current blockers and next
+actions across projects. `COORDINATION.md` explains portfolio status, production dependencies,
+package verification and approval withdrawal. `QUESTION_EXCHANGE.md` covers clarification
+packs, proposed replies and revision impact. `EFFORT_RECORDING.md` covers measured effort,
+corrections and rework summaries. These are local tools; no command contacts the client.

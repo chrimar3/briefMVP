@@ -61,6 +61,12 @@ def fingerprint(run_dir):
 
 def require_current_approval(run_dir):
     run_dir = Path(run_dir)
+    from pipeline.release_control import require_not_withdrawn
+    require_not_withdrawn(run_dir)
+    if (run_dir / 'question_exchange' / 'proposals').exists():
+        from pipeline.question_exchange import pending_proposals
+        if pending_proposals(run_dir):
+            raise ValueError('Unreviewed clarification replies; review the proposals before approval or release')
     verify_inputs(run_dir)
     verify_evidence(run_dir)
     approval = load(run_dir / "approval.json", {})

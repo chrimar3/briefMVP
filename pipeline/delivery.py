@@ -6,6 +6,7 @@ No command sends anything to a client; release creates a local, inspectable pack
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import hashlib
 import json
 import re
@@ -160,10 +161,22 @@ def approve(run, actor, notes, checks):
     return approval
 
 
-def release(run, output):
-    context(run)
+def require_creative_approval(run):
+    """Validate current creative selection, approval bindings and catalog freshness."""
+    from pipeline.release_control import require_not_withdrawn
+    require_not_withdrawn(run, include_creative=True)
     record = current_draft(run)
     approval = revisions.load(run / 'creative_approval.json', {})
+    if approval:
+        if not all(isinstance(approval.get(key), str) and approval[key].strip()
+                   for key in ('actor', 'notes', 'approved_at')):
+            raise ValueError('Creative approval metadata is incomplete; obtain fresh approval')
+        try:
+            approved_at = datetime.fromisoformat(approval['approved_at'].replace('Z', '+00:00'))
+            if approved_at.utcoffset() is None:
+                raise ValueError('Timestamp needs a timezone')
+        except ValueError as exc:
+            raise ValueError('Creative approval metadata has an invalid timestamp') from exc
     if (not approval.get('actor') or not all(approval.get('checks', {}).get(key) is True for key in CHECKS)
             or approval.get('draft_sha256') != revisions.file_hash(run / 'creative_draft.json')
             or approval.get('brief_approval_sha256') != revisions.file_hash(run / 'approval.json')
@@ -174,6 +187,12 @@ def release(run, output):
     problems = spec_catalog.validate(spec_table(run), selected_ids=[row['spec_id'] for row in rows])
     if problems:
         raise ValueError('; '.join(problems))
+    return record, approval, rows
+
+
+def release(run, output):
+    context(run)
+    record, approval, rows = require_creative_approval(run)
     output = Path(output).resolve()
     if output.exists() or output == run.resolve() or run.resolve() in output.parents:
         raise ValueError('Release output must be a new directory outside the run')

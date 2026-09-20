@@ -54,4 +54,41 @@ def validate(rows, spec_table, brief):
             duration = row.get("duration_seconds")
             if type(duration) not in (int, float) or not bounds["min"] <= duration <= bounds["max"]:
                 problems.append(f"{prefix}: duration outside selected spec range")
+    problems.extend(validate_dependencies(rows))
+    return problems
+
+
+def validate_dependencies(rows):
+    """Traffic dependencies are deliverable IDs, with predecessors due no later."""
+    problems, graph = [], {}
+    dates = {r.get('id'): r.get('deadline') for r in rows if isinstance(r.get('id'), str)}
+    for row in rows:
+        key, dependencies = row.get('id'), row.get('dependencies')
+        if not isinstance(key, str) or not isinstance(dependencies, list):
+            continue
+        graph[key] = []
+        seen = set()
+        for dep in dependencies:
+            if not isinstance(dep, str) or dep not in dates:
+                problems.append(f'{key}: dependency must name an existing deliverable')
+                continue
+            if dep in seen:
+                problems.append(f'{key}: duplicate dependency {dep}')
+            seen.add(dep)
+            if dep == key:
+                problems.append(f'{key}: self dependency')
+            graph[key].append(dep)
+            try:
+                if date.fromisoformat(dates[dep]) > date.fromisoformat(row['deadline']):
+                    problems.append(f'{key}: dependency {dep} is due after this deliverable')
+            except (ValueError, TypeError):
+                pass  # Ordinary row validation reports malformed dates.
+    # Kahn's algorithm avoids recursion limits on large production matrices.
+    pending = {key: set(values) for key, values in graph.items()}
+    while pending:
+        ready = {key for key, values in pending.items() if not values}
+        if not ready:
+            problems.append('Deliverable dependency cycle: ' + ', '.join(sorted(pending)))
+            break
+        pending = {key: values - ready for key, values in pending.items() if key not in ready}
     return problems

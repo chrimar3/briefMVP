@@ -25,7 +25,7 @@ python eval/pilot_scorecard.py /tmp/synthetic-effort.csv
 ```
 
 Use `python3` if that is the installed interpreter. Replace `<run>` with the actual
-synthetic run path. Minutes must be finite and strictly positive; fractions are
+synthetic run path. Minutes must be finite and nonnegative; fractions are
 preserved. Each event records a nonempty actor and event ID, plus a UTC recording
 timestamp. Reasons on effort events are optional. Accepted handoffs use
 `--accepted yes` without a return reason; rejected handoffs require a nonempty
@@ -53,8 +53,7 @@ IDs are unique across effort and handoff events within one run. Retrying an ID
 with the same payload succeeds without rewriting or adding an event. A different
 actor, kind, role, duration, or reason for that ID is rejected. Numerically equal
 minutes such as `10` and `10.0` are equivalent; text is compared exactly. Use a new
-ID for a new activity, not to retry an uncertain write. There is no correction or
-deletion command in this bounded implementation.
+ID for a new activity, not to retry an uncertain write. Use attributed correction or void events to amend mistakes; originals are retained.
 
 The recorder creates `effort.json` and its own persistent `.effort.lock` in the
 run directory. Standard-library `fcntl.flock` serializes cooperating processes
@@ -74,14 +73,15 @@ Brief ID and phase (`retro` or `live`) are explicit export metadata. Run ID is t
 run directory's name. Dates, baseline, quality, and question measurements are not
 inferred from event timestamps.
 
-Role columns sum recorded events only. An absent role is `not_recorded`, never
+Role columns sum effective active events only. An absent role is `not_recorded`, never
 zero. `total_attention_min` requires both account roles; `total_team_min` requires
 all six roles. A partial record therefore cannot establish a complete total.
-The strict positive-minute contract cannot express an explicitly measured zero.
+An explicit `--minutes 0` records an observed zero; an absent role stays unknown.
 A present role total also does not attest that all work for that role was logged.
 
-`first_handoff_accepted` and `return_reason` describe the first handoff in ledger
-recording order. Later handoffs remain in the ledger but do not replace the first
+`first_handoff_accepted` and `return_reason` describe the first active handoff in
+original recording order. Corrections retain the original observation position;
+voiding a handoff removes it from measurements. Later handoffs remain in the ledger but do not replace the first
 outcome. Historical handoffs must be recorded in order; event IDs do not determine
 chronology. No handoff means both exported fields are `not_recorded`.
 
@@ -103,3 +103,90 @@ complete classifications even when the total is zero. The new per-brief measured
 count includes only defined ratios. Ratios are not rounded before aggregation.
 Input is still one row per brief; the scorecard does not deduplicate repeated IDs.
 These summaries remain descriptive and do not assert acceptance criteria passed.
+
+
+## Attributed corrections and voids
+
+Amendments are logically append-only events in the same atomically replaced JSON
+ledger: original objects and their timestamps are preserved, never edited or
+deleted. Every amendment requires its own `--event-id`, `--actor`, `--reason`, and
+`--target-event-id`. The amendment actor identifies who changed the record; the
+replacement actor identifies whose effort or handoff was observed.
+
+```sh
+python -m pipeline.effort record <run> --actor synthetic-production \
+  --role production --minutes 0 --event-id production-observed-zero
+python -m pipeline.effort correct <run> --target-event-id assembly-001 \
+  --actor synthetic-supervisor --reason "Correct timer transcription" \
+  --event-id assembly-correction-001 \
+  --replacement '{"kind":"effort","actor":"synthetic-account","role":"account_assembly","minutes":10,"reason":"Spec repair"}'
+python -m pipeline.effort void <run> --target-event-id assembly-correction-001 \
+  --actor synthetic-supervisor --reason "Recorded against wrong synthetic run" \
+  --event-id assembly-void-001
+```
+
+`--replacement` is a complete JSON payload, with no event ID or timestamp:
+
+- Effort: `kind`, `actor`, `role`, `minutes`, `reason` (use JSON `null` if unknown).
+- Handoff: `kind`, `actor`, `accepted`, `return_reason` (`null` for acceptance;
+  nonempty reason for rejection).
+
+Correction must retain the target measurement's kind. Its new event ID becomes
+the active measurement ID; use that ID for another correction or a void. Only
+previously recorded, still-active measurements may be targeted. Unknown,
+self-referencing, already-voided, or already-replaced targets are rejected. Void
+events are not measurements and cannot be targeted. Forward references and
+cycles are rejected, including when loading a tampered ledger.
+
+Exact amendment retries succeed without writes, including after a later amendment
+has superseded the target. Reusing an ID with changed content is rejected. The
+same lock protects target validation and append, so competing amendments cannot
+both consume one active target. Voiding the only effort event for a role makes
+that role unknown again; it does not record zero effort. Corrections do not count
+as new handoff attempts.
+
+Python helpers preserve the existing `record`, `handoff`, and `export` signatures.
+New helpers are `void(run, *, target_event_id, actor, reason, event_id)` and
+`correct(run, *, target_event_id, actor, reason, event_id, replacement)`.
+`read_events(run)` returns a locked, validated effective snapshot: `None` means no
+ledger, `[]` means no active events. `effective_events(events)` folds and validates
+an in-memory history; callers reading files should use `read_events`.
+
+## Cross-run observed rework report
+
+```sh
+python -m eval.rework_report <synthetic-run-a> <synthetic-run-b>
+```
+
+The CLI prints JSON. It takes explicit run directories, resolves their paths, and
+skips aliases/repeated paths. It does not discover runs, inspect briefs, read
+answer keys, or invoke models. Python callers use `summarize(runs)` from
+`eval.rework_report`. Exit code 2 indicates an absent ledger, a run error, or
+numeric aggregation failure; output still includes usable runs and error details.
+Exit code 0 indicates successfully read ledgers, not complete measurements or a
+quality gate pass.
+
+- `runs` retains each unique run's `ok`, `missing`, or `error` status. Empty
+  ledgers and runs with all events voided remain valid but have no observations.
+- `first_handoff` counts the first effective attempt per measured run;
+  `all_attempts` counts every effective handoff. Both expose measured and missing
+  run counts. No observed attempts yields JSON `null`, not an assumed zero.
+- `return_reasons` counts observed rejections across **all** active attempts.
+  Later returns remain visible even when first handoff was accepted.
+- `attributed_reason_minutes` sums active effort with an explicit reason, grouped
+  by exact text. `attributions` retains run, event ID, actor, role, reason, minutes,
+  and correction attribution. Administrative correction/void reasons are not
+  themselves counted as work or return causes.
+- `observed_attributed_minutes` is the sum of those recorded minutes; absent
+  attributed effort yields `null`, while explicitly observed zero yields `0`.
+  `unattributed_minutes` and `unattributed_events` expose effort without a reason.
+  `effort_missing_runs` and `reason_minutes_missing_runs` expose coverage gaps.
+
+Reason labels are self-reported and may describe ordinary work, not necessarily
+rework. No causal link to a rejection is inferred from matching labels. An empty
+reason map does not prove no rework occurred. Counts and observed sums cover only
+available events; corrupt or missing runs are never treated as measured zeros.
+No automatic synonym grouping, clock-overlap detection, correction authorization
+registry, or savings estimate is provided. Each run is read under its own lock;
+a cross-run report is not one globally simultaneous snapshot. Files copied into
+different run directories are distinct runs; only resolved path aliases deduplicate.

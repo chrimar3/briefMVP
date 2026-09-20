@@ -17,6 +17,8 @@ import pytest
 
 from pipeline import review
 
+from review_cases import stored_run
+
 REPO = Path(__file__).resolve().parents[1]
 STORED_RUNS = ("runs/tier3", "runs/live", "runs/evidence-20260729")
 
@@ -24,7 +26,7 @@ FORBIDDEN = re.compile(r"cost|model|claude|sonnet|haiku|opus", re.IGNORECASE)
 
 
 def _brief(run: str) -> dict:
-    return json.loads((REPO / run / "brief.json").read_text(encoding="utf-8"))
+    return json.loads((stored_run(run) / "brief.json").read_text(encoding="utf-8"))
 
 
 def _mini_brief(**overrides) -> dict:
@@ -184,7 +186,7 @@ def test_stored_pages_add_nothing_the_brief_does_not_say(run):
     already exist verbatim-insensitive in brief.json (client budget language like
     'costs' is brief content; run cost/model info lives only in the manifest and
     must never appear)."""
-    raw = (REPO / run / "brief.json").read_text(encoding="utf-8")
+    raw = (stored_run(run) / "brief.json").read_text(encoding="utf-8")
     page = review.render_review(json.loads(raw))
     assert "$" not in page
     for match in {m.group(0).lower() for m in FORBIDDEN.finditer(page)}:

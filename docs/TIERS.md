@@ -89,3 +89,20 @@ as one release. See `docs/OPERATING_DECISIONS.md`, the implementation plan in
 
 This release enables approved delivery; it does not certify production readiness or authorize
 real data ingestion. Agency configuration, human review and pilot validation remain required.
+
+## Tier 7 — Agency coordination and delivery control (2026-09-20)
+
+Authorized after publication of Tiers 5 and 6. See `runs/tier_7_report.md` and
+`docs/superpowers/plans/2026-09-20-agency-coordination.md` for the ranked scope.
+
+- [x] Project status, portfolio queue, version-bound question packs and attributed reply proposals.
+- [x] Revision impact includes changed source contents and added/removed source documents.
+- [x] Package verification, withdrawal history and production dependency/deadline checks.
+- [x] Append-only effort corrections and measured cross-project rework summaries.
+- [x] Pending replies hold approval/release until explicit review; canonical data never silently changed.
+- [x] 587 tests pass in working tree and portable checkout; 7 existing skips, 16 historical xfails.
+  Frozen evidence remains 17/17 and deterministic agency benchmark 12/12.
+- [x] Independent Astra findings fixed and rechecked; original designs and frozen specs preserved.
+
+Stop at this tier for review. Real-data permission, authenticated staff roles, capacity planning,
+semantic quality evaluation and actual agency pilot results are not implied by these checks.

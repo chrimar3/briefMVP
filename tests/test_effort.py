@@ -29,7 +29,7 @@ def test_duplicate_retry_and_conflict_leave_ledger_unchanged(tmp_path):
     assert (tmp_path / 'effort.json').read_bytes() == before
 
 
-@pytest.mark.parametrize('changes', [dict(minutes=0), dict(minutes=-1), dict(minutes=float('nan')),
+@pytest.mark.parametrize('changes', [dict(minutes=-1), dict(minutes=float('nan')),
     dict(minutes=float('inf')), dict(minutes=True), dict(role='unknown'), dict(actor=' '), dict(event_id='')])
 def test_invalid_events_do_not_create_ledger(tmp_path, changes):
     with pytest.raises(ValueError):
@@ -146,3 +146,136 @@ def test_phase_and_per_brief_precision_are_not_pooled():
 def test_partial_fractional_question_counts_rejected():
     with pytest.raises(ValueError, match='integer'):
         pilot_scorecard.summarize([dict(row_type='PILOT', oq_real='0.5')])
+
+
+def correction(run, target='e1', event_id='c1', minutes=3):
+    return effort.correct(run, target_event_id=target, event_id=event_id,
+                          actor='Synthetic supervisor', reason='Fix timer',
+                          replacement=dict(kind='effort', actor='Synthetic operator',
+                                           role='account_assembly', minutes=minutes, reason='Spec repair'))
+
+
+def test_explicit_zero_is_measured_but_absent_role_is_unknown(tmp_path):
+    record(tmp_path, minutes=0)
+    row = effort.export(tmp_path, tmp_path / 'zero.csv', brief_id='synthetic', phase='retro')
+    assert row['assembly_min'] == 0
+    assert row['review_min'] == row['total_attention_min'] == 'not_recorded'
+
+
+def test_correction_preserves_original_and_replays_after_void(tmp_path):
+    record(tmp_path)
+    original = json.loads((tmp_path / 'effort.json').read_text())['events'][0]
+    correction(tmp_path)
+    correction(tmp_path)
+    with pytest.raises(ValueError, match='event-id'):
+        correction(tmp_path, minutes=4)
+    row = effort.export(tmp_path, tmp_path / 'corrected.csv', brief_id='synthetic', phase='retro')
+    assert row['assembly_min'] == 3
+    effort.void(tmp_path, target_event_id='c1', actor='Synthetic supervisor', reason='Wrong run', event_id='v1')
+    before = (tmp_path / 'effort.json').read_bytes()
+    correction(tmp_path)
+    effort.void(tmp_path, target_event_id='c1', actor='Synthetic supervisor', reason='Wrong run', event_id='v1')
+    assert (tmp_path / 'effort.json').read_bytes() == before
+    data = json.loads(before)
+    assert data['events'][0] == original
+    assert len(data['events']) == 3
+    assert effort.read_events(tmp_path) == []
+    row = effort.export(tmp_path, tmp_path / 'void.csv', brief_id='synthetic', phase='retro')
+    assert row['assembly_min'] == 'not_recorded'
+
+
+@pytest.mark.parametrize('target', ['unknown', 'e1', 'v1', 'self'])
+def test_invalid_void_targets_are_rejected_without_write(tmp_path, target):
+    record(tmp_path)
+    effort.void(tmp_path, target_event_id='e1', actor='Synthetic', reason='Wrong run', event_id='v1')
+    before = (tmp_path / 'effort.json').read_bytes()
+    with pytest.raises(ValueError):
+        effort.void(tmp_path, target_event_id=target, actor='Synthetic', reason='Wrong run', event_id='self')
+    assert (tmp_path / 'effort.json').read_bytes() == before
+
+
+def test_correction_chain_and_handoff_chronology(tmp_path):
+    effort.handoff(tmp_path, actor='Synthetic', accepted='no', return_reason='Wrong spec', event_id='h1')
+    effort.handoff(tmp_path, actor='Synthetic', accepted='no', return_reason='Late spec', event_id='h2')
+    args = dict(actor='Synthetic supervisor', reason='Fix outcome',
+                replacement=dict(kind='handoff', actor='Synthetic', accepted='yes', return_reason=None))
+    effort.correct(tmp_path, target_event_id='h1', event_id='c1', **args)
+    effort.correct(tmp_path, target_event_id='c1', event_id='c2', **args)
+    events = effort.read_events(tmp_path)
+    assert [e['event_id'] for e in events] == ['c2', 'h2']
+    assert events[0]['accepted'] == 'yes'
+    row = effort.export(tmp_path, tmp_path / 'handoff.csv', brief_id='synthetic', phase='retro')
+    assert row['first_handoff_accepted'] == 'yes'
+    with pytest.raises(ValueError):
+        correction(tmp_path, target='h2', event_id='wrong-kind')
+
+
+@pytest.mark.parametrize('change', [dict(actor=''), dict(reason=' '), dict(target_event_id='missing'),
+                                  dict(replacement={'kind': 'void'}), dict(target_event_id='c1')])
+def test_invalid_correction_rejected(tmp_path, change):
+    record(tmp_path)
+    args = dict(target_event_id='e1', event_id='c1', actor='Synthetic supervisor', reason='Fix timer',
+                replacement=dict(kind='effort', actor='Synthetic', role='operator', minutes=0, reason=None))
+    with pytest.raises(ValueError):
+        effort.correct(tmp_path, **{**args, **change})
+    assert len(json.loads((tmp_path / 'effort.json').read_text())['events']) == 1
+
+
+def test_corrupt_forward_reference_and_cycles_are_rejected(tmp_path):
+    record(tmp_path)
+    correction(tmp_path)
+    path = tmp_path / 'effort.json'
+    data = json.loads(path.read_text())
+    data['events'][1]['target_event_id'] = 'c1'
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):
+        effort.read_events(tmp_path)
+    data['events'][1]['target_event_id'] = 'future'
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):
+        effort.read_events(tmp_path)
+
+
+def test_correction_cli_and_void_cli(tmp_path):
+    record(tmp_path)
+    payload = json.dumps(dict(kind='effort', actor='Synthetic', role='operator', minutes=0, reason='Spec repair'))
+    assert effort.main(['correct', str(tmp_path), '--target-event-id', 'e1', '--actor', 'Synthetic supervisor',
+                        '--reason', 'Fix role', '--event-id', 'c1', '--replacement', payload]) == 0
+    assert effort.main(['void', str(tmp_path), '--target-event-id', 'c1', '--actor', 'Synthetic supervisor',
+                        '--reason', 'Wrong run', '--event-id', 'v1']) == 0
+    assert effort.read_events(tmp_path) == []
+
+
+def test_concurrent_corrections_only_one_can_replace_target(tmp_path):
+    record(tmp_path)
+    payload = json.dumps(dict(kind='effort', actor='Synthetic', role='operator', minutes=2, reason=None))
+    commands = [[sys.executable, '-m', 'pipeline.effort', 'correct', str(tmp_path),
+                 '--target-event-id', 'e1', '--actor', 'Synthetic supervisor', '--reason', 'Fix timer',
+                 '--event-id', event_id, '--replacement', payload] for event_id in ('c1', 'c2')]
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'}
+    processes = [subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env) for cmd in commands]
+    for process in processes:
+        process.communicate(timeout=20)
+    assert sorted(process.returncode for process in processes) == [0, 2]
+    assert len(json.loads((tmp_path / 'effort.json').read_text())['events']) == 2
+    assert len(effort.read_events(tmp_path)) == 1
+
+
+def test_correction_changes_totals_and_cannot_replace_inactive_target(tmp_path):
+    for i, role in enumerate(effort.ROLES):
+        record(tmp_path, event_id=str(i), role=role, minutes=2)
+    correction(tmp_path, target='0', minutes=0)
+    row = effort.export(tmp_path, tmp_path / 'total.csv', brief_id='synthetic', phase='retro')
+    assert row['total_attention_min'] == 2
+    assert row['total_team_min'] == 10
+    before = (tmp_path / 'effort.json').read_bytes()
+    with pytest.raises(ValueError, match='target'):
+        correction(tmp_path, target='0', event_id='c2')
+    assert (tmp_path / 'effort.json').read_bytes() == before
+
+
+def test_conflicting_void_retry_is_rejected(tmp_path):
+    record(tmp_path)
+    effort.void(tmp_path, target_event_id='e1', actor='Synthetic', reason='Wrong run', event_id='v1')
+    with pytest.raises(ValueError, match='event-id'):
+        effort.void(tmp_path, target_event_id='e1', actor='Different synthetic actor', reason='Wrong run', event_id='v1')

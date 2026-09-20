@@ -174,3 +174,11 @@ operators from overwriting each other's mutations. Decision carry-forward reuses
 question triage across revisions; approvals never migrate. CI runs deterministic checks and
 frozen-evidence grading without model calls. The [owner decision](docs/OPERATING_DECISIONS.md)
 records the change from the historical shadow-only scope without rewriting the frozen PRD.
+
+### Agency coordination
+
+`python3 -m pipeline.operations RUN [OTHER_RUN ...]` reports current blockers and the next
+human actions across explicit runs. See [coordination guide](docs/pilot/COORDINATION.md)
+for delivery verification, withdrawal and dependency checks; [question exchange](docs/pilot/QUESTION_EXCHANGE.md)
+for local clarification packs and revision impact; and [effort recording](docs/pilot/EFFORT_RECORDING.md)
+for corrections and rework analysis. These commands remain fixture-only and do not send messages.

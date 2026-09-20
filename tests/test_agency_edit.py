@@ -96,14 +96,18 @@ def test_bind_and_deliverable_use_active_catalog(run, tmp_path):
     args = ['deliverable', str(run), '--id', 'asset', '--spec-id', 'synthetic-image',
             '--quantity', '2', '--language', 'el', '--language', 'en', '--deadline', '2026-12-01',
             '--owner', 'Production', '--approval-owner', 'Lead', '--actor', 'Editor',
-            '--ref', 'deliverables:0', '--dependency', 'Synthetic artwork']
+            '--ref', 'deliverables:0', '--dependency', 'master']
+    predecessor = args[:-2].copy()
+    predecessor[predecessor.index('--id') + 1] = 'master'
+    assert agency_edit.main(predecessor) == 0
     assert agency_edit.main(args) == 0
-    row = revisions.load(run / 'agency_inputs.json')['deliverables'][0]
+    row = revisions.load(run / 'agency_inputs.json')['deliverables'][1]
     for key in ('resolution', 'aspect_ratio', 'format', 'file_type', 'duration'):
         assert row[key] == table()['specs'][0][key]
     assert row['languages'] == ['el', 'en'] and row['actor'] == 'Editor'
     assert agency_edit.main(args) == 0
-    assert len(revisions.load(run / 'agency_inputs.json')['deliverables']) == 1
+    assert len(revisions.load(run / 'agency_inputs.json')['deliverables']) == 2
+    assert row['dependencies'] == ['master']
     before = (run / 'agency_inputs.json').read_bytes()
     assert agency_edit.main(args + ['--duration-seconds', '5']) == 2
     assert (run / 'agency_inputs.json').read_bytes() == before

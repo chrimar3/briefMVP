@@ -47,7 +47,7 @@ def campaign_check(inputs, brief):
     return problems
 
 
-def audit(run):
+def audit(run, *, persist=True):
     run = Path(run)
     brief = read_run(run)
     inputs = revisions.load(run / "agency_inputs.json", {})
@@ -96,6 +96,10 @@ def audit(run):
         if path.exists():
             problems.extend(quality.render_coverage(brief, path.read_text(encoding="utf-8"), lang))
     q = clarifications.queue(brief, revisions.load(run / "clarifications.json", {}))
+    if (run / 'question_exchange' / 'proposals').exists():
+        from pipeline.question_exchange import pending_proposals
+        if pending_proposals(run):
+            problems.append('Unreviewed clarification replies; ingest relevant answers into a revised brief or explicitly dismiss irrelevant proposals')
     for item in q:
         decision = item["decision"]
         if not decision:
@@ -129,12 +133,14 @@ def audit(run):
               "status": "blocked" if problems else "reviewed", "blockers": problems, "notices": notices,
               "coverage": records, "questions": q,
               "boundary": "Evidence links and structure checked automatically. Semantic judgments are human attestations. Fixtures-only data; creative delivery requires separate human approval."}
-    revisions.write_json(run / "agency_audit.json", result)
+    if persist:
+        revisions.write_json(run / "agency_audit.json", result)
     lines = ["# Agency review", "", result["boundary"], "", f"Status: {result['status']}", ""]
     lines += [f"- {p}" for p in problems + notices]
     lines += ["", "## Fact coverage", ""] + [f"- {r['id']} · {r['field']}: {r['value']} → {', '.join(r['destinations']) or 'no destination; review exclusion if recorded'}" for r in records]
     lines += ["", "## Clarification queue", ""] + [f"- {item['id']}: {item['question']} ({(item['decision'] or {}).get('status', 'untriaged')})" for item in q]
-    (run / "agency_audit.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if persist:
+        (run / "agency_audit.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return result
 
 

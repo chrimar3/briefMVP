@@ -188,3 +188,68 @@ def test_manifest_revision_must_match_registered_payloads(tmp_path):
     revisions.write_json(run/'creative_draft.json', record)
     with pytest.raises(ValueError, match='revision'):
         delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
+
+
+def test_withdrawal_blocks_release_and_marks_existing_package(tmp_path):
+    from pipeline import release_control
+    run = prepare_release(tmp_path)
+    delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
+    output = delivery.release(run, tmp_path/'released')
+    assert release_control.verify(output, run)['valid']
+    result = release_control.withdraw(run, 'Synthetic lead', 'Wrong campaign selected')
+    assert len(result['affected_releases']) == 1
+    assert (output/'release.json').exists()
+    assert not release_control.verify(output, run)['valid']
+    with pytest.raises(ValueError, match='approval'):
+        delivery.release(run, tmp_path/'again')
+    assert revisions.load(run/'approval_withdrawals.json')[0]['reason'] == 'Wrong campaign selected'
+
+
+@pytest.mark.parametrize('change', ['extra', 'changed', 'missing', 'path'])
+def test_release_verifier_detects_package_changes(tmp_path, change):
+    from pipeline import release_control
+    run = prepare_release(tmp_path)
+    delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
+    output = delivery.release(run, tmp_path/'released')
+    if change == 'extra':
+        (output/'internal.md').write_text('Not approved')
+    elif change == 'changed':
+        (output/'creative.md').write_text('Different')
+    elif change == 'missing':
+        (output/'creative.md').unlink()
+    else:
+        data = revisions.load(output/'release.json')
+        data['files']['../outside'] = '0'*64
+        revisions.write_json(output/'release.json', data)
+    assert not release_control.verify(output, run)['valid']
+
+
+def test_withdrawal_of_release_survives_catalog_rebind(tmp_path):
+    from pipeline import release_control, spec_catalog
+    run = prepare_release(tmp_path)
+    delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
+    output = delivery.release(run, tmp_path/'released')
+    spec_catalog.bind(run, tmp_path/'catalog.json', actor='Synthetic traffic')
+    assert not (run/'approval.json').exists()
+    assert not (run/'creative_approval.json').exists()
+    release_control.withdraw(run, 'Synthetic lead', 'Withdraw earlier package')
+    assert release_control.verify(output, run)['withdrawn']
+
+
+def test_interrupted_withdrawal_allows_fresh_human_reapproval(tmp_path, monkeypatch):
+    from pipeline import release_control
+    from test_agency_operations import approve_synthetic
+    run = prepare_release(tmp_path)
+    delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
+    def fail_archive(*args, **kwargs):
+        raise OSError('simulated interruption')
+    with monkeypatch.context() as m:
+        m.setattr(revisions, 'archive', fail_archive)
+        with pytest.raises(OSError):
+            release_control.withdraw(run, 'Synthetic lead', 'Correct campaign')
+    with pytest.raises(ValueError, match='withdrawn'):
+        delivery.release(run, tmp_path/'not-allowed')
+    approve_synthetic(run)
+    delivery.register(run, tmp_path/'draft.txt', 'Synthetic operator')
+    delivery.approve(run, 'Synthetic lead', 'Fresh human review', delivery.CHECKS)
+    assert delivery.release(run, tmp_path/'fresh').is_dir()
