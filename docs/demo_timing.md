@@ -1,5 +1,10 @@
 # Demo timing — measured, not estimated
 
+> **Haiku-era measurement.** These runs (2026-07-27/28) used Haiku 4.5 for classification and
+> extraction. Extraction has run on Sonnet with an independent `verify-extract` reader since
+> the 2026-07-30 routing decision, so current timings and usage will differ and have not been
+> re-measured. The numbers below are kept as the record of what was measured then.
+
 All numbers from `demo/run_demo.py` on `fixtures/northlight_01/transcript_kickoff.md`
 (366 words, under the 800-word cap), classify → extract → deterministic gates, models
 `claude-haiku-4-5-20251001`, run sequentially on one machine. Reproduce any single run with:

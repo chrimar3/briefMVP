@@ -93,6 +93,13 @@ if g:
 else:
     fails.append('key visual <g id="kv-art"> missing')
 if 'SHADOW MODE' not in doc: fails.append('shadow-mode notice missing')
+# 7b current creative scope (owner decisions 2026-09-20 and 2026-09-22): the page must not carry the superseded
+# shadow-only or manual-edit-only claims, and must state the approval-gated release it replaced them with.
+for stale in ('never delivered', 'nothing delivered', 'no delivered creative', 'v1.1 takes creative live',
+              'creative stays in shadow', 'covers shadow evaluation only', 'schema-validated edit in v1'):
+    if stale in plain: fails.append(f'superseded creative/sign-off claim on the page: {stale!r}')
+if 'approves the exact files' not in plain: fails.append('creative release rule (a named creative lead approves the exact files) missing')
+if 'pipeline.agency resolve, attest and approve' not in plain: fails.append('Tier 5 sign-off commands missing from the sign-off description')
 # 8a visible-word budget per sheet (details excluded): hard cap 650, sheet 09 allowed 750
 for ms in re.finditer(r'<section class="sheet[^"]*" id="(ch\d\d)"(.*?)</section>', doc, flags=re.S):
     vis = re.sub(r'<details.*?</details>', '', ms.group(2), flags=re.S)

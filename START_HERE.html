@@ -93,7 +93,7 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
   <p class="mast-sub">From a messy pile of client inputs to a client-ready brief — in two
   languages, with receipts. AI writes, code checks, humans decide.</p>
   <div class="chips">
-    <span class="chip ok">17/17 on the sealed answer key</span>
+    <span class="chip ok">17/17 on the graded synthetic project</span>
     <span class="chip">every claim carries a citation</span>
     <span class="chip">gaps become questions, never guesses</span>
     <span class="chip">Greek + English from one object</span>
@@ -103,8 +103,9 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
 
 <section id="see-it">
   <h2>See it before you run anything</h2>
-  <p class="lede">The graded run ships in this repo. These two pages are the product's
-  account-team surface — double-click, no install, works offline:</p>
+  <p class="lede">The graded run ships in this repo. The first two pages are the product's
+  account-team surface; the third is the decision paper for whoever approves a pilot —
+  double-click, no install, works offline:</p>
   <div class="card-row">
     <a class="card" href="runs/tier3/brief_review.html">
       <h3>The brief review</h3>
@@ -114,20 +115,26 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
       <span class="go">Open the signed-off example →</span>
     </a>
     <a class="card" href="runs/tier3/run_review.html">
-      <h3>The pipeline walkthrough</h3>
-      <p>How that brief was built: what each source contributed, what the fidelity gate
-      flagged, the cross-source conflict candidates, and the readiness verdict — the
-      system explaining its own work.</p>
-      <span class="go">Open the run walkthrough →</span>
+      <h3>How this brief was built (run view)</h3>
+      <p>What each source contributed, what the fidelity gate flagged, the cross-source
+      conflict candidates, and the readiness verdict — the system explaining its own work.</p>
+      <span class="go">Open the run view →</span>
+    </a>
+    <a class="card" href="WALKTHROUGH.html">
+      <h3>The decision paper</h3>
+      <p>Ten sheets for a sponsor: the graded run end to end, what is measured and what is
+      assumed, what stays human, the limits and risks, and the three pilot decisions asked.</p>
+      <span class="go">Open WALKTHROUGH.html →</span>
     </a>
   </div>
 </section>
 
 <section id="how">
   <h2>How it works</h2>
-  <p class="lede">Seven pipeline steps, one human gate. The runner owns sequence and
-  refusal; deterministic gates verify every model output; nothing moves past the draft
-  without an account lead.</p>
+  <p class="lede">Ten steps, two of them people. Seven build the client brief; the account
+  lead signs it before any creative work starts; the creative draft follows; and a named
+  creative lead approves the exact files before any creative leaves as a package. The runner
+  owns sequence and refusal; deterministic gates verify every model output.</p>
   <ol class="journey">
     <li class="jstep"><span class="jstep-no">1</span><span class="jstep-body">
       <span class="jstep-name">Readiness gate</span>
@@ -140,7 +147,7 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
       <span class="jstep-status">garbled transcripts flagged, never fixed</span></span></li>
     <li class="jstep ai"><span class="jstep-no">4</span><span class="jstep-body">
       <span class="jstep-name">Extraction</span>
-      <span class="jstep-status">no verbatim quote → no claim</span></span></li>
+      <span class="jstep-status">no verbatim quote → no claim; a second reader checks it</span></span></li>
     <li class="jstep"><span class="jstep-no">5</span><span class="jstep-body">
       <span class="jstep-name">Conflict pass</span>
       <span class="jstep-status">disagreements surfaced, never resolved</span></span></li>
@@ -154,8 +161,11 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
       <span class="jstep-name">Human sign-off</span>
       <span class="jstep-status">not a system step — the gate it stops at</span></span></li>
     <li class="jstep ai"><span class="jstep-no">9</span><span class="jstep-body">
-      <span class="jstep-name">Creative (shadow)</span>
-      <span class="jstep-status">only after sign-off, never delivered</span></span></li>
+      <span class="jstep-name">Creative draft</span>
+      <span class="jstep-status">only after sign-off; a draft until approved</span></span></li>
+    <li class="jstep human"><span class="jstep-no">10</span><span class="jstep-body">
+      <span class="jstep-name">Creative approval</span>
+      <span class="jstep-status">named creative lead; then a local package, never sent automatically</span></span></li>
   </ol>
   <p class="legend">Every model step is verified by a deterministic gate: citations must
   resolve word-for-word, protected brand terms must survive, no figure may appear that no
@@ -170,11 +180,14 @@ python3 -m pip install -r requirements.txt
 python3 -m pytest -q
 
 <span class="c"># model stages run as Claude Code subagents — install + authenticate the claude CLI, then:</span>
-./demo.sh                                       <span class="c"># 2-3 min: one document in, verified facts out,</span>
-                                                <span class="c">#   ends by opening the walkthrough page</span>
+./demo.sh                                       <span class="c"># one document in, verified facts out,</span>
+                                                <span class="c">#   ends by opening its run view</span>
 python3 pipeline/runner.py --project fixtures/northlight_01   <span class="c"># full Stage-1 run → runs/&lt;ts&gt;/</span>
-python3 eval/harness.py runs/latest             <span class="c"># grade against the sealed answer key</span>
+python3 eval/harness.py runs/latest             <span class="c"># grade against the answer key</span>
 ./run_full.sh                                   <span class="c"># background demo run — opens the finished brief</span></pre>
+  <p class="lede">Python 3.9 or newer on macOS or Linux. The tests make no model calls; the
+  model stages run on the owner's Claude account and their usage under the current routing is
+  still being re-measured (the graded figures are from the earlier, Haiku-era routing).</p>
   <p class="lede">Completed runs also copy their pages to <span class="mono">reviews/</span>
   under recognisable names — that folder is the account team's shelf
   (see <span class="mono">reviews/README.md</span> for the sharing channels).</p>
@@ -194,21 +207,69 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
     <div class="g-card"><h3>Editorialise in views</h3><p>The review pages are
       deterministic renders of the run's artifacts — they cannot say anything the
       artifacts do not say, and carry no run cost or model information.</p></div>
-    <div class="g-card"><h3>Ship creative</h3><p>The creative brief stage runs in shadow
-      mode on signed-off briefs only; its drafts are for evaluation, never delivery.</p></div>
+    <div class="g-card"><h3>Release creative on its own</h3><p>Creative starts as a draft,
+      on signed-off briefs only. It becomes a local delivery package only after a named
+      creative lead approves the exact files; nothing is sent, posted or approved on anyone's
+      behalf.</p></div>
+  </div>
+</section>
+
+<section id="since">
+  <h2>Since the graded run: the agency layer (Tiers 5–7)</h2>
+  <p class="lede">The graded run is from July 2026. In September the pipeline gained the
+  operating layer an agency needs around it — all local commands, run by people, with no
+  model calls.</p>
+  <div class="g-grid">
+    <div class="g-card"><h3>What it adds</h3><p>Evidence-coverage audits and question
+      triage; conflict resolution, bilingual attestation and sign-off by command, bound to
+      the exact revision; creative registration, approval, release, verification and
+      withdrawal; clarification packs; effort and rework records for the pilot scorecard.</p></div>
+    <div class="g-card"><h3>What it proves</h3><p>The software behaves as specified: at
+      Tier 7, 587 deterministic tests pass, the frozen evidence still grades 17/17 and a
+      synthetic fault-injection benchmark passes 12/12. This is a software rehearsal.</p></div>
+    <div class="g-card"><h3>What it does not prove</h3><p>Generative quality under the
+      current routing, Greek register, review time, adoption or any time saved. Those need
+      the re-baseline and the pilot.</p></div>
+  </div>
+</section>
+
+<section id="decision">
+  <h2>The decision asked, and the risks</h2>
+  <p class="lede">The decision paper (<a href="WALKTHROUGH.html">WALKTHROUGH.html</a>, sheet
+  10) asks the sponsor for three things: approve a four-week pilot with live use in week 4
+  conditional on the retrospective results; re-measure usage and time under the current
+  routing before week 1; and estimate costs, confirm capacity and terms, and record a
+  spending ceiling before week 1. Creative delivery is in the pilot from week 1, under
+  separation of duties.</p>
+  <div class="g-grid">
+    <div class="g-card"><h3>Usage is not yet measured</h3><p>Extraction moved to a larger
+      model plus a second reader on 30 July; one leg measured about twice the graded tokens.
+      The whole-brief figure awaits the re-baseline.</p></div>
+    <div class="g-card"><h3>Exam-green is not lead-ready</h3><p>The harder second fixture
+      scored 15/17, then 16/17 after a re-roll, with errors no check sees. A person reviews
+      every brief.</p></div>
+    <div class="g-card"><h3>Refusals happen</h3><p>Three of ten supervised single-document
+      runs were refused on both attempts (Haiku-era). A refusal stops the run; it never
+      ships a guess.</p></div>
+    <div class="g-card"><h3>Terms and data</h3><p>Commercial and data-processing terms are
+      unresolved, and only synthetic data is permitted until the agency approves a data
+      policy.</p></div>
   </div>
 </section>
 
 <section id="map">
   <h2>Where things live</h2>
   <div class="map">
-    <div class="map-row"><span class="mono">docs/PRD.md</span><span>the spec — read-only, the contract everything hangs off</span></div>
+    <div class="map-row"><span class="mono">WALKTHROUGH.html</span><span>the decision paper — ten sheets, the canonical stakeholder page</span></div>
+    <div class="map-row"><span class="mono">docs/README.md</span><span>every document with its status (current, frozen, historical) and a reading order</span></div>
+    <div class="map-row"><span class="mono">docs/PRD.md</span><span>the original spec — frozen; later owner decisions live in docs/OPERATING_DECISIONS.md</span></div>
     <div class="map-row"><span class="mono">docs/EVIDENCE.md</span><span>artifact-backed proof of every claim: what ran, every check, every trap caught</span></div>
     <div class="map-row"><span class="mono">runs/tier3/</span><span>the committed graded run — signed brief, renders, extracts, both review pages</span></div>
+    <div class="map-row"><span class="mono">docs/pilot/</span><span>the pilot operating pack — champion runbook, creative delivery, coordination, scorecard, operating terms</span></div>
     <div class="map-row"><span class="mono">reviews/</span><span>the shareable shelf — completed runs publish both pages here automatically</span></div>
-    <div class="map-row"><span class="mono">pipeline/</span><span>deterministic orchestration: runner, gates, extraction, conflicts, review pages</span></div>
+    <div class="map-row"><span class="mono">pipeline/</span><span>deterministic orchestration: runner, gates, extraction, conflicts, review pages, and the agency commands (review, approval, delivery, coordination)</span></div>
     <div class="map-row"><span class="mono">skills/</span><span>the four runtime instruction files injected into subagents — spec, not suggestions</span></div>
-    <div class="map-row"><span class="mono">fixtures/northlight_01/</span><span>the synthetic project: transcript, RFP, emails, background + sealed answer key</span></div>
+    <div class="map-row"><span class="mono">fixtures/northlight_01/</span><span>the synthetic project: transcript, RFP, emails, background + an answer key only the grader reads</span></div>
     <div class="map-row"><span class="mono">CLAUDE.md</span><span>working rules for operating this repo with Claude Code — tiers, freezes, anti-patterns</span></div>
   </div>
 </section>

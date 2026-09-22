@@ -1,21 +1,33 @@
 # Evidence pack — the graded tier-3 run
 
-Everything on this page links to a committed artifact; nothing is asserted that a file
-cannot back. The graded run lives in [`runs/tier3/`](../runs/tier3/).
+Every figure on this page comes from a file. Where that file is committed it is linked; the
+few figures that come from local runs which are not in the repository say so (the one
+current-routing extraction leg, the continuous 29 July capture, and the two clean
+confirmation runs behind the cost range). The graded run
+lives in [`runs/tier3/`](../runs/tier3/).
+
+> **Routing era.** Everything measured here, except the one current-routing leg named under
+> *Measured usage*, ran under the **Haiku-era routing** of July 2026:
+> classification, fidelity and extraction on Haiku 4.5; synthesis and render on Sonnet 5. On
+> 2026-07-30 the owner moved extraction to Sonnet and added an independent `verify-extract`
+> reader per source (`.claude/agents/extract.md`, `config/model_routing.json`). Usage under
+> that current routing has not been measured for a whole brief yet; the owner-authorised
+> re-baseline is recorded in [`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md) § 2026-09-22.
 
 ## What ran, and when
 
 | | |
 |---|---|
-| Fixture | `fixtures/northlight_01` — synthetic Greek/English agency project with a **sealed answer key** the pipeline structurally cannot read |
+| Fixture | `fixtures/northlight_01` — synthetic Greek/English agency project with an answer key reserved for the grader |
+| Answer-key protection | Excluded from source discovery (`gates.HARNESS_ONLY_FILES`, skipped by `gates.discover_sources` and by intake) and never passed to a runtime agent, **by policy**. It is not cryptographically sealed, and during the graded run the agents' file access was not technically prevented from reaching it; nothing in the run records shows that any agent read it. The key was committed before the graded run started and has one commit in its history |
 | Run | `runs/tier3`, completed 2026-07-24 (assembled across resumed legs; `run_manifest.json` records every step, with `from_earlier_run` marking carried steps) |
-| Models (resolved IDs) | `claude-haiku-4-5-20251001` (classify, fidelity, extract) · `claude-sonnet-5` (synthesize, render) · `claude-opus-4-8` (creative A/B arm) |
+| Models (resolved IDs) | `claude-haiku-4-5-20251001` (classify, fidelity, extract) · `claude-sonnet-5` (synthesize, render, creative A/B arm) · `claude-opus-4-8` (creative A/B arm) — Haiku-era routing |
 | Verdict | **17/17 checks pass** — [`harness_report.json`](../runs/tier3/harness_report.json) |
 
 Final deliverables, as generated: [Greek brief](../runs/tier3/brief_el.md) ·
 [English brief](../runs/tier3/brief_en.md) · [canonical object](../runs/tier3/brief.json).
 The original console output was not captured in 2026-07; the manifest is the durable
-record. A fresh full-run console log (2026-07-27 re-run, labeled as such) is committed
+record. A fresh full-run console log (2026-07-28 re-run `case-full-20260728b`, labeled as such) is committed
 alongside the timing numbers — see [`demo_timing.md`](demo_timing.md).
 
 ## The exam: 17 machine checks, every seeded trap caught
@@ -55,13 +67,38 @@ checks the evidence layer, tier 2 the brief and both renders, tier 3 the seeded 
 | "TikTok dance… don't hold me to it" | Carried with `qualifier: conditional` (X2) |
 | No KPI, no media budget, no approver, no formats — anywhere | All four became client-facing open questions (T3.2) |
 
-## Measured cost and timing
+## Measured usage, cost and timing
 
-- **$2.25 per Stage-1 brief** (measured range $2.07–2.44 across runs) — method and
-  breakdown in [`COST_MODEL.md`](COST_MODEL.md); reproduce with `python3 eval/cost_report.py`.
-- The tier-3 manifest totals $4.29 because it additionally includes repair attempts and the
-  two-model creative A/B arm.
-- Stage timings summed over all attempts recorded in the tier-3 manifest:
+Usage first, in tokens by model (all token types: fresh input, output, cache reads, cache
+writes), from `runs/tier3/run_manifest.json`; reproduce the per-stage split with
+`python3 eval/cost_report.py runs/tier3 --tokens`.
+
+| Scope | Tokens | By model |
+|---|---|---|
+| Stage 1 (the client brief), nine model-agent attempts incl. one extraction repair | **984 820** | Haiku 4.5 533 641 · Sonnet 5 451 179 |
+| Stage 2 creative A/B (two drafts; production makes one) | 149 914 | Sonnet 5 86 441 · Opus 4.8 63 473 |
+| Whole graded run | 1 134 734 | |
+
+Under the current routing only one leg has been measured: transcript extraction took 598 743
+tokens (two Sonnet 5 extraction attempts, 91 918 and 462 130, plus the Sonnet 5 verifier,
+44 695) against 295 774 on the graded run. That run (`runs/routing-validate-01`, 2026-07-29)
+is local and not committed, and it is one leg, not a whole brief.
+
+**Dollars, for readers on API terms** (developer-subscription substrate, CLI-reported
+`cost_usd`; see [`COST_MODEL.md`](COST_MODEL.md)):
+
+- The graded run cost **$3.55** de-duplicated: **$2.81** for Stage 1 (including the extraction
+  repair) and $0.74 for the creative A/B.
+- Summing every `cost_usd` field in `runs/tier3/run_manifest.json` gives **$4.29**. The
+  difference is bookkeeping, not spend: the manifest records each creative arm's cost twice
+  (once on the arm, once on its single attempt), so $0.74 is counted twice. Both figures are
+  kept here because $4.29 appears in earlier reports; $3.55 is the spend.
+- The two clean Stage-1 confirmation runs (`tier3-confirm`, `tier3-confirm2`, every stage one
+  attempt; local, not committed) cost $2.07–2.44, mean $2.25 — the figure `COST_MODEL.md` §1
+  tabulates.
+- All of these are Haiku-era figures and are not a price under the current routing.
+
+Stage timings summed over all attempts recorded in the tier-3 manifest:
 
 | Stage | Time |
 |---|---|
@@ -70,11 +107,11 @@ checks the evidence layer, tier 2 the brief and both renders, tier 3 the seeded 
 | extraction (4 sources, incl. one repair) | 13.6 min |
 | synthesis | 5.1 min |
 | bilingual render | 9.2 min |
-| creative shadow (A/B, 2 models) | 3.3 min |
+| creative A/B (2 models, Tier-4 shadow mode) | 3.3 min |
 
 Live single-document timing (10 measured runs, p50/p95): [`demo_timing.md`](demo_timing.md).
 
-## Live-demo rehearsal (2026-07-29, fresh unseen sample)
+## Live-demo rehearsal (2026-07-29, fresh unseen sample, Haiku-era routing)
 
 A ~160-word synthetic kickoff snippet (new fictional client, never used in any fixture)
 pasted into `demo_live/sources/live_transcript.md`, then both defense-session paths:
@@ -84,10 +121,11 @@ pasted into `demo_live/sources/live_transcript.md`, then both defense-session pa
 | Extraction + verification only | `./demo.sh` | **205 s (3:25)** | 9 cited facts (speculation `conditional`, spoken figures kept in words), 9/9 citations verbatim, 4 open questions · $0.17 |
 | Full pipeline, single source | `./run_full.sh` | **345 s (5:45)** | All stages first-attempt → both renders; run manifest records `demo_profile` and the production input gate's refusal (`refused_overridden_demo_profile`) — the override is logged, never silent · ~$0.64 |
 
-## The three moments — real captured output (2026-07-29)
+## The three moments — real captured output (2026-07-29, Haiku-era routing)
 
 The images below are the **actual console output** of these commands, run for this page
-(terminal-rendered text, not screenshots; every character is genuine).
+(terminal-rendered text, not screenshots; every character is genuine). The images are
+committed; the run directory they show (`runs/evidence-20260729`) is local and not committed.
 
 1. **Full pipeline completing** — 25.2 min wall-clock, $2.12, one disclosed synthesis
    re-roll (trap X1 slipped on the first roll; the playbook's re-roll recovered it — both

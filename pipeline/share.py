@@ -3,8 +3,10 @@
 START_HERE.html is the front door for someone who HAS the repo; its example cards link
 into `runs/tier3/`. SHARE_ME.html is for someone who has nothing but one email
 attachment: the pitch plus BOTH committed example pages embedded inside the file. The
-recipient double-clicks, reads the story, and opens the real brief review and pipeline
-walkthrough — offline, no repo, no server, no install.
+recipient double-clicks, reads the story, and opens the real brief review and the run view
+(how that brief was built) — offline, no repo, no server, no install. The stakeholder
+decision paper, WALKTHROUGH.html, stays in the repository; the pitch names it in plain text
+because this file carries exactly one link (the repository URL, see tests/test_share.py).
 
 How the embedding works: each example page is carried verbatim as a JSON-encoded string
 (`</` escaped so no closing tag can break the carrier script). A click builds a Blob,
@@ -84,7 +86,7 @@ _PITCH = """
   <p class="mast-sub">From a messy pile of client inputs to a client-ready brief — in two
   languages, with receipts. AI writes, code checks, humans decide.</p>
   <div class="chips">
-    <span class="chip ok">17/17 on a sealed answer key</span>
+    <span class="chip ok">17/17 on the graded synthetic project</span>
     <span class="chip">every claim carries a citation</span>
     <span class="chip">gaps become questions, never guesses</span>
     <span class="chip">Greek + English from one object</span>
@@ -106,20 +108,21 @@ _PITCH = """
       <span class="go">Open the signed-off example →</span>
     </button>
     <button type="button" class="card" data-doc="run">
-      <h3>The pipeline walkthrough</h3>
-      <p>How that brief was built: what each source contributed, what the fidelity gate
-      flagged, the cross-source conflict candidates, and the readiness verdict — the
-      system explaining its own work.</p>
-      <span class="go">Open the run walkthrough →</span>
+      <h3>How this brief was built (run view)</h3>
+      <p>What each source contributed, what the fidelity gate flagged, the cross-source
+      conflict candidates, and the readiness verdict — the system explaining its own work.</p>
+      <span class="go">Open the run view →</span>
     </button>
   </div>
 </section>
 
 <section>
   <h2>How it works</h2>
-  <p class="lede">Seven pipeline steps, one human gate. Deterministic checks verify every
-  model output — citations must resolve word-for-word, protected brand terms must
-  survive, no figure may appear that no source stated.</p>
+  <p class="lede">Ten steps, two of them people. Seven build the client brief; the account
+  lead signs it before any creative work starts; the creative draft follows; and a named
+  creative lead approves the exact files before any creative leaves as a package.
+  Deterministic checks verify every model output — citations must resolve word-for-word,
+  protected brand terms must survive, no figure may appear that no source stated.</p>
   <ol class="journey">
     <li class="jstep"><span class="jstep-no">1</span><span class="jstep-body">
       <span class="jstep-name">Readiness gate</span>
@@ -132,7 +135,7 @@ _PITCH = """
       <span class="jstep-status">garbled transcripts flagged, never fixed</span></span></li>
     <li class="jstep"><span class="jstep-no">4</span><span class="jstep-body">
       <span class="jstep-name">Extraction</span>
-      <span class="jstep-status">no verbatim quote → no claim</span></span></li>
+      <span class="jstep-status">no verbatim quote → no claim; a second reader checks it</span></span></li>
     <li class="jstep"><span class="jstep-no">5</span><span class="jstep-body">
       <span class="jstep-name">Conflict pass</span>
       <span class="jstep-status">disagreements surfaced, never resolved</span></span></li>
@@ -144,10 +147,13 @@ _PITCH = """
       <span class="jstep-status">generate once, render twice</span></span></li>
     <li class="jstep human"><span class="jstep-no">8</span><span class="jstep-body">
       <span class="jstep-name">Human sign-off</span>
-      <span class="jstep-status">nothing ships without people</span></span></li>
+      <span class="jstep-status">the account lead signs before any creative work</span></span></li>
     <li class="jstep"><span class="jstep-no">9</span><span class="jstep-body">
-      <span class="jstep-name">Creative (shadow)</span>
-      <span class="jstep-status">only after sign-off, never delivered</span></span></li>
+      <span class="jstep-name">Creative draft</span>
+      <span class="jstep-status">only after sign-off; a draft until approved</span></span></li>
+    <li class="jstep human"><span class="jstep-no">10</span><span class="jstep-body">
+      <span class="jstep-name">Creative approval</span>
+      <span class="jstep-status">named creative lead; then a local package, never sent automatically</span></span></li>
   </ol>
 </section>
 
@@ -162,13 +168,46 @@ _PITCH = """
       as written and flagged — the reader decides what it meant.</p></div>
     <div class="g-card"><h3>Invent figures</h3><p>"Around eighty" stays that way until
       the client says eighty <em>what</em>. No number appears that no source stated.</p></div>
+    <div class="g-card"><h3>Release creative on its own</h3><p>Creative starts as a draft,
+      on signed-off briefs only. It becomes a local delivery package only after a named
+      creative lead approves the exact files; nothing is sent, posted or approved on anyone's
+      behalf.</p></div>
   </div>
+</section>
+
+<section>
+  <h2>Since the graded run: the agency layer</h2>
+  <p class="lede">The example is from July 2026. In September (Tiers 5–7) the system gained
+  the operating layer an agency needs around it — local commands run by people, with no
+  model calls: evidence-coverage audits and question triage; resolution, bilingual
+  attestation and sign-off bound to the exact revision; creative registration, approval,
+  release, verification and withdrawal; clarification packs; effort and rework records.</p>
+  <div class="g-grid">
+    <div class="g-card"><h3>What that proves</h3><p>The software behaves as specified: at
+      Tier 7, 587 deterministic tests pass, the frozen evidence still grades 17/17 and a
+      synthetic fault-injection benchmark passes 12/12 — a software rehearsal.</p></div>
+    <div class="g-card"><h3>What it does not prove</h3><p>Generative quality under the
+      current model routing, Greek register, review time, adoption or any time saved.
+      Those need a re-measurement and the pilot.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The decision asked, and the risks</h2>
+  <p class="lede">The repository's decision paper, WALKTHROUGH.html, asks a sponsor to
+  approve a four-week pilot with live use in week 4 conditional on the retrospective
+  results, to re-measure usage under the current routing before week 1, and to confirm
+  costs, capacity, terms and a spending ceiling before week 1. Creative delivery is in the
+  pilot from week 1, under separation of duties. The risks it names: whole-brief usage under
+  the current routing is not yet measured; the harder second fixture scored 15/17, then
+  16/17, so exam-green is not lead-ready; some runs are refused rather than completed; and
+  commercial and data terms are unresolved. The pilot operating pack is in docs/pilot/.</p>
 </section>
 
 </main>
 <footer><p>Example content is a synthetic project — no real client data. Want the
 system itself? <a href="REPO_URL_HERE">REPO_URL_HERE</a> — clone it and double-click
-START_HERE.html.</p></footer>
+START_HERE.html; the decision paper is WALKTHROUGH.html in the same folder.</p></footer>
 """
 
 _JS = """
@@ -224,7 +263,7 @@ _ADAPTED_JS = """
 
 
 def adapt_run_page(page_html: str, brief_html: str, el_md: str, en_md: str) -> str:
-    """Prepare the walkthrough page for life inside SHARE_ME.
+    """Prepare the run view (run_review.html) for life inside SHARE_ME.
 
     Its bottom buttons link sibling files by relative href — meaningless from a blob
     page with no folder around it. So the siblings ride along: the brief page and both
