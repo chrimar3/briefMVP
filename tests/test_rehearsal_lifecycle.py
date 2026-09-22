@@ -38,10 +38,26 @@ def test_rehearsal_covers_the_whole_lifecycle(fresh):
     for needed in ("init", "resolve timeline conflict", "attest (bilingual reviewer)", "audit (clean)",
                    "approve brief (account lead)", "register creative (operator)", "approve creative (creative lead)",
                    "release package", "verify package against the run", "withdraw approval (account lead)",
-                   "verify package after withdrawal"):
+                   "verify package after withdrawal", "verify audit log"):
         assert needed in names
-    final = json.loads((fresh / "transcript.json").read_text(encoding="utf-8"))[-1]
-    assert final["exit_code"] == 2 and any("withdrawn: true" in h for h in final["highlights"])
+    steps = {s["step"]: s for s in json.loads((fresh / "transcript.json").read_text(encoding="utf-8"))}
+    after = steps["verify package after withdrawal"]
+    assert after["exit_code"] == 2 and any("withdrawn: true" in h for h in after["highlights"])
+    log = steps["verify audit log"]
+    assert names.index("verify audit log") > names.index("withdraw approval (account lead)")
+    preview = steps["retention purge (dry run)"]
+    assert preview["exit_code"] == 0 and "dry_run: true" in preview["highlights"]
+    assert any("verified_intact true" in h for h in preview["highlights"])
+    assert log["exit_code"] == 0 and "valid: true" in log["highlights"]
+
+
+def test_rehearsal_keeps_every_open_question(fresh):
+    """T-01 fixed: no question is moved out because the render citation check cannot verify it."""
+    preparation = json.loads((fresh / "PREPARATION.json").read_text(encoding="utf-8"))
+    assert "questions_moved_out" not in preparation
+    brief = json.loads((fresh / "records" / "brief.json").read_text(encoding="utf-8"))
+    assert preparation["questions_kept"] == len(brief["open_questions"]) == 10
+    assert preparation["questions_with_timestamp_evidence"] == 6
 
 
 def test_rehearsal_uses_distinct_fictional_actors(fresh):

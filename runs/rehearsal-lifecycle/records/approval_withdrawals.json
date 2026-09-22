@@ -2,16 +2,17 @@
   {
     "actor": "Synthetic Account Lead A",
     "reason": "Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.",
-    "at": "2026-09-22T21:30:23.056270+00:00",
+    "at": "2026-09-22T21:56:32.662946+00:00",
     "approval_hashes": {
-      "approval.json": "f1f0edbdef0b6fee64f580083adfbaa83f0b60a278ca9feb5ea69c6f2015248b",
-      "creative_approval.json": "85810195fac8a0b423b12ae1221659d66edb8894f2f1cc0e0a2d87a60f098a79"
+      "approval.json": "701d5b136e40e040c4a46c4437c2a776c14c922a6dcfbd3e15c5b09a6317caca",
+      "creative_approval.json": "d5a3e77c1d11ee191a26ee7a38350760fafdbeb291e77a9c93486f4aaa7ad128"
     },
     "affected_releases": [
       {
         "path": "$PACKAGE",
-        "manifest_sha256": "a6723e5606c3dbe828f69e5ab94989d426d1bde5335be832fa9c318bafee00f5",
-        "at": "2026-09-22T21:30:22.990204+00:00"
+        "manifest_sha256": "59fb13a0408bdee2e240f47249c34e8ee60e147f7e77dc279bbd1a4debded807",
+        "at": "2026-09-22T21:56:32.604860+00:00",
+        "released_by": "Synthetic Operator O"
       }
     ]
   }

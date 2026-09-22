@@ -28,6 +28,6 @@
 - Strategy is TikTok-first: the entire creative approach must be designed primarily for TikTok. 
 - The brand guidelines in the attached document govern the creative work. 
 
-## Questions for the creative team
+## Strategic tensions (questions for the creative team)
 
 - The resolved audience differs from the RFP's original audience; which executions change? 

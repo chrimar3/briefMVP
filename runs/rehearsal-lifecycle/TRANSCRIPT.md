@@ -11,10 +11,10 @@ What this proves: the deterministic governance path runs end to end as a champio
 - **pseudonymised**: the developer's name (signer and resolver of record) → Synthetic Account Lead A
 - **signoff_reset**: signed_off → draft (sign-off is what this rehearsal exercises)
 - **conflict_reset**: {"field": "timeline", "index": 2, "resolution_text_reused": "Launch 15 September — the board's decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP's first week of October."}
-- **questions_kept**: 4
-- **questions_moved_out**: [{"index": 1, "field": "audiences", "linked_sources": ["rfp_meltemi", "transcript_kickoff"], "locations": ["## 3. Κοινό-στόχος", "[00:03:41]"]}, {"index": 2, "field": "budget", "linked_sources": ["rfp_meltemi", "transcript_kickoff"], "locations": ["## 6. Προϋπολογισμός", "[00:14:32]"]}, {"index": 3, "field": "objectives", "linked_sources": ["emails_thread", "rfp_meltemi", "transcript_kickoff"], "locations": ["**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22", "## 2. Στόχος", "[00:02:05]"]}, {"index": 4, "field": "key_messages", "linked_sources": ["background_brand_guidelines", "transcript_kickoff"], "locations": ["## Tone (guidance)", "[00:06:02]"]}, {"index": 5, "field": "deliverables", "linked_sources": ["rfp_meltemi", "transcript_kickoff"], "locations": ["## 4. Απαιτήσεις καμπάνιας", "[00:10:22]"]}, {"index": 8, "field": "timeline", "linked_sources": ["emails_thread", "rfp_meltemi", "transcript_kickoff"], "locations": ["## 5. Χρονοδιάγραμμα", "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22", "[00:17:03]"]}]
-- **why_moved**: pipeline/quality.py render_coverage requires each question's evidence location inside one bracketed tag matched by [^]]+; a location that itself contains ']' (every bracketed transcript timestamp such as [00:03:41]) can never satisfy it. Asked of the gate itself per question; if the gate changes, the kept set changes with it.
-- **render_patch**: stored tier3 renders: sign-off banner line removed, question blocks renumbered and given exact [source_id location] tags for the kept questions
+- **questions_kept**: 10
+- **questions_with_timestamp_evidence**: 6
+- **questions_note**: every open question stays in the brief. Before go-live precondition T-01 was fixed (pipeline/quality.py tag_location), render_coverage could not verify a question whose evidence is a bracketed transcript timestamp such as [00:03:41], and earlier versions of this rehearsal moved those questions out. The script now refuses any question the check cannot verify instead of working around it.
+- **render_patch**: stored tier3 renders: sign-off banner line removed, and each question block given its exact [source_id location] tags (a transcript timestamp written without its own brackets)
 
 ## Steps
 
@@ -26,34 +26,43 @@ What this proves: the deterministic governance path runs end to end as a champio
 | 4 | render replay | 0 | `(copy the prepared renders into $RUN; live runs use `python3 pipeline/runner.py ... --stage render`, a model call)` |
 | 5 | question queue | 0 | `python3 -m pipeline.agency queue $RUN` |
 | 6 | triage 93530066d10af8b06ea9 | 0 | `python3 -m pipeline.agency answer $RUN --id 93530066d10af8b06ea9 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
-| 7 | triage cc6218600702b2d844ba | 0 | `python3 -m pipeline.agency answer $RUN --id cc6218600702b2d844ba --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
-| 8 | triage a0010af1cf0982b06093 | 0 | `python3 -m pipeline.agency answer $RUN --id a0010af1cf0982b06093 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
-| 9 | triage d725026bab3d2b45218c | 0 | `python3 -m pipeline.agency answer $RUN --id d725026bab3d2b45218c --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
-| 10 | checklist objective_and_audience | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key objective_and_audience --value 'Launch objectives as signed off; audience per the resolved conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref o…` |
-| 11 | checklist deliverables_and_variants | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key deliverables_and_variants --value 'Deliverables as listed in the signed brief.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref deliverables:0 --ref de…` |
-| 12 | checklist mandatories_and_rights | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key mandatories_and_rights --value 'Brand mandatories apply verbatim.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:0 --ref mandatories:4` |
-| 13 | checklist dependencies | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key dependencies --value 'Brand guidelines version stated in the brief govern the work.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:7` |
-| 14 | checklist approvals_and_dates | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key approvals_and_dates --value 'Launch date per the resolved timeline conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref timeline:0` |
-| 15 | bind traffic catalog | 0 | `python3 -m pipeline.spec_catalog $RUN $WORK/synthetic-traffic-catalog-v1.json --actor 'Synthetic Traffic Reviewer T'` |
-| 16 | deliverable key-visual | 0 | `python3 -m pipeline.agency_edit deliverable $RUN --id key-visual --spec-id key_visual_digital_master --quantity 1 --language el --language en --deadline 2026-09-08 --owner 'Production lead' --approval-owner 'Account lead…` |
-| 17 | deliverable tiktok-cut (depends on key-visual) | 0 | `python3 -m pipeline.agency_edit deliverable $RUN --id tiktok-cut --spec-id tiktok_infeed_video --quantity 2 --language el --deadline 2026-09-12 --owner 'Production lead' --approval-owner 'Account lead' --actor 'Synthetic…` |
-| 18 | audit (before language review) | 2 | `python3 -m pipeline.agency audit $RUN` |
-| 19 | attest (bilingual reviewer) | 0 | `python3 -m pipeline.agency attest $RUN --actor 'Synthetic Bilingual Reviewer B' --greek-register 4 --notes 'Rehearsal attestation on synthetic renders; Greek checked against the sources.' --checks source_completeness el_…` |
-| 20 | audit (clean) | 0 | `python3 -m pipeline.agency audit $RUN` |
-| 21 | approve brief (account lead) | 0 | `python3 -m pipeline.agency approve $RUN --actor 'Synthetic Account Lead A' --summary 'Rehearsal: timeline conflict resolved; questions triaged non-blocking; checklist and matrix reviewed.'` |
-| 22 | handover | 0 | `python3 -m pipeline.agency handover $RUN` |
-| 23 | register creative (operator) | 0 | `python3 -m pipeline.delivery register $RUN --draft $WORK/creative-draft-rehearsal.md --actor 'Synthetic Operator O'` |
-| 24 | approve creative (creative lead) | 0 | `python3 -m pipeline.delivery approve $RUN --actor 'Synthetic Creative Lead C' --notes 'Rehearsal review: references, mandatories and deliverables checked on synthetic material.' --checks all_facts_cited qualifiers mandat…` |
-| 25 | release package | 0 | `python3 -m pipeline.delivery release $RUN --output $PACKAGE` |
-| 26 | verify package against the run | 0 | `python3 -m pipeline.release_control verify $PACKAGE --run $RUN` |
-| 27 | withdraw approval (account lead) | 0 | `python3 -m pipeline.release_control withdraw $RUN --actor 'Synthetic Account Lead A' --reason 'Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.'` |
-| 28 | verify package after withdrawal | 2 | `python3 -m pipeline.release_control verify $PACKAGE --run $RUN` |
+| 7 | triage 2862e1ceed80bea16d6f | 0 | `python3 -m pipeline.agency answer $RUN --id 2862e1ceed80bea16d6f --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 8 | triage 9866a11081952c55e20f | 0 | `python3 -m pipeline.agency answer $RUN --id 9866a11081952c55e20f --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 9 | triage 43f16a7dad9abe9e384b | 0 | `python3 -m pipeline.agency answer $RUN --id 43f16a7dad9abe9e384b --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 10 | triage 066cbba76ae71d99f227 | 0 | `python3 -m pipeline.agency answer $RUN --id 066cbba76ae71d99f227 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 11 | triage 37d1003beb4869172bf8 | 0 | `python3 -m pipeline.agency answer $RUN --id 37d1003beb4869172bf8 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 12 | triage cc6218600702b2d844ba | 0 | `python3 -m pipeline.agency answer $RUN --id cc6218600702b2d844ba --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 13 | triage a0010af1cf0982b06093 | 0 | `python3 -m pipeline.agency answer $RUN --id a0010af1cf0982b06093 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 14 | triage 9bb7ea4af126a45bd816 | 0 | `python3 -m pipeline.agency answer $RUN --id 9bb7ea4af126a45bd816 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 15 | triage d725026bab3d2b45218c | 0 | `python3 -m pipeline.agency answer $RUN --id d725026bab3d2b45218c --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --act…` |
+| 16 | checklist objective_and_audience | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key objective_and_audience --value 'Launch objectives as signed off; audience per the resolved conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref o…` |
+| 17 | checklist deliverables_and_variants | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key deliverables_and_variants --value 'Deliverables as listed in the signed brief.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref deliverables:0 --ref de…` |
+| 18 | checklist mandatories_and_rights | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key mandatories_and_rights --value 'Brand mandatories apply verbatim.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:0 --ref mandatories:4` |
+| 19 | checklist dependencies | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key dependencies --value 'Brand guidelines version stated in the brief govern the work.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:7` |
+| 20 | checklist approvals_and_dates | 0 | `python3 -m pipeline.agency_edit checklist $RUN --key approvals_and_dates --value 'Launch date per the resolved timeline conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref timeline:0` |
+| 21 | bind traffic catalog | 0 | `python3 -m pipeline.spec_catalog $RUN $WORK/synthetic-traffic-catalog-v1.json --actor 'Synthetic Traffic Reviewer T'` |
+| 22 | deliverable key-visual | 0 | `python3 -m pipeline.agency_edit deliverable $RUN --id key-visual --spec-id key_visual_digital_master --quantity 1 --language el --language en --deadline 2026-09-08 --owner 'Production lead' --approval-owner 'Account lead…` |
+| 23 | deliverable tiktok-cut (depends on key-visual) | 0 | `python3 -m pipeline.agency_edit deliverable $RUN --id tiktok-cut --spec-id tiktok_infeed_video --quantity 2 --language el --deadline 2026-09-12 --owner 'Production lead' --approval-owner 'Account lead' --actor 'Synthetic…` |
+| 24 | audit (before language review) | 2 | `python3 -m pipeline.agency audit $RUN` |
+| 25 | attest (bilingual reviewer) | 0 | `python3 -m pipeline.agency attest $RUN --actor 'Synthetic Bilingual Reviewer B' --greek-register 4 --notes 'Rehearsal attestation on synthetic renders; Greek checked against the sources.' --checks source_completeness el_…` |
+| 26 | audit (clean) | 0 | `python3 -m pipeline.agency audit $RUN` |
+| 27 | approve brief (account lead) | 0 | `python3 -m pipeline.agency approve $RUN --actor 'Synthetic Account Lead A' --summary 'Rehearsal: timeline conflict resolved; questions triaged non-blocking; checklist and matrix reviewed.'` |
+| 28 | handover | 0 | `python3 -m pipeline.agency handover $RUN` |
+| 29 | register creative (operator) | 0 | `python3 -m pipeline.delivery register $RUN --draft $WORK/creative-draft-rehearsal.md --actor 'Synthetic Operator O'` |
+| 30 | approve creative (creative lead) | 0 | `python3 -m pipeline.delivery approve $RUN --actor 'Synthetic Creative Lead C' --notes 'Rehearsal review: references, mandatories and deliverables checked on synthetic material.' --checks all_facts_cited qualifiers mandat…` |
+| 31 | release package | 0 | `python3 -m pipeline.delivery release $RUN --output $PACKAGE --actor 'Synthetic Operator O'` |
+| 32 | verify package against the run | 0 | `python3 -m pipeline.release_control verify $PACKAGE --run $RUN` |
+| 33 | withdraw approval (account lead) | 0 | `python3 -m pipeline.release_control withdraw $RUN --actor 'Synthetic Account Lead A' --reason 'Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.'` |
+| 34 | verify package after withdrawal | 2 | `python3 -m pipeline.release_control verify $PACKAGE --run $RUN` |
+| 35 | verify audit log | 0 | `python3 -m pipeline.release_control verify-log $RUN` |
+| 36 | retention inventory | 0 | `python3 -m pipeline.retention inventory --runs $RUN` |
+| 37 | retention purge (dry run) | 0 | `python3 -m pipeline.retention purge --run $RUN --dry-run --actor 'Synthetic Operator O' --reason 'Rehearsal: pilot-end deletion previewed, nothing deleted.'` |
 
 ## Output that matters
 
 **2. audit (before review)**
     status: blocked
-    blockers: 19 {"missing render": 2, "question": 4, "conflict": 1, "campaign": 10, "A sourced deliverables matrix is required": 1, "Current source-completeness, bilingual meaning, qualifiers a": 1}
+    blockers: 25 {"missing render": 2, "question": 10, "conflict": 1, "campaign": 10, "A sourced deliverables matrix is required": 1, "Current source-completeness, bilingual meaning, qualifiers a": 1}
     notice: Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim.
 
 **4. render replay**
@@ -61,41 +70,58 @@ What this proves: the deterministic governance path runs end to end as a champio
     brief_en.md
 
 **5. question queue**
-    4 question group(s)
+    10 question group(s)
 
-**18. audit (before language review)**
+**24. audit (before language review)**
     status: blocked
     blockers: 1 {"Current source-completeness, bilingual meaning, qualifiers a": 1}
 
-**20. audit (clean)**
+**26. audit (clean)**
     status: reviewed
     blockers: 0 {}
 
-**23. register creative (operator)**
+**29. register creative (operator)**
     registered_by: "Synthetic Operator O"
-    revision: "d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba"
+    revision: "83a721649465bb9c8b3f7a541f4b987a25ca4259637650100bb123cd28aa5ebd"
 
-**24. approve creative (creative lead)**
+**30. approve creative (creative lead)**
     actor: "Synthetic Creative Lead C"
-    approved_at: "2026-09-22T21:30:22.839293+00:00"
+    approved_at: "2026-09-22T21:56:32.502888+00:00"
 
-**25. release package**
+**31. release package**
     "$PACKAGE"
 
-**26. verify package against the run**
+**32. verify package against the run**
     valid: true
     receipt_matched: true
     withdrawn: false
     errors: []
 
-**27. withdraw approval (account lead)**
+**33. withdraw approval (account lead)**
     actor: "Synthetic Account Lead A"
     reason: "Rehearsal: client asked to pause the campaign; withdrawal exercised end to end."
 
-**28. verify package after withdrawal**
+**34. verify package after withdrawal**
     valid: false
     receipt_matched: true
     withdrawn: true
     errors: ["Approval was withdrawn for this release; do not use"]
+
+**35. verify audit log**
+    valid: true
+    entries: 17
+    errors: []
+
+**36. retention inventory**
+    runs: 1
+    sources: 4
+    byte copies by area: {"evidence": 4}
+    personal records: 7
+    release packages: 1
+
+**37. retention purge (dry run)**
+    dry_run: true
+    audit_log_deleted: entries 17, verified_intact true
+    release_packages_not_deleted: 1
 
 Records: `records/` (final run records and the delivered package, paths normalised to $RUN / $PACKAGE / $WORK).

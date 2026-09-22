@@ -62,7 +62,13 @@ def test_decision_carry_forward_requires_same_identity_and_same_evidence(tmp_pat
         revisions.carry_decisions(old,new,'Operator')
 
 
-def prepare_release(tmp_path):
+#: A draft that passes every approval-time check, including W4's fact checks on the signed brief
+#: (a draft must carry a strategic-tensions section, even when it lists none).
+SYNTHETIC_DRAFT = ('> CREATIVE DRAFT\nSynthetic campaign [brief:objectives:0]\nSynthetic campaign [brief:mandatories:0]\n'
+                   '\n## Strategic tensions\nNone identified.\n')
+
+
+def prepare_release(tmp_path, draft_text=None):
     from test_agency_operations import make_review_run, approve_synthetic
     from pipeline import spec_catalog
     run=make_review_run(tmp_path)
@@ -76,7 +82,7 @@ def prepare_release(tmp_path):
     spec_catalog.bind(run,path,actor='Synthetic traffic')
     approve_synthetic(run)
     draft=tmp_path/'draft.txt'
-    draft.write_text('> CREATIVE DRAFT\nSynthetic campaign [brief:objectives:0]\nSynthetic campaign [brief:mandatories:0]\n')
+    draft.write_text(draft_text or SYNTHETIC_DRAFT)
     delivery.register(run,draft,'Synthetic operator')
     return run
 
@@ -102,12 +108,32 @@ def test_full_release_is_curated_and_approval_bound(tmp_path):
         delivery.release(run,tmp_path/'bad', 'Synthetic releaser')
 
 
+@pytest.mark.parametrize('extra, reason', [
+    ('A Greek-made drink, new to the market [brief:objectives:0]\n', 'origin/market claim'),
+    ('Reviewed by a creative lead before sending.\n', 'human review'),
+])
+def test_approval_runs_the_fact_checks_against_the_signed_brief(tmp_path, extra, reason):
+    """Approval re-checks the exact registered draft against the signed brief (W4 fact checks), so
+    an invented figure or a self-claimed review cannot be approved even if it slipped past the
+    generating stage (for example a draft registered by hand)."""
+    run=prepare_release(tmp_path, draft_text=SYNTHETIC_DRAFT + extra)
+    with pytest.raises(ValueError, match=reason):
+        delivery.approve(run,'Synthetic creative lead','Reviewed fixture only',delivery.CHECKS)
+    assert not (run/'creative_approval.json').exists()
+
+
+def test_approval_requires_the_strategic_tensions_section(tmp_path):
+    run=prepare_release(tmp_path, draft_text=SYNTHETIC_DRAFT.split('\n## Strategic')[0] + '\n')
+    with pytest.raises(ValueError, match='Strategic tensions'):
+        delivery.approve(run,'Synthetic creative lead','Reviewed fixture only',delivery.CHECKS)
+
+
 def test_stub_catalog_blocks_creative_approval(tmp_path):
     from test_agency_operations import make_review_run, approve_synthetic
     run=make_review_run(tmp_path)
     approve_synthetic(run)
     draft=tmp_path/'draft.txt'
-    draft.write_text('> CREATIVE DRAFT\nSynthetic campaign [brief:objectives:0]\nSynthetic campaign [brief:mandatories:0]\n')
+    draft.write_text(SYNTHETIC_DRAFT)
     delivery.register(run,draft,'Synthetic operator')
     with pytest.raises(ValueError,match='stub'):
         delivery.approve(run,'Synthetic lead','Review',delivery.CHECKS)

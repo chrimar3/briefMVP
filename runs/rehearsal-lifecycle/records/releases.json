@@ -1,7 +1,8 @@
 [
   {
     "path": "$PACKAGE",
-    "manifest_sha256": "a6723e5606c3dbe828f69e5ab94989d426d1bde5335be832fa9c318bafee00f5",
-    "at": "2026-09-22T21:30:22.990204+00:00"
+    "manifest_sha256": "59fb13a0408bdee2e240f47249c34e8ee60e147f7e77dc279bbd1a4debded807",
+    "at": "2026-09-22T21:56:32.604860+00:00",
+    "released_by": "Synthetic Operator O"
   }
 ]

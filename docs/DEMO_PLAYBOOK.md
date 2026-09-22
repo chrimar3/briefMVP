@@ -25,9 +25,13 @@ below is exercised in advance; nothing here requires touching frozen files.
 Drop whatever they give you into a folder (`.md`/`.txt`), then:
 
 ```bash
-python3 pipeline/intake.py raw_docs/ --out fixtures/exam_01 --client examclient --tier S1
+python3 pipeline/intake.py raw_docs/ --out fixtures/exam_01 --client examclient --tier S1 --data-class synthetic
 ```
 
+- `--data-class` is **required and never inferred** (owner decision 2026-09-22): intake writes
+  the project's `data_declaration.json`, and the runner refuses a folder without one (exit 6).
+  Exam material is synthetic; `approved` also needs `--approval-ref`, `--approved-by` and
+  `--approved-on`.
 - `--tier` is **required and never inferred** (PRD DR-11). Ask the evaluators what the
   client's onboarding tier is; if they shrug, say "then onboarding sets it — I'll take S1"
   and move on. S2/S3 is refused by design — that refusal is itself worth demonstrating.

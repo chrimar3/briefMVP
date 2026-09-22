@@ -84,7 +84,9 @@ brief is due before the cause can be fixed.
 ## 5. Wrong package shared, or a package changed after release
 
 1. Operator or traffic: `python3 -m pipeline.release_control verify PKG --run RUN`. Changed or
-   extra files fail verification; an unknown package has no matching receipt.
+   extra files fail verification; an unknown package has no matching receipt. Then
+   `python3 -m pipeline.release_control verify-log RUN`: the run's hash-chained decision log must
+   still be intact and must vouch for every approval, withdrawal and release record.
 2. If a wrong or changed package reached the client: section 1.
 
 ## 6. Operator unavailable
@@ -92,9 +94,12 @@ brief is due before the cause can be fixed.
 Champions run steps 1–5 of `PILOT_RUNBOOK.md`; nobody takes over another person's approval
 role. Runs lock per directory (`.run.lock`); never delete a lock while a process may hold it.
 
-## 7. Known blocker found by the lifecycle rehearsal
+## 7. Blocker found by the lifecycle rehearsal (fixed)
 
-`pipeline/quality.py` `render_coverage` cannot verify an open question linked to a bracketed
-transcript timestamp such as `[00:03:41]`, so `agency approve` is unreachable for such briefs
-until the check is corrected (`runs/rehearsal-lifecycle/PREPARATION.json`, `why_moved`).
-Tracked as go-live precondition T-01 in `GO_LIVE_DECISIONS.md`.
+`pipeline/quality.py` `render_coverage` could not verify an open question linked to a bracketed
+transcript timestamp such as `[00:03:41]`, so `agency approve` was unreachable for such briefs.
+Fixed at the round-1 integration (go-live precondition T-01, `GO_LIVE_DECISIONS.md`): the check
+reads a bracketed location without its own brackets inside the `[source_id location]` tag
+(`quality.tag_location`), and still fails a question whose block does not cite that exact
+moment (`tests/test_quality.py`). The rehearsal now keeps all ten questions
+(`runs/rehearsal-lifecycle/PREPARATION.json`).

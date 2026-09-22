@@ -113,3 +113,31 @@ Authorized after publication of Tiers 5 and 6. See `runs/tier_7_report.md` and
 
 Stop at this tier for review. Real-data permission, authenticated staff roles, capacity planning,
 semantic quality evaluation and actual agency pilot results are not implied by these checks.
+
+## Tier 8 — Round 1 of the whole-project review: ten moves (2026-09-22/23)
+
+Authorized by the owner's review-loop instruction and the four decisions of 2026-09-22
+(`docs/OPERATING_DECISIONS.md`). Baseline and moves: `tools/project_review/rounds/r0/scores.md`;
+plan: `tools/project_review/rounds/r1/PLAN.md`; record: `runs/tier_8_report.md`. Six
+workstreams in isolated worktrees, then one integration pass. No runtime model calls.
+
+- [x] Move 1 — truth pass on the front doors, the docs index and the canonical `WALKTHROUGH.html`.
+- [x] Moves 2–3 — least-privilege runtime agents (staged `inputs/`, deny rules incl. any
+  `answer_key.json`, integrity check), untrusted-content rule U in every runtime prompt,
+  graded-fixture text removed from them; separation of duties, attributed release and a
+  hash-chained audit log with `release_control verify-log` (`docs/SECURITY.md`).
+- [x] Moves 4 and 10 — data declaration gate (runner exit 6, intake `--data-class`), retention
+  inventory and purge (staged inputs included; audit logs tombstoned, never silently deleted),
+  pilot operating pack and a deterministic lifecycle rehearsal (`runs/rehearsal-lifecycle/`).
+- [x] Moves 5–6 — tokens-by-model usage ruler with the verifier counted (`--usd` for dollars),
+  pass rates, supplementary scorer, known-defect records with strict-xfail regressions
+  (`docs/EVAL_RECORD.md`); `runs/routing-validate-01` committed.
+- [x] Move 7 — fixed bilingual templates enforced on new renders, Greek lint (warnings),
+  creative fact checks, byte-exact fidelity gate; approval re-runs the fact checks.
+- [x] Moves 8–9 — pyproject, lock file, CI matrix and `scripts/check.sh`; runner error
+  reporting; offline replay (`tools/replay`) with an end-to-end test.
+- [x] Integration: go-live precondition T-01 fixed (`quality.tag_location`); the rehearsal
+  keeps all ten questions. 948 passed, 7 skipped, 48 xfailed; frozen evidence 17/17; agency benchmark 12/12.
+
+Stop at this tier for review. The current-routing live re-baseline (owner decision 1) is the
+next round; it is not implied by these checks, nor are Greek quality, review time or adoption.

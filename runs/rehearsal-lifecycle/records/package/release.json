@@ -1,11 +1,12 @@
 {
   "status": "APPROVED FOR DELIVERY",
   "project_id": "northlight_01",
-  "creative_revision": "d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba",
+  "creative_revision": "83a721649465bb9c8b3f7a541f4b987a25ca4259637650100bb123cd28aa5ebd",
   "approved_by": "Synthetic Creative Lead C",
-  "approved_at": "2026-09-22T21:30:22.839293+00:00",
+  "approved_at": "2026-09-22T21:56:32.502888+00:00",
+  "released_by": "Synthetic Operator O",
   "files": {
-    "creative.md": "15aa85c9374c29043675d8138c44a5210973856732c59e5227ed82eff430e20d",
+    "creative.md": "a0202b5329d94a57dd89b997e562dd2b29e310f2a68b342b59168afa3a4ebe04",
     "deliverables.json": "dd84e62b9db9bde86f557b8671b8435c61579c53a40d358697b97543bac7b1f4"
   }
 }

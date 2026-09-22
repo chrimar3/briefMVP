@@ -13,7 +13,7 @@
     "expected_exit_code": 2,
     "highlights": [
       "status: blocked",
-      "blockers: 19 {\"missing render\": 2, \"question\": 4, \"conflict\": 1, \"campaign\": 10, \"A sourced deliverables matrix is required\": 1, \"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
+      "blockers: 25 {\"missing render\": 2, \"question\": 10, \"conflict\": 1, \"campaign\": 10, \"A sourced deliverables matrix is required\": 1, \"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
       "notice: Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim."
     ]
   },
@@ -40,12 +40,47 @@
     "exit_code": 0,
     "expected_exit_code": 0,
     "highlights": [
-      "4 question group(s)"
+      "10 question group(s)"
     ]
   },
   {
     "step": "triage 93530066d10af8b06ea9",
     "command": "python3 -m pipeline.agency answer $RUN --id 93530066d10af8b06ea9 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 2862e1ceed80bea16d6f",
+    "command": "python3 -m pipeline.agency answer $RUN --id 2862e1ceed80bea16d6f --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 9866a11081952c55e20f",
+    "command": "python3 -m pipeline.agency answer $RUN --id 9866a11081952c55e20f --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 43f16a7dad9abe9e384b",
+    "command": "python3 -m pipeline.agency answer $RUN --id 43f16a7dad9abe9e384b --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 066cbba76ae71d99f227",
+    "command": "python3 -m pipeline.agency answer $RUN --id 066cbba76ae71d99f227 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 37d1003beb4869172bf8",
+    "command": "python3 -m pipeline.agency answer $RUN --id 37d1003beb4869172bf8 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
     "exit_code": 0,
     "expected_exit_code": 0,
     "highlights": []
@@ -60,6 +95,13 @@
   {
     "step": "triage a0010af1cf0982b06093",
     "command": "python3 -m pipeline.agency answer $RUN --id a0010af1cf0982b06093 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage 9bb7ea4af126a45bd816",
+    "command": "python3 -m pipeline.agency answer $RUN --id 9bb7ea4af126a45bd816 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
     "exit_code": 0,
     "expected_exit_code": 0,
     "highlights": []
@@ -175,7 +217,7 @@
     "expected_exit_code": 0,
     "highlights": [
       "registered_by: \"Synthetic Operator O\"",
-      "revision: \"d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba\""
+      "revision: \"83a721649465bb9c8b3f7a541f4b987a25ca4259637650100bb123cd28aa5ebd\""
     ]
   },
   {
@@ -185,12 +227,12 @@
     "expected_exit_code": 0,
     "highlights": [
       "actor: \"Synthetic Creative Lead C\"",
-      "approved_at: \"2026-09-22T21:30:22.839293+00:00\""
+      "approved_at: \"2026-09-22T21:56:32.502888+00:00\""
     ]
   },
   {
     "step": "release package",
-    "command": "python3 -m pipeline.delivery release $RUN --output $PACKAGE",
+    "command": "python3 -m pipeline.delivery release $RUN --output $PACKAGE --actor 'Synthetic Operator O'",
     "exit_code": 0,
     "expected_exit_code": 0,
     "highlights": [
@@ -229,6 +271,41 @@
       "receipt_matched: true",
       "withdrawn: true",
       "errors: [\"Approval was withdrawn for this release; do not use\"]"
+    ]
+  },
+  {
+    "step": "verify audit log",
+    "command": "python3 -m pipeline.release_control verify-log $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "valid: true",
+      "entries: 17",
+      "errors: []"
+    ]
+  },
+  {
+    "step": "retention inventory",
+    "command": "python3 -m pipeline.retention inventory --runs $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "runs: 1",
+      "sources: 4",
+      "byte copies by area: {\"evidence\": 4}",
+      "personal records: 7",
+      "release packages: 1"
+    ]
+  },
+  {
+    "step": "retention purge (dry run)",
+    "command": "python3 -m pipeline.retention purge --run $RUN --dry-run --actor 'Synthetic Operator O' --reason 'Rehearsal: pilot-end deletion previewed, nothing deleted.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "dry_run: true",
+      "audit_log_deleted: entries 17, verified_intact true",
+      "release_packages_not_deleted: 1"
     ]
   }
 ]

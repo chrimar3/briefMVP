@@ -6,8 +6,8 @@ run partly measures recall of a worked example, not the rule it was meant to tea
 (tools/project_review/rounds/r0: a2_prompt_engineer, a3_llmops_engineer). The fixture sources are
 read here as plain text; the answer keys are never opened (only eval/harness.py reads those).
 
-Scope: the files W2 owns this round. TRANSLATION.md, render.md and creative-shadow.md are covered
-by the same check once their owner removes the remaining examples (see RUNTIME_PROMPTS_PENDING).
+Scope: every runtime instruction file — the four skills, and the agent bodies of all seven
+runtime subagents (render and creative-shadow joined at the round-1 integration).
 """
 
 import re
@@ -23,10 +23,6 @@ RUNTIME_PROMPTS = (
     ".claude/agents/classify.md",
     ".claude/agents/fidelity-check.md",
     ".claude/agents/synthesize.md",
-)
-
-#: Owned by another workstream this round; add them to RUNTIME_PROMPTS when decontaminated.
-RUNTIME_PROMPTS_PENDING = (
     "skills/TRANSLATION.md",
     ".claude/agents/render.md",
     ".claude/agents/creative-shadow.md",
@@ -92,7 +88,8 @@ def test_runtime_prompt_has_an_untrusted_content_rule(relpath, repo_root):
 
 def test_skills_share_one_rule_label(repo_root):
     """Rule U is one rule with one name across the skills, so reviewers can grep for it."""
-    for skill in ("skills/SOURCES.md", "skills/TRANSCRIPTS.md", "skills/SYNTHESIS.md"):
+    for skill in ("skills/SOURCES.md", "skills/TRANSCRIPTS.md", "skills/SYNTHESIS.md", "skills/TRANSLATION.md",
+                  ".claude/agents/render.md", ".claude/agents/creative-shadow.md"):
         assert "U — untrusted content" in (repo_root / skill).read_text(encoding="utf-8"), skill
 
 

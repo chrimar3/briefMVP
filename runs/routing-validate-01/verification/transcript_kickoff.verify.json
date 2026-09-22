@@ -1,0 +1,11 @@
+{
+  "source_id": "transcript_kickoff",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "missing:internal_conflicts",
+      "problem": "The extract omits the conflict between the RFP's stated audience (Gen Z) and Dimitris's correction (25-40 urban professionals), which Eleni explicitly flagged as important to retain — this should be captured as an internal_conflicts entry (or equivalent claim) the same way the OOH propose/retract was, since it is a substantive correction to the brief's target audience.",
+      "evidence": "το RFP που σας στείλαμε λέει Gen Z, αλλά honestly, our buyer is 25 to 40, urban professionals. ... Το Gen Z το έγραψε το προηγούμενο agency στο positioning και έμεινε. [00:05:20] ELENI: Κρατάω τη διόρθωση — σημαντικό."
+    }
+  ]
+}

@@ -13,6 +13,10 @@
 > - The "operate only with Codex" rule (§0) was the owner's instruction for September 18; the
 >   2026-09-22 review loop runs its judges and editors on Claude.
 > - Paths in §1–2 are relative to the repository root, not to this folder.
+> - The one-off scripts named in §2 — `codex_redesign.py`, `swap_kv.py`, `compare_cans.py`,
+>   `compare_logos.py`, `edit_r7.py`, `edit_r8.py` — and the `score-round-*.js` scorers were
+>   moved to `tools/walkthrough/archive/` in round 1 (see its `README.md`); `checks.py`,
+>   `build.py`, `codex_round.py` and `embed_packaging.py` stay in `tools/walkthrough/`.
 >
 > The number sources in §5 remain valid as a record of where each figure came from. For the
 > current state read [`README.md`](../../README.md) and [`docs/README.md`](../README.md).

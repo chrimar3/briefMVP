@@ -74,9 +74,23 @@ def render_coverage(brief, text, lang):
         block = blocks[i] if i < len(blocks) else ""
         for ref in question.get("linked_evidence") or []:
             tags = re.findall(r"\[([^]]+)\]", block)
-            if not any(ref.get("source_id", "") in tag and ref.get("location", "") in tag for tag in tags):
+            location = tag_location(ref.get("location", ""))
+            if not any(ref.get("source_id", "") in tag and location in tag for tag in tags):
                 problems.append(f"{lang}: question {i} lacks its linked evidence citation")
     return problems
+
+
+def tag_location(location):
+    """The location as it sits inside a `[source_id location]` citation tag.
+
+    A transcript location is itself bracketed (`[00:03:41]`); a tag cannot contain `]`, so the
+    render writes it without its own brackets (`[kickoff 00:03:41]`, the render order's form).
+    One enclosing pair is dropped; every other location is matched exactly as stored.
+    """
+    location = str(location or "").strip()
+    if len(location) > 2 and location.startswith("[") and location.endswith("]"):
+        return location[1:-1].strip()
+    return location
 
 
 def field_review_checklist():

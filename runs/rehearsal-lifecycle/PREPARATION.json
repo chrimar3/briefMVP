@@ -7,85 +7,8 @@
     "index": 2,
     "resolution_text_reused": "Launch 15 September — the board's decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP's first week of October."
   },
-  "questions_kept": 4,
-  "questions_moved_out": [
-    {
-      "index": 1,
-      "field": "audiences",
-      "linked_sources": [
-        "rfp_meltemi",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "## 3. Κοινό-στόχος",
-        "[00:03:41]"
-      ]
-    },
-    {
-      "index": 2,
-      "field": "budget",
-      "linked_sources": [
-        "rfp_meltemi",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "## 6. Προϋπολογισμός",
-        "[00:14:32]"
-      ]
-    },
-    {
-      "index": 3,
-      "field": "objectives",
-      "linked_sources": [
-        "emails_thread",
-        "rfp_meltemi",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
-        "## 2. Στόχος",
-        "[00:02:05]"
-      ]
-    },
-    {
-      "index": 4,
-      "field": "key_messages",
-      "linked_sources": [
-        "background_brand_guidelines",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "## Tone (guidance)",
-        "[00:06:02]"
-      ]
-    },
-    {
-      "index": 5,
-      "field": "deliverables",
-      "linked_sources": [
-        "rfp_meltemi",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "## 4. Απαιτήσεις καμπάνιας",
-        "[00:10:22]"
-      ]
-    },
-    {
-      "index": 8,
-      "field": "timeline",
-      "linked_sources": [
-        "emails_thread",
-        "rfp_meltemi",
-        "transcript_kickoff"
-      ],
-      "locations": [
-        "## 5. Χρονοδιάγραμμα",
-        "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
-        "[00:17:03]"
-      ]
-    }
-  ],
-  "why_moved": "pipeline/quality.py render_coverage requires each question's evidence location inside one bracketed tag matched by [^]]+; a location that itself contains ']' (every bracketed transcript timestamp such as [00:03:41]) can never satisfy it. Asked of the gate itself per question; if the gate changes, the kept set changes with it.",
-  "render_patch": "stored tier3 renders: sign-off banner line removed, question blocks renumbered and given exact [source_id location] tags for the kept questions"
+  "questions_kept": 10,
+  "questions_with_timestamp_evidence": 6,
+  "questions_note": "every open question stays in the brief. Before go-live precondition T-01 was fixed (pipeline/quality.py tag_location), render_coverage could not verify a question whose evidence is a bracketed transcript timestamp such as [00:03:41], and earlier versions of this rehearsal moved those questions out. The script now refuses any question the check cannot verify instead of working around it.",
+  "render_patch": "stored tier3 renders: sign-off banner line removed, and each question block given its exact [source_id location] tags (a transcript timestamp written without its own brackets)"
 }

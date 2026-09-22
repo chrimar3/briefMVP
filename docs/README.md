@@ -16,10 +16,10 @@ plus an independent `verify-extract` reader per source) has not yet been measure
 
 | Audience | Read in this order |
 |---|---|
-| Sponsor or decision maker | [`START_HERE.html`](../START_HERE.html) → [`WALKTHROUGH.html`](../WALKTHROUGH.html) (the decision paper, sheets 01 and 10 first) → [`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md) → [`pilot/SCORECARD.md`](pilot/SCORECARD.md) → [`pilot/OPERATING_TERMS.md`](pilot/OPERATING_TERMS.md) |
-| Hiring panel | [`README.md`](../README.md) → [`WALKTHROUGH.html`](../WALKTHROUGH.html) → [`EVIDENCE.md`](EVIDENCE.md) → [`runs/tier3/`](../runs/tier3/) → [`runs/voreas_prep_report.md`](../runs/voreas_prep_report.md) → [`runs/tier_7_report.md`](../runs/tier_7_report.md) → [`tools/project_review/rounds/r0/scores.md`](../tools/project_review/rounds/r0/scores.md) |
-| Operator or brief champion | [`pilot/BRIEF_CHAMPION_RUNBOOK.md`](pilot/BRIEF_CHAMPION_RUNBOOK.md) → [`pilot/CREATIVE_DELIVERY.md`](pilot/CREATIVE_DELIVERY.md) → [`pilot/COORDINATION.md`](pilot/COORDINATION.md) → [`pilot/QUESTION_EXCHANGE.md`](pilot/QUESTION_EXCHANGE.md) → [`pilot/EFFORT_RECORDING.md`](pilot/EFFORT_RECORDING.md) → [`pilot/CAMPAIGN_EDITING.md`](pilot/CAMPAIGN_EDITING.md) |
-| Engineer or development agent | [`CLAUDE.md`](../CLAUDE.md) → [`README.md`](../README.md) (build view) → [`TIERS.md`](TIERS.md) → [`PRD.md`](PRD.md) → [`COST_MODEL.md`](COST_MODEL.md) → [`runs/design_audit_report.md`](../runs/design_audit_report.md) |
+| Sponsor or decision maker | [`START_HERE.html`](../START_HERE.html) → [`WALKTHROUGH.html`](../WALKTHROUGH.html) (the decision paper, sheets 01 and 10 first) → [`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md) → [`pilot/GO_LIVE_DECISIONS.md`](pilot/GO_LIVE_DECISIONS.md) → [`pilot/SCORECARD.md`](pilot/SCORECARD.md) → [`pilot/OPERATING_TERMS.md`](pilot/OPERATING_TERMS.md) → [`pilot/DATA_PROTECTION.md`](pilot/DATA_PROTECTION.md) |
+| Hiring panel | [`README.md`](../README.md) → [`WALKTHROUGH.html`](../WALKTHROUGH.html) → [`EVIDENCE.md`](EVIDENCE.md) → [`EVAL_RECORD.md`](EVAL_RECORD.md) → [`runs/tier3/`](../runs/tier3/) (with `KNOWN_DEFECTS.md`) → [`runs/voreas_prep_report.md`](../runs/voreas_prep_report.md) → [`SECURITY.md`](SECURITY.md) → [`runs/tier_8_report.md`](../runs/tier_8_report.md) → [`tools/project_review/rounds/r0/scores.md`](../tools/project_review/rounds/r0/scores.md) |
+| Operator or brief champion | [`pilot/PILOT_RUNBOOK.md`](pilot/PILOT_RUNBOOK.md) → [`pilot/ROLES.md`](pilot/ROLES.md) → [`pilot/BRIEF_CHAMPION_RUNBOOK.md`](pilot/BRIEF_CHAMPION_RUNBOOK.md) → [`pilot/CREATIVE_DELIVERY.md`](pilot/CREATIVE_DELIVERY.md) → [`pilot/INCIDENT_RECOVERY.md`](pilot/INCIDENT_RECOVERY.md) → [`pilot/COORDINATION.md`](pilot/COORDINATION.md) → [`pilot/QUESTION_EXCHANGE.md`](pilot/QUESTION_EXCHANGE.md) → [`pilot/EFFORT_RECORDING.md`](pilot/EFFORT_RECORDING.md) → [`pilot/CAMPAIGN_EDITING.md`](pilot/CAMPAIGN_EDITING.md) |
+| Engineer or development agent | [`CLAUDE.md`](../CLAUDE.md) → [`README.md`](../README.md) (build view) → `scripts/check.sh` → [`tools/replay/README.md`](../tools/replay/README.md) → [`SECURITY.md`](SECURITY.md) → [`TIERS.md`](TIERS.md) → [`PRD.md`](PRD.md) → [`COST_MODEL.md`](COST_MODEL.md) → [`runs/design_audit_report.md`](../runs/design_audit_report.md) |
 
 ## Front doors and governance (repository root)
 
@@ -40,9 +40,11 @@ plus an independent `verify-extract` reader per source) has not yet been measure
 |---|---|---|
 | [`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md) | everyone | Current — **authoritative** owner decisions that supersede older text (creative delivery 2026-09-20; review loop, re-baseline, canonical walkthrough, creative in the pilot, data declaration 2026-09-22) |
 | [`PRD.md`](PRD.md) | engineers, panel | Frozen — the original specification (read-only). Superseded in part: the shadow-only creative non-goal (by `OPERATING_DECISIONS.md` 2026-09-20); §10's "~€5–6k/yr" of returned hours, which its own assumptions A1 × A2 × A4 put at ~210 h ≈ €3 990–4 200 |
-| [`TIERS.md`](TIERS.md) | engineers | Current — tier plan and status (Tiers 0–7 complete); the Tier 0–4 sections keep their July wording |
+| [`TIERS.md`](TIERS.md) | engineers | Current — tier plan and status (Tiers 0–8; Tier 8 is the round-1 review moves); the Tier 0–4 sections keep their July wording |
 | [`EVIDENCE.md`](EVIDENCE.md) | panel, engineers | Current — artifact-backed proof for the graded run (Haiku-era), with the $4.29 / $3.55 reconciliation and what protects the answer key |
-| [`COST_MODEL.md`](COST_MODEL.md) | engineers, management | Current — usage and cost derived from run manifests; its measured figures are Haiku-era |
+| [`EVAL_RECORD.md`](EVAL_RECORD.md) | panel, engineers | Current — per-check pass rates with n by fixture and routing era (`eval/pass_rates.py`), what 17/17 does and does not show, harness blind spots and the unfrozen supplementary scorer (`eval/supplementary.py`), held-out contamination disclosure, the risk-routing measurement, and the live re-baseline protocol |
+| [`SECURITY.md`](SECURITY.md) | engineers, management | Current — threat model and controls for the runtime agents: untrusted-content rule U, least-privilege permission rules, staged inputs, path safety, integrity check, separation of duties, hash-chained audit log (`release_control verify-log`), residual risks |
+| [`COST_MODEL.md`](COST_MODEL.md) | engineers, management | Current — tokens by model first (`eval/cost_report.py`; dollars only with `--usd`); graded figures are Haiku-era, the one current-routing leg is `runs/routing-validate-01` |
 | [`DEMO_PLAYBOOK.md`](DEMO_PLAYBOOK.md) | presenter | Historical, still usable — written for the July 2026 examination |
 | [`demo_timing.md`](demo_timing.md) | presenter, engineers | Historical — Haiku-era single-document and full-run timings (2026-07-27/28) |
 | [`full_run_console.log`](full_run_console.log) · [`full_run_reroll_console.log`](full_run_reroll_console.log) | engineers | Historical — console capture of run `case-full-20260728b` (2026-07-28), cited by `demo_timing.md` |
@@ -56,6 +58,11 @@ plus an independent `verify-extract` reader per source) has not yet been measure
 
 | Document | Audience | Status |
 |---|---|---|
+| [`PILOT_RUNBOOK.md`](pilot/PILOT_RUNBOOK.md) | operator, champions | Current — the one-page daily path (PRD §8 shape): drop files, one command, read the verdict, route |
+| [`ROLES.md`](pilot/ROLES.md) | sponsor, operator, every role | Current — RACI: each role mapped to commands, decisions and scorecard columns; separation of duties and the `--solo-rehearsal` waiver |
+| [`GO_LIVE_DECISIONS.md`](pilot/GO_LIVE_DECISIONS.md) | sponsor, management | Current — every OWNER TO CONFIRM item with owner, default, deadline and status; engineering preconditions T-01…T-06 (T-01 fixed at the round-1 integration) |
+| [`DATA_PROTECTION.md`](pilot/DATA_PROTECTION.md) | sponsor, data-protection lead | Current draft — personal-data inventory and flows, data declaration gate (runner exit 6, intake `--data-class`), retention schedule and `pipeline.retention`, rights procedure; legal judgements OWNER/DPO TO CONFIRM |
+| [`INCIDENT_RECOVERY.md`](pilot/INCIDENT_RECOVERY.md) | operator, account leads | Current — withdraw + notify + log, real data ingested → purge + record, usage window or CLI failure → resume, refusal near a deadline → manual fallback |
 | [`BRIEF_CHAMPION_RUNBOOK.md`](pilot/BRIEF_CHAMPION_RUNBOOK.md) | operator, champions, account leads | Current — the client-brief workflow, from intake to approval |
 | [`CREATIVE_DELIVERY.md`](pilot/CREATIVE_DELIVERY.md) | operator, creative lead, traffic | Current — creative register, approve and release |
 | [`COORDINATION.md`](pilot/COORDINATION.md) | operator, account, traffic | Current — status, portfolio queue, package verification, withdrawal, dependencies |
@@ -70,12 +77,16 @@ plus an independent `verify-extract` reader per source) has not yet been measure
 
 | Record | Status |
 |---|---|
-| [`runs/tier3/`](../runs/tier3/) | Historical evidence — the graded run (2026-07-24, Haiku-era), never edited |
+| [`runs/tier3/`](../runs/tier3/) | Historical evidence — the graded run (2026-07-24, Haiku-era), never edited; `KNOWN_DEFECTS.md` and `creative/KNOWN_DEFECTS.md` (added in round 1) list the defects a review panel verified in it |
+| [`runs/routing-validate-01/`](../runs/routing-validate-01/) | Historical evidence — the one current-routing leg (2026-07-29: transcript extract + verify-extract, 598 743 tokens), committed at the round-1 integration |
+| [`runs/rehearsal-lifecycle/`](../runs/rehearsal-lifecycle/) | Current, regenerable — deterministic agency-lifecycle rehearsal on a synthetic copy of `runs/tier3` (`regenerate.py`; 37 steps, zero model calls, distinct fictional actors) |
 | [`runs/voreas-prep-02/`](../runs/voreas-prep-02/), [`-03/`](../runs/voreas-prep-03/) · [`runs/voreas_prep_report.md`](../runs/voreas_prep_report.md) | Historical evidence — second fixture, 15/17 then 16/17 (2026-07-26, Haiku-era); back `tests/test_regression_voreas.py` |
-| `runs/tier_0_report.md` … `runs/tier_7_report.md` | Historical — one acceptance record per tier |
+| `runs/tier_0_report.md` … `runs/tier_8_report.md` | Historical — one acceptance record per tier (Tier 8: round-1 review moves) |
 | `runs/cost_c1_report.md` … `runs/cost_c4_report.md` · [`runs/design_audit_report.md`](../runs/design_audit_report.md) | Historical — cost-audit and design-audit records (July 2026) |
 | [`tools/walkthrough/`](../tools/walkthrough/) | Current gate and build (`checks.py`, `build.py`, `mustkeep.json`); the rest is review-loop history. `redesign/` (v2) is retired — see [`redesign/RETIRED.md`](../tools/walkthrough/redesign/RETIRED.md) |
 | [`tools/project_review/`](../tools/project_review/) | Current — whole-project review loop: `rubric.md`, `panels.json`, `rounds/r0/` baseline, `rounds/r1/PLAN.md`, `CHANGELOG.md` |
+| [`tools/replay/`](../tools/replay/) | Current — offline replay: a fake `claude` binary that replays a wiring-fixture recording so the whole Stage-1 run completes with zero model calls (not evidence of model quality) |
+| `scripts/check.sh` | Current — the one deterministic check for humans and CI: lint, tests, frozen grade (`eval/grade_frozen.py`, read-only), agency benchmark |
 
 ## Known discrepancies in historical records
 
@@ -97,8 +108,7 @@ Historical records are not edited; these notes say how to read them.
 - **AGENTS.md.** First committed in Tier 6 (`5c386ba`) as a mechanical copy of `CLAUDE.md` that
   named "Codex subagents" and `.Codex/agents/`; rewritten on 2026-09-23 as a pointer.
 - **Uncommitted runs.** Some documents cite local runs that are gitignored and not in the
-  repository: `runs/routing-validate-01` (the one current-routing extraction leg),
-  `runs/tier3-confirm` and `runs/tier3-confirm2` (the $2.07–2.44 cost range),
+  repository: `runs/tier3-confirm` and `runs/tier3-confirm2` (the $2.07–2.44 cost range),
   `runs/evidence-20260729` (the continuous 29 July capture). Their figures are quoted, labelled as
   local, and cannot be re-derived from a clone.
 - **docs/DECK.md** is cited by some tier reports and plans but is deliberately untracked (owner's

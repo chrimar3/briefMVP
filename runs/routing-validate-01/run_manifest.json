@@ -1,0 +1,151 @@
+{
+  "run_id": "routing-validate-01",
+  "pipeline_version": "1.0.0",
+  "project_dir": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/northlight_01",
+  "started_ts": "2026-07-29T21:42:30",
+  "finished_ts": "2026-07-29T21:51:19",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "extraction",
+  "demo_profile": null,
+  "sources": [
+    {
+      "source_id": "background_brand_guidelines",
+      "source_type": "background",
+      "source_date": "2026-03-02"
+    },
+    {
+      "source_id": "emails_thread",
+      "source_type": "email_thread",
+      "source_date": "2026-07-15 (latest message)"
+    },
+    {
+      "source_id": "rfp_meltemi",
+      "source_type": "rfp",
+      "source_date": "2026-06-28"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "source_type": "transcript",
+      "source_date": "2026-07-10"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "background",
+          "email_thread",
+          "rfp",
+          "transcript"
+        ],
+        "substantive_count": 3,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript"
+      }
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "transcript_kickoff",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/routing-validate-01/extracts/transcript_kickoff.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "6e4ff090-c575-4b94-9cd9-3531d838816e",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.650349,
+                "duration_ms": 277749,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 26634,
+                  "cache_read_input_tokens": 24710,
+                  "cache_creation_input_tokens": 40568
+                }
+              },
+              "violations": []
+            },
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "e21063ee-05b9-41e2-8cdf-f9e62e2fe222",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.6117783000000001,
+                "duration_ms": 161971,
+                "num_turns": 20,
+                "usage": {
+                  "input_tokens": 34,
+                  "output_tokens": 12987,
+                  "cache_read_input_tokens": 399611,
+                  "cache_creation_input_tokens": 49498
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/routing-validate-01/verification/transcript_kickoff.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "garbling",
+              "low_confidence"
+            ],
+            "issue_count": 1,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "f75736c8-89f6-49b6-b4a9-2f23141751cd",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.2110809,
+                  "duration_ms": 85929,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 6587,
+                    "cache_read_input_tokens": 20413,
+                    "cache_creation_input_tokens": 17689
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 12,
+          "open_question_count": 8,
+          "extraction_note_count": 3
+        }
+      ]
+    }
+  ]
+}

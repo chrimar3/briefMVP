@@ -137,6 +137,35 @@ def test_invoke_hands_the_built_command_to_the_cli(tmp_path, monkeypatch):
     assert argv == agents.build_command("classify", "ORDER", scope)[1:]
 
 
+def test_a_relative_cli_override_is_executed_from_the_neutral_cwd(tmp_path, monkeypatch):
+    """BRIEF_BUILDER_CLAUDE_BIN=bin/claude passes the availability check from the caller's cwd;
+    the CLI runs from a neutral cwd, so invoke must execute the absolute path it found."""
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    fake = bin_dir / "claude"
+    fake.write_text(
+        f"#!{sys.executable}\n"
+        "import json, sys\n"
+        "print(json.dumps({'result': sys.argv[0], 'session_id': 's', 'modelUsage': {'claude-test': {}}}))\n",
+        encoding="utf-8")
+    fake.chmod(fake.stat().st_mode | stat.S_IXUSR)
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(agents, "CLAUDE_BIN", os.path.join("bin", "claude"))
+    scope = runner._access_dirs(_ctx(tmp_path, INJECTION, INJECTION / "client.json"))
+    result = agents.invoke("classify", "ORDER", scope)
+    assert result.ok and Path(result.result_text).resolve() == fake.resolve()
+
+
+def test_a_cli_that_cannot_start_is_a_subagent_error(tmp_path, monkeypatch):
+    fake = tmp_path / "claude"
+    fake.write_text("not a program", encoding="utf-8")
+    fake.chmod(fake.stat().st_mode | stat.S_IXUSR)
+    monkeypatch.setattr(agents, "CLAUDE_BIN", str(fake))
+    scope = runner._access_dirs(_ctx(tmp_path, INJECTION, INJECTION / "client.json"))
+    with pytest.raises(agents.SubagentError, match="could not start"):
+        agents.invoke("classify", "ORDER", scope)
+
+
 # -- staging -------------------------------------------------------------------------------
 
 
@@ -163,6 +192,44 @@ def test_agents_read_staged_copies_never_the_project_folder(project, tmp_path, m
     assert "schema:brief_schema.json" in snapshot and "schema:extract_schema.json" in snapshot
     assert any(k.startswith("template:") for k in snapshot)
     assert Path(snapshot["source:inj_rfp"]["path"]).parent == project.resolve()  # originals bound
+
+
+def test_render_inputs_are_bound_to_the_run_and_write_denied(project, tmp_path, monkeypatch):
+    """The render stage reads the client-brief templates and config/greek_style.json: both are in
+    the input snapshot (a changed template or style table refuses a resume) and both sit under a
+    read-only directory that the agent's permission rules deny Write/Edit on."""
+    seen = {}
+
+    def classify(ctx, step):
+        seen["ctx"] = ctx
+        raise stages.HaltForHuman("stop after inspecting the context")
+
+    out = tmp_path / "runs"
+    _main(project, out, monkeypatch=monkeypatch, handlers={"classify": classify})
+    snapshot = json.loads((out / "r" / "input_snapshot.json").read_text(encoding="utf-8"))
+    templates = sorted(p.name for p in (gates.REPO_ROOT / "templates").iterdir() if p.is_file())
+    assert templates and all(f"template:{name}" in snapshot for name in templates)
+    assert Path(snapshot["greek_style"]["path"]) == stages.GREEK_STYLE_PATH.resolve()
+
+    _, deny = agents.permission_rules(agents.AccessScope.coerce(runner._access_dirs(seen["ctx"])))
+    for directory in (gates.REPO_ROOT / "templates", gates.CONFIG_DIR):
+        for tool in ("Write", "Edit"):
+            assert f"{tool}(/{directory.resolve().as_posix()}/**)" in deny, (tool, directory)
+    assert stages.GREEK_STYLE_PATH.resolve().parent == gates.CONFIG_DIR.resolve()
+
+
+def test_a_run_recorded_before_the_style_table_was_bound_still_resumes(project, tmp_path, monkeypatch):
+    """Binding a new input must not strand an older run: a snapshot without `greek_style` stays
+    as recorded, exactly like the schema/template rule above it."""
+    halt = lambda ctx, step: (_ for _ in ()).throw(stages.HaltForHuman("stop"))
+    out = tmp_path / "runs"
+    _main(project, out, monkeypatch=monkeypatch, handlers={"classify": halt})
+    path = out / "r" / "input_snapshot.json"
+    snapshot = json.loads(path.read_text(encoding="utf-8"))
+    snapshot.pop("greek_style")
+    path.write_text(json.dumps(snapshot), encoding="utf-8")
+    assert _main(project, out, monkeypatch=monkeypatch, handlers={"classify": halt}) == runner.EXIT_HALTED_FOR_HUMAN
+    assert "greek_style" not in json.loads(path.read_text(encoding="utf-8"))
 
 
 def test_injected_text_never_reaches_a_work_order(project, tmp_path):

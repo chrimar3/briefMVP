@@ -51,9 +51,9 @@ items closed) is the precondition for any `approved` data declaration. Status as
 
 | ID | Precondition | Owner | Status |
 |---|---|---|---|
-| T-01 | `pipeline/quality.py` `render_coverage` cannot verify open questions linked to bracketed transcript timestamps (`[00:03:41]`), so `agency approve` is unreachable for most real briefs; correct the check without loosening what it verifies | Engineering | Open (found by `runs/rehearsal-lifecycle/`) |
+| T-01 | `pipeline/quality.py` `render_coverage` could not verify open questions linked to bracketed transcript timestamps (`[00:03:41]`), so `agency approve` was unreachable for most real briefs; correct the check without loosening what it verifies | Engineering | Done (round-1 integration): `quality.tag_location`; `tests/test_quality.py` pins both directions; the rehearsal keeps all 10 questions |
 | T-02 | Current-routing re-baseline measured: tokens by model, wall time, retries, refusals per brief (R-3) | Operator | Open (next round) |
 | T-03 | `tests/test_regression_voreas.py` passes with no `xfail` marks on artifacts regenerated under current routing (`SCORECARD.md` preconditions) | Engineering | Open: 16 xfailed on the committed voreas runs |
 | T-04 | Separation of duties, attributed release and an append-only audit trail enforced by the agency and delivery commands (R-5) | Engineering | Verify present in the release used for the pilot |
-| T-05 | Full agency lifecycle rehearsed end to end on synthetic material | Operator | Done: `runs/rehearsal-lifecycle/TRANSCRIPT.md` (28 steps, zero model calls) |
+| T-05 | Full agency lifecycle rehearsed end to end on synthetic material | Operator | Done: `runs/rehearsal-lifecycle/TRANSCRIPT.md` (37 steps, zero model calls; all 10 questions kept after T-01; ends with `release_control verify-log` and a retention purge dry run) |
 | T-06 | Champions trained on `PILOT_RUNBOOK.md`; one timed synthetic rehearsal each | Operator | Open (before week 4) |

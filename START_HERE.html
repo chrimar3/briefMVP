@@ -177,7 +177,10 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
   <pre class="cmd"><span class="c"># tests need no model access — do this first</span>
 python3 -m venv .venv &amp;&amp; source .venv/bin/activate
 python3 -m pip install -r requirements.txt
-python3 -m pytest -q
+python3 -m pytest -q                            <span class="c"># or: bash scripts/check.sh (tests + frozen grade + benchmark)</span>
+
+<span class="c"># the whole Stage-1 run offline, zero model calls (replays a wiring-fixture recording):</span>
+BRIEF_BUILDER_CLAUDE_BIN="$PWD/tools/replay/claude" python3 pipeline/runner.py --project fixtures/northlight_01 --out /tmp/bb-replay
 
 <span class="c"># model stages run as Claude Code subagents — install + authenticate the claude CLI, then:</span>
 ./demo.sh                                       <span class="c"># one document in, verified facts out,</span>
@@ -185,6 +188,9 @@ python3 -m pytest -q
 python3 pipeline/runner.py --project fixtures/northlight_01   <span class="c"># full Stage-1 run → runs/&lt;ts&gt;/</span>
 python3 eval/harness.py runs/latest             <span class="c"># grade against the answer key</span>
 ./run_full.sh                                   <span class="c"># background demo run — opens the finished brief</span></pre>
+  <p class="lede">Every project folder carries a <span class="mono">data_declaration.json</span>
+  (the fixtures declare <span class="mono">synthetic</span>); the runner refuses a folder without
+  one (exit 6).</p>
   <p class="lede">Python 3.9 or newer on macOS or Linux. The tests make no model calls; the
   model stages run on the owner's Claude account and their usage under the current routing is
   still being re-measured (the graded figures are from the earlier, Haiku-era routing).</p>
@@ -201,7 +207,8 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
     <div class="g-card"><h3>Resolve conflicts</h3><p>When sources disagree, both quotes
       are shown with citations. Resolution belongs to the account lead, by design.</p></div>
     <div class="g-card"><h3>Silently fix garbles</h3><p>A mangled term is extracted
-      as written and flagged — the reader decides what it meant.</p></div>
+      as written and flagged for a person to confirm. (The graded run's renders dropped
+      that flag — a documented defect, runs/tier3/KNOWN_DEFECTS.md B3.)</p></div>
     <div class="g-card"><h3>Invent figures</h3><p>"Around eighty" stays that way until
       the client says eighty <em>what</em>. No number appears that no source stated.</p></div>
     <div class="g-card"><h3>Editorialise in views</h3><p>The review pages are
@@ -215,7 +222,7 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
 </section>
 
 <section id="since">
-  <h2>Since the graded run: the agency layer (Tiers 5–7)</h2>
+  <h2>Since the graded run: the agency layer (Tiers 5–8)</h2>
   <p class="lede">The graded run is from July 2026. In September the pipeline gained the
   operating layer an agency needs around it — all local commands, run by people, with no
   model calls.</p>
@@ -224,8 +231,15 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
       triage; conflict resolution, bilingual attestation and sign-off by command, bound to
       the exact revision; creative registration, approval, release, verification and
       withdrawal; clarification packs; effort and rework records for the pilot scorecard.</p></div>
+    <div class="g-card"><h3>Hardened in round 1 (Tier 8)</h3><p>Runtime agents read only
+      staged input copies, under an untrusted-content rule and deny rules
+      (<a href="docs/SECURITY.md">SECURITY.md</a>); separation of duties and a hash-chained
+      audit log (<code>release_control verify-log</code>); a data declaration on every project,
+      refused without one (exit 6); retention inventory and purge; an evaluation record with
+      known defects (<a href="docs/EVAL_RECORD.md">EVAL_RECORD.md</a>); offline replay
+      (<code>tools/replay</code>) and one check script (<code>scripts/check.sh</code>).</p></div>
     <div class="g-card"><h3>What it proves</h3><p>The software behaves as specified: at
-      Tier 7, 587 deterministic tests pass, the frozen evidence still grades 17/17 and a
+      Tier 8, 948 deterministic tests pass, the frozen evidence still grades 17/17 and a
       synthetic fault-injection benchmark passes 12/12. This is a software rehearsal.</p></div>
     <div class="g-card"><h3>What it does not prove</h3><p>Generative quality under the
       current routing, Greek register, review time, adoption or any time saved. Those need
@@ -264,12 +278,16 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
     <div class="map-row"><span class="mono">docs/README.md</span><span>every document with its status (current, frozen, historical) and a reading order</span></div>
     <div class="map-row"><span class="mono">docs/PRD.md</span><span>the original spec — frozen; later owner decisions live in docs/OPERATING_DECISIONS.md</span></div>
     <div class="map-row"><span class="mono">docs/EVIDENCE.md</span><span>artifact-backed proof of every claim: what ran, every check, every trap caught</span></div>
+    <div class="map-row"><span class="mono">docs/EVAL_RECORD.md</span><span>pass rates with n per check and routing era, harness blind spots, known defects, the re-baseline protocol</span></div>
+    <div class="map-row"><span class="mono">docs/SECURITY.md</span><span>threat model and controls: untrusted-content rule, staged inputs and deny rules, separation of duties, audit log</span></div>
     <div class="map-row"><span class="mono">runs/tier3/</span><span>the committed graded run — signed brief, renders, extracts, both review pages</span></div>
-    <div class="map-row"><span class="mono">docs/pilot/</span><span>the pilot operating pack — champion runbook, creative delivery, coordination, scorecard, operating terms</span></div>
+    <div class="map-row"><span class="mono">docs/pilot/</span><span>the pilot operating pack — pilot runbook, roles, go-live decisions, data protection, incident recovery, champion runbook, creative delivery, scorecard, operating terms</span></div>
     <div class="map-row"><span class="mono">reviews/</span><span>the shareable shelf — completed runs publish both pages here automatically</span></div>
     <div class="map-row"><span class="mono">pipeline/</span><span>deterministic orchestration: runner, gates, extraction, conflicts, review pages, and the agency commands (review, approval, delivery, coordination)</span></div>
     <div class="map-row"><span class="mono">skills/</span><span>the four runtime instruction files injected into subagents — spec, not suggestions</span></div>
-    <div class="map-row"><span class="mono">fixtures/northlight_01/</span><span>the synthetic project: transcript, RFP, emails, background + an answer key only the grader reads</span></div>
+    <div class="map-row"><span class="mono">fixtures/northlight_01/</span><span>the synthetic project: transcript, RFP, emails, background + an answer key only the grader reads (never staged for agents; a deny rule blocks it; not cryptographic)</span></div>
+    <div class="map-row"><span class="mono">scripts/check.sh</span><span>the one deterministic check humans and CI run: tests, frozen grade, agency benchmark</span></div>
+    <div class="map-row"><span class="mono">tools/replay/</span><span>offline replay: the whole Stage-1 run with zero model calls, from a wiring-fixture recording</span></div>
     <div class="map-row"><span class="mono">CLAUDE.md</span><span>working rules for operating this repo with Claude Code — tiers, freezes, anti-patterns</span></div>
   </div>
 </section>

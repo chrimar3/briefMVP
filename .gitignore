@@ -35,6 +35,13 @@ tools/walkthrough/_s*.js
 !runs/voreas-prep-02
 !runs/voreas-prep-03
 
+# Deterministic agency-lifecycle rehearsal (regenerate.py + transcript + records; zero model calls).
+!runs/rehearsal-lifecycle
+
+# Current-routing validation leg (one transcript: extract + verify-extract), 32 KB, synthetic;
+# cited by docs/COST_MODEL.md, docs/EVAL_RECORD.md and README.md.
+!runs/routing-validate-01
+
 # Codex round runner: per-agent logs and scratch dirs are regenerated; results (out/, result.json, report.md) are kept.
 tools/walkthrough/codex_round/*/logs/
 tools/walkthrough/codex_round/*/work/

@@ -114,10 +114,23 @@ def test_markdown_table_names_the_era_and_n(tmp_path, capsys):
     assert "Haiku-era" in out and "| T1.1 | 1/1 | 1/1 |" in out
 
 
+def _committed_reports(repo_root):
+    """Harness reports git tracks under runs/ — never gitignored local runs in a working checkout,
+    so the numbers are the same in a clean clone and in a developer's tree."""
+    import subprocess
+    try:
+        listed = subprocess.run(["git", "-C", str(repo_root), "ls-files", "-z", "--", "runs"],
+                                capture_output=True, check=True).stdout.decode("utf-8")
+    except (OSError, subprocess.CalledProcessError):
+        pytest.skip("not a git checkout: committed evidence cannot be told apart from local runs")
+    tracked = {(repo_root / rel).resolve() for rel in listed.split("\0") if rel}
+    return [p for p in pass_rates.find_reports([repo_root / "runs"]) if p.resolve() in tracked]
+
+
 def test_committed_evidence_aggregates(repo_root):
     """The committed evidence (runs/tier3, voreas-prep-02/03) is readable by the tool; the
     numbers recorded in docs/EVAL_RECORD.md come from this run of it."""
-    groups = pass_rates.aggregate([pass_rates.load_record(p) for p in pass_rates.find_reports([repo_root / "runs"])])
+    groups = pass_rates.aggregate([pass_rates.load_record(p) for p in _committed_reports(repo_root)])
     northlight = groups[("northlight_01", "haiku-era")]
     voreas = groups[("voreas_02", "haiku-era")]
     assert northlight["full_passes"] == 1 and northlight["reports"] == 1

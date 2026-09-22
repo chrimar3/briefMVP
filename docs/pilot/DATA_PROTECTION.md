@@ -15,7 +15,7 @@ cite it. Open items are consolidated in `GO_LIVE_DECISIONS.md`.
 | Sensitivity tier | `gates.enforce_sensitivity_tier`, schema enum S0/S1 | S2/S3 clients are refused at intake and on every run and agency read. |
 | Answer-key exclusion | `gates.HARNESS_ONLY_FILES`, `revisions.capture_evidence` | The grading key is never a source or an evidence copy. |
 | Release minimisation | `pipeline/delivery.py` release | Packages carry the approved creative and deliverable rows only: no raw sources, evidence, glossary, audit notes or paths. |
-| Retention inventory and purge | `pipeline/retention.py` | Finds every copy of a source (evidence/, history/, packages), deletes on instruction, writes a tombstone; never deletes committed evidence unless explicitly named. |
+| Retention inventory and purge | `pipeline/retention.py` | Finds every copy of a source (evidence/, history/, the staged `inputs/` copies agents read, packages), deletes on instruction, writes a tombstone; never deletes committed evidence unless explicitly named; never deletes a run's `audit_log.jsonl` silently (a source purge never touches it; a run purge records its hash, entry count and chain head in the tombstone first). |
 | Pseudonymised scorecard | `SCORECARD.md` §6 | Leads appear as L1/L2; the name mapping stays outside the repository. |
 
 Not implemented (open, §11): an automated special-category or personal-data pre-screen, and
@@ -110,9 +110,9 @@ agency must keep for accountability (**OWNER/DPO TO CONFIRM**, `GO_LIVE_DECISION
 | Artifact | Location | Contains | Proposed retention | How to delete |
 |---|---|---|---|---|
 | Project folder (sources, declaration, client config) | pilot location, outside the repository | originals | pilot end + 30 days | agency file deletion; `retention inventory` lists it as `originals_present` |
-| Run directory: `evidence/`, `history/`, `extracts/`, `fidelity/`, `verification/`, `diagnostics/`, briefs, renders, review HTML | `<pilot runs>/<run-id>/` | copies and quotes of sources | pilot end + 30 days | `python3 -m pipeline.retention purge --run DIR --actor NAME --reason TEXT` |
+| Run directory: `inputs/` (staged read-only source copies), `evidence/`, `history/`, `extracts/`, `fidelity/`, `verification/`, `diagnostics/`, briefs, renders, review HTML | `<pilot runs>/<run-id>/` | copies and quotes of sources | pilot end + 30 days | `python3 -m pipeline.retention purge --run DIR --actor NAME --reason TEXT` |
 | One source across runs (erasure request) | any run under the pilot runs folder | byte copies and per-source derivatives | on request | `purge --source-sha SHA --runs DIR ...`; run-level quotes remain until `--run` purge (listed as residual) |
-| Governance records (approvals, withdrawals, amendments, releases, clarifications, audit log) | run directory | agency staff names, decisions | as long as the delivered work needs an accountability trail: OWNER/DPO TO CONFIRM | with the run |
+| Governance records (approvals, withdrawals, amendments, releases, clarifications, audit log) | run directory | agency staff names, decisions | as long as the delivered work needs an accountability trail: OWNER/DPO TO CONFIRM | with the run; the purge record carries an `audit_log_deleted` tombstone (hash, entry count, chain head, events by type, whether it verified; no names) |
 | Effort records | `effort.json` in the run; exported CSV | staff minutes | until the pilot report; CSV keeps only L1/L2 | with the run; CSV by file deletion |
 | Release packages | wherever `delivery release --output` wrote them | approved creative, deliverable rows | the agency's delivery retention | not deleted by `purge --run` (listed in the tombstone) |
 | Review shelf and share pages | `reviews/` (inside the repository, git-ignored) and wherever shared | brief views | never for pilot data: publish to the pilot location instead | file deletion |

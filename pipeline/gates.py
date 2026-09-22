@@ -6,10 +6,16 @@ readiness block are the parts of the system a reviewer must be able to reproduce
 hand. If a value in here ever depends on a model, the "deterministic core" claim in
 the PRD stops being true.
 
-Two rules this module encodes structurally rather than by convention:
+Two rules this module encodes in code rather than by convention:
 
 * The answer key is harness-only. `discover_sources` reads `*.md` and explicitly
-  skips `HARNESS_ONLY_FILES`, so a pipeline run cannot see the exam.
+  skips `HARNESS_ONLY_FILES`, so the key is never a source. The rest of the
+  mechanism lives elsewhere: the runner stages only discovered sources into the
+  run's `inputs/` (pipeline/runner.py `stage_inputs`, which refuses a harness-only
+  file), agents are granted the run directory rather than the project folder, and
+  a permission deny rule blocks Read/Write/Edit of any `answer_key.json`
+  (pipeline/agents.py). That is policy enforced by code and CLI permissions, not a
+  cryptographic seal: a process with the operator's file access can still read it.
 * Sensitivity scope is enforced in code *and* in `brief_schema.json` (PRD DR-11);
   S2/S3 cannot be represented, let alone processed.
 """
@@ -193,8 +199,9 @@ def parse_source_header(text: str, path: Path) -> dict:
 def discover_sources(project_dir: Path) -> list[SourceDoc]:
     """Read every declared source in an Input folder, in stable order.
 
-    Only `*.md` is read, and `HARNESS_ONLY_FILES` is skipped explicitly — the answer key
-    is structurally unreachable from a pipeline run, not merely un-referenced.
+    Only `*.md` is read, and `HARNESS_ONLY_FILES` is skipped explicitly — the answer key is
+    excluded from discovery, so it is never staged into agent inputs; agents also carry a
+    deny rule for it (see the module docstring). Excluded by code, not cryptographically sealed.
     """
     project_dir = Path(project_dir)
     if not project_dir.is_dir():

@@ -175,3 +175,67 @@ def test_cli_inventory_and_refusals(tmp_path, capsys):
     assert "--runs" in capsys.readouterr().err
     assert retention.main(["purge", "--run", str(run), "--actor", "A", "--reason", "R", "--dry-run"]) == 0
     assert run.exists()
+
+
+def _stage_inputs(run, source):
+    """The read-only copies the runner stages for agents (pipeline/runner.py stage_inputs)."""
+    staged = run / "inputs" / source.name
+    (run / "inputs" / "client").mkdir(parents=True)
+    staged.write_bytes(source.read_bytes())
+    staged.chmod(0o444)
+    (run / "inputs" / "client" / "client.json").write_text('{"client_id": "synthetic"}', encoding="utf-8")
+    return staged
+
+
+def test_staged_input_copies_are_inventoried_and_purged(tmp_path):
+    runs, run, source, _ = make_run(tmp_path, with_package=False)
+    staged = _stage_inputs(run, source)
+    report = retention.inventory([runs])
+    (entry,) = report["sources"]
+    assert {"path": str(staged.resolve()), "area": "inputs", "run": str(run.resolve())} in entry["copies"]
+    staged_listing = {p["path"] for p in report["runs"][0]["staged_inputs"]}
+    assert staged_listing == {str(staged.resolve()), str((run / "inputs" / "client" / "client.json").resolve())}
+    result = retention.purge_source(entry["sha256"], [runs], actor="Synthetic DPO", reason="Erasure rehearsal",
+                                    protection=NothingCommitted())
+    assert not staged.exists()
+    assert str(staged.resolve()) in {d["path"] for d in result["deleted"]}
+
+
+def _logged_run(tmp_path):
+    runs, run, source, package = make_run(tmp_path, with_package=False)
+    revisions.append_audit(run, "conflict_resolved", "Synthetic Lead A", record="brief.json")
+    revisions.append_audit(run, "brief_amended", "Synthetic Lead A", details={"reason": "synthetic"})
+    return runs, run, source
+
+
+def test_purge_run_tombstones_the_audit_log_before_deleting_it(tmp_path):
+    runs, run, _ = _logged_run(tmp_path)
+    log = run / "audit_log.jsonl"
+    sha, lines = retention.sha256_file(log), log.read_text(encoding="utf-8").splitlines()
+    result = retention.purge_run(run, actor="Synthetic operator", reason="Pilot-end deletion",
+                                 protection=NothingCommitted())
+    assert not run.exists()
+    stone = result["audit_log_deleted"]
+    assert stone["sha256"] == sha and stone["entries"] == 2 and stone["verified_intact"] is True
+    assert stone["events"] == {"brief_amended": 1, "conflict_resolved": 1}
+    assert stone["chain_head_sha256"] == revisions._line_hash(lines[-1])
+    written = (runs / retention.TOMBSTONE_FILE).read_text(encoding="utf-8").splitlines()[-1]
+    assert json.loads(written)["audit_log_deleted"]["sha256"] == sha
+    assert "Synthetic Lead A" not in written  # hashes and counts, never the names in the entries
+
+
+def test_purge_run_dry_run_reports_the_audit_log_and_keeps_it(tmp_path):
+    runs, run, _ = _logged_run(tmp_path)
+    result = retention.purge_run(run, actor="Synthetic operator", reason="Check", dry_run=True,
+                                 protection=NothingCommitted())
+    assert result["audit_log_deleted"]["entries"] == 2 and (run / "audit_log.jsonl").is_file()
+
+
+def test_purge_source_never_deletes_an_audit_log(tmp_path):
+    runs, run, source = _logged_run(tmp_path)
+    # Even a byte-identical copy named like the log (contrived) is not treated as a source copy.
+    (run / "history" / "20260901T000000-abcdef12" / "audit_log.jsonl").write_bytes(source.read_bytes())
+    retention.purge_source(retention.sha256_file(source), [runs], actor="Synthetic DPO", reason="Erasure",
+                           protection=NothingCommitted())
+    assert (run / "audit_log.jsonl").is_file()
+    assert (run / "history" / "20260901T000000-abcdef12" / "audit_log.jsonl").is_file()

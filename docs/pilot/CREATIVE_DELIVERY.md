@@ -98,7 +98,8 @@ Reapprove only after inspecting the changes.
 python3 -m pipeline.delivery release RUN --output /path/to/new-delivery-folder --actor "Operator name"
 ```
 
-The releasing operator is recorded. The destination must not exist and must be outside RUN.
+The releasing operator is recorded (`--actor` is required). The destination must not exist and
+must be outside RUN.
 In the pilot it is under `$PILOT/packages/` (`PILOT_RUNBOOK.md`). Output includes:
 
 - `creative.md`: the approved creative brief, without the draft banner or internal entry tags.
@@ -110,6 +111,17 @@ Raw inputs, pipeline manifests, glossaries, audit reports and internal approval 
 not packaged. Check the package before sharing through the agency's existing process.
 Existing delivery folders are never overwritten. File hashes identify content integrity;
 they are not a cryptographic identity signature or a rights-clearance service.
+
+Every approval, withdrawal, amendment, conflict resolution and release is also appended to the
+run's hash-chained `audit_log.jsonl`. Before sharing, and after any incident, check it:
+
+```sh
+python3 -m pipeline.release_control verify-log RUN
+```
+
+It reports `valid: false` with the reason when a line was edited, removed or reordered, or when a
+decision record exists that no log entry vouches for. It is tamper evidence for a cooperating
+team; the names in it are typed by people and are not authenticated.
 
 ## 5. Revised campaigns and shared operation
 

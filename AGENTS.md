@@ -35,8 +35,7 @@ run makes model calls on the owner's account and needs the owner's authorisation
 ## Checks to run before you finish
 
 ```bash
-python3 -m pytest -o addopts='' -q
-python3 eval/agency_benchmark.py
+bash scripts/check.sh            # tests, frozen grade 17/17 (read-only), agency benchmark; lint if ruff is installed
 python3 tools/walkthrough/checks.py --file WALKTHROUGH.html   # only if you touched the walkthrough
 ```
 

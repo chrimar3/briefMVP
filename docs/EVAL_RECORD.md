@@ -11,8 +11,9 @@ Verified output defects in the graded run are in `runs/tier3/KNOWN_DEFECTS.md` a
 `runs/tier3/creative/KNOWN_DEFECTS.md`.
 
 **Where the numbers come from.** Figures marked **[committed]** come from run directories committed
-to this repo (`runs/tier3`, `runs/voreas-prep-02`, `runs/voreas-prep-03`), so any clone
-reproduces them. Figures marked **[local store]** come from the gitignored run directories on the
+to this repo (`runs/tier3`, `runs/voreas-prep-02`, `runs/voreas-prep-03`; `runs/routing-validate-01`
+was committed at the round-1 integration, after the tables below were measured, so its one extract
+is counted in the local-store rows), so any clone reproduces them. Figures marked **[local store]** come from the gitignored run directories on the
 operator's machine, read with the same tools on 2026-09-23. The tools never read an answer key:
 `pass_rates.py` reads the harness's own verdicts, and `supplementary.py` reads only sources
 returned by `pipeline.gates.discover_sources`.

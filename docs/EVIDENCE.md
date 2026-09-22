@@ -19,7 +19,7 @@ lives in [`runs/tier3/`](../runs/tier3/).
 | | |
 |---|---|
 | Fixture | `fixtures/northlight_01` — synthetic Greek/English agency project with an answer key reserved for the grader |
-| Answer-key protection | Excluded from source discovery (`gates.HARNESS_ONLY_FILES`, skipped by `gates.discover_sources` and by intake) and never passed to a runtime agent, **by policy**. It is not cryptographically sealed, and during the graded run the agents' file access was not technically prevented from reaching it; nothing in the run records shows that any agent read it. The key was committed before the graded run started and has one commit in its history |
+| Answer-key protection | Excluded from source discovery (`gates.HARNESS_ONLY_FILES`, skipped by `gates.discover_sources` and by intake). Since round 1 (Tier 8) runtime agents read byte-identical staged copies of the discovered sources in the run's `inputs/`, which can never include the key, are not granted the project folder, and carry a permission deny rule for any `answer_key.json` ([`SECURITY.md`](SECURITY.md) §3.2). That is enforced by code and CLI permissions, not cryptography. During the graded run (July, before those controls) the agents' file access was not technically prevented from reaching it; nothing in the run records shows that any agent read it. The key was committed before the graded run started and has one commit in its history |
 | Run | `runs/tier3`, completed 2026-07-24 (assembled across resumed legs; `run_manifest.json` records every step, with `from_earlier_run` marking carried steps) |
 | Models (resolved IDs) | `claude-haiku-4-5-20251001` (classify, fidelity, extract) · `claude-sonnet-5` (synthesize, render, creative A/B arm) · `claude-opus-4-8` (creative A/B arm) — Haiku-era routing |
 | Verdict | **17/17 checks pass** — [`harness_report.json`](../runs/tier3/harness_report.json) |
@@ -59,7 +59,7 @@ checks the evidence layer, tier 2 the brief and both renders, tier 3 the seeded 
 
 | Seeded trap (in the fixture) | Where it was caught |
 |---|---|
-| «μπραντ αγουέρνες», «κι βίζουαλ» — ASR-garbled English terms in the transcript | Fidelity gate flagged both with glossary proposals ([report](../runs/tier3/fidelity/transcript_kickoff.report.json)); carried as-is through extract → brief → renders (T1.4, T3.3) — never silently corrected |
+| «μπραντ αγουέρνες», «κι βίζουαλ» — ASR-garbled English terms in the transcript | Fidelity gate flagged both with glossary proposals ([report](../runs/tier3/fidelity/transcript_kickoff.report.json)); the extract carries both tokens as-is (T1.4) and the brief keeps them in `evidence[].anchor` (T3.3 searches the whole brief JSON). They are **not visible in the renders**: the reader-facing entries say "brand awareness" and "key visual" with no ASR flag, so the resolution happened silently where readers look ([`runs/tier3/KNOWN_DEFECTS.md`](../runs/tier3/KNOWN_DEFECTS.md) B3; pinned by strict-xfail tests and `eval/supplementary.py` S3) |
 | €90k-incl-media (RFP) vs "ογδόντα, ίσως ογδόντα πέντε" excl. media (CFO) | Surfaced as an open conflict with both citations (T3.1 C1); **no merged or converted total anywhere** (X3) |
 | RFP says October launch; a later email moves it to Sept 15 | Conflict with both citations, recency noted, resolution left to the human (T3.1 C2) |
 | RFP audience 18–24 vs CMO's spoken correction to 25–40 | Conflict C3, both cited |
@@ -82,7 +82,7 @@ writes), from `runs/tier3/run_manifest.json`; reproduce the per-stage split with
 Under the current routing only one leg has been measured: transcript extraction took 598 743
 tokens (two Sonnet 5 extraction attempts, 91 918 and 462 130, plus the Sonnet 5 verifier,
 44 695) against 295 774 on the graded run. That run (`runs/routing-validate-01`, 2026-07-29)
-is local and not committed, and it is one leg, not a whole brief.
+is committed evidence (32 KB, synthetic), and it is one leg, not a whole brief.
 
 **Dollars, for readers on API terms** (developer-subscription substrate, CLI-reported
 `cost_usd`; see [`COST_MODEL.md`](COST_MODEL.md)):

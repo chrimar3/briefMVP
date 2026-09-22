@@ -179,7 +179,8 @@ def approve(run, actor, notes, checks, solo_rehearsal=False):
     errors, _ = inspect_creative(text, brief)
     selected = {row['spec_id'] for row in rows}
     selected_table = {'specs': [row for row in spec_table(run)['specs'] if row['id'] in selected]}
-    errors += creative.check_creative_brief(run / record['files'][0]['file'], selected_table, mode='draft')
+    errors += creative.check_creative_brief(run / record['files'][0]['file'], selected_table, mode='draft',
+                                          brief=brief)
     if problems or errors:
         raise ValueError('; '.join(problems + errors))
     separation = _separation(run, actor, record, solo_rehearsal)

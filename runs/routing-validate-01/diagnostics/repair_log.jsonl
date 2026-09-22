@@ -1,0 +1,3 @@
+{"stage": "extraction", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.650349}
+{"stage": "verification", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.2110809}
+{"stage": "extraction", "site": "transcript_kickoff:verified-repair", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.6117783000000001}

@@ -10,8 +10,14 @@
     "rights_and_permissions": true,
     "client_safe": true
   },
-  "approved_at": "2026-09-22T21:30:22.839293+00:00",
-  "draft_sha256": "38d55f29445b4807cdc8f851d71b9f63823e0214fbced00bdd2f9d2521d5c0a5",
-  "brief_approval_sha256": "f1f0edbdef0b6fee64f580083adfbaa83f0b60a278ca9feb5ea69c6f2015248b",
-  "language_review_sha256": "0e7883eb4a22329a53c4fba6087394f40160aeefce29ebeceffcd59163e3da9a"
+  "approved_at": "2026-09-22T21:56:32.502888+00:00",
+  "draft_sha256": "215d2774be6985785ea099c410413ade78509094cc4d2df94d3f194a3f820831",
+  "brief_approval_sha256": "701d5b136e40e040c4a46c4437c2a776c14c922a6dcfbd3e15c5b09a6317caca",
+  "language_review_sha256": "b48a89670fe406a4984e59b9fb8abc4723bb505a1c5e10f69abe92d16293e089",
+  "separation_of_duties": {
+    "enforced": [
+      "creative_registrant != creative_approver",
+      "brief_signer != creative_approver"
+    ]
+  }
 }

@@ -48,6 +48,7 @@ decision (exactly one per row), C = consulted, I = informed. People are named at
 | Approve creative (`delivery approve`) | | | | I | | C | | C | A/R |
 | Release package (`delivery release --actor`) | | | | A/R | R | I | | I | I |
 | Verify a package (`release_control verify --run`) | | | | R | R | | | A | |
+| Verify the audit log (`release_control verify-log`) | | I | | R | R | I | | C | |
 | Withdraw approval (`release_control withdraw`) | I | | | R | | A | | I | C |
 | Record effort (`effort record`) / handoff (`effort handoff`) | | | | R (own) | R (own) | R (own) | R (own) | A/R (handoff) | R (own) |
 | Export scorecard rows, run `eval/pilot_scorecard.py` | I | | | A/R | C | C | | | |

@@ -22,8 +22,9 @@ the all-runs mean next to the clean-only mean. `--tokens` gives the per-stage ca
 only clean runs; both faults are fixed and tested in `tests/test_cost_report.py`.
 
 **Where the numbers come from.** Figures marked **[committed]** come from run directories
-committed to this repo (`runs/tier3`, `runs/voreas-prep-02`, `runs/voreas-prep-03`), so any clone
-reproduces them. Figures marked **[local store]** come from gitignored run directories on the
+committed to this repo (`runs/tier3`, `runs/voreas-prep-02`, `runs/voreas-prep-03`, and the
+current-routing transcript leg `runs/routing-validate-01`, committed at the round-1 integration),
+so any clone reproduces them. Figures marked **[local store]** come from gitignored run directories on the
 operator's machine (the checkout's `runs/`), measured with the same command on 2026-09-23. They are
 reproducible there but not on a fresh clone.
 
@@ -65,7 +66,7 @@ planning figure, and the clean-only mean is a floor. On `voreas_02` (6 sources),
 Haiku-era briefs used **1,309,915** and **1,792,417** tokens [committed]. Both needed repairs, and
 the second is a synthesis/render re-roll on the first's extracts.
 
-## 3. The current routing — measured on one source [local store]
+## 3. The current routing — measured on one source [committed]
 
 `python3 eval/cost_report.py runs/routing-validate-01`. This is an extraction-only run on the
 northlight transcript made on 2026-07-29 under the routing adopted on 2026-07-30.
@@ -199,7 +200,7 @@ non-subagent path, CLAUDE.md rule 4) can remove that overhead, and it has not ru
 | Stage-1 per brief, northlight, all complete runs (n=10) | mean $2.60 (range $2.07–3.20) | [local store] |
 | graded run `tier3`, Stage 1 / Stage 1 + creative A/B | $2.81 / **$3.55** | [committed] |
 | creative A/B, both drafts (`tier3`) | $0.74 | [committed] |
-| current routing, transcript leg only (`routing-validate-01`) | $1.47 (extraction $1.26 + verifier $0.21) | [local store] |
+| current routing, transcript leg only (`routing-validate-01`) | $1.47 (extraction $1.26 + verifier $0.21) | [committed] |
 
 **Previously published ratio.** Against ~€38 of labour per brief (PRD A1 × A4, an assumption), the
 earlier headline of $2.25/brief on the two clean runs gave **~17:1**. On the fixed ruler's clean

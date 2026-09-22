@@ -1,8 +1,8 @@
 {
-  "revision": "d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba",
-  "brief_fingerprint": "865b2a17b0cd31c36c6fdf03be563dcc18533f6c76ebf8b8f3e098a74af849b1",
+  "revision": "83a721649465bb9c8b3f7a541f4b987a25ca4259637650100bb123cd28aa5ebd",
+  "brief_fingerprint": "8a83e8ba33794bafa94eae0f00d36081ba5663946867fb03b313b6915a759437",
   "registered_by": "Synthetic Operator O",
-  "registered_at": "2026-09-22T21:30:22.733110+00:00",
+  "registered_at": "2026-09-22T21:56:32.401592+00:00",
   "claims": [
     {
       "text": "- Campaign objective 1, as signed off. [brief:objectives:0]",
@@ -205,9 +205,9 @@
   ],
   "files": [
     {
-      "file": "creative_versions/d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba/creative.md",
+      "file": "creative_versions/83a721649465bb9c8b3f7a541f4b987a25ca4259637650100bb123cd28aa5ebd/creative.md",
       "name": "creative.md",
-      "sha256": "c5a3d23f5862a70c822cecaa6fc7a8a59feeeb6e752e23041c01c21e09587420"
+      "sha256": "928e4cd4f46615c2acb8c0e3f31ff4d75dfd29b017bf5d291aaee36634d461e0"
     }
   ]
 }

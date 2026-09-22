@@ -350,13 +350,17 @@ def invoke(
     output is not this function's problem — the caller validates artifacts against the schema,
     because "the model replied" and "the model was right" are different questions.
     """
-    if shutil.which(CLAUDE_BIN) is None:
+    found = shutil.which(CLAUDE_BIN)
+    if found is None:
         raise SubagentError(
             f"'{CLAUDE_BIN}' not found on PATH. The pipeline drives Claude Code subagents; "
             f"set BRIEF_BUILDER_CLAUDE_BIN if the CLI lives elsewhere."
         )
 
     cmd = build_command(agent, prompt, access_dirs, model_override=model_override)
+    # Execute exactly what the availability check found, made absolute here: the process starts
+    # in a neutral cwd, where a relative BRIEF_BUILDER_CLAUDE_BIN would no longer resolve.
+    cmd[0] = os.path.abspath(found)
 
     try:
         proc = subprocess.run(
@@ -364,6 +368,8 @@ def invoke(
         )
     except subprocess.TimeoutExpired as exc:
         raise SubagentError(f"subagent '{agent}' exceeded {timeout_s}s") from exc
+    except OSError as exc:
+        raise SubagentError(f"subagent '{agent}': could not start {cmd[0]!r}: {exc}") from exc
 
     if not proc.stdout.strip():
         raise SubagentError(

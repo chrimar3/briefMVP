@@ -69,5 +69,4 @@ select = ["E9", "F"]
 "tests/test_harness.py" = ["F541"]
 "tests/test_publish.py" = ["F401", "F841"]
 "tests/test_rework_report.py" = ["F401"]
-"tests/test_runner.py" = ["F841"]             # line 194: exit code assigned, never asserted
 "tests/test_stages.py" = ["F401"]

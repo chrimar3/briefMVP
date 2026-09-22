@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import extraction, gates, replay, stages
+from pipeline import extraction, gates, quality, replay, stages
 
 REPO = Path(__file__).resolve().parents[1]
 RECORDING = replay.DEFAULT_RECORDED_RUN
@@ -94,9 +94,12 @@ def test_recording_is_pre_human_and_marks_what_replay_synthesised():
     assert "readiness" not in brief
     assert brief["signoff"] == {"status": "draft"}
     assert all(c["status"] == "open" and "resolution" not in c for c in brief["conflicts"])
-    for name in ("brief_en.md", "brief_el.md"):
-        text = (RECORDING / name).read_text(encoding="utf-8")
-        assert "DRAFT" in text and "SIGNED OFF" not in text and "ΥΠΟΓΕΓΡΑΜΜΕΝΟ" not in text
+    labels = stages.load_template_labels(REPO / "templates" / "northlight_client_brief.labels.json")
+    for lang in ("en", "el"):
+        text = (RECORDING / f"brief_{lang}.md").read_text(encoding="utf-8")
+        assert labels[lang]["banner_draft"] in text.splitlines()
+        assert labels[lang]["banner_signed_prefix"] not in text
+        assert "SIGNED OFF" not in text and "ΥΠΟΓΕΓΡΑΜΜΕΝΟ" not in text and "ΕΓΚΡΙΘΗΚΕ" not in text
     for report in (RECORDING / "verification").glob("*.verify.json"):
         assert "Synthesised for offline replay" in json.loads(report.read_text(encoding="utf-8"))["note"]
 
@@ -110,3 +113,23 @@ def test_committed_recording_matches_its_documented_derivation(tmp_path):
     assert sorted(p.relative_to(derived) for p in derived.rglob("*") if p.is_file()) == committed
     for rel in committed:
         assert (derived / rel).read_bytes() == (RECORDING / rel).read_bytes(), rel
+
+
+def test_recording_renders_pass_the_current_render_gates():
+    """The recorded renders are wiring fixtures generated from the recording's own brief.json
+    against today's template: both blocking render gates must accept them as they stand, so the
+    replayed render stage is judged by the real gates, never by a weakened copy."""
+    brief = json.loads((RECORDING / "brief.json").read_text(encoding="utf-8"))
+    brief["readiness"] = gates.compute_readiness_block(brief)
+    glossary = json.loads((REPO / "glossary" / "meltemi.json").read_text(encoding="utf-8"))
+    template = stages.resolve_brief_template(glossary)
+    labels = stages.load_template_labels(template["labels"])
+    el, en = RECORDING / "brief_el.md", RECORDING / "brief_en.md"
+    assert stages.check_render(el, en, brief, glossary) == []
+    assert stages.check_render_template(el, en, brief, labels) == []
+    # The agency approval check too — six of the ten questions cite bracketed transcript
+    # timestamps, the T-01 shape (docs/pilot/GO_LIVE_DECISIONS.md).
+    assert sum(any(r["location"].startswith("[") for r in q["linked_evidence"])
+               for q in brief["open_questions"]) == 6
+    for lang, path in (("en", en), ("el", el)):
+        assert quality.render_coverage(brief, path.read_text(encoding="utf-8"), lang) == []

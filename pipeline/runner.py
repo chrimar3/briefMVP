@@ -680,6 +680,12 @@ class Runner:
         recorded = revisions.load(self.run_dir / "input_snapshot.json")
         if recorded is None or any(key in recorded for key in skeleton):
             paths.update(skeleton)
+        # The render stage's Greek style table (preferred terms, banned calques) is a runtime
+        # input too. Bound on the same rule, keyed on its own presence, so a run recorded before
+        # it was bound keeps resuming on its recorded inputs.
+        style = {"greek_style": stages.GREEK_STYLE_PATH}
+        if recorded is None or any(key in recorded for key in style):
+            paths.update(style)
         try:
             revisions.prepare_run(self.run_dir, paths, self.stage)
         except (ValueError, OSError) as exc:

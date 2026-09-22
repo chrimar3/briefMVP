@@ -9,8 +9,9 @@ request needs to know where all of that is. Deterministic, local, no model calls
     python3 -m pipeline.retention purge --source-sha <sha256> --runs /pilot/runs --actor NAME --reason TEXT
     python3 -m pipeline.retention purge --run /pilot/runs/<run-id> --actor NAME --reason TEXT
 
-`inventory` lists, per source SHA-256, every byte-identical copy (evidence/, history/, release
-packages recorded in `releases.json`), the per-source derivatives (fidelity annotations,
+`inventory` lists, per source SHA-256, every byte-identical copy (evidence/, history/, the
+read-only staged copies agents read in `<run>/inputs/`, release packages recorded in
+`releases.json`), the per-source derivatives (fidelity annotations,
 extracts, verifier reports) and the run-level artifacts that quote all sources (brief, renders,
 review pages); plus each run's personal-data-bearing records and the `claude -p` session IDs
 the run recorded (those transcripts live in the operator's CLI profile, outside the run).
@@ -20,7 +21,10 @@ derivatives; run-level artifacts that still quote the source are listed in the t
 residual, because only `purge --run` can remove them without leaving a broken run.
 `purge --run` deletes the whole run directory. Release packages are listed, never deleted by
 `--run`: they are delivered material and follow the delivery retention rule
-(docs/pilot/DATA_PROTECTION.md §6).
+(docs/pilot/DATA_PROTECTION.md §6). The run's hash-chained `audit_log.jsonl` is never deleted
+silently: `purge --source-sha` never touches it, and `purge --run` writes an audit-log tombstone
+into the purge record first (its SHA-256, entry count, chain head, events by type and whether
+the chain verified), so the deletion of a decision trail is itself on record.
 
 Every purge writes a tombstone (what, when, who, why; hashes of what was deleted, never its
 content) to `retention_tombstones.jsonl` beside the purged runs. Committed evidence (files
@@ -46,9 +50,11 @@ from typing import Iterable, Optional
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import gates
+from pipeline import gates, revisions
 
 TOMBSTONE_FILE = "retention_tombstones.jsonl"
+#: The run's staged, read-only input copies (pipeline/runner.py STAGED_INPUTS_DIR).
+STAGED_INPUTS_DIR = "inputs"
 SHA_RE = re.compile(r"[0-9a-f]{64}")
 
 #: Files that mark a directory as a run directory.
@@ -284,9 +290,7 @@ def inventory(roots: Iterable[Path]) -> dict:
                 entry["identity"] = meta["identity"]
             for path, digest in sorted(hashes.items()):
                 if digest == sha:
-                    area = "package" if path in package_files else (
-                        "history" if "history" in path.relative_to(run).parts else
-                        "evidence" if path.relative_to(run).parts[0] == "evidence" else "run")
+                    area = "package" if path in package_files else _area(path.relative_to(run))
                     entry["copies"].append({"path": str(path), "area": area, "run": str(run)})
             entry["per_source_derivatives"].extend(
                 {"path": str(p), "sha256": hashes.get(p) or sha256_file(p), "run": str(run)}
@@ -297,6 +301,8 @@ def inventory(roots: Iterable[Path]) -> dict:
             "sources": sorted(sources),
             "file_count": len(files),
             "personal_records": [name for name in PERSONAL_RECORDS if (run / name).exists()],
+            "staged_inputs": [{"path": str(p), "sha256": hashes[p]} for p in files
+                              if p.relative_to(run).parts[0] == STAGED_INPUTS_DIR],
             "release_packages": [{"path": str(p), "exists": p.is_dir()} for p in packages],
             "cli_session_ids": session_ids(run),
         })
@@ -315,6 +321,37 @@ def inventory(roots: Iterable[Path]) -> dict:
             "Copies outside the scanned roots (downloads, e-mail, shared drives) are invisible to this tool.",
         ],
     }
+
+
+def _area(relative: Path) -> str:
+    """Where a byte copy sits inside a run: history, evidence, the staged inputs, or the run itself."""
+    if "history" in relative.parts:
+        return "history"
+    return {"evidence": "evidence", STAGED_INPUTS_DIR: "inputs"}.get(relative.parts[0], "run")
+
+
+def audit_log_tombstone(run: Path) -> Optional[dict]:
+    """What a purge records about the run's audit log before deleting it; None if there is none.
+
+    Hashes and counts only (the entries carry staff names): enough to prove later that a chain of
+    N decisions with this head existed and was deleted by this purge, and whether it verified.
+    """
+    path = Path(run) / revisions.AUDIT_LOG
+    if not path.is_file() or path.is_symlink():
+        return None
+    lines = [line for line in path.read_text(encoding="utf-8", errors="replace").splitlines() if line.strip()]
+    events: dict = {}
+    for line in lines:
+        try:
+            event = json.loads(line).get("event", "?")
+        except (ValueError, AttributeError):
+            event = "unreadable"
+        events[event] = events.get(event, 0) + 1
+    problems = revisions.verify_audit_log(run)
+    return {"path": str(path), "sha256": sha256_file(path), "entries": len(lines),
+            "chain_head_sha256": hashlib.sha256(lines[-1].encode("utf-8")).hexdigest() if lines else None,
+            "events": dict(sorted(events.items())), "verified_intact": not problems,
+            "verification_problems": problems}
 
 
 def _delete(path: Path) -> dict:
@@ -372,7 +409,8 @@ def purge_source(sha: str, roots: list, *, actor: str, reason: str, dry_run: boo
     if entry is None:
         raise RetentionError(f"No run under {', '.join(report['roots'])} records a source with SHA-256 {sha}")
     targets = [Path(c["path"]) for c in entry["copies"]] + [Path(d["path"]) for d in entry["per_source_derivatives"]]
-    targets = sorted(dict.fromkeys(targets))
+    # A decision trail is never a source copy; a purge by source must not be able to delete it.
+    targets = sorted(p for p in dict.fromkeys(targets) if p.name != revisions.AUDIT_LOG)
     protection = protection or _Protection()
     allowed, protected = _guard(targets, roots, include_committed, protection)
     residual = sorted(set(entry["run_level_derived"]))
@@ -407,14 +445,17 @@ def purge_run(run: Path, *, actor: str, reason: str, dry_run: bool = False, incl
     sources = run_sources(run)
     packages = release_packages(run)
     sessions = session_ids(run)
+    audit_log = audit_log_tombstone(run)  # recorded BEFORE the directory goes
     record = {
         "action": "purge_run", "target": {"run": str(run), "source_sha256": sorted(sources)},
         "actor": actor, "reason": reason, "at": _now(), "dry_run": dry_run,
+        "audit_log_deleted": audit_log,
         "deleted": [_plan_record(run)] if dry_run else [_delete(run)],
         "release_packages_not_deleted": [str(p) for p in packages if p.exists()],
         "cli_session_ids_to_delete_in_operator_profile": sessions,
         "note": "Release packages are delivered material and follow the delivery retention rule; "
-                "CLI session transcripts are deleted in the operator's CLI profile.",
+                "CLI session transcripts are deleted in the operator's CLI profile. The run's audit log "
+                "is deleted with it; audit_log_deleted is its tombstone (hashes and counts, no names).",
     }
     if not dry_run:
         record["tombstone"] = str(_write_tombstone(tombstone_dir or run.parent, record))

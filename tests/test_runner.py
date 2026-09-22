@@ -205,5 +205,6 @@ def test_without_demo_profile_thin_input_still_refuses(tmp_path):
         "--glossary", str(gates.REPO_ROOT / "glossary" / "meltemi.json")])
     manifest = json.loads((tmp_path / "out" / "refusal-test" / "run_manifest.json")
                           .read_text(encoding="utf-8"))
+    assert code == runner.EXIT_INSUFFICIENT_INPUT
     assert manifest["outcome"] == "insufficient_input"
     assert manifest["demo_profile"] is None

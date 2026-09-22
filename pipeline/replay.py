@@ -19,7 +19,8 @@ What replay is NOT: evidence of model quality. The artifacts are whatever the re
 holds; the gates re-check them against today's fixtures, so replay proves the wiring and the
 gates, never the judgment. The default recording is derived from the graded `runs/tier3`
 pack by `tools/replay/derive_recording.py`, which reverses only the human layer (sign-off,
-conflict resolutions, readiness injection) — see that script for the exact edits.
+conflict resolutions, readiness injection) and regenerates the two renders deterministically
+against today's client-brief template — wiring fixtures, not evidence; see that script.
 
 The fake accepts and ignores every flag it does not need (`--agents`, `--add-dir`,
 `--effort`, …), so command-line changes in `agents.py` never break it.
@@ -46,9 +47,12 @@ RECORDED_RUN_ENV = "BRIEF_BUILDER_REPLAY_RUN"
 REPLAY_MODEL_ID = "offline-replay"
 
 #: `  report    : /abs/path` style lines and the indented path under "exactly this path:".
-#: A path runs to the end of its line, so directories with spaces survive.
-_LABELLED_PATH_RE = re.compile(r"^[ \t]*(?:report|annotated|greek|english)[ \t]*:[ \t]*(/[^\n]*?)[ \t]*$",
-                               re.MULTILINE)
+#: A path runs to the end of its line, so directories with spaces survive; the render order's
+#: trailing `(follows template_greek)` annotation is not part of the path.
+_LABELLED_PATH_RE = re.compile(
+    r"^[ \t]*(?:report|annotated|greek|english)[ \t]*:[ \t]*(/[^\n]*?)"
+    r"(?:[ \t]+\(follows [^()\n]*\))?[ \t]*$",
+    re.MULTILINE)
 _EXACT_PATH_RE = re.compile(r"exactly this path[^\n]*:[ \t]*\n[ \t]*(/[^\n]*?)[ \t]*$", re.MULTILINE)
 _REPAIR_PATH_RE = re.compile(r"previous extract at (/[^\n]+?) failed")
 _PROJECT_ID_RE = re.compile(r"^\s*project_id\s*[:=]\s*(\S+)\s*$", re.MULTILINE)

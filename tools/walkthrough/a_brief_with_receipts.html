@@ -767,7 +767,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <ul class="takeaways">
         <li>Each document is read on its own by a model allowed to record evidence and nothing else.</li>
         <li>Every fact quotes the exact words and code checks the quote exists; one document was sent back once.</li>
-        <li>The transcriber garbled two English terms; the machine flags and proposes; the finished documents print the glossary term, flag cited.</li>
+        <li>Two garbled English terms were flagged with proposals; the finished documents print the glossary term without the flag.</li>
       </ul>
       <h2 class="sub">Listening without correcting</h2>
 <div class="hero clips">
@@ -1058,7 +1058,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <li>Every trap seeded in this project was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
         <li>Every check is a yes or a no; none is an opinion.</li>
       </ul>
-      <p class="note">The answer key is excluded from automatic source discovery, but runtime agents retain Read access to its containing directory. This does not establish that any agent read it.</p>
+      <p class="note">The answer key is excluded from source discovery. In this July run agents could still read its folder; nothing shows one did. Since round 1 agents read staged copies that exclude it, under a deny rule. Not cryptographic.</p>
       <p class="note">T1 = the evidence layer, T2 = the brief and both documents, T3 = the seeded traps, X = traps that must stay out.</p>
       
       <div class="hero"><ul class="exam">
@@ -1286,10 +1286,11 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <li><span class="big">210<small>hours/year target</small></span><p class="what">The assumed baseline is two hours per brief (PRD A1); fifty minutes is an unvalidated attention target (&sect;2): twenty assembling and thirty reviewing. The graded review was not timed; the pilot must measure both tasks. Across 180 briefs a year (A2) that is about 210 hours, worth &euro;4.0&ndash;4.2k at &euro;19&ndash;20 an hour (A4), before running and support costs, which are not yet estimated; all three inputs are validated in week 1.</p></li>
         </ul>
       </div>
-      <h2 class="sub">Since the graded run: Tiers 5&ndash;7</h2>
+      <h2 class="sub">Since the graded run: Tiers 5&ndash;8</h2>
       <ul class="limits">
         <li>Added: evidence-coverage audit and question triage; resolution, bilingual attestation and sign-off by command, bound to the exact revision; creative register, approve, release, verify and withdraw; clarification packs; effort and rework records. All are local commands run by people. <span class="cite">runs/tier_5&ndash;7_report.md &middot; docs/pilot/</span></li>
-        <li>Proven at Tier 7: the software behaves as specified; 587 deterministic tests pass, the frozen evidence still grades 17/17, a synthetic benchmark passes 12/12. <span class="cite">runs/tier_7_report.md</span></li>
+        <li>Round 1 (Tier 8): least-privilege agents, separation of duties with a hash-chained audit log, a data declaration on every project, retention tooling, offline replay. <span class="cite">docs/SECURITY.md &middot; docs/pilot/ &middot; runs/tier_8_report.md</span></li>
+        <li>Proven at Tier 8: the software behaves as specified; 948 deterministic tests pass, the frozen evidence still grades 17/17, a synthetic benchmark passes 12/12. <span class="cite">scripts/check.sh &middot; runs/tier_8_report.md</span></li>
         <li>Not proven: generative quality under the current routing, Greek register, review time, adoption or any time saved; the extra review steps must fit the 30-minute target. <span class="cite">decision 1 &middot; decision 2</span></li>
       </ul>
       <h2 class="sub">Limits</h2>
@@ -1315,7 +1316,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             <li>Proposed binding pilot condition: if weeks 2&ndash;3 miss any release target, week 4 does not go live. The executive sponsor named at kickoff records the week-4 release decision. Default use from month 2 requires a successful pilot report and separate sponsor approval; month-2 onboarding requests are an adoption measure, not a week-4 release criterion.</li>
           </ul>
           <span class="cite">docs/PRD.md &sect;7&ndash;8 &middot; owner: the executive sponsor named at kickoff &middot; needed before week 1</span></li>
-        <li>Re-baseline usage and time: rerun and re-measure under the 30 July routing (a larger extraction model plus a second reader), which on the transcript alone measured 598 743 tokens against 295 774. Authorised by the owner on 2026-09-22: three graded runs each on northlight_01 and voreas_02, recording per-check pass rates and tokens by model. <span class="cite">config/model_routing.json &middot; runs/routing-validate-01 (local, not committed) &middot; docs/OPERATING_DECISIONS.md &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
+        <li>Re-baseline usage and time: rerun and re-measure under the 30 July routing (a larger extraction model plus a second reader), which on the transcript alone measured 598 743 tokens against 295 774. Authorised by the owner on 2026-09-22: three graded runs each on northlight_01 and voreas_02, recording per-check pass rates and tokens by model. <span class="cite">config/model_routing.json &middot; runs/routing-validate-01 (committed) &middot; docs/OPERATING_DECISIONS.md &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
         <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved. <span class="cite">docs/PRD.md &sect;8 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
       </ol>
 <p class="foot">PRD &sect;10 quotes ~&euro;5&ndash;6k a year; the PRD&rsquo;s own assumptions give ~&euro;4.0&ndash;4.2k, the figure used here. Conversion: (120 &minus; 50) &times; 180 / 60 = 210 hours; 210 &times; &euro;19&ndash;20 = &euro;3&#8201;990&ndash;4&#8201;200.</p>
@@ -1340,7 +1341,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         </table></div>
         <p class="foot"><b>Dollars, for readers on API terms:</b> de-duplicated, the graded run cost $3.55 ($2.81 stage one); <a class="repo" href="docs/EVIDENCE.md" target="_blank" rel="noopener">docs/EVIDENCE.md</a> quotes the raw $4.29 because the manifest records each creative arm twice.</p>
         <p class="foot"><b>Why 33 min and 25.2 min:</b> the graded pack was assembled across resumed legs (run_manifest.json marks every stage-one step from_earlier_run); the 29 July capture ran continuously. Render effort was capped on 25 July and a within-source retraction check added on 29 July; neither is in the graded numbers.</p>
-        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, runs/routing-validate-01 (a local run, not committed), docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
+        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, <a class="repo" href="runs/routing-validate-01/" target="_blank" rel="noopener">runs/routing-validate-01</a> (the one current-routing leg), docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
       </details>
     </div>
   </section>
@@ -1376,7 +1377,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
     { g: 'The run, sheet by sheet', t: 'Conflicts', w: 'Three contradictions, both sides quoted, nothing resolved', r: ['code', 'ai'] },
     { g: 'The run, sheet by sheet', t: 'The brief', w: 'One object, ten questions, rendered in Greek and English', r: ['ai', 'code'] },
     { g: 'The run, sheet by sheet', t: 'Sign-off', w: 'A person resolves the conflicts and signs', r: ['people'] },
-    { g: 'The run, sheet by sheet', t: 'The exam', w: 'Seventeen machine checks against a sealed key', r: ['code'] },
+    { g: 'The run, sheet by sheet', t: 'The exam', w: 'Seventeen machine checks against a key fixed before the run', r: ['code'] },
     { g: 'The run, sheet by sheet', t: 'Creative brief', w: 'The creative draft and its key visual', r: ['ai', 'people'] },
     { g: 'Numbers and decisions', t: 'Numbers and decisions', w: 'What it costs, what it replaces, what must be decided', r: ['code'] }
   ];

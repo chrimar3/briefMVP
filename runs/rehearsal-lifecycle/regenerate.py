@@ -7,7 +7,9 @@ What it does, in a temporary directory, with fictional actors in distinct roles:
 
     prepare → init → audit (blocked) → resolve → render replay → triage → checklist →
     catalog bind → deliverables → attest → audit (clean) → approve → handover →
-    register creative → creative approve → release → verify → withdraw → verify (withdrawn)
+    register creative → creative approve → release → verify → withdraw → verify (withdrawn) →
+    verify-log (the hash-chained audit log covers every decision) → retention inventory →
+    retention purge --dry-run (previews the pilot-end deletion, audit-log tombstone included)
 
 Every step is the real CLI a champion would type (`python3 -m pipeline.<module> ...`), run as a
 subprocess from the repository root; the transcript records each command, its exit code and
@@ -18,10 +20,12 @@ how a live brief is handled:
   * the committed tier3 artifacts are copied; the developer's real name (signer and resolver of
     record) is replaced by a fictional actor, and sign-off is reset to draft;
   * the timeline conflict is reset to open so the lifecycle can resolve it again (same text);
-  * open questions the render citation gate cannot verify at all (PREPARATION.json why_moved) are
-    moved out of the canonical brief and listed, and the remaining question blocks in the
-    stored renders get their exact linked-evidence tags — a deterministic stand-in for a
-    current-template re-render, which would need a model call;
+  * the question blocks in the stored renders get their exact linked-evidence tags — a
+    deterministic stand-in for a current-template re-render, which would need a model call.
+    All ten questions stay in the brief: until go-live precondition T-01 was fixed
+    (pipeline/quality.py tag_location) the six whose evidence is a bracketed transcript
+    timestamp could never pass the render citation check and had to be moved out; the script
+    now refuses, rather than works around, any question the check cannot verify;
   * the "render replay" step copies those prepared renders back after `resolve` archived them.
 The creative draft is text written for this exercise (not model output). The spec catalog is
 a synthetic catalog on a reserved `.invalid` domain with the stub's invented values.
@@ -93,9 +97,15 @@ def _probes(names: list) -> set:
     return {name.split()[-1][:6] for name in names if name.split()}
 
 
+def _tags(question: dict) -> str:
+    """The question's exact linked-evidence tags, in the render order's `[source_id location]` form."""
+    return " ".join(f"[{r.get('source_id', '')} {quality.tag_location(r.get('location'))}]"
+                    for r in question.get("linked_evidence") or [])
+
+
 def _verifiable(question: dict) -> bool:
     """Can ANY render satisfy quality.render_coverage for this question? Asked of the gate itself."""
-    tags = " ".join(f"[{r.get('source_id', '')} {r.get('location', '')}]" for r in question.get("linked_evidence") or [])
+    tags = _tags(question)
     probe = {"open_questions": [question]}
     return not quality.render_coverage(probe, f"## ⚠ Q\n\n1. Probe {tags}\n", "en")
 
@@ -126,7 +136,7 @@ def _rewrite_questions(render: str, keep: list, questions: list) -> str:
     for new_number, index in enumerate(keep, 1):
         block = re.sub(r"^\d+\.", f"{new_number}.", blocks[index], count=1)
         first, _, rest = block.partition("\n")
-        tags = " ".join(f"[{r['source_id']} {r['location']}]" for r in questions[index].get("linked_evidence") or [])
+        tags = _tags(questions[index])
         out.append(f"{first.rstrip()} {tags}\n{rest}")
     return head + "".join(out) + tail
 
@@ -145,11 +155,13 @@ def prepare(run: Path, renders_aside: Path) -> dict:
 
     brief = json.loads((run / "brief.json").read_text(encoding="utf-8"))
     original_questions = copy.deepcopy(brief["open_questions"])
-    keep = [i for i, q in enumerate(original_questions) if _verifiable(q)]
-    moved = [{"index": i, "field": q["field"], "linked_sources": sorted({r["source_id"] for r in q.get("linked_evidence") or []}),
-              "locations": [r["location"] for r in q.get("linked_evidence") or []]}
-             for i, q in enumerate(original_questions) if i not in keep]
-    brief["open_questions"] = [original_questions[i] for i in keep]
+    unverifiable = [i for i, q in enumerate(original_questions) if not _verifiable(q)]
+    if unverifiable:
+        raise RehearsalError(f"open questions {unverifiable} cannot satisfy pipeline/quality.py render_coverage "
+                             f"with their exact evidence tags; fix the check, never drop the questions")
+    keep = list(range(len(original_questions)))
+    timestamped = sum(any(str(r.get("location", "")).startswith("[") for r in q.get("linked_evidence") or [])
+                      for q in original_questions)
     timeline = next(i for i, c in enumerate(brief["conflicts"]) if c["field"] == "timeline")
     reset_resolution = brief["conflicts"][timeline]["resolution"]
     brief["conflicts"][timeline] = {k: v for k, v in brief["conflicts"][timeline].items()
@@ -178,13 +190,14 @@ def prepare(run: Path, renders_aside: Path) -> dict:
         "signoff_reset": "signed_off → draft (sign-off is what this rehearsal exercises)",
         "conflict_reset": {"field": "timeline", "index": timeline, "resolution_text_reused": reset_resolution},
         "questions_kept": len(keep),
-        "questions_moved_out": moved,
-        "why_moved": ("pipeline/quality.py render_coverage requires each question's evidence location inside "
-                      "one bracketed tag matched by [^]]+; a location that itself contains ']' (every bracketed "
-                      "transcript timestamp such as [00:03:41]) can never satisfy it. Asked of the gate itself "
-                      "per question; if the gate changes, the kept set changes with it."),
-        "render_patch": "stored tier3 renders: sign-off banner line removed, question blocks renumbered and "
-                        "given exact [source_id location] tags for the kept questions",
+        "questions_with_timestamp_evidence": timestamped,
+        "questions_note": ("every open question stays in the brief. Before go-live precondition T-01 was fixed "
+                           "(pipeline/quality.py tag_location), render_coverage could not verify a question whose "
+                           "evidence is a bracketed transcript timestamp such as [00:03:41], and earlier versions "
+                           "of this rehearsal moved those questions out. The script now refuses any question the "
+                           "check cannot verify instead of working around it."),
+        "render_patch": "stored tier3 renders: sign-off banner line removed, and each question block given its "
+                        "exact [source_id location] tags (a transcript timestamp written without its own brackets)",
     }
 
 
@@ -222,13 +235,6 @@ def cli(transcript: Transcript, step: str, module: str, *args, expect: int = 0, 
     return result.stdout
 
 
-def supports(module: str, subcommand: str, flag: str) -> bool:
-    """Does this CLI subcommand accept `flag`? Lets the rehearsal follow a stricter CLI (e.g. release --actor)."""
-    result = subprocess.run([sys.executable, "-m", module, subcommand, "--help"], cwd=REPO,
-                            capture_output=True, text=True, timeout=60)
-    return flag in result.stdout
-
-
 def _json_lines(keys):
     def pick(output):
         try:
@@ -237,6 +243,26 @@ def _json_lines(keys):
             return output.strip().splitlines()[-3:]
         return [f"{k}: {json.dumps(data.get(k), ensure_ascii=False)[:300]}" for k in keys if k in data]
     return pick
+
+
+def _inventory(output):
+    data = json.loads(output)
+    areas = {}
+    for source in data["sources"]:
+        for item in source["copies"]:
+            areas[item["area"]] = areas.get(item["area"], 0) + 1
+    run = data["runs"][0]
+    return [f"runs: {data['run_count']}", f"sources: {len(data['sources'])}",
+            f"byte copies by area: {json.dumps(dict(sorted(areas.items())))}",
+            f"personal records: {len(run['personal_records'])}", f"release packages: {len(run['release_packages'])}"]
+
+
+def _purge_preview(output):
+    data = json.loads(output)
+    stone = data.get("audit_log_deleted") or {}
+    return [f"dry_run: {json.dumps(data['dry_run'])}",
+            f"audit_log_deleted: entries {stone.get('entries')}, verified_intact {json.dumps(stone.get('verified_intact'))}",
+            f"release_packages_not_deleted: {len(data['release_packages_not_deleted'])}"]
 
 
 def _blockers(output):
@@ -277,7 +303,7 @@ def write_creative_draft(path: Path, brief: dict) -> None:
     lines += [f"- Key message {i + 1}, as signed off. [brief:key_messages:{i}]" for i in range(len(brief["key_messages"]))]
     lines += ["", "## Mandatories (verbatim from the signed brief)", ""]
     lines += [f"- {entry['content']} [brief:mandatories:{i}]" for i, entry in enumerate(brief["mandatories"])]
-    lines += ["", "## Questions for the creative team", "",
+    lines += ["", "## Strategic tensions (questions for the creative team)", "",
               "- The resolved audience differs from the RFP's original audience; which executions change? [brief:objectives:0]",
               ""]
     path.write_text("\n".join(lines), encoding="utf-8")
@@ -353,10 +379,7 @@ def lifecycle(work: Path) -> tuple:
         "--notes", "Rehearsal review: references, mandatories and deliverables checked on synthetic material.",
         "--checks", "all_facts_cited", "qualifiers", "mandatories", "brand_voice", "deliverables",
         "rights_and_permissions", "client_safe", pick=_json_lines(["actor", "approved_at"]))
-    release_args = ["release", run, "--output", package]
-    if supports("pipeline.delivery", "release", "--actor"):
-        release_args += ["--actor", OPERATOR]
-    cli(t, "release package", "pipeline.delivery", *release_args)
+    cli(t, "release package", "pipeline.delivery", "release", run, "--output", package, "--actor", OPERATOR)
     cli(t, "verify package against the run", "pipeline.release_control", "verify", package, "--run", run,
         pick=_json_lines(["valid", "receipt_matched", "withdrawn", "errors"]))
     cli(t, "withdraw approval (account lead)", "pipeline.release_control", "withdraw", run, "--actor", ACCOUNT_LEAD,
@@ -364,6 +387,12 @@ def lifecycle(work: Path) -> tuple:
         pick=_json_lines(["actor", "reason"]))
     cli(t, "verify package after withdrawal", "pipeline.release_control", "verify", package, "--run", run,
         expect=2, pick=_json_lines(["valid", "receipt_matched", "withdrawn", "errors"]))
+    cli(t, "verify audit log", "pipeline.release_control", "verify-log", run,
+        pick=_json_lines(["valid", "entries", "errors"]))
+    cli(t, "retention inventory", "pipeline.retention", "inventory", "--runs", run, pick=_inventory)
+    cli(t, "retention purge (dry run)", "pipeline.retention", "purge", "--run", run, "--dry-run",
+        "--actor", OPERATOR, "--reason", "Rehearsal: pilot-end deletion previewed, nothing deleted.",
+        pick=_purge_preview)
     return preparation, t, run, package
 
 

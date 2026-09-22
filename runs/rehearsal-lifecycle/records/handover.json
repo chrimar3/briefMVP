@@ -1,7 +1,7 @@
 {
   "mode": "APPROVED BRIEF HANDOVER",
   "creative_release": "requires separate creative approval",
-  "fingerprint": "865b2a17b0cd31c36c6fdf03be563dcc18533f6c76ebf8b8f3e098a74af849b1",
+  "fingerprint": "8a83e8ba33794bafa94eae0f00d36081ba5663946867fb03b313b6915a759437",
   "deliverables": [
     {
       "channel": "Cross-channel",
@@ -30,7 +30,7 @@
         }
       ],
       "actor": "Synthetic Traffic Reviewer T",
-      "updated_at": "2026-09-22T21:30:22.050810+00:00",
+      "updated_at": "2026-09-22T21:56:31.748645+00:00",
       "refs": [
         "deliverables:0"
       ]
@@ -63,7 +63,7 @@
         }
       ],
       "actor": "Synthetic Traffic Reviewer T",
-      "updated_at": "2026-09-22T21:30:22.143451+00:00",
+      "updated_at": "2026-09-22T21:56:31.832998+00:00",
       "refs": [
         "deliverables:0"
       ],

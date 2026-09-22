@@ -165,7 +165,8 @@ _PITCH = """
     <div class="g-card"><h3>Resolve conflicts</h3><p>When sources disagree, both quotes
       are shown with citations. Resolution belongs to the account lead, by design.</p></div>
     <div class="g-card"><h3>Silently fix garbles</h3><p>A mangled term is extracted
-      as written and flagged — the reader decides what it meant.</p></div>
+      as written and flagged for a person to confirm. (The graded run's renders dropped
+      that flag — a documented defect, runs/tier3/KNOWN_DEFECTS.md B3.)</p></div>
     <div class="g-card"><h3>Invent figures</h3><p>"Around eighty" stays that way until
       the client says eighty <em>what</em>. No number appears that no source stated.</p></div>
     <div class="g-card"><h3>Release creative on its own</h3><p>Creative starts as a draft,
@@ -183,8 +184,12 @@ _PITCH = """
   attestation and sign-off bound to the exact revision; creative registration, approval,
   release, verification and withdrawal; clarification packs; effort and rework records.</p>
   <div class="g-grid">
+    <div class="g-card"><h3>Hardened in round 1</h3><p>A review panel's ten moves (Tier 8):
+      runtime agents read only staged copies and follow an untrusted-content rule; separation
+      of duties and a hash-chained audit log; a data declaration on every project (refused
+      without one); retention tooling; fixed bilingual templates; an offline replay.</p></div>
     <div class="g-card"><h3>What that proves</h3><p>The software behaves as specified: at
-      Tier 7, 587 deterministic tests pass, the frozen evidence still grades 17/17 and a
+      Tier 8, 948 deterministic tests pass, the frozen evidence still grades 17/17 and a
       synthetic fault-injection benchmark passes 12/12 — a software rehearsal.</p></div>
     <div class="g-card"><h3>What it does not prove</h3><p>Generative quality under the
       current model routing, Greek register, review time, adoption or any time saved.
