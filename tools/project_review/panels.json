@@ -1,0 +1,62 @@
+{
+ "product": {
+  "layer": "Layer 1 — Product & business",
+  "aspects": ["value_framing", "pilot_readiness"],
+  "evidence": "README.md, docs/PRD.md, docs/OPERATING_DECISIONS.md, docs/TIERS.md, docs/COST_MODEL.md, docs/pilot/ (all files), runs/tier_5_report.md to runs/tier_7_report.md, START_HERE.html",
+  "judges": {
+   "p1_agency_md": "the managing director of a 50-person Greek creative agency who would sign off a pilot and answer for its risk and return",
+   "p2_account_director": "a senior account director at a Greek agency who writes client briefs every week and would be the daily user",
+   "p3_transformation_consultant": "an AI-transformation consultant who has run controlled generative-AI pilots in professional-services firms"
+  }
+ },
+ "ai_system": {
+  "layer": "Layer 2 — AI system design",
+  "aspects": ["prompt_skill_design", "routing_usage", "evaluation_method"],
+  "evidence": "skills/*.md, .claude/agents/*.md, config/model_routing.json, pipeline/agents.py, pipeline/stages.py, pipeline/extraction.py, eval/ (harness.py, agency_benchmark.py, cost_report.py, substrate_spike.py), fixtures/ (all five), runs/tier3/run_manifest.json, runs/cost_c*_report.md, runs/voreas_prep_report.md, docs/COST_MODEL.md, docs/EVIDENCE.md",
+  "judges": {
+   "a1_eval_scientist": "an LLM evaluation scientist who designs benchmarks and statistical evaluation for generative systems",
+   "a2_prompt_engineer": "an applied LLM engineer who writes production prompts and agent definitions and debugs their failure modes",
+   "a3_llmops_engineer": "an LLMOps / ML platform engineer responsible for model routing, usage budgets and observability"
+  }
+ },
+ "output": {
+  "layer": "Layer 3 — Output quality",
+  "aspects": ["brief_accuracy", "bilingual_quality", "creative_quality"],
+  "evidence": "fixtures/northlight_01/ (the four sources and brand guidelines; do NOT treat answer_key.json as an output), runs/tier3/extracts/, runs/tier3/brief.json, runs/tier3/brief_el.md, runs/tier3/brief_en.md, runs/tier3/creative/, runs/tier3/harness_report.json, config/channel_specs.json, runs/voreas_prep_report.md, runs/voreas-prep-02 and -03, skills/TRANSLATION.md",
+  "judges": {
+   "o1_bilingual_strategist": "a bilingual Greek–English account strategist who checks briefs against the client's own words",
+   "o2_greek_editor": "a professional Greek copy editor and Greek–English translator for marketing and advertising",
+   "o3_creative_director": "an executive creative director at an agency who receives creative briefs and judges whether a team can work from them"
+  }
+ },
+ "engineering": {
+  "layer": "Layer 4 — Engineering",
+  "aspects": ["architecture", "code_quality", "testing_ci", "reproducibility_dx"],
+  "evidence": "pipeline/ (all modules), eval/, demo/, tests/, tools/ (exclude tools/project_review/rounds), schema/, config/, requirements.txt, .github/workflows/, demo.sh, run_full.sh, README.md run sections, AGENTS.md",
+  "judges": {
+   "e1_staff_python": "a staff Python engineer reviewing the codebase for a hiring panel",
+   "e2_test_lead": "a test and QA lead who judges suites by what they would catch, not by their count",
+   "e3_dx_engineer": "a developer-experience engineer who clones repositories and times how long it takes a newcomer to run and change them"
+  }
+ },
+ "trust": {
+  "layer": "Layer 5 — Trust",
+  "aspects": ["human_governance", "security_injection", "data_protection"],
+  "evidence": "pipeline/gates.py, pipeline/creative.py, pipeline/delivery.py, pipeline/release_control.py, pipeline/agency.py, pipeline/handover.py, pipeline/agents.py, pipeline/intake.py, .claude/agents/*.md (tool lists), skills/SOURCES.md, schema/brief_schema.json, config/, docs/OPERATING_DECISIONS.md, docs/pilot/OPERATING_TERMS.md, docs/pilot/CREATIVE_DELIVERY.md, docs/PRD.md (risks), tests/",
+  "judges": {
+   "t1_appsec": "an application security engineer specialising in LLM applications and prompt injection",
+   "t2_dpo": "a data protection officer for EU/Greek agencies who assesses GDPR readiness of AI tooling",
+   "t3_ai_governance": "an AI governance and risk lead who audits human-in-the-loop controls and accountability"
+  }
+ },
+ "communication": {
+  "layer": "Layer 6 — Communication",
+  "aspects": ["documentation", "stakeholder_materials"],
+  "evidence": "README.md, AGENTS.md, CLAUDE.md, docs/ (all), runs/tier_*_report.md, HANDOFF_WALKTHROUGH.md, WALKTHROUGH.html, SHARE_ME.html, START_HERE.html, reviews/README.md",
+  "judges": {
+   "c1_tech_writer": "a senior technical writer who audits documentation sets for accuracy, currency and reading order",
+   "c2_exec_comms": "an executive-communications consultant from a top strategy firm who prepares board decision materials",
+   "c3_hiring_lead": "the lead of the hiring panel that set this case study, deciding what it shows about the candidate"
+  }
+ }
+}

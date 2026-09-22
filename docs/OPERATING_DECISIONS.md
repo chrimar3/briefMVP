@@ -22,3 +22,28 @@ No UI/integration, model-routing or frozen-schema change was authorized by this 
 The Tier-4 `creative-shadow` identifier and legacy checker remain for compatibility with
 historical evidence. Newly generated output uses CREATIVE DRAFT; it can become APPROVED FOR
 DELIVERY through the new human approval/release workflow.
+
+## 2026-09-22 — Whole-project review loop and four owner decisions
+
+Owner instruction: rate every aspect of the project with independent judge panels, create a
+baseline, then work in rounds of the ten highest-leverage moves until every aspect is above
+8/10. The frozen rubric, panels and baseline live in `tools/project_review/` (6 layers, 17
+aspects, 3 independent specialist judges per layer; baseline round `r0`, every aspect 5.0–7.0).
+Loop judges and editors run on Claude because Codex was at its usage limit (owner's choice).
+
+The owner decided, in answer to explicit questions:
+
+1. **Live re-baseline authorized.** After graded-fixture text is removed from the runtime
+   prompts, run 3 graded rolls on each of `northlight_01` and `voreas_02` under the current
+   routing, on the owner's Claude subscription. This produces per-check pass rates and usage
+   in tokens by model for the routing actually in use.
+2. **One canonical walkthrough.** Correct `WALKTHROUGH.html` (v1) to match the current system
+   (creative delivery after human approval, Tier 5–7 operations) and make it the canonical
+   page. The v2 redesign is retired and kept as a historical record.
+3. **Creative delivery is in the pilot from week 1**, under enforced separation of duties
+   (a creative approver distinct from the person who registered the draft and from the brief
+   signer) and the existing release, verification and withdrawal controls.
+4. **Explicit data declaration is part of the input contract.** A project without a data
+   declaration is refused. Fixtures declare `synthetic`; any non-synthetic project must carry a
+   recorded approval reference. Real client data still requires the agency's data-policy
+   approval; this decision adds the control, it does not grant that approval.

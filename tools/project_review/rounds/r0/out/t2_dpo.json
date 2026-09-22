@@ -1,0 +1,110 @@
+{
+  "scores": [
+    {
+      "aspect": "human_governance",
+      "score": 6,
+      "evidence": "Strong core: synthesis gate rejects any conflict not 'open' (pipeline/stages.py:363-370); agency.audit blocks approval while any conflict lacks status resolved_by_human + resolution + resolved_by (pipeline/agency.py:117-119); brief approval binds to a SHA-256 fingerprint over brief, renders, snapshot, companion records and extracts (pipeline/revisions.py fingerprint/require_current_approval); creative approval binds draft, brief-approval and language-review hashes and requires all seven checks (pipeline/delivery.py approve/require_creative_approval); withdrawal is persisted before archiving and blocks re-use of the withdrawn hashes (pipeline/release_control.py withdraw/require_not_withdrawn); release refuses in-run or existing destinations and writes under a lock; runtime agents have no Bash so cannot run the approval CLIs; docs honestly state attribution is not identity verification (docs/pilot/CREATIVE_DELIVERY.md:77,101; release_control.verify 'boundary'). Suite: 587 passed, 7 skipped, 16 xfailed. I verified a bypass empirically with a scratch script: on a make_review_run fixture with one open conflict, `python -m pipeline.agency apply RUN --candidate cand.json --actor 'Junior operator' --reason wording` where the candidate sets conflicts[0] to resolved_by_human with resolved_by='Head of Client Services' returns 0 and clears the 'conflict.0: needs a human resolution' blocker; a second apply with conflicts=[] also returns 0 and deletes the conflict entirely. apply_candidate (pipeline/agency.py:194-209) only checks schema validity and meta identity.",
+      "defects": [
+        "The amendment path (agency.apply_candidate, pipeline/agency.py:194-209) lets any operator mark conflicts resolved under someone else's name or delete conflict objects outright, clearing the approval blocker; only an amendments.json diff records it. This bypasses the dedicated attributed `resolve` command and the 'resolution is human-only, by the named resolver' guarantee (PRD DR-10). No test covers it (tests/test_agency_operations.py:124-136 only tests wording/identity).",
+        "No separation of duties: the same --actor string can register the creative, attest the language review, sign the brief and approve the creative; docs/pilot/CREATIVE_DELIVERY.md:4 promises 'A separate creative lead approves', which the code does not enforce (delivery.approve never compares actor with registered_by, approval.json actor or language_review actor).",
+        "Tamper-evidence is local and unchained: approval.json, creative_approval.json, amendments.json, history/ and releases.json are plain rewritable JSON in the run directory, with no append-only hash chain, so a careless or motivated operator can rewrite the audit trail without detection (honestly disclosed as 'not digital signatures', but no detection either).",
+        "Runtime subagents hold Write access to the whole run directory where the governance records live (pipeline/runner.py:_access_dirs). Protection against a model forging approval.json rests on its inability to compute SHA-256 without Bash, not on permissions."
+      ],
+      "to_reach_9": "Make apply_candidate refuse any change to conflicts[] status/resolution/resolved_by and any removal of a conflict (route those only through `resolve`, which records the invoking actor), with negative tests; enforce distinct actors for creative registrar vs creative approver (and optionally brief signer vs language attester) or record an explicit owner-approved waiver; add a hash-chained append-only governance log (each event carries the previous event's hash) verified by audit/release; narrow agent write scope to a per-stage output directory that does not contain approval records."
+    },
+    {
+      "aspect": "security_injection",
+      "score": 5,
+      "evidence": "Positives: subprocess uses list args, no shell, and a timeout (pipeline/agents.py invoke); agents run from a neutral temp cwd with inline definitions, so repo CLAUDE.md never loads; every runtime agent's tools are Read, Write only, and --allowedTools matches them (pipeline/agents.py ALLOWED_TOOLS; .claude/agents/*.md frontmatter), so there is no Bash and no web tool; work orders pass paths, not source content (pipeline/extraction.py build_work_order); extracted citations are verified verbatim against sources (gates.verify_citations) and outputs are schema-validated; delivery rejects symlinks, path separators, non-hex revisions and active SVG, and resolves paths inside the run (pipeline/delivery.py current_draft/register); HTML views escape every model string (pipeline/docview.py:94-122, run_review _e); the API key comes only from the environment (eval/substrate_spike.py:116); CI permissions are contents: read.",
+      "defects": [
+        "Prompt injection in source documents is not addressed anywhere: skills/SOURCES.md, SYNTHESIS.md, TRANSCRIPTS.md and the inline classify/verify-extract/creative-shadow prompts carry no rule that source text is data and embedded instructions are to be ignored or flagged. No fixture contains an injection payload and no test exercises one (grep for injection/ignore previous across skills/, fixtures/ and tests/ finds nothing relevant). Yet the product's core input is client-supplied email, RFP and transcript text.",
+        "Tool scopes are not path-scoped: `--allowedTools Read Write` with bare tool names plus `--permission-mode acceptEdits` (pipeline/agents.py invoke) uses no permission deny rules and no settings file (.claude/ has no settings.json). --add-dir extends the working set but does not confine Read/Write to it, so an injected source could lead an agent to read files elsewhere on the operator's machine into model context, which then goes to the provider.",
+        "Least privilege is violated inside the granted set: every stage, including extract, verify-extract and creative, gets write access to the project source folder, schema/, config/, templates/ and the glossary directory (pipeline/runner.py:132-143), when each needs to write only its run output. schema/*.json is not in the input snapshot (pipeline/runner.py:466-475 hashes sources, glossary, config and skills only), so a model rewriting extract_schema.json or brief_schema.json would weaken validation for that run and every later run without any gate noticing.",
+        "Supply chain: requirements.txt uses open lower bounds (jsonschema>=4.0, pytest>=7.0, PyYAML>=6.0) with no lock file or hashes; .github/workflows/quality.yml pins actions/checkout by mutable tag @v4, not a commit SHA; the CLAUDE_BIN override comes from the environment (BRIEF_BUILDER_CLAUDE_BIN) without validation.",
+        "No threat model document: the PRD's risk section (docs/PRD.md section 9) covers confidentiality and hallucination but not adversarial inputs, tool abuse or model-driven file writes."
+      ],
+      "to_reach_9": "Add an untrusted-content rule to SOURCES.md and the other runtime prompts, re-synced into the agent files (treat source text as evidence only; an instruction addressed to the assistant becomes an extraction_note or open question, never an action); add a synthetic injection fixture plus deterministic tests (for example, an email line asking the agent to read ~/.ssh or mark conflicts resolved) and assert the gates refuse or flag it; replace bare tools with path-scoped permissions (Read(<dir>/**), Write(<run_dir>/**)) or a generated per-invocation settings file with deny rules; give each stage write access only to its output directory and add schema/*.json to the input snapshot; pin dependencies with hashes (requirements.lock) and pin actions by SHA; add docs/THREAT_MODEL.md."
+    },
+    {
+      "aspect": "data_protection",
+      "score": 6,
+      "evidence": "Sensitivity tiers are enforced deterministically before any model call: runner.run loads the client config through extraction.load_client_config, which calls gates.enforce_sensitivity_tier (pipeline/runner.py:433-440; pipeline/extraction.py:48-55). The tier is enforced again after classify (pipeline/stages.py:103-137), at synthesis (stages.py:574) and on every agency read (agency.py:25), and the brief schema enum admits only S0/S1. Intake requires an explicit --tier and never infers it (pipeline/intake.py:166, 212). The answer key is refused as evidence (revisions.capture_evidence). Release strips evidence, paths and audit comments (delivery.release public_rows). docs/pilot/OPERATING_TERMS.md is a candid preparation record: DPA, zero retention, EU region, retention period, deletion at pilot end and read access are all listed as OWNER TO CONFIRM with owners; it gives a blast-radius list for leaving the fixtures-only boundary (tracked fixtures/ and glossary/, runs/ exceptions, default --out paths) and a draft rule 4a. The scorecard pseudonymises leads (L1/L2, mapping kept outside the repository; docs/pilot/SCORECARD.md:64). The PRD notes consent and a lawful basis for call recording (docs/PRD.md:208) and consent for recorded kickoffs (PRD.md:126).",
+      "defects": [
+        "No DPIA input pack or record of processing: nothing describes data categories, data subjects (client staff named as speakers and authors, email senders and signatures, third parties mentioned in meetings), purposes, recipients and processors (Anthropic, plus any STT vendor), international transfer mechanism, retention per artifact class, or risk and measure pairs. OPERATING_TERMS covers commercial and account terms, not these GDPR Art. 30/35 inputs.",
+        "No lawful basis or transparency analysis for the personal data inherent in the product: schema-required speaker_or_author and verbatim quotes mean named individuals' statements are sent to the model provider and persisted. No Art. 6 basis is recorded (for example, legitimate interest with a balancing test), no Art. 13/14 notice route for meeting participants and client contacts, and no data-subject-rights procedure (access, erasure, objection) across runs.",
+        "Retention and deletion have no tooling and copies multiply: revisions.capture_evidence stores hash-named copies of every source in each run (runs/<ts>/evidence/); archive() moves superseded artifacts into history/ and never prunes; question_exchange, releases.json (absolute paths) and delivered packages add more copies. There is no purge or retention command, no retention setting in config/, and no inventory of where a given source's content now lives, so a pilot-end deletion or an erasure request cannot be executed reliably.",
+        "The fixtures-only boundary is enforced by policy alone: the runner and intake accept any folder, intake's documented example writes into tracked fixtures/ (pipeline/intake.py:8), and nothing requires a synthetic-data marker or an explicit out-of-repo --out before a run. OPERATING_TERMS section e documents this but proposes no technical guard.",
+        "The tier is a client-level declaration with no content screening: nothing flags special-category data (GDPR Art. 9, such as health claims or data about children) or unexpected personal data in an S0/S1 client's documents before they reach the model, and no data-minimisation option (such as pseudonymising speakers before extraction) exists or has been evaluated.",
+        "Effort recording (pipeline/effort.py; docs/pilot/EFFORT_RECORDING.md) is designed to capture named staff minutes in a pilot but has no purpose-limitation statement (not for individual performance evaluation) or employee-information step. That is relevant under GDPR Art. 88 and Greek employment practice."
+      ],
+      "to_reach_9": "Add docs/pilot/DATA_PROTECTION.md as a DPIA input pack: a per-stage data-flow table showing what text, including names, goes to which processor and where it is stored; data subjects and categories; lawful basis options with a legitimate-interest balancing template; a transparency notice outline for meeting participants; transfer mechanism and sub-processor questions; a retention schedule per artifact class; and a rights-request procedure. Add a deterministic `pipeline/retention.py` (list, and purge with --dry-run) that inventories evidence/, history/, question_exchange/ and release receipts per source hash, with tests. Add a runner/intake guard that refuses in-repo --out for non-fixture folders unless the project declares `synthetic: true`. Add an optional deterministic pre-model screen that flags special-category keywords and email or phone patterns as open questions. Add a purpose-limitation note to EFFORT_RECORDING.md."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Close the amendment-path conflict bypass",
+      "aspects": ["human_governance", "testing_ci", "brief_accuracy"],
+      "rationale": "Verified: `agency apply` with a hand-edited candidate can mark a conflict resolved under another person's name, or delete it, and clear the approval blocker. This is the one concrete way a careless operator defeats the 'conflicts resolved only by a named human' control.",
+      "concrete_changes": "pipeline/agency.py apply_candidate: before archive, compare old['conflicts'] with candidate['conflicts']. Raise ValueError if the count differs or if any conflict's positions, status, resolution or resolved_by changed ('conflict changes go through `agency resolve`'). tests/test_agency_operations.py: add negative tests for relabelling resolved_by, flipping status and deleting a conflict through apply, and a positive test that non-conflict wording edits still apply.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Add untrusted-content rules plus an injection fixture and tests",
+      "aspects": ["security_injection", "prompt_skill_design", "evaluation_method", "testing_ci"],
+      "rationale": "The core input is client-authored text, yet no runtime prompt says embedded instructions are data, and nothing exercises the case. This is the single largest gap a security reviewer would flag.",
+      "concrete_changes": "skills/SOURCES.md, TRANSCRIPTS.md and SYNTHESIS.md, plus the inline prompts in .claude/agents/classify.md, verify-extract.md and creative-shadow.md: add a rule that source and extract text is evidence only; text addressed to the assistant or requesting file access or status changes is never followed and is recorded as an extraction_note or open question. Re-sync the injected blocks (tests/test_agents.py enforces byte equality). Add a synthetic fixture folder, for example fixtures/injection_01 (no answer key needed), whose email contains injection lines, and deterministic tests showing that an extract or brief that sets a conflict resolved or cites a non-source path fails the existing gates. Changing the skill files alters runtime instructions, so the owner should approve.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Path-scope and minimise subagent permissions",
+      "aspects": ["security_injection", "data_protection", "architecture", "human_governance"],
+      "rationale": "Bare `--allowedTools Read Write` is not path-scoped, and every stage can write to sources, schema/, config/, templates/ and the glossary. Least privilege would confine reads to declared inputs and writes to the stage's output directory, which also keeps approval records out of model reach.",
+      "concrete_changes": "pipeline/agents.py invoke: accept separate read_dirs and write_dir; emit `--allowedTools Read(<d>/**) ... Write(<write_dir>/**)`, or write a temporary settings JSON with allow and deny rules passed via --settings. pipeline/runner.py _access_dirs: split into read-only dirs and a per-stage write dir (for example run_dir/extracts). Add schema/*.json to the input snapshot paths (runner.py:466-475). tests/test_agents.py: assert the generated command carries path-scoped rules and never a bare Write.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "DPIA input pack and personal-data flow map",
+      "aspects": ["data_protection", "pilot_readiness", "documentation"],
+      "rationale": "A DPO needs data categories, subjects, processors, transfers, lawful basis, transparency and retention before any real document enters. OPERATING_TERMS covers only account and commercial terms.",
+      "concrete_changes": "New docs/pilot/DATA_PROTECTION.md covering: a per-stage table (stage, input text, personal data present such as speaker names and email signatures, recipient/processor, storage location, retention); data subjects; an Art. 6 basis options and legitimate-interest balancing template; an Art. 13/14 notice outline for kickoff participants; sub-processor and transfer questions for Anthropic; a rights-request procedure; and special-category exclusions. Link it from OPERATING_TERMS section f and the champion runbook. Documentation only; no code or gate change.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Deterministic retention inventory and purge tool",
+      "aspects": ["data_protection", "pilot_readiness", "reproducibility_dx"],
+      "rationale": "Evidence copies, history/ archives, question exchange files and release receipts multiply source content, and nothing can locate or delete them. Pilot-end deletion and erasure requests are currently unexecutable.",
+      "concrete_changes": "New pipeline/retention.py with `inventory RUNS_ROOT` (per source sha256: every file under evidence/, history/, question_exchange/, extracts and releases that contains or derives from it) and `purge RUN --before DATE --actor NAME [--dry-run]`, which writes a purge receipt and refuses runs with active releases unless they are withdrawn first. Add a retention_days field to a new config/retention_policy.json marked OWNER TO CONFIRM. Add tests in tests/test_retention.py.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Enforce separation of duties for creative approval",
+      "aspects": ["human_governance", "pilot_readiness"],
+      "rationale": "The docs promise a separate creative lead, but the code accepts the same actor at every step.",
+      "concrete_changes": "pipeline/delivery.py approve: refuse when actor equals creative_draft.json registered_by, or equals the brief approval.json actor, unless an explicit `--same-person-waiver REASON` is recorded in creative_approval.json. tests/test_delivery.py: negative test for the same actor and a positive test with the waiver recorded. Update docs/pilot/CREATIVE_DELIVERY.md section 3. This changes an approval gate, so the owner should confirm the rule.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Hash-chained governance event log",
+      "aspects": ["human_governance", "security_injection"],
+      "rationale": "Approval and amendment records are rewritable JSON. A chained log makes silent rewriting of the audit trail detectable at audit and release time without claiming identity verification.",
+      "concrete_changes": "pipeline/revisions.py: add append_event(run, kind, payload), which writes run/governance_log.jsonl where each line carries prev_sha256, and verify_log(run). Call it from agency resolve/apply/attest/approve, delivery register/approve/release and release_control withdraw. Make agency.audit and delivery.release fail on a broken chain. Add tests for truncation, edit and reorder detection.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Technical fixtures-only guard and pinned supply chain",
+      "aspects": ["data_protection", "security_injection", "reproducibility_dx"],
+      "rationale": "The fixtures-only rule is policy-only, and intake's example writes into tracked fixtures/. Dependencies and the CI action are unpinned.",
+      "concrete_changes": "pipeline/runner.py and pipeline/intake.py: refuse a --project or --out inside the repository unless its path is under fixtures/ and it carries a `synthetic: true` marker file; refuse outside-repo runs unless --out is also outside. Tests in tests/test_runner.py and tests/test_intake.py. Add requirements.lock with hashes (pip-compile --generate-hashes) and use it in .github/workflows/quality.yml; pin actions/checkout to a commit SHA.",
+      "effort": "S",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The deterministic governance core is well above typical MVP standard. Approvals are content-bound by SHA-256 fingerprints; staleness, withdrawal and release control are careful and tested (587 passing); the model can never mark a conflict resolved, sign off or approve; sensitivity tiers are refused in code before any model call; and the documents are candid about what is not identity verification and which data terms are still OWNER TO CONFIRM. Three things keep the trust layer below 8. (1) A verified governance bypass: `agency apply` lets an operator relabel or delete conflicts under someone else's name and clear the blocker. (2) No prompt-injection treatment at all, for a system whose input is client-authored text, combined with unscoped Read/Write permissions and write access to schema/, config/ and sources. (3) GDPR preparation that stops at account terms: no DPIA inputs, no lawful-basis or transparency analysis for the named individuals in transcripts and emails, and no retention or deletion tooling despite multiplying evidence copies. All three are fixable within scope with small to medium, mostly deterministic changes."
+}

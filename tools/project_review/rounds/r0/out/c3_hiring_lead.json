@@ -1,0 +1,93 @@
+{
+  "scores": [
+    {
+      "aspect": "documentation",
+      "score": 6,
+      "evidence": "Strong parts, checked against code: the Tier 5-7 guides in docs/pilot/ (runbook, CREATIVE_DELIVERY, COORDINATION, QUESTION_EXCHANGE, EFFORT_RECORDING, CAMPAIGN_EDITING) name subcommands that all exist (every `python3 -m pipeline.<mod> --help` parses, and each agency/agency_edit/delivery/release_control/operations subcommand cited in docs/pilot/*.md is present). The Tier 7 test count in runs/tier_7_report.md and docs/TIERS.md (587 passed, 7 skipped, 16 xfailed) matches my own run of the deterministic suite exactly. docs/EVIDENCE.md ties every check to a committed artifact. docs/OPERATING_DECISIONS.md records the 2026-09-20 scope change without editing the frozen PRD. The tier reports keep limits and non-claims explicit. Against that, many documents are stale or contradict each other after Tiers 5-7 and the 30 July routing change: README.md:113 says '321 tests ... ~0.4s' (actual 587 passed, ~2.3s). README.md:27 says the answer key is one 'it cannot see' and docs/EVIDENCE.md:10 says the pipeline 'structurally cannot read' it, but WALKTHROUGH.html sheet 08 and pipeline/agents.py (--add-dir; agents have Read) show this is only a policy rule. docs/COST_MODEL.md §1 still prices extraction on Haiku with no staleness note, although CLAUDE.md and config/model_routing.json route it to Sonnet plus a verifier, and §3's '~€5-6k/yr' contradicts the €4.0-4.2k that WALKTHROUGH sheet 10 derives from the PRD. docs/EVIDENCE.md quotes $4.29 while the walkthrough ledger says $3.55 after de-duplication. AGENTS.md (committed in 5c386ba) is a find-and-replace copy of CLAUDE.md: it says the runtime is 'Codex subagents' and points to a non-existent '.Codex/agents/'. The CLAUDE.md Architecture section lists 8 pipeline modules, but pipeline/ now has 28 .py files and 6,765 non-blank lines. HANDOFF_WALKTHROUGH.md (repo root, dated 09-18) is internal Codex-CLI operating notes that predate Tier 6 and still say creative is 'labelled shadow mode'. docs/FABLE_MISSION_visualisation.md still reads 'Status: IN PROGRESS' (2026-07-30). There is no docs index or stated reading order across 15 docs/ files and 4 root-level entry points.",
+      "defects": [
+        "README.md:113 test count '321 tests, ~0.4s' is stale (actual: 587 passed, 7 skipped, 16 xfailed).",
+        "README.md:27 ('a sealed answer key it cannot see') and docs/EVIDENCE.md:10 ('structurally cannot read') overclaim. WALKTHROUGH sheet 08 and the agent tool scopes show the protection is policy plus discovery exclusion, not isolation, so the documents contradict each other.",
+        "docs/COST_MODEL.md prices the pre-30-July Haiku extraction routing with no note that it is superseded, and §3 '~€5-6k/yr' contradicts the €4.0-4.2k PRD arithmetic used in WALKTHROUGH sheet 10.",
+        "docs/EVIDENCE.md reports $4.29 for the tier-3 manifest, while the walkthrough ledger says the de-duplicated figure is $3.55 because each creative arm is recorded twice. HANDOFF_WALKTHROUGH.md §3.4 lists this as known and unfixed.",
+        "AGENTS.md is committed with false facts: 'Codex subagents' and '.Codex/agents/' (the real directory is .claude/agents/). runs/tier_5_report.md also calls AGENTS.md 'pre-existing untracked', yet it was committed in Tier 6.",
+        "The CLAUDE.md/AGENTS.md Architecture sections and the README build-view table omit the Tier 5-7 modules (agency, delivery, operations, release_control, question_exchange, effort, spec_catalog, quality ...) and docs/pilot/.",
+        "HANDOFF_WALKTHROUGH.md sits at the repo root as a stale internal agent-ops note (Codex CLI flags, a pending v1/v2 page decision, creative 'shadow mode' rules), and docs/FABLE_MISSION_visualisation.md still says 'IN PROGRESS'.",
+        "There is no docs map or reading order. README's Tier 5-7 sections are appended feature lists and do not tell a reader which documents are current and which are historical records."
+      ],
+      "to_reach_9": "Fix every stale figure and claim listed above (test count, answer-key wording, the COST_MODEL routing note and €4.0-4.2k, the de-duplicated EVIDENCE cost, AGENTS.md paths). Update the Architecture sections to cover the Tier 5-7 modules. Add a single docs map to the README that splits documents into current and historical and gives a reading order. Mark historical documents (HANDOFF, FABLE_MISSION, AUDIT_BRIEF, DEMO_PLAYBOOK) with a one-line status banner or move them under docs/history/. Add a deterministic docs-consistency test for the figures that drift, such as the test count and the creative-delivery wording."
+    },
+    {
+      "aspect": "stakeholder_materials",
+      "score": 6,
+      "evidence": "WALKTHROUGH.html is an unusually honest decision document. Sheet 01 gives the answer first. Tokens come first, with dollars only in the sheet-10 footnote. Every figure carries a ledger source. It separates measured from assumed ('210 hours/year target ... PRD assumptions A1, A2, A4, validated in week 1'). It discloses the limits: 3 of 10 refusals, second fixture at 15/17 then 16/17, 'exam-green is not lead-ready', Draft A inventing a budget total, answer-key protection being policy only. It ends with three explicit decisions, each with an owner and a deadline (sheet 10). SHARE_ME.html and START_HERE.html give a clear what-it-is and what-it-will-not-do. The tier reports (runs/tier_5-7_report.md) state limits and 'not claimed' items explicitly. The significant problem is that all three front-door pages are materially stale on the question a decision maker most needs answered: what stays human. START_HERE.html:157-158 and :197 and SHARE_ME.html:192-193 say creative is 'only after sign-off, never delivered' and 'its drafts are for evaluation, never delivery'. START_HERE was last changed 2026-07-30. WALKTHROUGH sheets 01, 02 and 09 say 'drafts a creative brief in shadow mode (drafted for evaluation, never delivered)', 'no delivered creative' and 'creative stays in shadow in v1'. Tier 6 (docs/OPERATING_DECISIONS.md 2026-09-20; pipeline/delivery.py register/approve/release) now delivers creative after a named creative lead approves the exact files, and .claude/agents/creative-shadow.md:15 says the shadow-only restriction was superseded. Tiers 5-7 (coordination, withdrawal, effort measurement, and a 50-person-agency framing) are invisible in every non-engineer artifact. The tier reports say they are engineering records, not client deliverables, and nothing replaces them for a sponsor. The decision ask on sheet 10 ('creative in shadow' during the pilot) is never reconciled with the new release capability. README's headline stakeholder numbers (README.md:28 '~$2-2.6 per brief') are dollars-first, from the superseded Haiku routing, and leave out the second-fixture result. Per HANDOFF_WALKTHROUGH.md §7, two walkthrough versions (v1/v2) are both published while the owner has not yet chosen between them.",
+      "defects": [
+        "START_HERE.html (lines 157-158, 197) and SHARE_ME.html (192-193) state creative is 'never delivered'. That is false since Tier 6 (pipeline/delivery.py, docs/OPERATING_DECISIONS.md).",
+        "WALKTHROUGH.html sheets 01, 02 and 09 state 'never delivered' / 'no delivered creative' / 'creative stays in shadow in v1', and sheet 09 cites the PRD non-goal without the 2026-09-20 supersession. The central 'what stays human' message contradicts the current code.",
+        "No stakeholder-level account of Tiers 5-7: a sponsor or hiring panel reading the walkthrough, SHARE_ME or START_HERE learns nothing about approval-bound creative release, withdrawal, coordination or rework measurement, or what risk each adds.",
+        "The sheet-10 pilot ask ('creative in shadow') is not reconciled with the Tier 6 release capability. The decision maker is not told whether creative release is inside or outside the pilot being approved.",
+        "README.md:26-28 leads with '17/17 at ~$2-2.6 per brief'. This is dollars-first against the project's tokens-first rule for stakeholder material, comes from the pre-30-July routing, and leaves out the second-fixture 15/17 and 16/17 that the walkthrough discloses.",
+        "The page to present is still undecided: WALKTHROUGH v1 and v2 are both published with an owner decision pending (HANDOFF_WALKTHROUGH.md §7). The walkthrough's own review loop scores concision at 6.33-6.67, which is dense for a non-engineer."
+      ],
+      "to_reach_9": "Bring START_HERE, SHARE_ME and WALKTHROUGH into line with the 2026-09-20 decision. Show a four-state creative lifecycle (draft -> creative-lead approval of exact files -> local release package -> withdrawal) with the human at each gate. Say explicitly whether creative release is in or out of the proposed pilot. Add one short 'What changed in Tiers 5-7 and why it matters to an agency' sheet or section with the risks and non-claims. Make README headline numbers tokens-first and include the second-fixture result. Settle v1 vs v2 so there is one canonical presentation page, with the checks.py gate green."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Re-align all three front-door pages with the 2026-09-20 creative-delivery decision",
+      "aspects": ["stakeholder_materials", "documentation", "human_governance", "value_framing"],
+      "rationale": "The most consequential inconsistency in the repository: every page a decision maker or hiring panel opens says creative is never delivered, while Tier 6 shipped approval-bound release. It weakens the 'people decide' story at exactly the point where the story became stronger (named approval of exact files, withdrawal).",
+      "concrete_changes": "START_HERE.html lines 157-158 and 197, and SHARE_ME.html lines 192-193: replace 'Creative (shadow) · only after sign-off, never delivered' with 'Creative draft · released only after a named creative lead approves the exact files'. Rewrite the 'Ship creative' card as 'Release creative on its own: drafts become a local delivery package only after sign-off plus named creative-lead approval; nothing is sent or posted automatically (pipeline/delivery.py)'. WALKTHROUGH.html sheets 01, 02 and 09: change the 'never delivered' / 'no delivered creative' / 'creative stays in shadow in v1' sentences so they cite docs/OPERATING_DECISIONS.md and state that this historical graded run used shadow mode. Re-run tools/walkthrough/checks.py (the 'labelled shadow mode and mock-up' rule should be reworded to 'mock-up labelled; release requires approval'). Rebuild v2 if it is kept.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a stakeholder 'What Tiers 5-7 add' section and reconcile the pilot ask",
+      "aspects": ["stakeholder_materials", "pilot_readiness", "value_framing"],
+      "rationale": "A sponsor currently cannot see the agency-operations work (approval binding, withdrawal, coordination queue, rework measurement), its non-claims, or whether creative release is inside the pilot. The tier reports say they are engineering records and not for this reader.",
+      "concrete_changes": "In WALKTHROUGH.html sheet 10 (or a ledger under sheet 02, keeping the sheet limit of 10), add a five-row table: capability, human gate, what it does not prove (taken from the Boundaries paragraphs of runs/tier_6_report.md and runs/tier_7_report.md). Add a fourth decision line to sheet 10: 'Creative release during the pilot: in / out (owner)'. Add the same decision as an OWNER TO CONFIRM row in docs/pilot/OPERATING_TERMS.md and a corresponding note in docs/pilot/SCORECARD.md.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Fix the stale and contradictory figures in README, EVIDENCE and COST_MODEL",
+      "aspects": ["documentation", "routing_usage", "evaluation_method", "stakeholder_materials"],
+      "rationale": "Several concrete, cheap-to-fix contradictions that a reviewer finds in minutes damage credibility more than their size suggests. The walkthrough already holds the corrected wording.",
+      "concrete_changes": "README.md:113: '587 tests pass (7 skipped, 16 expected failures), no model calls, ~2-3 s'. README.md:27 and docs/EVIDENCE.md:10: replace 'cannot see' / 'structurally cannot read' with the walkthrough's wording ('excluded from automatic source discovery and reserved to the harness by policy; runtime agents retain Read access'). README.md:26-28: lead with '0.98 M tokens per Stage-1 brief (graded routing)', move dollars to a footnote, and add 'second synthetic fixture: 15/17, 16/17 after re-roll'. docs/EVIDENCE.md: add the de-duplicated $3.55 ($2.81 Stage 1) next to $4.29, with the reason. docs/COST_MODEL.md: add a top banner saying the figures are for the pre-30-July Haiku-extraction routing and are awaiting re-baseline (runs/routing-validate-01: 598 743 vs 295 774 tokens), and correct §3 '~€5-6k/yr' to '~€4.0-4.2k/yr (PRD A1, A2, A4)'.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Repair AGENTS.md and bring the architecture sections up to Tier 7",
+      "aspects": ["documentation", "reproducibility_dx", "architecture"],
+      "rationale": "AGENTS.md is committed with a false runtime description and a non-existent path. Both agent-instruction files and the README build table describe an 8-module pipeline that now has 28 modules, so a new engineer or agent is misdirected on arrival.",
+      "concrete_changes": "AGENTS.md: restore 'Claude Code subagents' and '.claude/agents/' (keep the Codex-specific operator notes, if any, in a clearly labelled section). CLAUDE.md and AGENTS.md Architecture: add one line per Tier 5-7 module group (quality/agency/agency_edit, delivery/release_control/spec_catalog, operations/question_exchange/effort, locks/evidence copies) and docs/pilot/. README build-view table: add rows for these modules and docs/pilot/. Correct the runs/tier_5_report.md claim that AGENTS.md was 'pre-existing untracked' through an erratum line in runs/tier_7_report.md or a new errata file (do not rewrite the historical report).",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Add a docs map with current/historical status and retire the root-level handoff",
+      "aspects": ["documentation", "stakeholder_materials", "reproducibility_dx"],
+      "rationale": "There are four root entry points (README, START_HERE, SHARE_ME, WALKTHROUGH), plus a root-level internal HANDOFF, plus 15 docs/ files with no status markers. Readers cannot tell what is current. HANDOFF_WALKTHROUGH.md exposes internal agent-ops mechanics to a hiring panel.",
+      "concrete_changes": "Add a 'Reading order' section to README.md. Decision maker: WALKTHROUGH, then SHARE_ME. Engineer: README, EVIDENCE, TIERS, tier_7_report. Operator: docs/pilot/BRIEF_CHAMPION_RUNBOOK then CREATIVE_DELIVERY. Governance: OPERATING_DECISIONS, PRD (frozen). Include a table marking each docs/ file Current or Historical, with a date. Add a one-line 'Historical record (date); superseded by X' banner to docs/FABLE_MISSION_visualisation.md, docs/AUDIT_BRIEF.md, docs/DEMO_PLAYBOOK.md and HANDOFF_WALKTHROUGH.md, or move HANDOFF_WALKTHROUGH.md to tools/walkthrough/HANDOFF.md and update the memory pointer.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Add a deterministic docs-consistency test",
+      "aspects": ["documentation", "testing_ci", "stakeholder_materials"],
+      "rationale": "Every defect found here is drift after a later tier. A cheap gate stops the next tier from reintroducing it, in the same way tools/walkthrough/checks.py already protects the walkthrough's quotes.",
+      "concrete_changes": "tests/test_docs_consistency.py: (1) fail if README.md states a test count different from the collected count (or require the README to omit the count). (2) Fail if START_HERE.html, SHARE_ME.html, WALKTHROUGH.html or README.md contain 'never delivered' or 'never delivery' while docs/OPERATING_DECISIONS.md contains the 2026-09-20 entry. (3) Fail if AGENTS.md or CLAUDE.md reference a directory that does not exist. (4) Fail if the phrases 'structurally cannot read' or 'cannot see' occur near 'answer key'. Runs in the existing CI workflow.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Settle one canonical walkthrough and tighten it for the non-engineer",
+      "aspects": ["stakeholder_materials"],
+      "rationale": "With two published versions and an open owner decision there is no single artifact to present. The review loop's own concision scores (6.33-6.67) show the density that costs a non-engineer attention.",
+      "concrete_changes": "The owner picks v1 or v2 (HANDOFF_WALKTHROUGH.md §7). Copy the choice over WALKTHROUGH.html, keep the other in tools/walkthrough/backups/, and republish the single URL. In the same pass, cut each sheet's body text to the three takeaway lines plus the evidence clipping and move the remaining prose into the ledgers, with the checks.py gate green and mustkeep.json facts preserved.",
+      "effort": "M",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "For a hiring panel, this repository shows the discipline you want from an AI-transformation lead: measured figures are kept apart from assumed ones, limits are disclosed without being asked (refusal rate, second-fixture misses, invented totals in the creative drafts, answer-key protection being only a policy rule), frozen specifications are respected, and decisions have owners and deadlines. WALKTHROUGH.html is the clearest evidence of that. The weakness is currency. The project went through three more tiers and a scope change (creative release on 2026-09-20), but the front-door pages, the README headline, COST_MODEL, EVIDENCE and AGENTS.md were not brought along. The stakeholder materials therefore contradict the code on the one point they exist to make clear, what stays human, and the documents contradict each other on cost figures and on how the answer key is protected. Most fixes are small and mechanical (moves 3-6). The creative-boundary update and the pilot-scope reconciliation (moves 1-2) need the owner and would lift both aspects the most."
+}

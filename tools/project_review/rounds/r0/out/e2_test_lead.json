@@ -1,0 +1,161 @@
+{
+ "scores": [
+  {
+   "aspect": "architecture",
+   "score": 7,
+   "evidence": "Core pipeline is well separated: pipeline/runner.py owns sequence and refusal (STEP_SEQUENCE, STAGE_SELECTIONS, STEP_PREREQUISITES, typed exit codes), pipeline/agents.py is the single model seam (clean substrate, neutral cwd, ALLOWED_TOOLS), gates/stages hold deterministic checks, the readiness block is injected by the runner rather than the model, the creative stage is a separate selection behind sign-off (runner.py STAGE_SELECTIONS['creative']), and policy lives in config/ (readiness_policy, channel_specs, model_routing). Input contract is header-driven (gates.discover_sources) and voreas-prep runs show a second client worked without code changes. But the Tier 5-7 layer is bolted on less cleanly: pipeline/revisions.py is a hub with lazy-import cycles (revisions -> release_control/question_exchange/quality/clarifications, each of which imports revisions); the original stage module now reaches into Tier-5 code (stages.py lazy `from pipeline import quality, revisions`); private helpers cross module boundaries (delivery.py imports stages._money_figures, publish.py imports review._load_brief_meta, runner.py calls publish._publish_locked); Tier 5-7 companion records (agency_inputs.json, approval.json, language_review.json, creative_draft.json, creative_approval.json, release.json) have no JSON Schema in schema/ (grep finds no jsonschema use in agency/delivery/question_exchange/effort/spec_catalog), so the 'schema as contract' principle stops at the brief; render template is hardcoded to templates/northlight_client_brief.md (stages.py:823).",
+   "defects": [
+    "Import cycles between revisions.py and release_control/question_exchange/quality/clarifications, hidden by function-local imports.",
+    "Core stages.py depends lazily on Tier-5 modules (quality, revisions): original pipeline no longer independent of the agency layer.",
+    "Cross-module use of private functions: stages._money_figures (delivery.py), review._load_brief_meta (publish.py), publish._publish_locked (runner.py).",
+    "Tier 5-7 companion records have no schemas; their shape is enforced only by ad-hoc code checks.",
+    "Tier 5-7 uses bare ValueError as its domain error protocol while the original pipeline has a GateError hierarchy; two error models in one system.",
+    "Render template path hardcoded to a client-named file (stages.py:823), no per-client template selection."
+   ],
+   "to_reach_9": "Extract an approval/revision service module that owns fingerprint/require_current_approval without cycles, make shared helpers public, add JSON Schemas for every companion record and validate them on read/write, unify on one exception hierarchy, and make the render template a client-config field."
+  },
+  {
+   "aspect": "code_quality",
+   "score": 6,
+   "evidence": "Original modules (runner.py, stages.py, gates.py, agents.py, extraction.py, review.py) are typed (e.g. runner 18/18, stages 20/20 functions annotated), docstrung with rationale, and consistent. Tier 5-7 modules use a different idiom: single-quoted, untyped (agency 0/9, delivery 0/9, effort 0/14, revisions 0/16, question_exchange 1/22, release_control 0/4), dense one-liners (22 lines >120 chars in agency.py), and bare ValueError for every failure. revisions.py places `from contextlib import contextmanager; import fcntl` mid-module after function definitions. Oversized functions: stages.check_synthesis 215 lines, check_render 113, run_review._source_card 113, demo/run_demo.main 139. Verified bug: Runner.run (runner.py ~399-404) wraps the whole _run_locked in `except ValueError` and labels it '[run lock]'; json.JSONDecodeError is a ValueError, so a corrupt brief.json on a resumed leg prints '[run lock] Expecting property name...' and exits 4 with no run_manifest.json (reproduced in a scratch clone with --stage render). tools/walkthrough holds committed one-off scripts (edit_r7.py, edit_r8.py, swap_kv.py, score-round-v2/v3/opus.js), 14 HTML backups, and every .py there hardcodes /Users/chrism/... paths.",
+   "defects": [
+    "Runner.run catches all ValueError as lock contention: corrupt artifacts are misreported as '[run lock]' and no manifest is written (reproduced).",
+    "Two coding idioms: Tier 5-7 modules untyped, single-quoted, dense one-line style versus typed original modules.",
+    "Stringly-typed errors: every Tier 5-7 failure is a bare ValueError distinguished only by message text.",
+    "Very long functions (check_synthesis 215 lines, run_demo.main 139, check_render 113, _source_card 113).",
+    "Mid-module imports in revisions.py and function-local imports used to dodge cycles.",
+    "tools/walkthrough: dead one-off scripts, committed backups, hardcoded absolute /Users/chrism paths.",
+    "Broad `except Exception` swallowing in runner._write_manifest/_render_handler and demo/run_demo.py (intended best-effort, but hides the publish step failing silently in manifests)."
+   ],
+   "to_reach_9": "Fix the ValueError catch with a dedicated RunBusyError, introduce a typed exception hierarchy, bring Tier 5-7 modules to the typed/formatted idiom (ruff format + mypy in CI), split check_synthesis/check_render into per-rule functions, and archive or path-fix tools/walkthrough."
+  },
+  {
+   "aspect": "testing_ci",
+   "score": 7,
+   "evidence": "Ran the suite: 587 passed, 7 skipped, 16 xfailed in ~2s, identical in a fresh `git clone` (tests leave no files behind). conftest.py autouse fixture points CLAUDE_BIN at a nonexistent binary so no test can spend money. Tests are meaningful and negative-heavy: test_gates (undeclared/unknown/duplicate sources, readiness thresholds, malformed policy), test_extraction (fabricated anchors/locations, silent garble repair, markdown-boundary anchors), test_stages (synthesis/render gate violations), test_delivery (tamper detection, stale approval, withdrawal, manifest escape), test_effort/test_question_exchange (real concurrent subprocess races, os.replace/os.link failure injection). xfail discipline is exemplary: tests/test_regression_voreas.py uses xfail(strict=True, raises=AssertionError) with reasons tied to runs/voreas_prep_report.md findings. CI (.github/workflows/quality.yml) runs pytest, grades frozen runs/tier3 evidence in-process without rewriting the report, and runs eval/agency_benchmark.py. Weaknesses: CI runs `pytest -o addopts=''`, discarding pytest.ini's --strict-markers; no setup-python/version matrix (dev is 3.9.6, CI gets ubuntu-latest's default); no lint/type check or coverage; no end-to-end runner test with a fake agent that writes artifacts through all seven steps (runner tests stop at the first model step); the demonstrated runner error-path bug has no test; Tier 5-7 tests rely on pytest.raises(ValueError, match='review'/'changed') substrings, which cannot distinguish failure causes; tools/ is untested; 7 skips are parametrize-then-skip noise in test_agents.py; test modules import helpers from each other (from test_agency_operations import make_review_run) instead of conftest fixtures.",
+   "defects": [
+    "CI disables --strict-markers via -o addopts=''.",
+    "No Python version pin or matrix in CI; local 3.9 vs CI default python3.",
+    "No end-to-end runner test with a stub agent producing artifacts through classification->render and a resume leg.",
+    "Runner error path (ValueError mislabelled as run lock, no manifest) untested.",
+    "Tier 5-7 negative tests match generic ValueError message fragments rather than specific exception types.",
+    "No lint, type check or coverage report in CI; tools/walkthrough code untested.",
+    "Cross-test-module helper imports instead of shared fixtures in conftest."
+   ],
+   "to_reach_9": "Add a fake-agent end-to-end runner test (replaying runs/tier3 artifacts) plus the corrupt-artifact regression, restore strict markers in CI, add setup-python matrix [3.9, 3.12] with ruff and a coverage floor, and switch Tier 5-7 tests to specific exception types."
+  },
+  {
+   "aspect": "reproducibility_dx",
+   "score": 6,
+   "evidence": "Clean clone works: `git clone` + pytest passes identically with only jsonschema/pytest/PyYAML; README 'Run it' gives a venv path and one-command runs (`python3 pipeline/runner.py --project fixtures/northlight_01`, demo.sh, run_full.sh); agents.invoke checks shutil.which(CLAUDE_BIN); runner prerequisite errors are legible (STEP_PREREQUISITES message); runs/tier3 lets a reader inspect results without a CLI; review pages are deterministic (test_render_is_deterministic). Weaknesses: requirements.txt is unpinned (`jsonschema>=4.0`, `pytest>=7.0`, `PyYAML>=6.0`) with no lock file; no Python version is declared anywhere and CI does not pin one; the required `claude` CLI version is undocumented although agents.py depends on version-sensitive flags (--agents, --effort, --output-format json); README.md:113 says '321 tests ... ~0.4s' while the suite has 610 tests (docs/TIERS.md says 587); AGENTS.md, the onboarding file for non-Claude agents, points to a nonexistent `.Codex/agents/` directory and calls the runtime 'Codex subagents' (a find/replace artefact; the real path is .claude/agents/ and the runtime is the claude CLI); invocation idiom is mixed (`python3 pipeline/runner.py` via sys.path hack vs `python3 -m pipeline.agency`); tools/walkthrough scripts only run on the author's machine (hardcoded /Users/chrism paths); question_exchange._binding digests the absolute run path, so moving a run directory changes its binding; run_full.sh uses macOS `open`; the misleading '[run lock]' error on a corrupt artifact is a clear-errors failure.",
+   "defects": [
+    "Unpinned dependencies, no lock file.",
+    "No declared Python version; CI uses the runner default.",
+    "Required claude CLI version and flags undocumented; no preflight version check.",
+    "README test count stale (321 vs 610 collected).",
+    "AGENTS.md references nonexistent .Codex/agents/ and misnames the runtime.",
+    "Mixed script vs -m invocation idioms; no pyproject or entry points.",
+    "tools/walkthrough hardcodes absolute author paths; question-exchange binding tied to absolute run path.",
+    "Corrupt-artifact error misreported as a lock conflict."
+   ],
+   "to_reach_9": "Pin exact dependency versions (or add a constraints file), declare and CI-test the supported Python versions, document and preflight-check the claude CLI version, fix README/AGENTS.md onboarding facts, unify on `python3 -m pipeline.<cmd>`, and make tools/ repo-relative."
+  }
+ ],
+ "moves": [
+  {
+   "title": "Fix runner ValueError catch-all and add the regression test",
+   "aspects": [
+    "code_quality",
+    "testing_ci",
+    "reproducibility_dx",
+    "human_governance"
+   ],
+   "rationale": "A verified bug: any ValueError (including json.JSONDecodeError from a corrupt brief.json/extract during _hydrate) is reported as '[run lock]', exits 4 and leaves no run_manifest.json, so the audit trail is silent about a failed run.",
+   "concrete_changes": "pipeline/revisions.py: define `class RunBusyError(ValueError)` and raise it from run_lock. pipeline/runner.py Runner.run: catch only revisions.RunBusyError; in _hydrate wrap json.JSONDecodeError into gates.GateError naming the file, and have _run_locked write a manifest with outcome 'corrupt_artifact'. tests/test_runner.py: add test_corrupt_brief_on_resume_is_reported_not_called_a_lock (write '{broken' to brief.json, --stage render, assert message names brief.json, exit 4, manifest outcome recorded).",
+   "effort": "S",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Pin the environment and tighten CI",
+   "aspects": [
+    "reproducibility_dx",
+    "testing_ci"
+   ],
+   "rationale": "Unpinned deps, no declared Python, and CI dropping --strict-markers make green runs non-reproducible over time and weaken the suite for no reason.",
+   "concrete_changes": "requirements.txt: exact pins (jsonschema==4.24.0, PyYAML==6.0.1, pytest==7.4.3 or current tested versions) plus a comment on the supported range. .github/workflows/quality.yml: add actions/setup-python with matrix python-version [\"3.9\", \"3.12\"], run `python -m pytest -q` without `-o addopts=''` so --strict-markers applies. README 'Run it': state supported Python versions and the minimum claude CLI version; pipeline/agents.py: optional preflight `claude --version` check with a clear error when below the documented minimum (tested with a fake binary).",
+   "effort": "S",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Correct onboarding facts in README and AGENTS.md",
+   "aspects": [
+    "reproducibility_dx",
+    "documentation"
+   ],
+   "rationale": "A new engineer's first two files contain wrong facts: a stale test count and a nonexistent agent directory.",
+   "concrete_changes": "README.md:113: replace '321 tests, ~0.4s' with 'the full deterministic suite, no model calls, a few seconds' (or the current 587 passed / 7 skipped / 16 xfailed). AGENTS.md: `.Codex/agents/` -> `.claude/agents/`, 'Codex subagents' -> 'Claude Code subagents', and the 'this AGENTS.md never loads' sentence -> refer to CLAUDE.md. Add a tests/test_docs_facts.py check that every repo path in backticks in README.md/AGENTS.md exists.",
+   "effort": "S",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "End-to-end runner test with a fake agent replaying runs/tier3",
+   "aspects": [
+    "testing_ci",
+    "architecture",
+    "evaluation_method"
+   ],
+   "rationale": "Every gate is unit-tested but no test drives the runner through all seven steps, the repair loop wiring, manifest writing, readiness injection and a resume leg together; integration regressions in runner.py would pass CI.",
+   "concrete_changes": "tests/test_runner_e2e.py: monkeypatch agents.invoke with a fake that, per agent name, copies the matching committed artifact from runs/tier3 (classification.json, fidelity/, extracts/, brief.json without readiness, brief_el.md/brief_en.md) into the run dir and returns a SubagentResult; run Runner(fixtures/northlight_01, tmp_path).run(); assert exit 0, manifest steps 1-7 pass, readiness block injected by the runner, input_snapshot.json written, then rerun `--stage render --run-id` and assert history/ archive and from_earlier_run flags. Add a variant where the fake writes a fabricated anchor on the first attempt to prove the repair round is invoked and logged.",
+   "effort": "M",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Typed domain exception hierarchy for Tier 5-7",
+   "aspects": [
+    "code_quality",
+    "testing_ci",
+    "architecture",
+    "human_governance"
+   ],
+   "rationale": "All approval, staleness, integrity, lock and withdrawal failures are bare ValueError; callers and tests can only distinguish them by message substrings (match='review').",
+   "concrete_changes": "New pipeline/errors.py: `class AgencyError(ValueError)` with subclasses RunBusyError, StaleApprovalError, IntegrityError, WithdrawnError, InvalidRecordError. Replace raises in revisions.py, delivery.py, release_control.py, question_exchange.py, agency_edit.py, spec_catalog.py, effort.py. Update tests/test_delivery.py, test_agency_edit.py, test_question_exchange.py, test_effort.py to pytest.raises(<specific class>). Subclassing ValueError keeps existing CLI handlers working.",
+   "effort": "M",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "JSON Schemas for Tier 5-7 companion records",
+   "aspects": [
+    "architecture",
+    "human_governance",
+    "testing_ci"
+   ],
+   "rationale": "The schema-as-contract principle covers the brief and extracts only; approval, language review, creative draft/approval, release and agency_inputs records are shaped by ad-hoc code, so a hand-edited or partially written record is caught only if some check happens to read that field.",
+   "concrete_changes": "Add schema/agency_inputs_schema.json, approval_schema.json, language_review_schema.json, creative_draft_schema.json, creative_approval_schema.json, release_manifest_schema.json (new files; brief_schema.json untouched). Validate in a single revisions.write_record/load_record pair used by delivery.py, agency.py, agency_edit.py, release_control.py; add tests/test_schemas.py cases for each (valid fixture passes, missing actor/fingerprint fails).",
+   "effort": "M",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Break import cycles, publicise shared helpers, type Tier 5-7",
+   "aspects": [
+    "architecture",
+    "code_quality"
+   ],
+   "rationale": "revisions.py lazily imports four modules that import it; stages.py reaches into Tier-5 code; three private helpers are used across modules; Tier 5-7 modules are untyped and in a different idiom.",
+   "concrete_changes": "Move fingerprint/require_current_approval/verify_* into new pipeline/approval.py (imports revisions, release_control, question_exchange, quality; nothing imports back); make stages._money_figures -> gates.money_figures, review._load_brief_meta -> review.load_brief_meta, publish._publish_locked -> publish.publish_run; move revisions.py mid-module imports to the top. Add type hints to agency, delivery, effort, revisions, question_exchange, release_control, spec_catalog, operations; add ruff (format + F/E rules) and mypy --ignore-missing-imports on pipeline/ eval/ demo/ to CI. Split stages.check_synthesis/check_render into per-rule helpers with identical outputs, verified by the existing tests plus the e2e replay.",
+   "effort": "M",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Quarantine and de-hardcode tools/walkthrough",
+   "aspects": [
+    "code_quality",
+    "reproducibility_dx"
+   ],
+   "rationale": "290 tracked files under tools/, including one-off edit scripts, 14 HTML backups and scripts that only run on the author's machine (hardcoded /Users/chrism paths), dilute the codebase and break for any other engineer.",
+   "concrete_changes": "Replace every `/Users/chrism/AI-transformation-assignment/brief-builder` literal in tools/walkthrough/*.py, redesign/audit_v2.py and score-round-*.js with a repo root derived from Path(__file__).resolve(); move edit_r7.py, edit_r8.py, swap_kv.py, compare_*.py, backups/ and codex_* prompt/response files into tools/walkthrough/archive/ with a README stating they are historical and unmaintained (or drop them from git with a pointer to the commit); include the remaining maintained tools (build.py, checks.py) in the CI lint step.",
+   "effort": "S",
+   "needs_owner_decision": false
+  }
+ ],
+ "overall": "The original Stage-1 pipeline is a strong reference for separating model work from deterministic gates: a single model seam, runner-owned sequencing and refusals, schema-validated artifacts, and a fast, isolated suite of 610 tests with exemplary strict-xfail regression discipline, green in a fresh clone and in CI with frozen-evidence grading. The Tier 5-7 agency layer lowers the engineering bar: bare ValueError as the error protocol (which produced a verified runner bug that mislabels corrupt artifacts as a lock conflict and writes no manifest), import cycles hidden by local imports, private helpers crossing modules, no schemas for approval/release records, and an untyped, dense idiom. Reproducibility is good in practice but not pinned: loose requirements, no declared Python or claude CLI version, CI discards strict markers, stale README test count, a broken AGENTS.md path, and author-machine paths throughout tools/. Scores: architecture 7, code_quality 6, testing_ci 7, reproducibility_dx 6."
+}

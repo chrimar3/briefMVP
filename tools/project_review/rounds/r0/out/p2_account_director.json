@@ -1,0 +1,100 @@
+{
+  "scores": [
+    {
+      "aspect": "value_framing",
+      "score": 6,
+      "evidence": "The PRD is a strong core. docs/PRD.md s1 names the problem (account-lead hours, a quality floor that varies by author, downstream rework). s2 has goals with a named 2 h baseline and an honest ~50 min total-attention target that includes assembly. s3 lists non-goals. s4 names assumptions A1-A5, each with a week-1 validation method. s7 sets metrics with absolute adoption counts. s10 frames cost as the smallest line. docs/COST_MODEL.md keeps measured and projected apart well ($2.25 measured on the subagent substrate, s7 says 'Do not present EUR0.50 as measured'). The Tier 5-7 reports (runs/tier_5_report.md 'Unperformed / owner work', runs/tier_7_report.md 'not claimed as measured agency ROI', docs/TIERS.md Tier 5-7 closing lines) disclaim unmeasured savings. docs/OPERATING_DECISIONS.md records the creative scope change without editing the frozen PRD. The framing breaks down across documents. START_HERE.html, which bills itself as the operator's front door, still says creative 'runs in shadow mode ... never delivery'. The README headline mixes a stale measured cost with an unlabelled assumption. The capacity-returned figures disagree and are left unreconciled. Nothing states a value hypothesis for the Tier 5-7 operations layer against the PRD's review-time target. I verified CLI existence and the suite (587 passed, 7 skipped, 16 xfailed).",
+      "defects": [
+        "START_HERE.html (pipeline step 9 'Creative (shadow) only after sign-off, never delivered'; 'What the system will not do' row 'Ship creative ... never delivery') contradicts docs/OPERATING_DECISIONS.md 2026-09-20 and README 'Human-approved creative delivery (Tier 6)'. The front door misstates current scope.",
+        "The README headline ('~$2-2.6 per brief against ~EUR38-40 of account-lead time') puts a measured figure next to an assumption (PRD A1 x A4, unvalidated) with no label. The measured figure also comes from Haiku-era routing. Under the current routing (config/model_routing.json and CLAUDE.md: sonnet extraction plus verify-extract) the whole-brief cost is unmeasured, and docs/pilot/OPERATING_TERMS.md s c reports the transcript leg alone at 598,743 vs 295,774 tokens. docs/COST_MODEL.md s1 and docs/TIERS.md 'Models' still show extraction on haiku.",
+        "Capacity returned is inconsistent. docs/pilot/SCORECARD.md s3 gives 210 h/yr (~EUR4.0-4.2k) and docs/COST_MODEL.md s3 / PRD s10 give EUR5-6k/yr. The scorecard itself calls this 'unreconciled' and it was left that way.",
+        "No value hypothesis for Tiers 5-7 against the PRD metric. The new mandatory review ceremony (audit, per-question triage, exclude, 5-check attest, sourced checklist per key, deliverable matrix, approve; BRIEF_CHAMPION_RUNBOOK.md s3-s6) is never set against the PRD s2/s7 '<30 min review' target. The added human minutes may erode the core value claim, and no document says whether they count in review_min.",
+        "Product definition drift. The README 'Product view' says 'A folder, an input, an output, and four instruction files. The skeleton is the product' and PRD s3 says 'Folder + files + review checklist'. The agency layer now spans roughly nine CLI modules (pipeline.agency, agency_edit, delivery, release_control, operations, question_exchange, effort, spec_catalog, publish) and no document reconciles the two.",
+        "Agency size is inconsistent: runs/tier_7_report.md says '50-person agency', PRD case header says '~40-person'. The README test count (321) is stale against 587."
+      ],
+      "to_reach_9": "Make every surface tell one story. Update START_HERE.html, the README diagram node G, SCORECARD and OPERATING_TERMS to the 2026-09-20 creative decision. Label every headline number as measured (with its routing era and date) or assumed (PRD assumption ID, validated in week 1). Re-measure or explicitly retire the Haiku-era cost and token headline under current routing. Reconcile capacity returned into one derivation. Add a short value-hypothesis paragraph for the Tier 5-7 layer: which PRD metric it moves (rework, first-handoff acceptance), what review minutes it adds, and how the scorecard will show the net effect."
+    },
+    {
+      "aspect": "pilot_readiness",
+      "score": 6,
+      "evidence": "The preparation work is substantial. docs/pilot/OPERATING_TERMS.md frames the account/data decision as options A/B/C and gives a precise blast radius for lifting the fixture-only rule (paths, gitignore exceptions, runner defaults at pipeline/runner.py). It adds a ready-to-paste rule 4a, a 'before week 1' table with owners, and verbatim questions for management. docs/pilot/SCORECARD.md defines every measure with unit, recorder, timing, baseline and target, plus CE1-CE5 critical-error classes, week-3/week-4 pass rules and an immediate-stop rule. The CSV template carries a fully annotated example row. The commands in BRIEF_CHAMPION_RUNBOOK.md, CREATIVE_DELIVERY.md, COORDINATION.md, QUESTION_EXCHANGE.md and EFFORT_RECORDING.md exist: I verified pipeline.agency, delivery, release_control, effort, question_exchange, operations, spec_catalog and agency_edit with --help. eval/pilot_scorecard.py runs on the template and reports zero measured briefs, not an invented result. Withdrawal, refusal ('a refusal is evidence', runbook s4) and revision invalidation are covered. What stops a day-one start: role coverage is incomplete, the pilot's creative scope is contradictory, the stated precondition is unmet and no current-routing baseline exists, the daily path is far from the PRD's one-page runbook, and operational failure/recovery procedures are missing.",
+      "defects": [
+        "Roles are incomplete and scattered. OPERATING_TERMS.md s f names only the sponsor, management contact, operator and two champions. The runbook and delivery guide also require a bilingual reviewer (attest), a traffic reviewer (spec_catalog bind, deliverable specs) and a creative lead (delivery approve), and none of these is in the week-1 naming line. No single RACI maps role to commands, decisions and backup.",
+        "The pilot's creative scope is contradictory. SCORECARD.md s3 ('reviews the shadow draft ... nothing delivered (s3). Not a pilot gate') and s5 ('Creative in shadow') plus OPERATING_TERMS.md s c ('shadow creative pass that PRD s3 and s8 require') predate docs/OPERATING_DECISIONS.md 2026-09-20. Nothing says whether creative delivery is in pilot scope, and the scorecard has no creative-release measures beyond creative_strikes.",
+        "The stated precondition is unmet and no baseline exists under current routing. SCORECARD.md preconditions require tests/test_regression_voreas.py with no xfail marks, but the suite has 16 xfailed today. The whole-brief tokens, wall time and refusal rate under the 30 July routing were never measured (OPERATING_TERMS s c; SCORECARD s1 're-baseline pending'; refusal-rate target 'OWNER TO CONFIRM after re-baseline'). Running this is within scope (Anthropic subagents are allowed) and Tiers 5-7 did not do it.",
+        "The daily path is not operable by an ops coordinator on day one. PRD s8 promises a one-page runbook (drop files, one command, read the verdict, route). BRIEF_CHAMPION_RUNBOOK.md is 192 lines and points to five more guides with about 30 distinct CLI invocations, --ref FIELD:INDEX selectors and hand-copied fact/question IDs. There is no quick card, no per-step time budget and no training/certification step. OPERATING_TERMS s f still lists 'Write the one-page runbook' as open, which contradicts the existing runbook.",
+        "Operational failure/recovery is missing. There is no procedure for usage-window exhaustion or CLI auth failure mid-run (which resume command, same run ID or new), for a pipeline refusal close to a client deadline (manual fallback, and how that brief is recorded in the scorecard), or for accidental S2/real-data ingestion (SCORECARD s4 says 'immediate stop', but gives no clean-up, deletion or notification owner; retention is still open, OPERATING_TERMS g7).",
+        "The runbook examples use /tmp paths for run and output directories. A pilot needs a durable, access-controlled out-of-repo path (OPERATING_TERMS g4), and the runbook never points at it.",
+        "eval/pilot_scorecard.py computes only one pass flag (review_under_30). The other SCORECARD s4 end-week-3 and end-week-4 rules (assembly <=20, total <=50, survival mean >70, precision mean >80, ce_total 0, 2/2 lead-initiated) must be judged by hand."
+      ],
+      "to_reach_9": "Add one role table that names every role the commands require, with backups, and extend the week-1 naming line to cover it. Record the owner's decision on creative delivery during the pilot and update SCORECARD and OPERATING_TERMS to match. Run and commit a current-routing fixture baseline (northlight_01 plus voreas_02) and state honestly the xfail status against the precondition. Ship a one-page daily quick card with time per step and a champion training checklist. Add a failure/recovery section covering usage window, auth, refusal near deadline, wrong tier or real data, and wrong package sent. Make pilot_scorecard.py report pass / fail / insufficient_data for every s4 rule per phase."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Align the front door and pilot docs with the 2026-09-20 creative decision",
+      "aspects": ["value_framing", "pilot_readiness", "documentation", "stakeholder_materials", "human_governance"],
+      "rationale": "The operator's front door and the pilot scorecard still say creative is shadow-only and never delivered, while code and OPERATING_DECISIONS allow human-approved release. This is the most visible contradiction, and it leaves pilot creative scope undefined.",
+      "concrete_changes": "START_HERE.html: change step 9 to 'Creative draft: only after sign-off; released only with a named creative lead's approval (docs/pilot/CREATIVE_DELIVERY.md)' and rewrite the 'Ship creative' row the same way. Link docs/pilot/BRIEF_CHAMPION_RUNBOOK.md under 'Where things live'. README.md diagram node G: 'draft, then creative-lead approval, then local release package'. docs/pilot/SCORECARD.md s3 and s5, and OPERATING_TERMS.md s c: replace 'shadow ... nothing delivered' with the owner's chosen pilot rule (e.g. shadow in retro weeks 2-3, delivery-eligible in week 4 once a creative lead is named). Add creative measures: creative_approved yes/no, creative_released yes/no, creative_first_pass_approved.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Label every headline value figure as measured or assumed, and retire the stale cost headline",
+      "aspects": ["value_framing", "routing_usage", "documentation", "stakeholder_materials"],
+      "rationale": "The README headline pairs a Haiku-era dollar figure with an unlabelled labour assumption, and COST_MODEL/TIERS still show extraction on haiku after the 30 July routing change. A daily user or sponsor cannot tell what was proved.",
+      "concrete_changes": "README.md 'About this project': replace '~$2-2.6 per brief against ~EUR38-40' with 'Measured: 0.98 M tokens per brief on the graded run (Haiku-era routing, 2026-07-24); current routing not yet re-measured. Assumed: ~2 h of account-lead time per brief today (PRD A1, validated in pilot week 1).' Add a dated banner at the top of docs/COST_MODEL.md s1 and docs/TIERS.md 'Models' saying extraction moved to sonnet plus verify-extract on 2026-07-30 and the tables are historical until re-measured.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Commit a current-routing fixture baseline for the pilot",
+      "aspects": ["pilot_readiness", "routing_usage", "evaluation_method", "brief_accuracy", "value_framing"],
+      "rationale": "SCORECARD machine-time, token and refusal baselines are 're-baseline pending', and its Voreas precondition is unmet. Without a current-routing run the agency cannot size seats or the usage window, and cannot set the refusal-rate target on approval day.",
+      "concrete_changes": "Run python3 pipeline/runner.py on fixtures/northlight_01 and fixtures/voreas_02 (two rolls each) under the unchanged routing with --out runs/<id>. Record tokens by model (eval/cost_report.py --tokens), wall time, repairs and refused legs in a new committed runs/pilot_baseline_report.md. Replay tests/test_regression_voreas.py against the fresh outputs and remove xfails only where genuinely resolved. Update SCORECARD s1/s2 baselines and OPERATING_TERMS s c 'Usage' with the measured figures.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "One pilot RACI covering every role the commands require",
+      "aspects": ["pilot_readiness", "human_governance"],
+      "rationale": "The bilingual reviewer, traffic reviewer and creative lead run gating commands (attest, spec_catalog bind, delivery approve) but are missing from the week-1 naming list. Without them, approval-day staffing is incomplete.",
+      "concrete_changes": "Add a 'Roles' section to docs/pilot/OPERATING_TERMS.md s f with a table of sponsor, management contact, operator, champion 1 and 2, account leads L1 and L2, bilingual reviewer, traffic/spec owner and creative lead. For each role list the decisions owned, the exact commands run (e.g. 'agency attest', 'spec_catalog', 'delivery approve'), the backup and the named person (OWNER TO CONFIRM). Extend the first 'before week 1' row to name all of them. Replace the stale 'Write the one-page runbook' row with 'Train champions on the quick card; each completes one synthetic rehearsal end to end'.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "One-page daily quick card with a time budget reconciled to the <30 min review target",
+      "aspects": ["pilot_readiness", "value_framing", "documentation"],
+      "rationale": "PRD s8 promises a one-page runbook for ops coordinators. The actual path spans six documents and about 30 commands, and nothing shows the added review ceremony still fits the PRD's review-time value claim.",
+      "concrete_changes": "Add docs/pilot/QUICK_CARD.md: the happy path in at most 10 commands (runner, agency init/audit/queue/answer, attest, approve, handover, publish, effort record), each with its role and an expected-minutes column, and links to the long guides for exceptions. Add a sentence to SCORECARD s1 saying agency-tool triage, attest and checklist minutes by the lead count inside review_min, and that operator minutes go to operator_min.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Failure and recovery section in the champion runbook",
+      "aspects": ["pilot_readiness", "human_governance", "data_protection"],
+      "rationale": "Day-one operation will hit usage-window caps, CLI auth expiry, refusals near deadlines and mis-tiered inputs. Right now only refusal diagnostics and withdrawal are documented.",
+      "concrete_changes": "Add s8 'When things go wrong' to docs/pilot/BRIEF_CHAMPION_RUNBOOK.md with a symptom / first action / who decides / how to record table. Rows: usage window exhausted mid-run (resume with --stage on the same run ID if inputs are unchanged); claude CLI not authenticated; leg refused twice near a client deadline (lead writes the brief manually, scorecard row with legs_refused and notes); S2 or real data found in inputs (stop, delete per the retention rule once set, notify sponsor); wrong package shared (release_control withdraw plus the account lead's client communication). Replace the /tmp examples with <pilot path> placeholders tied to OPERATING_TERMS g4.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Reconcile capacity-returned and agency-size figures",
+      "aspects": ["value_framing", "documentation", "stakeholder_materials"],
+      "rationale": "Two annual-value figures (210 h / EUR4.0-4.2k vs EUR5-6k) and two agency sizes (40 vs 50) undermine the business case the pilot is meant to test.",
+      "concrete_changes": "In docs/COST_MODEL.md s3, add one derivation: (A1 120 - 50) min x A2 15 x 12 / 60 = 210 h/yr x A4 EUR19-20 = EUR4.0-4.2k, as the stated floor. Note that PRD s10's EUR5-6k is superseded by this derivation, and point SCORECARD s3 at it (dropping 'unreconciled'). Change 'a 50-person agency' in runs/tier_7_report.md to '~40-person (PRD case)' through an errata line rather than rewriting history, if tier reports are treated as immutable.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make the scorecard tool evaluate every documented pass rule",
+      "aspects": ["pilot_readiness", "testing_ci"],
+      "rationale": "Only review_under_30 is computed, so the end-week-3 gate that decides week-4 go-live must be worked out by hand, which invites disputes at the stop/go meeting.",
+      "concrete_changes": "In eval/pilot_scorecard.py, add a per-phase 'rules' block giving pass / fail / insufficient_data for assembly median <=20, review median <30, total median <=50, survival mean >70 (week 4), per-brief precision mean >80, ce_total 0 on every row, and live rows initiated_by=lead for 2/2 leads. Use the SCORECARD s4 thresholds unchanged, and flag readings marked OWNER TO CONFIRM as 'owner_reading_pending'. Add tests in tests/ for each rule, including missing data returning insufficient_data and never pass.",
+      "effort": "M",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "As the account director who would use this every week: the PRD tells a credible story (measured cost vs assumed labour, adoption in absolute numbers, gaps as questions), and the pilot kit is more thorough than most agencies would produce. It has an options-based operating-terms record, a precisely defined scorecard with critical-error classes and stop rules, and runbooks whose commands actually exist and pass 587 tests. It is not yet coherent or operable enough to start on approval day. The front door and the scorecard still describe creative as shadow-only, contradicting the owner's 2026-09-20 decision. The headline cost is Haiku-era and not labelled as measured vs assumed, and the capacity figures disagree. Three gating reviewer roles are never named. The stated precondition is unmet and there is no current-routing baseline. The daily path is a six-document CLI manual, not the promised one-page runbook, and it has no failure/recovery playbook. Both aspects score 6; most of the fixes are small documentation changes plus one fixture baseline run."
+}

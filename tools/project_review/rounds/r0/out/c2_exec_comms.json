@@ -1,0 +1,103 @@
+{
+  "scores": [
+    {
+      "aspect": "documentation",
+      "score": 6,
+      "evidence": "Strengths: the Tier 5-7 docs are current and honest about their limits (docs/TIERS.md Tier 5-7 sections, runs/tier_5/6/7_report.md 'Boundaries' sections, docs/pilot/CREATIVE_DELIVERY.md, BRIEF_CHAMPION_RUNBOOK.md, COORDINATION.md). docs/OPERATING_DECISIONS.md cleanly records the 2026-09-20 supersession without editing the frozen PRD. Every CLI named in README (pipeline.agency, agency_edit, spec_catalog, delivery, effort, operations, question_exchange, release_control) answers --help. The suite I ran gives 587 passed / 7 skipped / 16 xfailed, matching runs/tier_7_report.md and TIERS.md Tier 7. The walkthrough gate (tools/walkthrough/checks.py) runs with no failures. Weaknesses: the older documents were not brought up to date after Tiers 5-7. Several front-door and pilot documents still describe the scope as it was before 2026-09-20 (details under defects). The cost documents are dollar-first and use figures from the old model routing without saying so. There is no index of docs/ that separates current, historical and frozen documents.",
+      "defects": [
+        "README.md:111 says '321 tests ... ~0.4s'. The actual suite is 587 passed, 7 skipped, 16 xfailed, as README's own Tier 7 record and runs/tier_7_report.md state.",
+        "Three documents still say creative is shadow-only and never delivered, which contradicts docs/OPERATING_DECISIONS.md (2026-09-20) and docs/pilot/CREATIVE_DELIVERY.md. START_HERE.html (step 9 'Creative (shadow) only after sign-off, never delivered'; 'Ship creative ... never delivery'). docs/pilot/SCORECARD.md:43,57 ('nothing delivered', 'v1.1 decision'). docs/pilot/OPERATING_TERMS.md:19 ('shadow creative pass'). None of them carries a note that it predates the decision.",
+        "AGENTS.md is a mechanical Claude→Codex substitution of CLAUDE.md. It says the pipeline is 'built as Codex subagents' and points to '.Codex/agents/'. The runtime agents are Claude Code subagents in .claude/agents/. '.codex/' is untracked and only resolves because macOS is case-insensitive, so the path is wrong on a clean Linux clone.",
+        "docs/pilot/OPERATING_TERMS.md:19 cites 'HANDOFF_WALKTHROUGH.md line 30' and 'line 32' for token figures. After the handoff was rewritten, those lines are a tool list and '## 3. Next steps', so the citations are broken.",
+        "docs/COST_MODEL.md §1 tables extraction as 'haiku' ($2.25/brief) and does not say the figures come from before the 2026-07-30 routing change, which moved extraction to sonnet (.claude/agents/extract.md: model: sonnet) and added verify-extract. README:28 and :116 carry '~$2–2.6 per brief' forward without the caveat, while WALKTHROUGH sheet 10 and OPERATING_TERMS correctly say the whole-brief figure under current routing is unmeasured.",
+        "The returned-hours value is stated two ways. docs/COST_MODEL.md §3 says '~€5–6k/yr'; WALKTHROUGH.html sheet 10 derives €4.0–4.2k from PRD A1/A2/A4. The creative A/B cost also differs: $0.74 in COST_MODEL §1 against $0.93 from `python3 eval/cost_report.py` today.",
+        "docs/EVIDENCE.md:10 says the pipeline 'structurally cannot read' the answer key, and the dollar totals disagree. The walkthrough's round-10 correction says the key is protected by policy plus gates.HARNESS_ONLY_FILES exclusion, not made unopenable. EVIDENCE.md also gives $4.29 as the tier-3 total while COST_MODEL §5 says ~$3.55, with no reconciliation.",
+        "HANDOFF_WALKTHROUGH.md (tracked at repo root, 'updated 2026-09-18') predates Tiers 5-7. It lists as a page rule 'Creative output ... labelled shadow mode', and its 'next steps' are still open without any status marker.",
+        "docs/FABLE_MISSION_visualisation.md is still headed 'Status: IN PROGRESS' (2026-07-30). docs/AUDIT_BRIEF.md says 'Tiers 0–4 are complete'. Neither is marked historical, and no docs index shows which documents are current."
+      ],
+      "to_reach_9": "Make one dated currency pass so every tracked document either reflects the 2026-09-20 decision and the 587-test suite or carries an explicit 'historical, as of <date>' banner. Regenerate AGENTS.md correctly. Put the cost documents on tokens-first figures that state their routing era, with one reconciled total and one value figure. Fix the broken line citations. Add a docs/ index (current / historical / frozen). Add a deterministic doc-lint test (cited repo paths exist; no 'never delivered' wording outside files marked historical) so drift cannot come back."
+    },
+    {
+      "aspect": "stakeholder_materials",
+      "score": 6,
+      "evidence": "WALKTHROUGH.html (10 sheets, 7.7k words) is close to board-grade on content. It is answer-first: sheet 01 leads with 'Approve a four-week pilot, with live use in week 4 conditional on the retrospective results'. It separates measured from assumed: the 210 h / €4.0–4.2k are labelled PRD assumptions A1/A2/A4 to validate in week 1, and running costs are marked not estimated. It names what stays human (conflicts resolved_by_human, sign-off, creative lead), states the PRD's two named risks (sheet 10), gives usage in tokens by model with dollars only in the footnote, and has decision owners with a proposed binding gate. The deterministic gate checks every quote verbatim against the fixtures. START_HERE.html and SHARE_ME.html are clear, non-technical front doors with a 'What the system will not do' list. The tier reports carry honest 'Boundaries / Unperformed' sections. What holds the score at 6: the whole stakeholder set was written for the scope before 2026-09-20 and not refreshed after Tiers 5-7, the main decision document cannot be reached from the front doors, and the presentation itself is in an unresolved two-version state.",
+      "defects": [
+        "The presentation materials contradict the current operating decision on creative. WALKTHROUGH.html sheet 09/10 say 'creative stays in shadow in v1' and 'Shadow mode ... nothing delivered', and sheet 02 says 'v1.1 takes creative live after the pilot targets'. START_HERE.html and SHARE_ME.html say 'Creative (shadow) only after sign-off, never delivered'. docs/OPERATING_DECISIONS.md (2026-09-20) and runs/tier_6_report.md say human-approved creative delivery now exists. A hiring panel reading README's Tier 6 section and then START_HERE gets opposite answers to 'what stays human / what ships'.",
+        "The decision document cannot be found from the front doors. WALKTHROUGH.html is not linked from README.md, START_HERE.html or SHARE_ME.html; only docs/pilot/*.md mention it. START_HERE's 'pipeline walkthrough' card opens runs/tier3/run_review.html, a different page. The shared word 'walkthrough' hides the one page that carries the ask.",
+        "Tiers 5-7 are invisible to a non-engineer decision maker. No stakeholder page says what the agency tooling adds (coverage ledger, question triage, revision-bound approval, delivery with withdrawal, effort/rework measurement), what it proves (deterministic software rehearsal: 587 tests, benchmark 12/12), what it does not prove (no fresh generative evaluation under current routing), or how it changes the pilot ask. Sheet 07 still describes sign-off as 'a manual, schema-validated edit' of brief.json, whereas `pipeline.agency attest/approve` now exists.",
+        "The walkthrough exists in two published versions with a pending owner decision (HANDOFF_WALKTHROUGH.md §7 'v1 or v2'), and two artifact URLs circulate. A board pack should have one canonical version.",
+        "The front doors lead with a dollar headline ('~$2–2.6 per brief against ~€38–40', README:28) measured under routing that has since changed. The decision paper leads with 0.98 M tokens and says the current-routing figure is unmeasured. The two stakeholder surfaces give different headline economics.",
+        "The Tier 5-7 reports are dense engineering change logs; they say themselves they are not client deliverables. None ends with a plain-language 'decision requested / what changed for the pilot' line, so a hiring panel has to synthesise the story across three reports.",
+        "START_HERE says 'Seven pipeline steps, one human gate' and then shows nine numbered rows. It also omits the risks and the decision being asked, so a reader who stops at the front door never sees the ask."
+      ],
+      "to_reach_9": "Choose one walkthrough and retire the other. Add a dated 'Since the graded run (Tiers 5–7)' panel to sheet 10 that restates the pilot ask under the 2026-09-20 creative decision and says plainly what the new tooling does and does not prove. Rewrite the creative lines on START_HERE/SHARE_ME to match: approved delivery exists, never automatic, always creative-lead approval. Link the decision paper from README, START_HERE and SHARE_ME as 'the decision paper'. Put the front-door economics on the same tokens-first, routing-dated basis as sheet 10. Add a three-line plain-language summary to each Tier 5-7 report."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Post-2026-09-20 creative-scope currency sweep across stakeholder and pilot material",
+      "aspects": ["stakeholder_materials", "documentation", "value_framing", "pilot_readiness", "creative_quality"],
+      "rationale": "This is the most visible contradiction in the repo: the front doors and the decision paper say creative is 'never delivered', while the operating decision, README Tier 6 and CREATIVE_DELIVERY.md say approved delivery exists. A panel that notices it will doubt every other claim.",
+      "concrete_changes": "START_HERE.html and SHARE_ME.html: change step 9 to 'Creative draft — after sign-off; released only with a named creative lead's approval, never automatically', and rewrite the 'Ship creative' refusal as 'Release creative without a person'. WALKTHROUGH.html sheets 02/07/09/10: keep the graded-run facts, add a dated line 'Since 2026-09-20 (docs/OPERATING_DECISIONS.md) approved creative can be packaged locally via pipeline/delivery.py; the pilot proposal keeps creative behind creative-lead approval', and reword 'creative stays in shadow in v1' / 'v1.1 takes creative live'. docs/pilot/SCORECARD.md:43,57 and OPERATING_TERMS.md:19: replace 'nothing delivered / v1.1 decision' with the current rule. Re-run tools/walkthrough/checks.py and rebuild/republish the artifact.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make the decision paper reachable: one canonical walkthrough, linked from every front door",
+      "aspects": ["stakeholder_materials", "documentation", "value_framing"],
+      "rationale": "The best stakeholder asset in the repo (the ask, the gates, the risks) cannot be reached from README, START_HERE or SHARE_ME, and two published versions compete.",
+      "concrete_changes": "Owner picks v1 or v2 (HANDOFF_WALKTHROUGH.md §7); move the loser to tools/walkthrough/backups/ and publish a single URL. Add to README 'About this project' and to START_HERE/SHARE_ME a card 'The decision paper (10 sheets): WALKTHROUGH.html — what it is, what was proved, what stays human, the pilot ask'. Rename the START_HERE run-page card to 'How this brief was built (run view)' so the two 'walkthroughs' no longer share a name.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a 'Since the graded run — Tiers 5–7' panel to the decision paper and front door",
+      "aspects": ["stakeholder_materials", "value_framing", "pilot_readiness", "evaluation_method"],
+      "rationale": "Three tiers of agency tooling currently exist only in engineering reports. A decision maker needs to know what changed, what that proves (deterministic rehearsal) and what it does not (no fresh generative evaluation, no pilot data).",
+      "concrete_changes": "WALKTHROUGH.html sheet 10 (within the 650-word gate) and START_HERE.html: a 5-row panel, each with a file cite. Rows: coverage ledger / question triage / revision-bound approval (runs/tier_5_report.md); human-approved creative release and withdrawal (tier_6, tier_7); effort and rework measurement for the pilot scorecard (pipeline.effort, eval/rework_report). Then 'Proven: 587 deterministic tests, frozen harness 17/17, benchmark 12/12. Not proven: generative quality under current routing, Greek register, any time saving.' Update sheet 07's sign-off description to name `python3 -m pipeline.agency attest/approve`. End each of runs/tier_5/6/7_report.md with a three-line plain-language 'What changed for the pilot / decision requested'.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Fix README headline facts and add a reading order",
+      "aspects": ["documentation", "reproducibility_dx", "routing_usage", "stakeholder_materials"],
+      "rationale": "The README is the first page an engineer or panel member reads, and its test count and cost headline are stale. A reading order removes the navigation problem across more than 15 docs.",
+      "concrete_changes": "README.md:111: replace '321 tests, ~0.4s' with 'about 590 tests (587 pass, 7 skip, 16 historical xfail at Tier 7), no model calls', or drop the number and point to .github/workflows/quality.yml. README.md:28/116: lead with tokens ('0.98 M tokens per Stage-1 brief on the graded run; whole-brief figure under the 2026-07-30 routing not yet measured, runs/routing-validate-01'), with dollars as a footnote. Add a 'Reading order' box: 1 START_HERE.html, 2 WALKTHROUGH.html (decision paper), 3 docs/EVIDENCE.md, 4 docs/OPERATING_DECISIONS.md, 5 docs/pilot/BRIEF_CHAMPION_RUNBOOK.md, 6 CLAUDE.md/docs/TIERS.md.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Regenerate AGENTS.md so it no longer misstates the runtime",
+      "aspects": ["documentation", "reproducibility_dx", "architecture"],
+      "rationale": "AGENTS.md states the pipeline is built on Codex subagents and points to an untracked, case-mismatched path. Any Codex operator following it looks in the wrong place.",
+      "concrete_changes": "Regenerate AGENTS.md from CLAUDE.md, keeping 'Claude Code subagents' and '.claude/agents/' for the runtime. Change only the operator-facing sentences (who orchestrates). Add a header line 'Operator mirror of CLAUDE.md for Codex sessions; the runtime agents are Claude Code subagents'. Optionally add a pytest assertion that every repo path named in AGENTS.md/CLAUDE.md exists with exact case.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Reconcile cost and evidence figures and mark their routing era",
+      "aspects": ["documentation", "routing_usage", "evaluation_method", "value_framing"],
+      "rationale": "Three documents give different totals ($4.29 vs $3.55; creative $0.74 vs $0.93; €5–6k vs €4.0–4.2k). The cost model does not say it was measured before the routing change. EVIDENCE.md keeps a 'structurally cannot read' claim that the walkthrough already corrected.",
+      "concrete_changes": "docs/COST_MODEL.md: add a top banner 'Measured under the pre-2026-07-30 routing (haiku extraction, no verify-extract); the current-routing whole brief is unmeasured, and the transcript leg alone is 598 743 vs 295 774 tokens (runs/routing-validate-01)'. Put a tokens table by model first and dollars second, per the tokens-first working rule. Change §3 '~€5–6k/yr' to the PRD arithmetic €4.0–4.2k, matching WALKTHROUGH sheet 10. Re-state the creative A/B from the current eval/cost_report.py output. docs/EVIDENCE.md:10: replace 'structurally cannot read' with 'excluded from every work order by gates.HARNESS_ONLY_FILES and read only by the harness, a policy plus gate protection'. Add one sentence reconciling the $4.29 manifest total with COST_MODEL §5's ~$3.55, or keep one number.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Retire stale working documents and fix broken citations; add a docs index",
+      "aspects": ["documentation", "pilot_readiness"],
+      "rationale": "HANDOFF_WALKTHROUGH.md, FABLE_MISSION ('IN PROGRESS') and AUDIT_BRIEF ('Tiers 0–4 complete') read as current, and pilot documents cite handoff line numbers that have moved.",
+      "concrete_changes": "Add docs/README.md: a table of every docs/ file with status (Current / Historical-as-of-date / Frozen) and audience. Prepend a 'Historical — superseded by docs/OPERATING_DECISIONS.md and Tier 5–7; kept for the record' banner to HANDOFF_WALKTHROUGH.md, docs/FABLE_MISSION_visualisation.md and docs/AUDIT_BRIEF.md, or move HANDOFF to tools/walkthrough/. In docs/pilot/OPERATING_TERMS.md:19, replace 'HANDOFF_WALKTHROUGH.md line 30/32' with the primary sources runs/tier3/run_manifest.json and runs/routing-validate-01.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Deterministic doc-currency lint in the test suite",
+      "aspects": ["documentation", "testing_ci", "stakeholder_materials"],
+      "rationale": "Every defect above is drift that a cheap deterministic check would have caught. It keeps documentation above 8 after future tiers without relying on reviewers.",
+      "concrete_changes": "Add tests/test_doc_currency.py (no model calls). It asserts: (a) every backticked repo path in README.md, AGENTS.md, CLAUDE.md, docs/*.md and docs/pilot/*.md exists with exact case; (b) no 'HANDOFF_WALKTHROUGH.md line N' style citations; (c) the phrases 'never delivered', 'nothing delivered' and 'creative stays in shadow' appear only in files carrying the historical banner or in frozen docs/PRD.md and runs/tier_[0-4]_report.md; (d) README links WALKTHROUGH.html. Tests are added, never relaxed.",
+      "effort": "M",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The content quality is high where the work was done. The decision paper (WALKTHROUGH.html) is answer-first, separates measured from assumed, names what stays human and states an explicit gated ask. The Tier 5-7 reports and pilot runbooks are candid about their limits. Both aspects score 6 for the same reason: the materials were not refreshed after Tiers 5-7. The front doors, the decision paper and two pilot documents still say creative is 'never delivered', against the 2026-09-20 owner decision and the Tier 6 release capability. The decision paper cannot be reached from README, START_HERE or SHARE_ME and exists in two versions. README's test count (321 vs 587) and dollar headline are stale. AGENTS.md misstates the runtime. The cost documents mix routing eras and give three sets of numbers that are not reconciled. A single currency sweep, one canonical linked decision paper, a 'since the graded run' panel and a doc-lint test would likely lift both aspects to 8 or above."
+}

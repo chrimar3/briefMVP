@@ -1,0 +1,102 @@
+{
+  "scores": [
+    {
+      "aspect": "value_framing",
+      "score": 6,
+      "evidence": "Strong core: docs/PRD.md s1-s3 states the problem (hours plus author-dependent quality), users (account leads, creative team), a two-stage value hypothesis, non-goals and named assumptions A1-A5 with week-1 validation methods (s4); s7 splits leading/lagging metrics with honest n=2 adoption framing; s10 says labour ratio is the floor, not the case. docs/COST_MODEL.md s2/s7 separates measured ($2.25 Stage-1, two clean runs) from projected (<EUR0.50) explicitly. docs/TIERS.md lines 73-74, 90-91, 107-108 and runs/tier_7_report.md line 12 disclaim measured ROI/savings. docs/OPERATING_DECISIONS.md records the 2026-09-20 scope change without rewriting the frozen PRD. But the front door and pilot docs are inconsistent with that decision and with the current evidence (see defects), and the README headline merges measured, stale and assumed numbers into one sentence.",
+      "defects": [
+        "Scope/non-goal contradiction: START_HERE.html line 157 ('Creative (shadow) ... never delivered') and line 197 ('Ship creative ... never delivery') and docs/pilot/SCORECARD.md lines 43 and 57 ('nothing delivered (s3)', 'Creative in shadow') contradict docs/OPERATING_DECISIONS.md (2026-09-20: creative can proceed to delivery), CLAUDE.md rule 5 and docs/pilot/CREATIVE_DELIVERY.md line 3. The PRD's own rationale for shadow mode (s3: promote only 'once draft-survival rate proves extraction quality') was dropped with no stated replacement criterion.",
+        "README.md line 28 headline '17/17, at ~$2-2.6 per brief against ~EUR38-40 of account-lead time' does not label EUR38-40 as the unvalidated assumption A1 x A4, and compares model cost to the gross 2 h of labour rather than to the hypothesised saving (~70 min per PRD s2); COST_MODEL.md s3 '~17:1' inherits the same framing.",
+        "Selective measured evidence: README/START_HERE/EVIDENCE cite only northlight 17/17; the harder second fixture scored 15/17 and 16/17 with documented critical errors (runs/voreas_prep_report.md harness table, findings 1-4) and is not mentioned at the front door.",
+        "Stale measured figures presented as current: the $2-2.6 and 0.98 M-token figures are Haiku-era extraction; routing moved extraction to sonnet plus a verifier on 2026-07-30 (commit 6d77ae7, .claude/agents/extract.md model: sonnet) yet docs/COST_MODEL.md s1 table still lists extraction as haiku and README line 116 presents the cost as measured without that caveat (docs/pilot/OPERATING_TERMS.md line 19 admits the whole-brief figure under current routing is unmeasured).",
+        "Unreconciled business-case figures: capacity returned EUR4.0-4.2k (SCORECARD.md line 45) vs EUR5-6k (PRD s10, COST_MODEL.md line 56), flagged 'unreconciled' but never resolved; agency size ~40 (PRD line 3) vs '50-person agency' (runs/tier_7_report.md line 10, both superpowers plans).",
+        "No updated value hypothesis for Tiers 5-7: delivery, coordination and effort tooling are justified as 'concrete benefit' lists, but the added review steps (attest, audit, approve, exclusions) are not reconciled with the PRD s2 '~30 min review' target the pilot is scored on.",
+        "README.md line 113 says '321 tests'; the suite at HEAD runs 587 passed, 7 skipped, 16 xfailed (verified), matching TIERS.md line 103."
+      ],
+      "to_reach_9": "Make one authoritative value-claim ledger (measured / projected / assumed, with source and date) that README, START_HERE and COST_MODEL quote verbatim; include the voreas_02 result; frame the ratio on hypothesised labour saved; re-measure cost/tokens under current routing; reconcile the capacity figure and agency size; align every surface with the 2026-09-20 creative decision and state the pilot's creative promotion criterion."
+    },
+    {
+      "aspect": "pilot_readiness",
+      "score": 6,
+      "evidence": "docs/pilot/SCORECARD.md is near reference-grade: operational definitions per measure (assembly/review/total, lines 13-15), a concrete draft-survival recording protocol with read-only draft copies (line 23), a four-class question-precision taxonomy (line 24), critical-error classes CE1-CE5 grounded in real findings (lines 32-38), week-3/week-4 pass rules, stop rule and immediate-stop conditions (lines 47-52), and a week-by-week protocol (lines 54-60); eval/pilot_scorecard.py implements survival and descriptive summaries without inventing passes. docs/pilot/OPERATING_TERMS.md is a proper decision record: options A/B/C, permitted data, a ready-to-paste rule 4a, a blast-radius inventory of paths that must move outside the repo, a 'before week 1' owner table and verbatim questions. Runbooks cover recovery paths: refusal handling and new run IDs (BRIEF_CHAMPION_RUNBOOK.md lines 114-118), locks, approval invalidation, withdrawal and interrupted-withdrawal recovery (COORDINATION.md lines 46-73). 587 deterministic tests pass. What is missing is the part an agency needs on approval day: a pilot-mode runbook, a consistent creative scope, an incident procedure and consolidated roles.",
+      "defects": [
+        "No pilot-mode operating runbook: docs/pilot/BRIEF_CHAMPION_RUNBOOK.md is titled 'synthetic agency rehearsal', uses /tmp and fixtures paths, and is a ~20-command CLI manual; the PRD s8 'one-page runbook (drop files -> run one command -> read the verdict -> route the draft)' does not exist, and OPERATING_TERMS.md line 78 still lists writing it as a to-do.",
+        "Creative scope for the pilot is undecided and self-contradictory: SCORECARD.md lines 43/57 run creative in shadow with 'nothing delivered', while CREATIVE_DELIVERY.md and OPERATING_DECISIONS.md enable delivery; no document says whether weeks 2-4 may use delivery or what evidence promotes it.",
+        "No incident/escalation procedure: SCORECARD.md line 51 defines immediate-stop triggers (S2/S3 material, a critical error reaching a client) but nothing says who is notified, how the client is informed, how mis-ingested data is deleted (retention itself is OWNER TO CONFIRM, OPERATING_TERMS.md line 67), or how the event is logged; operational failures (Claude usage window exhausted mid-run, CLI auth failure, model outage, repeated refusals -> manual fallback) have no procedure for the pilot.",
+        "Roles are scattered and inconsistent: PRD s8 names operator, two champions, two account leads, sponsor; the runbook adds bilingual reviewer and traffic; CREATIVE_DELIVERY adds creative lead; no single RACI maps each role to commands, decisions and scorecard columns, and the champion-training plan is a single table row.",
+        "Pilot capacity planning is unmeasured under current routing: tokens, wall time and retries per brief after the 2026-07-30 routing change are unknown (OPERATING_TERMS.md line 19; SCORECARD.md line 17 're-baseline pending'), so the usage-window/seat decision cannot be sized on approval day.",
+        "The review-time target (<30 min, SCORECARD.md line 14) was set before Tier 5-7 added coverage exclusions, question triage, bilingual attestation and approval steps; no rehearsal timing or 'minimum pilot path' says which of these are mandatory in weeks 2-3.",
+        "Documented example fails: docs/pilot/CAMPAIGN_EDITING.md line 30 uses --dependency 'Synthetic artwork', but pipeline/handover.py validate_dependencies (lines 61-91) rejects any dependency that is not an existing deliverable ID, as COORDINATION.md line 27 states.",
+        "Scorecard pass rules (SCORECARD.md s4) are not machine-evaluated; eval/pilot_scorecard.py is descriptive only, so the week-3 go/no-go must be hand-computed."
+      ],
+      "to_reach_9": "Add a pilot-mode one-page runbook with out-of-repo paths and a preflight, an incident/recovery playbook with owners and time bounds, a consolidated RACI plus day-zero go/no-go checklist, an explicit owner decision on creative scope during the pilot, a re-baselined current-routing run for capacity sizing, a timed rehearsal of the minimum review path, doc-example tests, and a week-3 gate mode in pilot_scorecard.py."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Align every surface with the 2026-09-20 creative decision and fix the pilot's creative scope",
+      "aspects": ["value_framing", "pilot_readiness", "documentation", "stakeholder_materials", "human_governance"],
+      "rationale": "The front door (START_HERE) and the pilot scorecard still promise shadow-only creative while the code and OPERATING_DECISIONS enable delivery; a reader cannot tell what the pilot will actually do. This is the single contradiction most likely to be noticed by a decision maker.",
+      "concrete_changes": "Add a dated entry to docs/OPERATING_DECISIONS.md stating the pilot creative scope (recommended: shadow during weeks 2-3, delivery via pipeline/delivery.py allowed only after the week-3 gate and a survival mean >70%, restoring the PRD s3 promotion logic). Update START_HERE.html step 9 label and the 'Ship creative' card; README.md line 129 wording; docs/pilot/SCORECARD.md lines 43 and 57 to cite the new entry; add a one-line note in docs/pilot/CREATIVE_DELIVERY.md s1 linking the pilot scope.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Publish one value-claim ledger: measured vs projected vs assumed",
+      "aspects": ["value_framing", "routing_usage", "documentation", "stakeholder_materials", "evaluation_method"],
+      "rationale": "The PRD and COST_MODEL separate measured from assumed well, but the README headline collapses them and omits the weaker second-fixture result; a specialist reads that as overclaiming.",
+      "concrete_changes": "Add a 'What is measured, what is assumed' table to README.md (replacing line 28's sentence) with rows: northlight 17/17 (measured, synthetic, 1 fixture, runs/tier3); voreas_02 15/17 then 16/17 with CE1-CE4 (measured, runs/voreas_prep_report.md); Stage-1 tokens/cost (measured, Haiku-era routing, superseded 2026-07-30); current-routing cost (unmeasured); labour EUR38-40 (assumption A1 x A4, validated week 1); saving ~70 min/brief (PRD s2 target); ratio stated against saved labour; capacity returned with one reconciled figure. Link it from START_HERE.html. Fix README line 113 test count to the current suite; add a note in docs/COST_MODEL.md s1 that extraction now runs sonnet plus verifier and the table is Haiku-era. Report tokens by model first, dollars as footnote.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Write the pilot-mode one-page champion runbook with a safe-path preflight",
+      "aspects": ["pilot_readiness", "data_protection", "reproducibility_dx"],
+      "rationale": "PRD s8 requires a one-page runbook for two champions; the existing runbook is a synthetic rehearsal manual. On approval day the agency needs the short operational path with out-of-repo storage enforced.",
+      "concrete_changes": "Create docs/pilot/PILOT_DAY_RUNBOOK.md (one page): preconditions (rule 4a pasted, OPERATING_TERMS option recorded), drop files into <pilot path>/<brief_id>/input, one command, how to read the verdict (pass/refusal/repair), copy draft to draft/ for survival, route to the account lead, where to log the scorecard row. Add a small wrapper (e.g. tools/pilot_run.sh or pipeline/pilot_preflight.py) that refuses --project/--out/--glossary paths inside the repository and checks the client glossary tier is S0/S1, with tests using temp synthetic paths. Keep BRIEF_CHAMPION_RUNBOOK.md as the full reference.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Add an incident and recovery playbook with owners and time bounds",
+      "aspects": ["pilot_readiness", "human_governance", "data_protection"],
+      "rationale": "Immediate-stop triggers exist but nothing says what happens next; a controlled pilot needs rehearsed responses before the first real brief.",
+      "concrete_changes": "Create docs/pilot/INCIDENTS.md covering: critical error found before/after client send (pipeline.release_control withdraw, account-lead client notice via existing process, CE row in scorecard, sponsor informed within 1 working day); S2/S3 or out-of-scope data ingested (stop, deletion steps for input/run/evidence copies, sponsor and DPO notified, log entry); usage window exhausted mid-run (resume with --stage on the same run ID, never rerun-until-green); CLI auth/model outage and two refusals on one leg (fall back to the manual brief, record legs_refused); lock left behind. Each entry: trigger, owner, first action, deadline, record. Link it from SCORECARD.md s4 and the runbooks.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Consolidate roles into a RACI and turn 'before week 1' into a signed go/no-go checklist",
+      "aspects": ["pilot_readiness", "human_governance", "stakeholder_materials"],
+      "rationale": "Roles are spread across PRD s8, the runbook, CREATIVE_DELIVERY and SCORECARD; approval day needs one page that names who does what and what must be true to start.",
+      "concrete_changes": "Create docs/pilot/ROLES.md: RACI rows for sponsor, management, operator, champions x2, account leads x2, bilingual reviewer, creative lead, traffic, mapped to each decision (tiering, sign-off, attest, creative approve, withdraw, stop rule) and each scorecard column; include a two-hour champion training outline with a synthetic rehearsal exercise. Convert OPERATING_TERMS.md s f into a checkbox go/no-go list with blank name fields and a sponsor sign line; keep OWNER TO CONFIRM markers.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Re-baseline one full run under current routing for capacity sizing",
+      "aspects": ["pilot_readiness", "routing_usage", "value_framing", "documentation"],
+      "rationale": "The usage-window/seat decision (OPERATING_TERMS option A) and every published token/cost figure rest on Haiku-era extraction; the pilot cannot be sized without a current measurement.",
+      "concrete_changes": "Run python3 pipeline/runner.py on fixtures/northlight_01 and fixtures/voreas_02 under unchanged config/model_routing.json with unique run IDs; record tokens by model, wall time, retries via eval/cost_report.py --tokens; commit a runs/rebaseline_report.md; update COST_MODEL.md s1, SCORECARD.md line 17 and the example CSV row, OPERATING_TERMS.md line 19 monthly-token estimate. Grade northlight read-only (harness.load_run + grade, no report rewrite). No routing change.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Time a synthetic rehearsal of the minimum review path and define it",
+      "aspects": ["value_framing", "pilot_readiness"],
+      "rationale": "Tier 5-7 added mandatory-looking review steps that may break the <30 min review hypothesis the pilot is scored on; better to know before week 2.",
+      "concrete_changes": "Add a 'Minimum pilot path' section to docs/pilot/SCORECARD.md listing which pipeline.agency steps are required in weeks 2-3 (e.g. audit, queue/answer, resolve, sign-off) and which are optional (client-pack, carry-decisions, question_exchange, delivery). Run one timed rehearsal on runs/tier3 copies using pipeline.effort record, and report the observed minutes per step as rehearsal evidence (not a pilot result).",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Test every documented pilot command and add a week-3 gate mode to the scorecard tool",
+      "aspects": ["pilot_readiness", "documentation", "testing_ci"],
+      "rationale": "CAMPAIGN_EDITING.md line 30 shows an example the validator rejects; operators copy examples. The week-3 go/no-go is currently hand-computed.",
+      "concrete_changes": "Fix docs/pilot/CAMPAIGN_EDITING.md line 30 to reference a predecessor deliverable ID (add that row first). Add tests/test_pilot_doc_examples.py that extracts sh blocks from docs/pilot/*.md, substitutes a temp synthetic run built from runs/tier3 data, and asserts each non-model command exits as documented. Add eval/pilot_scorecard.py --gate week3|week4 that evaluates SCORECARD.md s4 rules on PILOT rows and reports pass/fail/insufficient-data per rule, never passing on missing data; tests with synthetic CSVs.",
+      "effort": "M",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The PRD is a model value framing (named assumptions with validation methods, honest n=2 adoption metrics, cost as the smallest line) and the pilot scorecard and operating-terms record are unusually rigorous. Both aspects are pulled down by currency and consistency, not by thinking: the front door still promises shadow-only creative after the owner enabled delivery; the README headline mixes a single-fixture 17/17, a Haiku-era cost and an unvalidated labour assumption, and omits the weaker voreas_02 result; the capacity figures are not reconciled. On pilot readiness, the agency would still need to write the one-page pilot runbook, decide creative scope for the pilot, and create an incident playbook and a consolidated RACI, and it cannot size capacity under current routing. Most fixes are small documentation moves; two need owner decisions (creative scope, published figures) and one needs a fresh fixture run."
+}

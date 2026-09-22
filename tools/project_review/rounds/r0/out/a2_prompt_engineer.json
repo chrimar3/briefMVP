@@ -1,0 +1,114 @@
+{
+  "scores": [
+    {
+      "aspect": "prompt_skill_design",
+      "score": 6,
+      "evidence": "Strong craft: skills/SOURCES.md has numbered non-negotiable rules, fixed confidence definitions, per-source-type posture (§5), an 8-step self-check with rationale (§8 rule 8 on constructed citations). SYNTHESIS.md rules 4-5 are precise about resolution-by-omission and currency-in-questions. Agent wrappers inject skills byte-exact (tests/test_agents.py), tools are Read,Write only (.claude/agents/*.md frontmatter, mirrored by pipeline/agents.py ALLOWED_TOOLS), and agents run from a neutral cwd so CLAUDE.md never loads. Work orders carry paths only (extraction.py build_work_order), repair orders list violations verbatim (agents.repair_order), and many rules have a deterministic gate: citation verbatim-ness, unsourced glossary terms, anchor sweep, conflict-consistency, superseded-within-source, currency marks (stages.py check_synthesis), render no-invention and citation tags (check_render), and fidelity annotate-never-repair (check_fidelity). Suite runs green: 587 passed, 7 skipped, 16 xfailed.",
+      "defects": [
+        "The runtime prompts contain the graded fixture's own trap text. SOURCES.md §9's worked example is the northlight CFO line at [00:14:32], word for word (fixtures/northlight_01/transcript_kickoff.md:25, the X3 source). TRANSCRIPTS.md §2 and §3 use the exact seeded garbles «μπραντ αγουέρνες» and «κι βίζουαλ». SYNTHESIS.md rule 2 uses «κάπου στα ογδόντα». SOURCES.md §4 uses the northlight RFP's 'Στρατηγική **TikTok-first**' as its anchor example. verify-extract.md and SOURCES §7 use 'don't hold me to it', the X2 phrase in both keyed fixtures. These examples prime the model for the exact test items.",
+        "Several instructions are not backed by a gate. TRANSCRIPTS.md §4 says a low score or summary_suspicion must escalate, but check_fidelity (stages.py) never checks this against the verdict. Nothing checks the 'report counts match annotations' self-check. classify.md rule 3 (low confidence means unclassified_ask_human) is not enforced by check_classification, and its evidence citations are never verified against the sources. SOURCES.md says every medium/low item must generate an open_question, and no gate checks that (grep finds no linked_items check).",
+        "The fidelity gate is looser than its prompt. The work order says 'one altered character fails the run… do not normalise whitespace', but check_fidelity compares whitespace-collapsed text (' '.join(stripped.split())).",
+        "Tool scoping is not least-privilege. _access_dirs (runner.py:132) grants --add-dir plus the Write tool on the project dir, which contains answer_key.json, and on schema/, config/ (model_routing.json, readiness_policy.json, channel_specs.json) and templates/, which its docstring calls 'read-only'. 'answer_key.json is off limits' is only an instruction in every work order.",
+        "The extractor must apply verifier findings without adjudicating them. The repair order says 'Fix exactly these problems' (extraction.py extract_source), so a verifier false positive about a qualifier or attribution gets applied, with no record of whether each finding was accepted or rejected. The verifier's 'evidence' span is never checked for being verbatim.",
+        "Spec ambiguities found in rehearsal are still open. Rule G does not say that a garbled claim must still appear as an item in its field as well as in a note: the voreas finding 1 extract kept it as a note only (xfail test_garble_flagged_objective_survives_synthesis). The queued SYNTHESIS garble-coverage rule and the TRANSLATION keep_latin scope line (runs/voreas_prep_report.md 'Decisions queued') were never applied.",
+        "Smaller inconsistencies: the SOURCES.md §9 example value joins clauses with an em dash, which breaks its own 'no paraphrase drift' rule, and its open question omits linked_items. creative-shadow.md introduces the [brief:field:N] citation format only in self-check 7, not in §4 Output, and still calls the spec table a 'Tier-4 stub'. check_creative_brief never verifies [brief:…] refs or verbatim mandatories. stages.render hardcodes templates/northlight_client_brief.md for every client."
+      ],
+      "to_reach_9": "Replace every fixture-derived example in skills/ and the agent bodies with neutral ones, and add a test that fails when any fixture sentence (8-gram overlap) appears in a runtime prompt. Stage run inputs into a key-free copy and stop granting Write on schema/config/templates. Gate each rule that currently lives only in the prompt: fidelity escalation and counts, classify low-to-ask plus citation verification, medium/low-to-open-question linkage, byte-exact annotation diff. Let the extractor accept or reject each verifier finding, with the decision logged. Apply the queued rule-G, garble-coverage and keep_latin clarifications, and move the creative citation format into §4."
+    },
+    {
+      "aspect": "routing_usage",
+      "score": 5,
+      "evidence": "The routing rationale is explicit and human-owned: CLAUDE.md 'Model routing' and config/model_routing.json, including the effort policy with provenance and a calibration rule. Every attempt records resolved model IDs and token categories (agents.SubagentResult; runs/tier3/run_manifest.json shows input, output, cache-read and cache-write per stage, plus claude-haiku-4-5-20251001, claude-sonnet-5 and claude-opus-4-8). The cost audits C0–C4 (runs/cost_c1..c4_report.md) are measurement-driven, state misses honestly and separate measured from projected figures (COST_MODEL §6: the API arm is labelled a projection). docs/pilot/OPERATING_TERMS.md:19 states in tokens that the whole-brief figure under the 30 July routing is unmeasured.",
+      "defects": [
+        "The published headline numbers predate the current routing and are not flagged as stale. README.md:28 ('17/17, at ~$2–2.6 per brief'), docs/EVIDENCE.md and docs/COST_MODEL.md §1 still show extraction on haiku with no verify-extract step. Since 2026-07-30, extraction runs on sonnet with a sonnet verifier. The one measured leg (runs/routing-validate-01) cost $0.65 + $0.61 (repair) + $0.21 (verify) for a single source, against $0.09–0.16 per haiku-era extract. The per-brief figure is therefore materially out of date, and no full-brief run exists under the shipped routing.",
+        "Costs are presented in dollars first, against the tokens-first requirement. COST_MODEL.md, EVIDENCE.md 'Measured cost' and the README headline are all in $/€. eval/cost_report.py reports dollars by default and tokens only behind --tokens. No document has a per-model token table.",
+        "The risk-routed verifier never actually routes to the base model. risk_classes (extraction.py) flags 'figures' on any digit in any value (dates included) and 'garbling' on any extraction_note. Replayed over the 14 stored extracts (tier3, evidence-20260729, voreas-prep-02), all 14 route to sonnet. The haiku-else branch that CLAUDE.md and model_routing.json describe is effectively dead, which inflates cost without being disclosed.",
+        "_verify_policy (extraction.py) silently falls back to defaults on a malformed or missing config (it catches OSError and JSONDecodeError). This contradicts the fail-loud principle that stage_effort (agents.py) states so that 'a measured cost number and the config that supposedly produced it' cannot disagree.",
+        "Minor: model_routing.json _provenance justifies synthesis effort as 'conflict adjudication', wording that contradicts SYNTHESIS.md rule 4 ('never resolve'). The frontmatter says model: haiku for verify-extract while in practice it runs sonnet."
+      ],
+      "to_reach_9": "Run one full graded brief (ideally 3) per keyed fixture under the shipped routing. Publish a per-stage, per-model token table (input, cache-read, cache-write, output), plus plan-window share, as the headline in COST_MODEL.md, EVIDENCE.md and README, with dollars in a footnote and haiku-era figures explicitly labelled as historical. Make cost_report print tokens by model by default. Narrow the risk classes so the base model receives real traffic (or drop the pretence and document always-sonnet), have _verify_policy fail loudly, and record the routing decision per run."
+    },
+    {
+      "aspect": "evaluation_method",
+      "score": 5,
+      "evidence": "The harness was frozen before the artifacts it grades existed (eval/harness.py docstring). It runs 17 checks across evidence, brief/render and seeded-challenge tiers, with answer keys that contain conflicts, gaps, garbles and traps X1–X3 (fixtures/northlight_01 and voreas_02 answer_key.json). The second fixture came with a harder key and exposed real weaknesses (runs/voreas_prep_report.md: 15/17 then 16/17). Stored-artifact regression tests carry honest xfails (tests/test_regression_voreas.py, 16 xfails citing the report). eval/agency_benchmark.py labels itself 'NOT generative quality' and lists what it does not measure. The graded pack is committed in runs/tier3, and roll-dependence is acknowledged in docs/DEMO_PLAYBOOK.md:93.",
+      "defects": [
+        "The tests leak into the prompts. The runtime skills quote northlight's X3 budget line, both seeded garbles and the X2 phrase (see prompt_skill_design). voreas_02 reuses «μπραντ αγουέρνες» and 'don't hold me to it' (transcript_kickoff.md:7, transcript_followup.md:17), so neither keyed fixture is held out from the prompts and the 17/17 partly measures recall of worked examples. This is not disclosed anywhere.",
+        "The answer key is not sealed from the models. EVIDENCE.md claims a 'sealed answer key the pipeline structurally cannot read', and gates.py claims 'structurally unreachable'. Only discover_sources skips the file: every runtime agent gets Read access to fixtures/<project>/ via --add-dir (runner.py _access_dirs), and exclusion relies on an instruction in the prompt. No run records evidence that the key was not read.",
+        "There is no variance measurement. The headline is a single graded run, and the evidence run needed a synthesis re-roll to go green (EVIDENCE.md 'one disclosed synthesis re-roll'). X1 slipped on 3 of 5 rolls before a gate was added (stages.py:410). No N-roll pass-rate table per check exists for either fixture.",
+        "The shipped routing has never been graded. Every harness_report.json in runs/ comes from a haiku-extraction run. The current sonnet-extract plus verify-extract pipeline has no end-to-end harness result (runs/latest and routing-validate-01 are an extraction-only demo-profile leg).",
+        "The frozen checks are lenient in ways that an unfrozen supplementary scorer could cover. X2 passes vacuously when the speculative item is dropped ('not present in draft'). X1 inspects only the deliverables field, by keyword, although the key says 'draft or renders'. X3 matches literal strings, which misses unmarked numeral conversion (voreas finding 4). T3.2 is a substring match. Nothing measures precision (spurious conflicts, duplicate questions) or open-question quality.",
+        "The fixtures are narrow and the gates were partly fitted to them. Only two keyed fixtures exist, both following one trap template (same X1/X2/X3 types and phrasing). The three agency_*_01 fixtures have no answer key and are about 230 words each. Several runner gates were written from harness failures on these same fixtures (the X1 superseded gate, conflict-consistency from voreas addendum 1), so the harness now partly measures the gates rather than the model, and no fresh keyed fixture has been run since.",
+        "The grader shares code with what it grades (the harness imports gates.verify_citations; disclosed in README footnote 1)."
+      ],
+      "to_reach_9": "Decontaminate the prompts and seal the key by staging inputs. Author a third keyed fixture blind, with a different trap family (a cross-speaker correction, a written retraction, digit figures with ambiguous units, a different garbled term), created as a new file without editing existing keys. Run each keyed fixture 3–5 times under the shipped routing, publish per-check pass rates, and make that table the headline rather than a single 17/17. Add a key-free supplementary scorer (eval/brief_quality.py) that promotes the voreas regression rules, detects X2-style omissions by comparing extract to brief, flags unmarked numeral conversion, and reports question/conflict duplication rates, reported alongside the frozen harness."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Decontaminate runtime prompts and apply the queued spec clarifications",
+      "aspects": ["prompt_skill_design", "evaluation_method", "brief_accuracy"],
+      "rationale": "The skills quote the graded trap lines word for word, so the 17/17 cannot be told apart from example recall. Removing the leak restores eval validity and costs little. Applying the three queued clarifications fixes known spec gaps (voreas finding 1, keep_latin scope, creative citation format) in the same re-sync.",
+      "concrete_changes": "Replace the examples in skills/SOURCES.md (§4 anchor example 'Στρατηγική **TikTok-first**', §7 'don't hold me to this', §9 worked example), skills/TRANSCRIPTS.md §2 and §3 («μπραντ αγουέρνες», «κι βίζουαλ»), skills/SYNTHESIS.md rule 2 («κάπου στα ογδόντα») and skills/TRANSLATION.md rule 3 ('Meltemi Fizz'). Use a fictional client, different figures and a different garbled term, e.g. «σόσιαλ λίσενινγκ». Also replace the example phrases in .claude/agents/verify-extract.md. Make the §9 value verbatim and add linked_items to its question. Add one sentence to rule G: 'the garbled claim is still emitted as an item in its field; the note is additional'. Add a SYNTHESIS rule-3 sentence: 'a garble-flagged item survives assembly like any other'. Add one TRANSLATION line on keep_latin scope when a source itself wrote the Greek word. Move the [brief:field:N] format into creative-shadow.md §4 and drop 'Tier-4 stub'. Re-sync the injected blocks and add tests/test_prompt_hygiene.py, which fails if any 8-token span of fixtures/*/*.md (sources only, never answer keys) appears in skills/ or .claude/agents/.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Seal the answer key and make skeleton dirs read-only by staging inputs",
+      "aspects": ["evaluation_method", "prompt_skill_design", "security_injection", "human_governance"],
+      "rationale": "Runtime agents currently have Read access to answer_key.json and Write access to schema/, config/ and templates/. The 'structurally unreachable' claim only holds for Python code. Staging makes it true for the models as well.",
+      "concrete_changes": "Change runner.py _access_dirs to copy the discovered sources (discover_sources output), the client config, the schemas, the template and channel_specs.json into run_dir/_inputs/ at run start, and pass only run_dir, never project_dir, gates.SCHEMA_DIR, CONFIG_DIR or templates/. Point work orders at the staged paths. Add a test asserting that no access dir contains answer_key.json and that none resolves to a repo source dir. Until this lands, correct docs/EVIDENCE.md ('structurally cannot read') and the gates.py docstring to say the exclusion is instructional for agents.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Graded N-roll run under the shipped routing, with a tokens-by-model headline",
+      "aspects": ["routing_usage", "evaluation_method", "documentation", "stakeholder_materials"],
+      "rationale": "Every published score and cost is haiku-era. The shipped pipeline (sonnet extract plus verifier) has never been graded or costed end to end. One batch of runs fixes currency, variance and the tokens-first requirement together.",
+      "concrete_changes": "Run python pipeline/runner.py 3 times each on fixtures/northlight_01 and fixtures/voreas_02 (after moves 1 and 2). Grade each run with the harness into its own run dir, not the committed tier3 report. Write runs/routing_current_report.md with per-check pass rates (k/N) and per-stage, per-model tokens (input, cache-read, cache-write, output) plus retries. Replace the README.md:28 headline, EVIDENCE.md 'Measured cost' and COST_MODEL.md §1 with the token table and pass rates, with dollars in a footnote and the haiku-era $2.25 kept as a labelled historical row.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Close the instruction-without-gate gaps",
+      "aspects": ["prompt_skill_design", "human_governance", "testing_ci"],
+      "rationale": "Rules that exist only in the prompt, such as fidelity escalation and classify low-to-ask, are exactly the ones a model can get wrong silently. Gating them brings the instructions and the enforcement into line.",
+      "concrete_changes": "stages.check_fidelity: fail when fidelity_score=='low' or summary_suspicion is true and verdict!='escalate_to_human'; fail when tokens_flagged != the count of [FIDELITY:] annotations; compare stripped text byte-exact, or state the whitespace tolerance in TRANSCRIPTS.md §5 and the work order. stages.check_classification: fail on classification_confidence=='low' without unclassified_ask_human and a non-empty question_for_human; verify each evidence location and anchor with gates.verify_citations against the listed sources. extraction.check_extract: define linked_items as item paths (e.g. 'budget[0]') in SOURCES.md §4 and fail when a medium/low item is linked by no open_question. extraction.check_verify_report: require each issue's evidence to occur in the source. Add a negative test for each.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make verifier findings adjudicated, not obeyed",
+      "aspects": ["prompt_skill_design", "brief_accuracy", "human_governance"],
+      "rationale": "The repair order currently tells the extractor to 'fix exactly these' verifier findings, so a hallucinated qualifier or attribution finding gets applied with no trace. Adjudication with a logged decision keeps the second check independent without making it authoritative.",
+      "concrete_changes": "In extraction.extract_source, build a dedicated verified-repair order: 'For each finding, either apply it or reject it with a one-line reason citing the source'. Have the extractor write run_dir/verification/<source_id>.adjudication.json ({where, decision: applied|rejected, reason}) and gate its shape. Surface rejected findings in the run manifest and in brief_review.html for the account lead.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make the verify-extract risk routing real and fail loudly",
+      "aspects": ["routing_usage", "code_quality"],
+      "rationale": "All 14 stored extracts trip the strong-model branch, because 'figures' matches any digit and 'garbling' matches any note. The documented haiku-else routing is fiction, and a malformed policy silently falls back.",
+      "concrete_changes": "extraction.risk_classes: count 'figures' only on budget and timeline items, or on currency marks or spoken-number words; count 'garbling' only on notes that carry a glossary-match proposal. Replay over the stored extracts and report the base/strong split in the routing report. _verify_policy: raise on invalid JSON or unknown model and treat only a missing file as defaults, mirroring agents.stage_effort. Or, if the owner prefers always-sonnet, set base_model to sonnet and say so in CLAUDE.md and model_routing.json. Also reword the model_routing.json _provenance line 'conflict adjudication' to 'conflict detection'.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Key-free supplementary quality scorer beside the frozen harness",
+      "aspects": ["evaluation_method", "brief_accuracy", "bilingual_quality"],
+      "rationale": "The frozen harness cannot change, but it passes omissions (X2 'not present'), paraphrased retractions and unmarked numeral conversions, and it measures no precision at all. The voreas regression rules already encode better checks, but only as xfails over two stored runs.",
+      "concrete_changes": "Add eval/brief_quality.py (must not read answer_key.json), runnable on any run dir. Promote the rules in tests/test_regression_voreas.py: no field asserting one side of an open conflict; questions that duplicate open conflicts; rendered questions carrying linked_evidence; numerals in the brief traceable to extract values; conflict positions spanning two sources. Add an omission check: every extract item with qualifier=conditional reaches the brief as a conditional entry or an open question. Report duplicate-question and spurious-conflict rates. Print it next to the harness in the move-3 report as unfrozen evidence, never as a gate.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Third keyed fixture with a different trap family, authored blind",
+      "aspects": ["evaluation_method", "brief_accuracy"],
+      "rationale": "Both keyed fixtures share one trap template and phrasing, and both have been used to design gates. A held-out fixture is the only way to show the prompts and gates generalise.",
+      "concrete_changes": "Have an author who has not read skills/ or the existing keys create fixtures/<client>_03/ (a new folder with a new answer_key.json; no existing key is edited). Traps should include a cross-speaker correction, a retraction written in an email, a digit figure with ambiguous units, a different garbled glossary term and no 'don't hold me to it' phrasing. Seal it until prompts are final, then run it 3 times under the shipped routing and report the results unchanged, including failures.",
+      "effort": "L",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The prompt engineering is careful. The skills are precise and explain their reasoning, the agent wrappers are thin and byte-synced, work orders carry paths only, and an unusually large share of the rules are enforced by deterministic gates with one repair round. The weaknesses are in what the evidence proves. The runtime prompts quote the graded trap lines word for word. The answer key sits in a directory the model agents can read. There is no N-roll variance measurement. Every published score and dollar figure predates the 30 July routing change, which has never been graded or costed end to end, and costs are reported in dollars first. The verifier's risk routing sends everything to sonnet. The highest-leverage fixes are cheap: decontaminate the prompts, stage inputs, then run a graded N-roll batch under the current routing with a tokens-by-model headline."
+}

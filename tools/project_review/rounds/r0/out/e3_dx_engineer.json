@@ -1,0 +1,126 @@
+{
+  "scores": [
+    {
+      "aspect": "architecture",
+      "score": 7,
+      "evidence": "Model work and deterministic checks are cleanly separated: pipeline/gates.py (header lines 1-15: 'Nothing in this module calls a model') holds input contract, readiness, schema and citation verdicts; pipeline/agents.py is a single invocation seam (CLAUDE_BIN line 41, shutil.which check line 209, run_gated repair loop line 285); every model step is a registered handler (runner.py AGENT_HANDLERS) wrapped by a gate plus bounded repair. Stage-1 artefacts hang off schema/brief_schema.json and schema/extract_schema.json, and the probe validates the schema inside the synthesis gate (stages.py check_synthesis, 'Schema violations must be visible INSIDE the gate'). Policy lives as data (config/readiness_policy.json, channel_specs.json, model_routing.json, campaign_profiles.json). The Stage-2 gate is structural (creative refuses an unsigned brief). New clients need only a folder that honours the source-header contract plus a glossary JSON: grep finds no client strings in pipeline/ apart from docstrings. Five fixture projects exist (fixtures/agency_*_01, northlight_01, voreas_02). Tier 5-7 work sits beside the frozen schema as companion records instead of changing it, which is the right call.",
+      "defects": [
+        "The Tier 5-7 contract has no schema. About 20 companion record types (agency_inputs.json, clarifications.json, coverage_decisions.json, approval.json, creative_approval.json, creative_draft.json, releases.json, release.json, approval_withdrawals.json, effort.json, handover.json, language_review.json, evidence_index.json, input_snapshot.json, revision_lineage.json, amendments.json, agency_audit.json ...) are checked only by ad-hoc code (for example effort._load, delivery.verify). 'The schema as the contract' holds for Stage 1 only.",
+        "No central registry of the run-directory layout: record file names are string literals repeated across modules in two quote styles (grep counts 18 occurrences of 'agency_inputs.json' and 21 of 'brief.json' in pipeline/*.py).",
+        "pipeline/ is a flat package of 28 modules that mixes orchestration (runner, stages, extraction), gates, HTML view generation (review.py 720 lines, run_review.py 692, docview, share, publish) and agency operations (agency, delivery, release_control, effort, question_exchange). Nothing marks where the core ends and companion tooling begins.",
+        "Policy is split: the input-contract policy is hardcoded in gates.py lines 32-60 (REQUIRED_SOURCE_TYPES, MIN_SUBSTANTIVE_SOURCES, budget/timeline regexes, under a banner 'POLICY — agency-tunable thresholds'), while readiness thresholds live in config/readiness_policy.json.",
+        "Every run has a side effect outside its run directory: Runner._write_manifest calls publish._publish_locked (a private function in another module) and writes to repo-level reviews/ (publish.py line 22 DEFAULT_REVIEWS_DIR).",
+        "PIPELINE_VERSION is still '1.0.0' ('Tiers 0-4 complete', pipeline/__init__.py) even though Tiers 5-7 changed runner behaviour (input snapshots, run locks, history archiving). The module's own rule, 'Bump on behaviour change', is broken, so manifests from before and after Tier 5 cannot be told apart."
+      ],
+      "to_reach_9": "Declare JSON Schemas for the companion records (new files under schema/companion/, leaving brief_schema.json untouched) and validate them on every load and write through one helper. Add a pipeline/run_layout.py registry of record paths. Split pipeline/ into core, views and agency subpackages, or at least document that boundary. Move the input-contract constants into config. Make reviews/ publishing an explicit step. Bump PIPELINE_VERSION."
+    },
+    {
+      "aspect": "code_quality",
+      "score": 6,
+      "evidence": "The original pipeline (Tiers 0-4) reads well: gates.py, agents.py, extraction.py, runner.py, stages.py, review.py and run_review.py have type hints on every function (AST scan: 20/20, 9/9, 10/10, 18/18, 20/20, 20/20, 16/16) and docstrings or comments that record the reason behind each rule and the failures that produced it (for example stages.py check_synthesis on anchor-level conflict matching). There are only 5 broad `except Exception` blocks, each a documented best-effort view step (runner.py lines 259, 339, 347). Errors are specific (gates.InputContractError, GateError; delivery.verify catches ValueError, OSError, TypeError and KeyError explicitly). The naming is domain-precise.",
+      "defects": [
+        "The code idiom splits at Tier 5. The 13 Tier 5-7 modules have almost no type hints: agency.py 0/9, delivery.py 0/9, effort.py 0/14, revisions.py 0/16, release_control.py 0/4, quality.py 0/5, operations.py 0/3, question_exchange.py 1/22, plus eval/pilot_scorecard.py, rework_report.py and agency_benchmark.py at 0. They also have few docstrings, switch to single quotes and use a denser style (`package/'release.json'`). The Tier 0-4 modules are fully typed.",
+        "The same helpers exist twice with different semantics. effort._lock blocks (flock LOCK_EX) while revisions.run_lock fails fast (LOCK_NB). effort._atomic_write calls fsync while revisions.write_json does not. A reader cannot tell which durability guarantee applies to which record.",
+        "revisions.py imports mid-file: `from contextlib import contextmanager` and `import fcntl` sit at lines ~145-146, after the functions above them.",
+        "Some functions are too large: stages.check_synthesis is 215 lines holding six sequential checks, stages.check_render 113, run_review._source_card 113, demo/run_demo.main 139, extraction.extract_source 98, agency.main 97 and agency.audit 95. stages.py is 846 lines.",
+        "tools/walkthrough/ tracks one-off, single-use scripts (edit_r7.py, edit_r8.py, swap_kv.py, embed_packaging.py) with hardcoded absolute paths (/Users/chrism/... in build.py, checks.py, codex_round.py, compare_*.py and codex_redesign.py, which also points at a personal ~/.claude journal path). It also tracks 14 HTML/MD backups under tools/walkthrough/backups/, about 15 MB of tracked tooling files in total.",
+        "Nothing enforces style: there is no linter or formatter config (no pyproject/ruff/flake8) and no type checker. That is how the two idioms above drifted apart."
+      ],
+      "to_reach_9": "Type-annotate and docstring the Tier 5-7 public functions. Merge lock and atomic-write into one helper in revisions.py, with fsync and a documented blocking policy. Hoist the mid-file imports. Split check_synthesis and check_render into named sub-checks without changing any violation strings. Move the one-off walkthrough scripts and backups out of HEAD and make the remaining tools derive their root from Path(__file__). Add ruff (plus non-strict mypy on pipeline/) and run both in CI."
+    },
+    {
+      "aspect": "testing_ci",
+      "score": 7,
+      "evidence": "I ran the suite: 587 passed, 7 skipped, 16 xfailed in about 2 s, with the same result in a fresh `git clone` of HEAD into the scratchpad (no untracked or ignored files needed). There are 30 test files. The tests are behaviour-named and include negative and edge cases: tests/test_gates.py (answer key never opened, undeclared file refused, duplicate IDs refused, missing policy fatal, policy drives verdict, readiness block is pure); test_delivery.py (tamper detection, busy-run lock, manifest escape, withdrawal survives rebind, interrupted withdrawal); test_dependencies.py (unknown, self, cycle, late, duplicate). conftest.py has an autouse fixture that points agents.CLAUDE_BIN at a binary that cannot exist, so no test can call a model. The xfail discipline is exemplary: test_regression_voreas.py uses xfail(strict=True, raises=AssertionError), each case carries a reason citing the report finding and the committed run, and an XPASS would flip the suite red. The 7 skips are principled parametrised exclusions (test_agents.py lines 87 and 106). CI (.github/workflows/quality.yml) runs the suite, grades the frozen runs/tier3 evidence in-process without rewriting its report (I reproduced 17/17), and runs eval/agency_benchmark.py. It uses least-privilege `permissions: contents: read` and a 10-minute timeout.",
+      "defects": [
+        "No end-to-end orchestration test. tests/test_runner.py only goes as far as the classify dispatch ('clears the gate then stops cleanly without a model'), and repair-loop tests fake agents.invoke per stage (test_agents.py line 176, test_stages.py line 474). No test drives Runner.run through all six handlers → gates → manifest → review pages → reviews/ publish with replayed model outputs, so wiring regressions between stages (hydration, --stage legs, manifest outcome 'complete') are not covered.",
+        "CI does not pin Python (no actions/setup-python), so it runs whatever ubuntu-latest ships (3.12 today), while the local dev interpreter is 3.9.6. There is no version matrix, so a 3.10+ construct or a 3.13 deprecation would be caught on one side only.",
+        "CI and every documented command pass `-o addopts=''`, which silently drops pytest.ini's `--strict-markers`. It is harmless today (only parametrize and xfail are used) but it disables a guard the project configured.",
+        "CI has no lint, type-check or coverage step, so the idiom drift described under code_quality cannot be caught.",
+        "Tests import helpers from other test modules instead of from conftest fixtures (for example test_dependencies.py: `from test_agency_operations import make_review_run`). This couples test files and depends on rootdir sys.path behaviour."
+      ],
+      "to_reach_9": "Add tests/test_e2e_replay.py. It should monkeypatch agents.invoke with a replayer that copies the committed runs/tier3 outputs for each agent, run Runner(stage='full') on fixtures/northlight_01 into tmp_path with reviews_dir redirected, and assert that the manifest outcome is 'complete', every gate passed, the review pages exist and harness.grade gives 17/17 on the replayed run. Pin Python in CI with setup-python and a 3.9/3.12 matrix. Stop overriding addopts, which removes the -q duplication and keeps strict markers. Add ruff and mypy steps. Move shared builders into conftest.py."
+    },
+    {
+      "aspect": "reproducibility_dx",
+      "score": 7,
+      "evidence": "A clean-clone newcomer path works in a few minutes: README 'Run it' gives a venv, pip install of three deps and pytest. I verified that a fresh clone passes all tests, that the CI frozen-evidence grade gives 17/17 and that the benchmark passes. Runner errors are legible and carry exit codes. A missing CLI gives \"'no-such-claude-bin' not found on PATH ... set BRIEF_BUILDER_CLAUDE_BIN\" with exit 4; a missing folder gives '[input contract] /nonexistent is not a directory.' with exit 4; an empty folder gives 'no source documents found.' with exit 4. Every pipeline CLI answers --help. The committed runs/tier3 evidence lets anyone without the claude CLI inspect a full run. run_full.sh archives the prior output instead of overwriting it, and runs record input and config hashes and refuse reuse when inputs change.",
+      "defects": [
+        "Nothing is pinned: requirements.txt has only floors (jsonschema>=4.0, pytest>=7.0, PyYAML>=6.0), with no lock or hash file, and no Python version is declared anywhere (no pyproject requires-python, no .python-version, nothing in README). CI's interpreter (ubuntu-latest) differs from the dev one (3.9.6).",
+        "README.md line 113 says '321 tests, no model calls, ~0.4s'. The suite now collects 610 (587 passed, 7 skipped, 16 xfailed) in about 2 s, and runs/tier_7_report.md line 70 already reports the correct number. The first thing a newcomer checks is therefore wrong.",
+        "Invocation is inconsistent. The runner, demo and most eval tools run as scripts (`python3 pipeline/runner.py`, `python3 eval/cost_report.py`), agency tools as modules (`python3 -m pipeline.agency`). `python3 eval/rework_report.py --help` crashes with ModuleNotFoundError: No module named 'pipeline' (only `-m eval.rework_report` works, docs/pilot/EFFORT_RECORDING.md line 158). Docs also mix `python` and `python3`.",
+        "AGENTS.md is a mechanical sed of CLAUDE.md (identical after s/Claude Code/Codex/, s/.claude/.Codex/). It tells the reader that the stages are 'Codex subagents' at `.Codex/agents/`, a path that does not exist (the runtime shells out to the `claude` CLI and reads .claude/agents/). Both files' Architecture sections list only the Tier 0-4 modules, so an engineer onboarding through them never learns about the 13 Tier 5-7 modules.",
+        "There is no single command that mirrors CI (pytest, then the frozen-evidence grade, then the benchmark). The grade step exists only as an inline heredoc in quality.yml, and there is no Makefile or scripts/check.sh.",
+        "POSIX and macOS assumptions are undocumented: fcntl locking (revisions.py, effort.py), runs/latest symlinks, and `open` in run_full.sh (macOS only)."
+      ],
+      "to_reach_9": "Add pyproject.toml with requires-python and tool config, plus a hashed lock (for example requirements.lock from pip-compile --generate-hashes). Use setup-python in CI with the same version. Fix the README test line, or drop the count and point at the tier report. Make every CLI runnable as `python3 -m` and add the sys.path shim to eval/rework_report.py. Add scripts/check.sh (and have CI call it) running exactly the three CI steps. Regenerate AGENTS.md by hand for the real substrate and add the Tier 5-7 modules to both Architecture sections. State in the README that the project is POSIX-only."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Pin the toolchain and make local runs match CI",
+      "aspects": ["reproducibility_dx", "testing_ci", "documentation"],
+      "rationale": "Unpinned deps, no declared Python version and a CI interpreter that differs from the dev one mean 'passes on my machine' and 'passes in CI' are two different claims. A newcomer's first check, the README test count, is stale. These are cheap fixes that remove the clearest DX defects.",
+      "concrete_changes": "Add pyproject.toml ([project] requires-python = \">=3.9\", plus [tool.pytest.ini_options] or keep pytest.ini). Add requirements.lock generated with `pip-compile --generate-hashes requirements.txt` and install from it in CI. In .github/workflows/quality.yml add actions/setup-python with a matrix of ['3.9', '3.12'], and replace `-o addopts=''` with plain `python3 -m pytest` so --strict-markers applies. Add scripts/check.sh running pytest, the frozen-evidence grade (the heredoc moved into eval/grade_frozen.py, which imports harness read-only and writes nothing) and eval/agency_benchmark.py, and have CI call it. Fix README.md line 113 to the measured '587 passed, 7 skipped, 16 xfailed, ~2 s' or reference runs/tier_7_report.md. Document the Python version and POSIX-only support in README 'Run it'.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "End-to-end replay test of the full runner",
+      "aspects": ["testing_ci", "architecture", "evaluation_method"],
+      "rationale": "Every gate is unit-tested, but nothing proves that the six handlers, hydration, manifest, review pages and publish step wire together. Runner tests stop at classify. A replay of the committed tier3 model outputs gives a deterministic, model-free integration test of the whole Stage-1 sequence.",
+      "concrete_changes": "Create tests/test_e2e_replay.py. Build a fake agents.invoke that, keyed by agent name and work order, copies the matching committed artefact from runs/tier3 (classification.json, fidelity report, extracts/*.json, brief.json, brief_el.md, brief_en.md) into the run dir and returns a usage stub. Run Runner(project_dir=fixtures/northlight_01, out_dir=tmp_path, stage='full') with publish.DEFAULT_REVIEWS_DIR monkeypatched to tmp_path. Assert that run_manifest.json outcome == 'complete' with exit 0, every step passed, brief_review.html and the document views exist, and harness.grade(harness.load_run(run_dir)) is 17/17 (read-only import). Add a second case where the replayer returns a corrupted extract once, to show the repair loop recording 2 attempts through the runner.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Schemas and a layout registry for Tier 5-7 companion records",
+      "aspects": ["architecture", "code_quality", "human_governance", "testing_ci"],
+      "rationale": "About 20 companion JSON record types (approvals, releases, withdrawals, effort, clarifications ...) carry the governance guarantees, yet their structure is enforced only by scattered ad-hoc code and file names are repeated string literals. Declared schemas make 'the schema is the contract' true for Tiers 5-7 without touching the frozen brief schema.",
+      "concrete_changes": "Add schema/companion/{agency_inputs,clarifications,coverage_decisions,approval,creative_approval,creative_draft,releases,release,approval_withdrawals,effort,handover,language_review,evidence_index,input_snapshot,revision_lineage}.schema.json, describing what the code already accepts. Add pipeline/run_layout.py with one constant per record path and its schema. Add revisions.load_record(run, KIND) and revisions.write_record(run, KIND, value), which validate with jsonschema, and replace the literal file names in agency.py, delivery.py, release_control.py, effort.py, question_exchange.py, handover.py and operations.py. Add tests/test_companion_schemas.py covering a valid example for each schema, rejection of one malformed example per schema, and a check that every committed record in runs/tier3 and the test builders validates. schema/brief_schema.json stays unchanged.",
+      "effort": "L",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Unify the Tier 5-7 idiom with the original pipeline",
+      "aspects": ["code_quality", "testing_ci"],
+      "rationale": "The Tier 0-4 modules are fully typed and documented, while the 13 Tier 5-7 modules are untyped and denser, and duplicate the lock and atomic-write helpers with different semantics. A reviewer sees two codebases. Adding a linter and type checker keeps the drift from coming back.",
+      "concrete_changes": "Add type hints and one-line docstrings to the public functions in pipeline/{agency,agency_edit,delivery,release_control,effort,revisions,quality,operations,question_exchange,handover,clarifications,client_pack,spec_catalog}.py and eval/{pilot_scorecard,rework_report,agency_benchmark}.py. Replace effort._lock and effort._atomic_write with revisions.run_lock (with a `blocking=` parameter) and revisions.write_json, upgraded to fsync before os.replace. Move revisions.py's mid-file `from contextlib import contextmanager` and `import fcntl` to the top. Add [tool.ruff] to pyproject.toml (E, F, I, B, UP with target py39) and [tool.mypy] (check_untyped_defs, not strict) for pipeline/, with a CI step for each.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Split the monolithic gate functions without changing behaviour",
+      "aspects": ["code_quality"],
+      "rationale": "stages.check_synthesis (215 lines, six sequential checks) and check_render (113 lines) are the heart of the deterministic core. They are well commented but hard to review or extend. Named sub-checks make each rule individually testable, and because the violation strings stay unchanged the gate cannot be relaxed.",
+      "concrete_changes": "In pipeline/stages.py, extract check_synthesis into _check_signoff_and_evidence, _check_conflict_consistency, _check_superseded_within_source, _check_anchor_integrity, _check_currency_discipline and _check_schema_probe, each returning list[str], and make check_synthesis concatenate them in the current order. Do the same for check_render. Add a golden test that asserts byte-identical violation lists before and after on the existing test_stages.py inputs. Violation text and ordering must not change.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Fix onboarding files and CLI invocation consistency",
+      "aspects": ["reproducibility_dx", "documentation", "architecture"],
+      "rationale": "AGENTS.md sends a Codex-based newcomer to a non-existent `.Codex/agents/` and misdescribes the runtime. Both agent instruction files omit the 13 Tier 5-7 modules. eval/rework_report.py crashes when run the way its sibling eval scripts are run. PIPELINE_VERSION hides the Tier 5-7 behaviour change in every manifest.",
+      "concrete_changes": "Rewrite AGENTS.md by hand: the runtime substrate is the `claude` CLI with definitions in .claude/agents/, and Codex is only the build-time assistant. Keep the rules identical to CLAUDE.md. Extend the Architecture bullet in both CLAUDE.md and AGENTS.md with the Tier 5-7 modules (agency, agency_edit, revisions, quality, clarifications, handover, client_pack, delivery, spec_catalog, effort, release_control, operations, question_exchange), one clause each. Add the standard `if __package__ in (None, ''): sys.path.insert(...)` shim to eval/rework_report.py and eval/pilot_scorecard.py. Standardise the docs on `python3 -m <module>` (runner, harness and demo keep path forms that work). Bump pipeline/__init__.py PIPELINE_VERSION to 1.1.0 with a comment noting that Tiers 5-7 added input snapshots, run locks and history archiving. Guard run_full.sh's `open` with `command -v open`, falling back to xdg-open.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Remove one-off walkthrough scripts and backups from the tracked tree",
+      "aspects": ["code_quality", "reproducibility_dx"],
+      "rationale": "tools/walkthrough/ tracks single-use editor passes (edit_r7.py, edit_r8.py, swap_kv.py), 14 HTML backups and scripts with hardcoded /Users/chrism paths, one of which points at a personal ~/.claude journal. They do not run on any other machine and bury the real tools.",
+      "concrete_changes": "Tag the current state (for example `walkthrough-archive-r11`), then `git rm` tools/walkthrough/backups/, edit_r7.py, edit_r8.py, swap_kv.py and codex_redesign.py from HEAD. In build.py, checks.py, codex_round.py, compare_cans.py, compare_logos.py and embed_packaging.py, replace the absolute ROOT with `Path(__file__).resolve().parents[2]`. Add a short tools/walkthrough/README.md naming what each remaining script is for and stating that none of them is part of the pipeline.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Move input-contract policy into config and make shelf publishing explicit",
+      "aspects": ["architecture", "pilot_readiness"],
+      "rationale": "Readiness thresholds are config, but the source-type rules and signal patterns that decide refusal are hardcoded under a banner calling them agency-tunable. Every run also writes into repo-level reviews/ as a hidden side effect through a private function.",
+      "concrete_changes": "Add config/input_contract.json holding required_source_types, substantive_source_types, min_substantive_sources and the budget/timeline signal patterns, with the same _provenance and _calibration_rule notes as readiness_policy.json. Load it in gates.readiness_gate with the same fatal-if-missing rule as load_readiness_policy, and keep the current values exactly. Replace the runner's call to publish._publish_locked with the public publish.publish_run behind a `--no-publish` flag (default unchanged). Record the published paths in the manifest.",
+      "effort": "M",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "The engineering core is sound and honest. Deterministic gates wrap every model step through one invocation seam; the frozen schema is the contract for Stage 1; policy lives as data; the test suite (610 collected, 2 s, model calls impossible by construction, strict evidence-cited xfails) passes on a clean clone; and CI re-grades the frozen evidence without rewriting it. What stops this layer at 7 is uneven quality between the original pipeline and the Tier 5-7 extension. The 13 newer modules are untyped, duplicate the lock and atomic-write helpers, and keep about 20 companion record types with no schema or layout registry. On top of that the toolchain is unpinned and CI runs a different Python from dev, no end-to-end runner test exists, and the newcomer path has papercuts (a stale README test count, a sed-generated AGENTS.md pointing at a non-existent path, inconsistent `-m` versus script invocation with one crashing CLI, one-off walkthrough scripts with absolute paths). All of these can be fixed within the project rules without touching the frozen PRD, answer keys, harness or brief schema."
+}

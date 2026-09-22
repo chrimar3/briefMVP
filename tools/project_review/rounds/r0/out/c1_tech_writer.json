@@ -1,0 +1,100 @@
+{
+  "scores": [
+    {
+      "aspect": "documentation",
+      "score": 5,
+      "evidence": "Deep documents are strong and mostly verifiable. docs/EVIDENCE.md maps all 17 harness checks and every seeded trap to committed artifacts in runs/tier3 (harness_report.json, run_manifest.json, extracts, fidelity report). docs/COST_MODEL.md derives cost from manifests and says plainly where figures are projections (§6 C4). docs/pilot/OPERATING_TERMS.md marks every open commercial term OWNER TO CONFIRM and says outright that the whole-brief figure under the 30 July routing is unmeasured. The pilot guides (BRIEF_CHAMPION_RUNBOOK, CREATIVE_DELIVERY, COORDINATION, QUESTION_EXCHANGE, EFFORT_RECORDING) name subcommands that match the real CLIs: I checked `python3 -m pipeline.{agency,agency_edit,delivery,release_control,question_exchange,effort,spec_catalog,operations} --help`. Tier 0–4 reports carry GREEN status, DoD tables and resolved model IDs. The deterministic suite gives 587 passed, 7 skipped, 16 xfailed, which matches runs/tier_7_report.md and docs/TIERS.md Tier 7. The weakness is currency. The front doors (README.md, START_HERE.html, AGENTS.md) and the cost headline were never swept after the 30 July routing change or after Tiers 5–7. They now contradict the code, docs/OPERATING_DECISIONS.md and each other.",
+      "defects": [
+        "README.md:113 says '321 tests, ~0.4s'. The suite now gives 587 passed, 7 skipped, 16 xfailed (runs/tier_7_report.md, and my own run).",
+        "README.md:116 says 'A full Stage-1 run makes 6 model calls — ~$2–2.6 measured', and README.md:28 headlines '~$2–2.6 per brief'. Under current routing, pipeline/extraction.py:318-336 runs a verify-extract subagent for each source, and .claude/agents/extract.md is now sonnet. A run therefore makes at least 12 model calls. The $2.07–2.44 range was measured on the Haiku-era runs tier3-confirm and tier3-confirm2 (COST_MODEL.md §1). README, EVIDENCE.md and COST_MODEL.md never mention the 30 July routing change. OPERATING_TERMS.md §c and WALKTHROUGH sheet 10 say the current whole-brief figure is unmeasured.",
+        "START_HERE.html ('Creative (shadow) — only after sign-off, never delivered'; 'Ship creative … never delivery') and SHARE_ME.html (the same step 9) contradict docs/OPERATING_DECISIONS.md (2026-09-20). They also contradict README.md:146/160 and docs/pilot/CREATIVE_DELIVERY.md, which say creative can now be approved and released.",
+        "AGENTS.md is a find-and-replace copy of CLAUDE.md that was committed in 5c386ba. It says the pipeline is 'built as Codex subagents' and points to `.Codex/agents/`. The runtime actually calls `claude -p` with .claude/agents/ (pipeline/agents.py; README 'Run it'), and the .codex/ directory it points to is untracked (git status). runs/tier_5_report.md also still calls AGENTS.md 'pre-existing untracked'.",
+        "HANDOFF_WALKTHROUGH.md is dated 2026-09-18, before Tiers 5–7. It still lists 'Repository discrepancies still unedited' that remain unedited: docs/EVIDENCE.md:63 still quotes $4.29 against the de-duplicated $3.55, and docs/COST_MODEL.md §3 still says '~€5–6k/yr' against the PRD arithmetic of €3,990–4,200. Its §4 rule 'Creative output … labelled shadow mode' is superseded by OPERATING_DECISIONS.md.",
+        "Cited evidence is not in the repository. runs/routing-validate-01 is the only source for the post-routing 598,743-token figure (WALKTHROUGH sheet 10, OPERATING_TERMS.md, HANDOFF §5). The tier3-confirm and tier3-confirm2 runs (COST_MODEL.md §1, 'reproduce with python eval/cost_report.py') and runs/evidence-20260729 (EVIDENCE.md 'three moments') are gitignored. This goes against EVIDENCE.md's opening claim that everything 'links to a committed artifact'. README.md 'Product view (… the deck's Slide 3)' and several reports cite docs/DECK.md, which is deliberately untracked.",
+        "docs/ has no index and no status markers. Historical kickoff and plan documents (FABLE_MISSION_visualisation.md 'Status: IN PROGRESS' dated 2026-07-30; AUDIT_BRIEF.md 'Tiers 0–4 are complete'; TIERS.md §Models 'extract → haiku') sit beside current operating documents and give no current, historical or superseded signal. The Tier 5–7 material is appended at the foot of README.md in a different voice, and the README Build-view table has no docs/pilot or OPERATING_DECISIONS row."
+      ],
+      "to_reach_9": "Make one currency pass that brings every front-door figure and claim in line with HEAD: test count, model-call count, the routing change and the unmeasured whole-brief cost, creative delivery status, and AGENTS.md. Commit the evidence runs that published figures depend on, or stop citing them. Add a docs/README.md index that gives each document a status (current, historical, superseded) and a reading order per audience. Fix or annotate the two known numeric discrepancies in EVIDENCE.md and COST_MODEL.md."
+    },
+    {
+      "aspect": "stakeholder_materials",
+      "score": 6,
+      "evidence": "WALKTHROUGH.html is an unusually honest decision document. Sheet 01 puts the ask first ('Approve a four-week pilot, with live use in week 4 conditional on the retrospective results'). Sheet 10 names three decisions with owners and deadlines, separates measured tokens (0.98 M, runs/tier3/run_manifest.json) from assumed labour (PRD A1/A2/A4), and lists limits and risks: 3 of 10 refusals, second fixture 15/17 then 16/17, 'exam-green is not lead-ready', and the Draft A invented budget. It also marks what stays human: conflict resolution, sign-off and the creative lead's call. START_HERE.html and SHARE_ME.html open offline and link to committed review pages (runs/tier3/brief_review.html, run_review.html; brief.json signoff.status = signed_off). The Tier 5–7 reports state their boundaries carefully ('does not certify production readiness'; 'not … realized savings'). But the materials describe a system that no longer matches HEAD, so a decision maker gets conflicting answers to 'what stays human' and 'what is being approved'.",
+      "defects": [
+        "The creative scope contradicts itself across materials. WALKTHROUGH sheets 02, 09 and 10 say 'shadow mode (drafted for evaluation, never delivered)', 'no delivered creative. v1.1 takes creative live after the pilot targets'. START_HERE.html and SHARE_ME.html say 'never delivered', and docs/pilot/SCORECARD.md:43 says 'nothing delivered'. docs/OPERATING_DECISIONS.md (2026-09-20), README Tier 6 and runs/tier_6_report.md say creative can now be approved and released. A decision maker cannot tell whether the pilot approval covers delivered creative.",
+        "The walkthrough says 'the review page does not save decisions or signatures', that recording is 'a manual, schema-validated edit' of brief.json, and that it 'proposes the runbook before week 1'. Tier 5 has since shipped the pipeline.agency resolve, attest and approve CLI and docs/pilot/BRIEF_CHAMPION_RUNBOOK.md. The page undersells the current system and misstates the human workflow.",
+        "The walkthrough itself is unsettled. HANDOFF_WALKTHROUGH.md §7 records the owner decision 'v1 or v2' as still pending, and two published artifact URLs carry different presentations of the same material.",
+        "The headline numbers disagree between materials. README.md headlines '~$2–2.6 per brief' (Haiku-era dollars). WALKTHROUGH headlines 0.98 M tokens and says the routing needs a re-baseline before week 1. START_HERE shows no usage figure at all. The only post-routing measurement (runs/routing-validate-01) is not committed, so a hiring panel cannot inspect the figure the walkthrough asks management to plan capacity against.",
+        "START_HERE.html and SHARE_ME.html do not mention the Tier 5–7 agency operations: coverage ledger, question exchange, approval binding, release and withdrawal. Their 'Where things live' section omits docs/pilot/ and docs/OPERATING_DECISIONS.md, and the verify-extract second reader is missing from their 'Seven pipeline steps' list.",
+        "runs/tier_5_report.md to runs/tier_7_report.md are dense engineering changelogs: no GREEN or BLOCKED status in the title, no DoD-to-evidence table like Tiers 0–4, and no plain-language 'what was proved / what was not / what is being asked' paragraph. Nothing gives a non-engineer a current-state summary after Tier 7."
+      ],
+      "to_reach_9": "Reconcile the creative-delivery and review-workflow story across WALKTHROUGH, START_HERE, SHARE_ME and SCORECARD after the owner decides whether the pilot includes delivered creative. Settle v1 against v2. Put one headline usage figure, measured under current routing and backed by a committed run, on every front door. Add a one-page current-state summary, linked from START_HERE, covering what Tiers 5–7 added, what was proved (deterministic) against what was not (generative quality, pilot outcomes), and the decision asked."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Reconcile creative-delivery status across all stakeholder front doors",
+      "aspects": ["stakeholder_materials", "documentation", "human_governance", "value_framing"],
+      "rationale": "This is the most visible contradiction. Three presentation files and the pilot scorecard say creative is 'never delivered'. The owner decision of 2026-09-20 and the shipped pipeline/delivery.py say it can be released after named human approval. A decision maker cannot tell what they are approving, and a hiring panel sees the materials disagree with the code.",
+      "concrete_changes": "The owner first decides whether the pilot itself runs creative in shadow or with approved delivery. Then: START_HERE.html and SHARE_ME.html change step 9 'Creative (shadow) — only after sign-off, never delivered' to 'Creative draft — only after sign-off; released only with a named creative lead's approval (pipeline/delivery.py)', and rewrite the 'Ship creative' refusal row to 'Approve creative on anyone's behalf'. WALKTHROUGH.html sheets 02, 09 and 10 (and v2 via build_v2.py) replace 'never delivered' and 'v1.1 takes creative live' with the current rule plus the pilot's chosen stance, then pass tools/walkthrough/checks.py. docs/pilot/SCORECARD.md:43/57 states the pilot stance explicitly and cites OPERATING_DECISIONS.md. Add a mustkeep.json entry so later review rounds hold the fact.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "README currency pass: tests, model calls, routing change, usage headline, Tier 5–7 navigation",
+      "aspects": ["documentation", "routing_usage", "reproducibility_dx", "stakeholder_materials"],
+      "rationale": "README is the first file a hiring panel or engineer reads. It currently gives a stale test count, a stale model-call count and a Haiku-era dollar headline without the caveat, and it never mentions the 30 July routing that the code runs today.",
+      "concrete_changes": "README.md:113: replace '321 tests, ~0.4s' with no hard count, or with '~590 tests (587 pass, 7 skip, 16 documented xfail), no model calls'. README.md:116: replace '6 model calls — ~$2–2.6 measured' with 'classify, fidelity, one extract plus one independent verify-extract per source, synthesize, render (routing: config/model_routing.json, .claude/agents/*.md); usage was measured on the pre-30-July routing and a whole-brief re-baseline is pending'. README.md:28: lead with tokens (0.98 M, graded routing) and put dollars in a footnote with the same caveat. Move the Tier 5–7 sections into a 'Current operating state' block near the top that links docs/OPERATING_DECISIONS.md and docs/pilot/. Add docs/pilot and OPERATING_DECISIONS rows to the Build-view table. Remove or qualify 'the deck's Slide 3', because docs/DECK.md is untracked.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Fix or retire AGENTS.md",
+      "aspects": ["documentation", "reproducibility_dx", "security_injection"],
+      "rationale": "A committed operating file that describes the runtime as 'Codex subagents' and points to an untracked `.Codex/agents/` misleads any agent or engineer who loads it. It also contradicts pipeline/agents.py, CLAUDE.md and runs/tier_5_report.md.",
+      "concrete_changes": "Replace AGENTS.md with a short file for the Codex development harness. It should say that runtime agents are .claude/agents/*.md invoked through `claude -p` (pipeline/agents.py), and that CLAUDE.md is the governing rule set and repeats its critical rules verbatim. Fix every '.Codex' and 'Codex subagents' substitution. Separately decide whether .codex/ should be tracked or gitignored, and state which in the Tier-8 report or the commit message.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a docs index with reading order and document status",
+      "aspects": ["documentation", "reproducibility_dx", "pilot_readiness"],
+      "rationale": "docs/ mixes current operating guides, frozen specifications, historical kickoff and plan documents, and console logs, with nothing to tell a reader which is authoritative today. Reading order exists only implicitly (README → START_HERE → EVIDENCE).",
+      "concrete_changes": "Create docs/README.md with one table: document, audience, status (current / frozen / historical / superseded-by), last verified tier. Cover PRD (frozen), TIERS, OPERATING_DECISIONS, EVIDENCE, COST_MODEL, DEMO_PLAYBOOK, AUDIT_BRIEF (historical), FABLE_MISSION_visualisation (historical; implemented as reviews/ pages), demo_timing, the console logs, superpowers/plans (historical plans) and each docs/pilot file. Include three reading paths: decision maker, hiring panel, operator or engineer. Link it from README and START_HERE. Rewrite the header of HANDOFF_WALKTHROUGH.md, or add a banner saying it predates Tiers 5–7, and move the settled items out of §3 'Next steps'.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Re-baseline one whole brief under current routing and commit the evidence",
+      "aspects": ["routing_usage", "documentation", "stakeholder_materials", "pilot_readiness", "evaluation_method"],
+      "rationale": "Every published usage number describes routing the code no longer runs. The only post-routing measurement (runs/routing-validate-01, one leg) is uncommitted. The walkthrough itself asks for this re-baseline before week 1. Doing it closes the largest honesty gap in the numbers.",
+      "concrete_changes": "Run `python3 pipeline/runner.py --project fixtures/northlight_01` once under current routing, then read-only harness grading using harness.load_run and harness.grade, without the report-writing CLI. Commit the run directory (for example runs/rebaseline-<date>/) with a .gitignore exception, and commit runs/routing-validate-01 as well. Record tokens by model with `eval/cost_report.py <run> --tokens`. Then update the COST_MODEL.md headline table (tokens first, dollars footnoted, pre- and post-routing rows), README, EVIDENCE.md, WALKTHROUGH sheet 10 and OPERATING_TERMS.md §c. No model upgrade, no gate change.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Close the two known numeric discrepancies in EVIDENCE.md and COST_MODEL.md",
+      "aspects": ["documentation", "routing_usage", "value_framing"],
+      "rationale": "HANDOFF_WALKTHROUGH §3.4 has listed these as known since 2026-09-18, and WALKTHROUGH sheet 10 has to footnote around them. Leaving known-wrong figures in the evidence documents invites exactly the contradiction finding a panel will make.",
+      "concrete_changes": "docs/EVIDENCE.md:63: add that the raw manifest total is $4.29 because each creative arm is recorded twice, de-duplicated $3.55 ($2.81 Stage 1), with the computation. docs/COST_MODEL.md §3: replace '~€5–6k/yr of returned hours' with '(120 − 50) × 180 ÷ 60 = 210 h × €19–20 = €3,990–4,200 (PRD A1, A2, A4)'. Add a banner at the top of COST_MODEL.md saying §1 was measured under pre-30-July routing, and state tokens alongside every dollar figure. Then remove the corresponding workaround footnote from WALKTHROUGH sheet 10 and the item from the HANDOFF list.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Bring the walkthrough's human-workflow facts up to Tier 7, and settle v1 against v2",
+      "aspects": ["stakeholder_materials", "human_governance", "pilot_readiness"],
+      "rationale": "The walkthrough says decisions are recorded by hand in brief.json and that a runbook is only 'proposed'. Tier 5 shipped the resolve, attest and approve CLI and a champion runbook, so the page misstates what stays human and how. Two published versions of the page dilute the ask.",
+      "concrete_changes": "The owner picks v1 or v2 (HANDOFF §7). On the chosen page, sheets 02, 07 and 10: replace 'a manual, schema-validated edit in v1; the review page does not save decisions' with the shipped path, 'the account lead records resolutions and sign-off through `python3 -m pipeline.agency resolve/attest/approve`, which binds approval to the exact revision; the review page stays read-only'. Replace 'This walkthrough proposes the runbook' with a link to docs/pilot/BRIEF_CHAMPION_RUNBOOK.md. Add one ledger line on Tier 5–7 safeguards, marked deterministic and not generative quality. Keep the checks.py gate green, update mustkeep.json, run one review round, and republish only the chosen URL.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "One-page current-state summary for decision makers after Tier 7",
+      "aspects": ["stakeholder_materials", "value_framing", "pilot_readiness"],
+      "rationale": "Tier 5–7 reports are accurate engineering changelogs, but nothing gives a non-engineer a single current answer to what it is, what was proved, what was not, what stays human, the risks, and the decision asked.",
+      "concrete_changes": "Add a 'Where it stands (after Tier 7)' section to START_HERE.html, and the equivalent to SHARE_ME.html, that links a short docs/STATUS.md. Content: capabilities by tier; a proved column (17/17 frozen harness on one fixture, 16/17 on the second, 12/12 deterministic agency benchmark, 587 tests) against a not-yet-proved column (generative quality under current routing, Greek naturalness, any pilot outcome, real-data terms); what stays human (conflicts, sign-off, creative approval, release and withdrawal); open owner decisions (OPERATING_TERMS blanks, SCORECARD threshold, pilot creative stance). Add status markers (GREEN) and a DoD-to-evidence table header to runs/tier_5_report.md through runs/tier_7_report.md, without altering their recorded results.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "The deep documentation is honest and largely verifiable. EVIDENCE.md, COST_MODEL.md, OPERATING_TERMS.md, the pilot guides (whose CLI references match the code) and the Tier 0–4 reports are good examples of separating measured from assumed. WALKTHROUGH.html states the decision, owners, risks and limits clearly. The set fails on currency. After the 30 July routing change and Tiers 5–7, nobody swept the front doors. README gives a stale test count (321 against 587), a stale model-call count and a Haiku-era dollar headline. START_HERE, SHARE_ME, the walkthrough and SCORECARD still say creative is 'never delivered', which contradicts OPERATING_DECISIONS.md and the shipped delivery workflow. AGENTS.md is a mis-substituted copy that points to an untracked directory. Key cited evidence (routing-validate-01, tier3-confirm) is not committed, and there is no docs index or status marking. Most fixes are small text edits. The ones that change presentation material or published figures need the owner's decision first."
+}
