@@ -33,7 +33,7 @@ for m in re.finditer(r'<section class="sheet[^>]*" id="(ch\d\d)"(.*?)</section>'
  v=re.sub(r'<details.*?</details>','',m[2],flags=re.S);v=re.sub('<span class="sic">sic</span>','',v);v=re.sub('<[^>]+>','',v)
  words[m[1]]=len(html.unescape(v).strip().split())
 check('visible_word_caps',all(n<= (750 if k=='ch09' else 650) for k,n in words.items()))
-gate=subprocess.run(['python3','/Users/chrism/AI-transformation-assignment/brief-builder/tools/walkthrough/checks.py','--file',str(root/'WALKTHROUGH_v2.html')],capture_output=True,text=True)
+gate=subprocess.run(['python3',str(root.parent/'checks.py'),'--file',str(root/'WALKTHROUGH_v2.html')],capture_output=True,text=True)
 check('unmodified_checks_py_passes',gate.returncode==0)
 report={'checks':checks,'visible_words':words,'bytes':len(b.encode()),'source_bytes':len(a.encode()),'gate':json.loads(gate.stdout),'browser_verification':'BLOCKED: Chrome aborts; Chromium reports macOS bootstrap_check_in Permission denied (1100). No screenshots produced.'}
 (root/'audit_results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')

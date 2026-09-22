@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-15",
+    "extraction_ts": "2026-07-24T12:48:06",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "lang": "el",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "speaker_or_author": "Dimitris (Meltemi)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [
+    {
+      "value": "brief",
+      "lang": "en",
+      "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+      "anchor": "τελικό approval του brief",
+      "speaker_or_author": "Eleni (Northlight)",
+      "qualifier": "implied",
+      "confidence": "medium"
+    },
+    {
+      "value": "αναθεωρημένο πλάνο",
+      "lang": "el",
+      "location": "**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05",
+      "anchor": "θα σας στείλουμε αναθεωρημένο πλάνο",
+      "speaker_or_author": "Eleni (Northlight)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "**το board μετέθεσε το launch για 15 Σεπτεμβρίου**",
+      "speaker_or_author": "Dimitris (Meltemi)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ξέρω ότι στενεύει το χρονοδιάγραμμα",
+      "lang": "el",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "Ξέρω ότι στενεύει το χρονοδιάγραμμα",
+      "speaker_or_author": "Dimitris (Meltemi)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "το 15/9 αλλάζει αρκετά τον προγραμματισμό",
+      "lang": "el",
+      "location": "**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05",
+      "anchor": "το 15/9 αλλάζει αρκετά τον προγραμματισμό",
+      "speaker_or_author": "Eleni (Northlight)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "brand guidelines (ισχύει η έκδοση 3.1)",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "Επισυνάπτω τα brand guidelines (ισχύει η έκδοση 3.1)",
+      "speaker_or_author": "Dimitris (Meltemi)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "Approval decision-maker still undefined. Message 2: Dimitris states 'Για το approval θα επανέλθω — παίζει ανάμεσα σε εμένα και τη διοίκηση' (will revert; approval sits between himself and management). Message 3: Eleni awaits 'το όνομα για το approval' (the name for approval).",
+      "why_it_matters": "Must identify the specific approval authority to coordinate brief review cycles and prevent delays.",
+      "suggested_question_for_client": "Ποιο είναι το ακριβές όνομα και η θέση της προσώπου που θα εγκρίνει το brief;"
+    },
+    {
+      "field": "audiences",
+      "gap": "No target audience segment, age group, demographic, or psychographic profile specified.",
+      "why_it_matters": "Cannot develop positioning, key messages, or media strategy without audience definition.",
+      "suggested_question_for_client": "Σε ποια ηλικιακή ομάδα, δημογραφικό ή ψυχογραφικό προφίλ θέλετε να απευθυνθεί το Meltemi Fizz;"
+    },
+    {
+      "field": "budget",
+      "gap": "No budget figure, range, or currency specified. Scope boundary unclear (production vs. media spend).",
+      "why_it_matters": "Budget parameters determine scope, channel mix, and production quality.",
+      "suggested_question_for_client": "Ποιο είναι το προϋπολογισμό; Αφορά μόνο production ή περιλαμβάνει και media spend;"
+    },
+    {
+      "field": "objectives",
+      "gap": "Only one objective stated: catch end of season. No broader business goals, brand targets, or success metrics mentioned.",
+      "why_it_matters": "Complete objective framework shapes brief strategy, positioning, and KPI measurement.",
+      "suggested_question_for_client": "Εκτός από τη στρατηγική χρονοδιάγραμμα, ποιοι είναι οι κύριοι στόχοι της καμπάνιας; Αναζητάτε brand awareness, trial, retention, ή κάτι άλλο;"
+    },
+    {
+      "field": "key_messages",
+      "gap": "No strategic positioning or key messages documented.",
+      "why_it_matters": "Key messages are foundational for creative development and all communication.",
+      "suggested_question_for_client": "Ποια είναι η μοναδική προτάση αξίας του Meltemi Fizz και ποια κύρια μηνύματα θέλετε να περάσουμε;"
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Market research: Client has no internal research available. Message 2 states: 'Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο' (no internal research; use public data if available).",
+    "Launch date is new/recent change; original planned launch date not documented in this thread.",
+    "Scope of 'αναθεωρημένο πλάνο' not detailed; delivery commitment stated but content undefined."
+  ]
+}

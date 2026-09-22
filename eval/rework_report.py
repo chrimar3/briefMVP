@@ -4,9 +4,13 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
 
-from pipeline import effort
+if __package__ in (None, ''):  # allow `python3 eval/rework_report.py` as well as `-m eval.rework_report`
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from pipeline import effort  # noqa: E402
 
 
 def _sum(values):

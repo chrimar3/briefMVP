@@ -1,12 +1,26 @@
 """Content-bound review and safe reuse; no model calls or implicit human decisions."""
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import shutil
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Iterator, Union
 from uuid import uuid4
+
+#: The per-run advisory lock file. Its absence means no locked operation ever mutated the run.
+RUN_LOCK_FILE = ".run.lock"
+
+
+class RunBusyError(ValueError):
+    """Another cooperating process holds the run lock. The one error `run_lock` raises itself.
+
+    A ValueError subclass so every existing caller that handles ValueError keeps working;
+    callers that must tell contention apart from a bad artifact catch this class only.
+    """
 
 
 def digest(value):
@@ -141,20 +155,49 @@ def changes(before, after):
             for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)}
 
 
-from contextlib import contextmanager
-import fcntl
-
-
 @contextmanager
-def run_lock(run_dir):
-    """One cooperating process may mutate a run at a time; OS releases on crash."""
+def run_lock(run_dir: Union[str, Path]) -> Iterator[None]:
+    """One cooperating process may mutate a run at a time; OS releases on crash.
+
+    Exclusive and fail-fast: raises RunBusyError, never blocks. Creates the run directory and
+    its lock file, so use it only for operations that write. Read-only views use `read_lock`.
+    """
     run_dir = Path(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
-    with (run_dir / '.run.lock').open('a+') as handle:
+    with (run_dir / RUN_LOCK_FILE).open('a+') as handle:
         try:
             fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise ValueError('Run is busy in another operation; retry after it finishes') from exc
+            raise RunBusyError('Run is busy in another operation; retry after it finishes') from exc
+        try:
+            yield
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
+@contextmanager
+def read_lock(run_dir: Union[str, Path]) -> Iterator[None]:
+    """Consistent read of a run that never creates anything in it.
+
+    Status and portfolio views read committed evidence folders (runs/tier3, …) that must stay
+    byte-identical, so this never creates a directory or a lock file. When the lock file
+    exists, a shared non-blocking lock excludes a concurrent writer (RunBusyError, like
+    `run_lock`). When it does not, no locked writer has ever touched the run; if one starts
+    while the read is in progress, the lock file appears and the read is refused as busy
+    instead of returning a possibly half-updated view.
+    """
+    run_dir = Path(run_dir)
+    lock_path = run_dir / RUN_LOCK_FILE
+    if not lock_path.is_file():
+        yield
+        if lock_path.exists():
+            raise RunBusyError('Run changed during a read-only check; retry after it finishes')
+        return
+    with lock_path.open('r') as handle:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RunBusyError('Run is busy in another operation; retry after it finishes') from exc
         try:
             yield
         finally:

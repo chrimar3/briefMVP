@@ -1,0 +1,73 @@
+# Project metadata and tool configuration. The model side runs through Claude Code subagents,
+# so there is no model SDK dependency by design (PRD DR-1: buy the model, build the skeleton).
+# Exact, tested versions live in requirements.lock; the ranges below are the supported window.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brief-builder"
+dynamic = ["version"]
+description = "Two-stage AI briefing pipeline: deterministic gates around Claude Code subagents (synthetic fixtures only)."
+readme = "README.md"
+# 3.9 is the floor (the code uses 3.9 APIs such as Path.is_relative_to). POSIX only: run locking
+# uses fcntl (pipeline/revisions.py, pipeline/effort.py), so Windows is not supported.
+requires-python = ">=3.9"
+dependencies = ["jsonschema>=4.18,<5"]
+
+[project.optional-dependencies]
+test = ["pytest>=7,<9", "PyYAML>=6,<7"]
+
+[tool.setuptools]
+packages = ["pipeline"]
+
+[tool.setuptools.dynamic]
+version = { attr = "pipeline.PIPELINE_VERSION" }
+
+# ---------------------------------------------------------------------------------------------
+# pytest — replaces pytest.ini. --strict-markers lives here, so nobody needs `-o addopts=''`
+# any more (that override silently dropped it).
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "--strict-markers"
+
+# ---------------------------------------------------------------------------------------------
+# ruff — pyflakes-level correctness (F) plus syntax errors (E9). CI runs `ruff check .`.
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+extend-include = ["tools/replay/claude"]
+extend-exclude = [
+    "runs",
+    ".codex",
+    # Historical one-off scripts, kept for the record and never run (see its README).
+    "tools/walkthrough/archive",
+]
+
+[tool.ruff.lint]
+select = ["E9", "F"]
+
+# Known findings in files outside round-1 workstream W5's ownership, listed rather than silently
+# excluded. Each entry is debt for the owning workstream: fix the finding, then delete the line.
+[tool.ruff.lint.per-file-ignores]
+"eval/harness.py" = ["F401"]                  # frozen file (CLAUDE.md): unused typing.Callable
+"eval/repair_analysis.py" = ["F541"]          # f-string without placeholders, line 255
+"demo/run_demo.py" = ["F541"]                 # f-strings without placeholders, lines 187-188
+"pipeline/docview.py" = ["F401"]              # unused ReviewInputError import
+"tools/walkthrough/codex_round.py" = ["F401"] # unused sys import
+"tools/walkthrough/embed_packaging.py" = ["F401"]  # unused sys import
+"tools/walkthrough/redesign/build_v2.py" = ["F401", "F541"]  # retired v2 builder
+"tests/test_agency_operations.py" = ["F401"]
+"tests/test_agency_quality.py" = ["F401"]
+"tests/test_cost_report.py" = ["F401"]
+"tests/test_creative.py" = ["F401"]
+"tests/test_delivery.py" = ["F401"]
+"tests/test_docview.py" = ["F401"]
+"tests/test_effort.py" = ["F401"]
+"tests/test_harness.py" = ["F541"]
+"tests/test_publish.py" = ["F401", "F841"]
+"tests/test_rework_report.py" = ["F401"]
+"tests/test_runner.py" = ["F841"]             # line 194: exit code assigned, never asserted
+"tests/test_stages.py" = ["F401"]

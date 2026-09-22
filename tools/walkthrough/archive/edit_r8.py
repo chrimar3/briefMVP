@@ -1,7 +1,7 @@
 """Round-8 editor pass (bounded hypothesis: answer the failed creative-director task and the three gaps the CMO, CFO and
 engineer agree on; no restructuring). Asserting replacements."""
 import pathlib
-p = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder/WALKTHROUGH.html')
+p = pathlib.Path(__file__).resolve().parents[3] / 'WALKTHROUGH.html'
 doc = p.read_text(encoding='utf-8'); orig = doc; log = []
 def rep(old, new, tag, count=1):
     global doc

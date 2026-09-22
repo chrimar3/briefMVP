@@ -3,7 +3,7 @@ asked to reproduce, with Codex's own notes. Images embedded as JPEG data URIs (n
 walkthrough's paper/ink/pencil/red tokens and type stacks so the page reads as part of the same family."""
 import base64, io, pathlib, re, html
 from PIL import Image
-ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder'); T = ROOT / 'tools/walkthrough'
+ROOT = pathlib.Path(__file__).resolve().parents[3]; T = ROOT / 'tools/walkthrough'
 def data_uri(path, maxdim=1100, q=84):
     im = Image.open(path).convert('RGB'); s = min(1.0, maxdim / max(im.size))
     im = im.resize((round(im.size[0] * s), round(im.size[1] * s)), Image.LANCZOS)

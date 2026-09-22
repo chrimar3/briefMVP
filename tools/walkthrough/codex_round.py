@@ -5,7 +5,7 @@ Usage: python3 tools/walkthrough/codex_round.py --round 9 [--page WALKTHROUGH.ht
 Writes tools/walkthrough/codex_round/r<N>/{prompts,out,logs}/, result.json, report.md."""
 import argparse, json, pathlib, subprocess, hashlib, sys, time
 from concurrent.futures import ThreadPoolExecutor
-ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder')
+ROOT = pathlib.Path(__file__).resolve().parents[2]  # repo root, wherever it is cloned
 ap = argparse.ArgumentParser(); ap.add_argument('--round', type=int, required=True); ap.add_argument('--page', default='WALKTHROUGH.html')
 ap.add_argument('--concurrency', type=int, default=5); ap.add_argument('--model', default='gpt-6-astra'); ap.add_argument('--args', default='tools/walkthrough/round8_args.json')
 A = ap.parse_args()

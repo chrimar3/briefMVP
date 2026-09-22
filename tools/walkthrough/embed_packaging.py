@@ -2,7 +2,7 @@
 (data URI, no external resource). Idempotent: re-running replaces the row. Run after judging: it changes the page hash."""
 import base64, io, pathlib, re, sys, argparse
 from PIL import Image
-ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder')
+ROOT = pathlib.Path(__file__).resolve().parents[2]  # repo root, wherever it is cloned
 ap = argparse.ArgumentParser(); ap.add_argument('--src', default='tools/walkthrough/kv_packaging_mockup.png'); ap.add_argument('--caption', default='Packaging application &middot; raster mock-up &middot; 1:1 &middot; generated for this walkthrough by an image model (gpt-6-astra, built-in image tool) from one prompt written from the brand mandatories; packaging is an undefined context in the brief <span class="dim">[open_questions/deliverables]</span>'); ap.add_argument('--alt', default='Packaging mock-up generated for this walkthrough; a corner caption reads mock-up, not for delivery.'); A = ap.parse_args()
 SRC = ROOT / A.src
 PAGE = ROOT / 'WALKTHROUGH.html'

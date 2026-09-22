@@ -1,12 +1,20 @@
-"""Local project status and portfolio review queue. No cached readiness or approvals."""
+"""Local project status and portfolio review queue. No cached readiness or approvals.
+
+Read-only by contract: status and portfolio never write into a run directory (not even a
+lock file), so they are safe to point at committed evidence such as runs/tier3.
+"""
 from __future__ import annotations
 
 import argparse
 from collections import Counter
 import json
+import sys
 from pathlib import Path
 
-from pipeline import agency, delivery, gates, revisions
+if __package__ in (None, ''):  # allow `python3 pipeline/operations.py` as well as `-m pipeline.operations`
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from pipeline import agency, delivery, gates, revisions  # noqa: E402
 
 
 def status(run):
@@ -15,7 +23,8 @@ def status(run):
     try:
         if not run.is_dir():
             raise ValueError('Run directory does not exist')
-        with revisions.run_lock(run):
+        # Read-only: a status check must never create .run.lock in an evidence folder.
+        with revisions.read_lock(run):
             brief = agency.read_run(run)
             result.update(project_id=brief['meta']['project_id'], client_id=brief['meta']['client_id'])
             result['withdrawals'] = len(revisions.load(run/'approval_withdrawals.json', []))

@@ -2,9 +2,10 @@
 """Codex (gpt-6-astra) research-then-build chain for a redesigned walkthrough. Step 1: deep research with live web
 search into a design spec. Step 2: build WALKTHROUGH_v2.html from the current page's content under the same gate.
 Everything is written under tools/walkthrough/redesign/; the current page is never touched."""
-import json, pathlib, subprocess, time, hashlib
-ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder'); D = ROOT / 'tools/walkthrough/redesign'; D.mkdir(exist_ok=True)
-JOURNAL = '/Users/chrism/.claude/projects/-Users-chrism-AI-transformation-assignment-brief-builder/edd3479c-e412-45f7-b67d-b8ca22a65764/subagents/workflows/wf_b52abbc5-e12/journal.jsonl'
+import json, os, pathlib, subprocess, time, hashlib
+ROOT = pathlib.Path(__file__).resolve().parents[3]; D = ROOT / 'tools/walkthrough/redesign'; D.mkdir(exist_ok=True)
+# Round-8 audience findings (a workflow journal in the author's local Claude session store, never committed).
+JOURNAL = os.environ.get('WALKTHROUGH_ROUND8_JOURNAL', '<round-8 workflow journal.jsonl, not in the repository>')
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 MUSTKEEP = json.load(open(ROOT / 'tools/walkthrough/round8_args.json'))['mustKeep']
 def codex(name, prompt, extra=()):

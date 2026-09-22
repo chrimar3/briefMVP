@@ -41,6 +41,14 @@ DETERMINISTIC = "deterministic"
 MODEL = "model"
 
 
+class CorruptArtifactError(gates.GateError):
+    """An artifact an earlier leg left in the run directory cannot be read.
+
+    Raised while hydrating a resumed run. It names the file, and the runner records it in
+    the manifest as outcome `corrupt_artifact` — never as lock contention.
+    """
+
+
 @dataclass(frozen=True)
 class Step:
     number: int
@@ -288,6 +296,17 @@ AGENT_HANDLERS: dict[str, Callable[["RunContext", Step], dict]] = {
 }
 
 
+def _read_artifact(path: Path) -> dict:
+    """Load one JSON artifact of an earlier leg; a file that will not parse is named, not guessed."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise CorruptArtifactError(
+            f"{path.name} in {path.parent} is not valid JSON ({exc}). Inspect or remove it, "
+            f"then resume, or start a new run."
+        ) from exc
+
+
 class Runner:
     def __init__(
         self,
@@ -308,6 +327,8 @@ class Runner:
         self.source = source
         self.demo_profile = Path(demo_profile) if demo_profile else None
         self.steps: list[dict] = []
+        self.sources: list = []
+        self.started_ts: str = ""
 
     # -- plumbing ----------------------------------------------------------------
 
@@ -316,7 +337,7 @@ class Runner:
         self.steps.append(entry)
         return entry
 
-    def _write_manifest(self, outcome: str, exit_code: int) -> Path:
+    def _write_manifest(self, outcome: str, exit_code: int, error: Optional[str] = None) -> Path:
         manifest = {
             "run_id": self.run_id,
             "pipeline_version": PIPELINE_VERSION,
@@ -330,6 +351,8 @@ class Runner:
             "sources": [s.as_meta() for s in self.sources],
             "steps": self.steps,
         }
+        if error:
+            manifest["error"] = error
         path = self.run_dir / "run_manifest.json"
         path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         # Deterministic walkthrough view of whatever this run produced — every outcome
@@ -360,7 +383,7 @@ class Runner:
         # pipeline that executed a single step — an audit trail that lies by omission.
         prior_manifest = self.run_dir / "run_manifest.json"
         if prior_manifest.is_file():
-            previous = json.loads(prior_manifest.read_text(encoding="utf-8")).get("steps") or []
+            previous = _read_artifact(prior_manifest).get("steps") or []
             rerunning = set(STAGE_SELECTIONS[self.stage])
             self.steps = [
                 {**step, "from_earlier_run": True}
@@ -371,25 +394,34 @@ class Runner:
         loaded = []
         classification = self.run_dir / "classification.json"
         if classification.is_file():
-            ctx.artifacts["classification"] = json.loads(classification.read_text(encoding="utf-8"))
+            ctx.artifacts["classification"] = _read_artifact(classification)
             loaded.append("classification")
 
         extracts_dir = self.run_dir / "extracts"
         if extracts_dir.is_dir():
             for path in sorted(extracts_dir.glob("*.json")):
-                ctx.artifacts.setdefault("extracts", {})[path.stem] = json.loads(
-                    path.read_text(encoding="utf-8")
-                )
+                ctx.artifacts.setdefault("extracts", {})[path.stem] = _read_artifact(path)
             if ctx.artifacts.get("extracts"):
                 loaded.append(f"{len(ctx.artifacts['extracts'])} extract(s)")
 
         brief_path = self.run_dir / "brief.json"
         if brief_path.is_file():
-            ctx.artifacts["brief"] = json.loads(brief_path.read_text(encoding="utf-8"))
+            ctx.artifacts["brief"] = _read_artifact(brief_path)
             loaded.append("brief")
 
         if loaded:
             print(f"  resuming with: {', '.join(loaded)}\n")
+
+    def _corrupt_artifact(self, exc: CorruptArtifactError) -> int:
+        """Report an unreadable resume artifact by name and record it in the manifest.
+
+        The unreadable file stays where it is for inspection, and a copy of the earlier
+        manifest is kept in history/ before this leg's manifest replaces it.
+        """
+        print(f"[corrupt artifact] {exc}", file=sys.stderr)
+        revisions.archive(self.run_dir, ["run_manifest.json"], copy_only=True)
+        self._write_manifest("corrupt_artifact", EXIT_GATE_ERROR, error=str(exc))
+        return EXIT_GATE_ERROR
 
     def _update_latest_symlink(self) -> None:
         """`runs/latest` — what `eval/harness.py runs/latest` grades."""
@@ -404,10 +436,13 @@ class Runner:
     # -- the sequence ------------------------------------------------------------
 
     def run(self) -> int:
+        # Only lock contention is reported as a lock problem. Anything else keeps its own name:
+        # gate errors are recorded per step, an unreadable resume artifact as outcome
+        # `corrupt_artifact`, and an unexpected error as a traceback — never as contention.
         try:
             with revisions.run_lock(self.run_dir):
                 return self._run_locked()
-        except ValueError as exc:
+        except revisions.RunBusyError as exc:
             print(f"[run lock] {exc}", file=sys.stderr)
             return EXIT_GATE_ERROR
 
@@ -469,7 +504,11 @@ class Runner:
                       "campaign_profiles": gates.CONFIG_DIR / "campaign_profiles.json",
                       "model_routing": gates.CONFIG_DIR / "model_routing.json",
                       "readiness_policy": self.demo_profile or gates.CONFIG_DIR / "readiness_policy.json"})
-        bound = revisions.load(self.run_dir / "input_snapshot.json", {}).get("channel_specs")
+        snapshot = self.run_dir / "input_snapshot.json"
+        try:
+            bound = (_read_artifact(snapshot) if snapshot.is_file() else {}).get("channel_specs")
+        except CorruptArtifactError as exc:
+            return self._corrupt_artifact(exc)
         if (self.run_dir / "agency_inputs.json").exists() and bound:
             paths["channel_specs"] = Path(bound["path"])
         paths.update({f"skill:{p.name}": p for p in (gates.REPO_ROOT / "skills").glob("*.md")})
@@ -479,7 +518,10 @@ class Runner:
             print(f"[revision safety] {exc}", file=sys.stderr)
             return EXIT_GATE_ERROR
 
-        self._hydrate(ctx)
+        try:
+            self._hydrate(ctx)
+        except CorruptArtifactError as exc:
+            return self._corrupt_artifact(exc)
 
         selected = STAGE_SELECTIONS[self.stage]
         for step in (s for s in STEP_SEQUENCE if s.name in selected):

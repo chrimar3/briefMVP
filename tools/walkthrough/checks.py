@@ -1,6 +1,6 @@
 """Deterministic gate for WALKTHROUGH.html (or --file <path>). Exit 0 = all green, 1 = failures (printed)."""
 import re, html, pathlib, unicodedata, collections, subprocess, sys, json
-ROOT = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder')
+ROOT = pathlib.Path(__file__).resolve().parents[2]  # repo root, wherever it is cloned
 PAGE = ROOT / 'WALKTHROUGH.html'
 if '--file' in sys.argv: PAGE = pathlib.Path(sys.argv[sys.argv.index('--file') + 1]).resolve()
 doc = PAGE.read_text(encoding='utf-8')

@@ -8,26 +8,25 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor declared in pyproject.toml (requires-python >= 3.9) and a current release.
+        python-version: ["3.9", "3.12"]
     env:
       PYTHONPYCACHEPREFIX: /tmp/brief-builder-ci-cache
     steps:
+      # Pinned by tag, not commit SHA: the SHAs could not be looked up offline when this was
+      # written. Replace each tag with its full commit SHA (keeping the tag as a comment).
       - uses: actions/checkout@v4
-      - name: Install deterministic test dependencies
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install the locked deterministic toolchain
         run: |
-          python3 -m venv .ci-venv
-          .ci-venv/bin/python -m pip install -r requirements.txt
-          echo "$PWD/.ci-venv/bin" >> "$GITHUB_PATH"
-      - name: Test gates and complete approval/release workflow
-        run: python3 -m pytest -o addopts='' -q
-      - name: Grade frozen evidence without overwriting its report
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          from eval import harness
-          results = harness.grade(harness.load_run(Path('runs/tier3')))
-          assert len(results) == 17
-          assert all(result.status == 'pass' for result in results)
-          print('Frozen evidence: 17/17')
-          PY
-      - name: Exercise synthetic agency safeguards
-        run: python3 eval/agency_benchmark.py
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock ruff==0.6.9
+      - name: Lint (ruff, pyflakes-level rules from pyproject.toml)
+        run: ruff check .
+      - name: Tests, read-only frozen grade, agency benchmark (the same command humans run)
+        run: PYTHON=python scripts/check.sh --no-lint

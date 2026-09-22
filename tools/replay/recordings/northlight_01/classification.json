@@ -1,0 +1,28 @@
+{
+  "project_id": "northlight_01",
+  "client_id": "meltemi_beverages",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S1",
+  "tier_source": "client_config",
+  "rationale": "The RFP and kickoff transcript explicitly request creative work for a product launch campaign: TikTok-first strategy, video and key visual assets, social media content. This is audience-destined creative, not PR or internal comms.",
+  "evidence": [
+    {
+      "source_id": "rfp_meltemi",
+      "location": "section 4, line 15–17",
+      "anchor": "Στρατηγική TikTok-first: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok. […] Δημιουργικό υλικό για το launch (βίντεο, key visuals)."
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "timestamp 00:10:22",
+      "anchor": "Some videos and social stuff, κυρίως. […] maybe a TikTok dance thing?"
+    },
+    {
+      "source_id": "rfp_meltemi",
+      "location": "section 1–2",
+      "anchor": "Η Meltemi Beverages λανσάρει το Meltemi Fizz, ένα sparkling tea με μηδέν ζάχαρη… Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά."
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

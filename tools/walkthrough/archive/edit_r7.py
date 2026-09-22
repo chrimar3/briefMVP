@@ -1,7 +1,7 @@
 """Round-7 editor pass (bounded hypothesis: fix every verified hard failure and the auditors' factual-precision
 and cheap rendered-UX findings; no restructuring, no new prose beyond a clause). Asserting replacements."""
 import pathlib
-p = pathlib.Path('/Users/chrism/AI-transformation-assignment/brief-builder/WALKTHROUGH.html')
+p = pathlib.Path(__file__).resolve().parents[3] / 'WALKTHROUGH.html'
 doc = p.read_text(encoding='utf-8'); orig = doc; log = []
 def rep(old, new, count=1, tag=''):
     global doc

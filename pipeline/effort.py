@@ -101,13 +101,23 @@ def effective_events(events):
 
 
 @contextmanager
-def _lock(run):
+def _lock(run, *, shared=False):
+    """Blocking ledger lock. Writers take it exclusive; `shared=True` is for readers.
+
+    A reader never creates the lock file: with no lock file, no writer has ever run here and
+    the atomically replaced ledger can be read as is, so read-only commands leave evidence
+    folders byte-identical.
+    """
     run = Path(run)
     if not run.is_dir():
         raise ValueError('run must be an existing directory')
+    lock_path = run / '.effort.lock'
+    if shared and not lock_path.is_file():
+        yield run
+        return
     # A separate, persistent inode: never lock the atomically replaced ledger.
-    with (run / '.effort.lock').open('a') as handle:
-        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+    with lock_path.open('r' if shared else 'a') as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_SH if shared else fcntl.LOCK_EX)
         try:
             yield run
         finally:
@@ -131,7 +141,7 @@ def _load(run):
 
 def read_events(run):
     """Locked effective snapshot; None means no ledger, [] an empty active set."""
-    with _lock(run) as directory:
+    with _lock(run, shared=True) as directory:
         if not (directory / 'effort.json').exists():
             return None
         return effective_events(_load(directory)['events'])

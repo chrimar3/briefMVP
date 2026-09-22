@@ -28,6 +28,48 @@ def _never_call_a_real_model(monkeypatch):
     monkeypatch.setattr(agents, "CLAUDE_BIN", "brief-builder-tests-must-not-call-a-model")
 
 
+#: Committed run evidence the suite reads but must never write into (not even a lock file).
+COMMITTED_EVIDENCE = ("runs/tier3", "runs/voreas-prep-02", "runs/voreas-prep-03")
+_LOCK_NAMES = (".run.lock", ".effort.lock")
+
+
+def _evidence_lock_files() -> set:
+    return {str(p.relative_to(REPO_ROOT)) for d in COMMITTED_EVIDENCE for name in _LOCK_NAMES
+            for p in (REPO_ROOT / d).rglob(name)}
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _committed_evidence_stays_untouched():
+    """Fail the session if any test leaves a lock file in committed evidence.
+
+    A read-only status check once created runs/tier3/.run.lock as an untracked file; read-only
+    views now use revisions.read_lock, and this guard keeps it that way for every test.
+    """
+    before = _evidence_lock_files()
+    yield
+    created = sorted(_evidence_lock_files() - before)
+    if created:
+        pytest.fail(f"the test session created lock files in committed evidence: {created}")
+
+
+#: The fake `claude` CLI (offline replay + subprocess-seam fault injection).
+FAKE_CLAUDE = REPO_ROOT / "tools" / "replay" / "claude"
+
+
+@pytest.fixture
+def fake_claude(monkeypatch) -> Path:
+    """Point the model seam at the fake CLI (absolute path: invoke runs from a neutral cwd).
+
+    Overrides the autouse poison above for this test only; the fake makes no model call.
+    """
+    from pipeline import agents
+
+    monkeypatch.setattr(agents, "CLAUDE_BIN", str(FAKE_CLAUDE))
+    for name in ("BRIEF_BUILDER_FAKE_CLAUDE_MODE", "BRIEF_BUILDER_FAKE_CLAUDE_ARGV", "BRIEF_BUILDER_REPLAY_RUN"):
+        monkeypatch.delenv(name, raising=False)
+    return FAKE_CLAUDE
+
+
 @pytest.fixture(scope="session")
 def repo_root() -> Path:
     return REPO_ROOT

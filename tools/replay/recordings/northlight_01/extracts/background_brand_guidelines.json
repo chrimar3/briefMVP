@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "background_brand_guidelines",
+    "source_type": "background",
+    "source_date": "2026-03-02",
+    "extraction_ts": "2026-07-24T12:45:48",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [
+    {
+      "value": "Confident, modern Greek with natural use of English category terms. Humor allowed; sarcasm about competitors is not.",
+      "lang": "en",
+      "location": "## Tone (guidance)",
+      "anchor": "Confident, modern Greek with natural use of English category terms. Humor allowed;",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "The product name Meltemi Fizz is always written in Latin script, in full. Never transliterated, never abbreviated to \"Fizz\".",
+      "lang": "en",
+      "location": "## Brand name usage",
+      "anchor": "The product name **Meltemi Fizz** is always written in Latin script, in full.",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+      "lang": "en",
+      "location": "## Brand name usage",
+      "anchor": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.",
+      "lang": "en",
+      "location": "## Color & visual",
+      "anchor": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Permitted claims: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+      "lang": "mixed",
+      "location": "## Claims — hard rules",
+      "anchor": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Not permitted: any health or weight-loss claim; any comparison naming a competitor brand.",
+      "lang": "en",
+      "location": "## Claims — hard rules",
+      "anchor": "**Not permitted:** any health or weight-loss claim; any comparison naming a competitor brand.",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "No alcohol association of any kind (imagery, occasions, co-branding).",
+      "lang": "en",
+      "location": "## Category no-gos",
+      "anchor": "No alcohol association of any kind (imagery, occasions, co-branding).",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+      "lang": "en",
+      "location": "## Category no-gos",
+      "anchor": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+      "speaker_or_author": "Meltemi Beverages (Brand Guidelines)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Document is marked as an excerpt (v3.1). Guidelines reference an 'approved ingredient list' for permitted claims including φυσικά συστατικά, but the actual list is not provided in this excerpt."
+  ]
+}
