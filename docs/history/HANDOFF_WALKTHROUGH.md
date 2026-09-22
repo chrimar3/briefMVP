@@ -1,5 +1,22 @@
 # Handoff — the stakeholder walkthrough and its review loop (updated 2026-09-18, afternoon)
 
+> **Historical record — superseded.** Moved here from the repository root on 2026-09-23;
+> the text below is unchanged. It predates Tiers 5–7 and the owner decisions of 2026-09-20
+> and 2026-09-22 ([`docs/OPERATING_DECISIONS.md`](../OPERATING_DECISIONS.md)), so several
+> statements are no longer current:
+>
+> - The v1-or-v2 question (§3, §7) is settled: `WALKTHROUGH.html` (v1) is the canonical page;
+>   v2 in `tools/walkthrough/redesign/` is retired and kept as a historical record.
+> - The page rule "creative output … labelled shadow mode" (§4) is superseded: creative can be
+>   released after a named creative lead approves the exact files, and the pilot includes it
+>   from week 1 under separation of duties.
+> - The "operate only with Codex" rule (§0) was the owner's instruction for September 18; the
+>   2026-09-22 review loop runs its judges and editors on Claude.
+> - Paths in §1–2 are relative to the repository root, not to this folder.
+>
+> The number sources in §5 remain valid as a record of where each figure came from. For the
+> current state read [`README.md`](../../README.md) and [`docs/README.md`](../README.md).
+
 Read this first in a fresh chat. Then `tools/walkthrough/codex_priorities.md` (Codex's ranking of what is pending) and, for the redesign, `tools/walkthrough/redesign/build_notes.md`.
 
 ## 0. Operating rule: Codex gpt-6-astra does the model work

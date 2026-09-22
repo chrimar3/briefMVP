@@ -3,10 +3,17 @@
 Governing rules live in `CLAUDE.md` (one tier at a time · commit · STOP for human review · never relax a criterion · 3 fails → `runs/BLOCKED.md`).
 Every DoD below is **machine-checkable** — the run proves completion, it does not declare it.
 
+> **Status (2026-09-23):** Tiers 0–7 are complete and green (`runs/tier_0_report.md` … `runs/tier_7_report.md`).
+> No Tier 8 is authorised; the owner's whole-project review loop (`tools/project_review/`, decisions in
+> `docs/OPERATING_DECISIONS.md` § 2026-09-22) is not a tier. The Tier 0–4 sections below are the
+> original build plan and keep their July wording, including the shadow-only creative stage, which the
+> owner superseded on 2026-09-20.
+
 ## Models
 - Subagent frontmatter uses **aliases** (`haiku`, `sonnet`) so they resolve to the latest generation automatically. At kickoff, verify with `/model` and record: current generation expected = Haiku 4.5, Sonnet 5, orchestrator Fable 5 (fall back to Opus 4.8 if Fable usage draw on the Max plan proves too heavy).
 - Every `tier_N_report.md` logs resolved model IDs. Never upgrade a stage's model to pass a gate (CLAUDE.md).
 - Tier-4 A/B only: creative-shadow runs twice (sonnet vs opus) on identical input.
+- *Routing note (2026-07-30, human decision):* extraction moved from haiku to **sonnet**, plus an independent `verify-extract` reader per source (sonnet when the extract carries risk classes, else haiku; `config/model_routing.json`). The Tier 0 line below ("extract … → haiku") and every graded Tier 1–4 figure are from the earlier routing.
 
 ## Tier 0 — Scaffold & wiring
 Build: `.claude/agents/` definitions (extract, classify, fidelity-check → haiku; synthesize, render, creative-shadow → sonnet; injecting skills verbatim: extract←SOURCES.md, synthesize←SYNTHESIS.md, render←TRANSLATION.md, fidelity-check←TRANSCRIPTS.md; classify & creative-shadow inline), `pipeline/gates.py` + `pipeline/runner.py` skeletons, pytest scaffolding.

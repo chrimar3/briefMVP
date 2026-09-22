@@ -1,5 +1,10 @@
 # System-design audit brief — the deterministic core
 
+> **Historical record.** This kickoff brief was executed on 2026-07-25 (commit `580feaf`);
+> the findings and outcome are in [`runs/design_audit_report.md`](../runs/design_audit_report.md).
+> It describes the repository as it stood after Tier 4 and is kept unchanged. For the current
+> state see [`docs/README.md`](README.md).
+
 > Kickoff document for a **post-tier audit session**. Tiers 0–4 are complete and green
 > (`runs/tier_*_report.md`); this is NOT a tier, but CLAUDE.md governance still applies in full.
 > Mission: audit and optimise the deterministic core — the gates, the runner, the policy files —

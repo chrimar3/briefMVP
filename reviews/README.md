@@ -1,23 +1,24 @@
 # reviews/ — the shareable shelf
 
 Every **completed** pipeline run automatically drops its two self-contained pages here,
-named so a non-technical reader can recognise them at a glance:
+plus the brief documents, named so a non-technical reader can recognise them at a glance:
 
 ```
 meltemi-beverages-northlight-01-2026-07-24-<revision>-brief.html   ← the brief review page (account-lead surface)
-meltemi-beverages-northlight-01-2026-07-24-<revision>-run.html     ← the pipeline walkthrough (how it was built)
+meltemi-beverages-northlight-01-2026-07-24-<revision>-run.html     ← the run view (how this brief was built)
 meltemi-beverages-northlight-01-2026-07-24-<revision>-el.html      ← the Greek brief document, typeset for reading
 meltemi-beverages-northlight-01-2026-07-24-<revision>-en.html      ← the English brief document, typeset for reading
 meltemi-beverages-northlight-01-2026-07-24-<revision>-el.md        ← the same Greek document as raw markdown
 meltemi-beverages-northlight-01-2026-07-24-<revision>-en.md        ← the same English document as raw markdown
 ```
 
-The walkthrough's bottom buttons are rewritten on copy so they link the shelf names —
-everything cross-links correctly inside this folder.
+The run view's bottom buttons are rewritten on copy so they link the shelf names —
+everything cross-links correctly inside this folder. (The run view is not the stakeholder
+decision paper; that is `WALKTHROUGH.html` at the repository root.)
 
 ## How account leads get them (pilot distribution — no server, by design)
 
-1. **Email / Slack the file.** Each page is one file with zero dependencies — attach it,
+1. **Email / Slack the file (by hand).** Each page is one file with zero dependencies — attach it,
    the lead double-clicks, it opens in any browser, offline, phone included. Print → PDF
    works from the page itself.
 2. **Share this folder.** Point Dropbox / OneDrive / Drive desktop sync at `reviews/` and
@@ -29,6 +30,9 @@ everything cross-links correctly inside this folder.
 ## Rules
 
 - Only completed runs publish. Refusals and partial runs stay in `runs/` for the operator.
+- Creative is never published here. An approved creative package is created only by
+  `python3 -m pipeline.delivery release` into a folder of its own, after a named creative
+  lead's approval (`docs/pilot/CREATIVE_DELIVERY.md`).
 - Filenames include client, project, date and a content revision. Different campaigns
   and revisions keep distinct paths; republishing identical content is idempotent.
   Existing links remain on their original version. Share the new paths printed by the publisher.

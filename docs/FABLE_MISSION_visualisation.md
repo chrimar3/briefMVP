@@ -1,5 +1,12 @@
 # Fable Mission — Brief visualisation for account leads
 
+> **Historical record — implemented.** The "IN PROGRESS" status below is from 2026-07-30 and
+> is kept unchanged. The mission shipped the same day as the brief review page
+> (`pipeline/review.py`), the run review page (`pipeline/run_review.py`) and the `reviews/`
+> shelf (`pipeline/publish.py`); `runs/tier3/brief_review.html` and `run_review.html` are its
+> committed output. §6 decisions are still cited by `reviews/README.md`. For the current state
+> see [`docs/README.md`](README.md).
+
 **Status:** IN PROGRESS — owner gave the explicit go 2026-07-30. §5 is the plan being
 executed; §6 owner decisions are binding.
 **Author:** Claude Fable 5, from the owner's prompt: *"better visualisation for the account

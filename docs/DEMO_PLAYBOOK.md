@@ -1,5 +1,13 @@
 # Demo Playbook — running the pipeline on documents you have never seen
 
+> **Historical record, still usable.** Written for the July 2026 live examination under the
+> Haiku-era routing. The commands still work. Two things have changed since: extraction now
+> runs on Sonnet with an independent `verify-extract` reader per source (routing decision
+> 2026-07-30), so the "haiku for schema-following work" narration and the "~$3" re-roll cost
+> are Haiku-era; and creative is no longer shadow-only
+> ([`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md)). For the current state see
+> [`docs/README.md`](README.md).
+
 Written for the live examination: the evaluators hand over an arbitrary transcript, RFP,
 and/or email thread, and the pipeline has to produce a brief in front of them. Everything
 below is exercised in advance; nothing here requires touching frozen files.
