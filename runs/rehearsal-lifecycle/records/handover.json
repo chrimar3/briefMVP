@@ -1,0 +1,74 @@
+{
+  "mode": "APPROVED BRIEF HANDOVER",
+  "creative_release": "requires separate creative approval",
+  "fingerprint": "865b2a17b0cd31c36c6fdf03be563dcc18533f6c76ebf8b8f3e098a74af849b1",
+  "deliverables": [
+    {
+      "channel": "Cross-channel",
+      "resolution": "2048x2048",
+      "aspect_ratio": "1:1",
+      "format": "Key visual — digital master",
+      "file_type": "PNG",
+      "duration": "n/a",
+      "id": "key-visual",
+      "spec_id": "key_visual_digital_master",
+      "quantity": 1,
+      "languages": [
+        "el",
+        "en"
+      ],
+      "deadline": "2026-09-08",
+      "owner": "Production lead",
+      "approval_owner": "Account lead",
+      "dependencies": [],
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+          "anchor": "τελικό approval του brief",
+          "speaker_or_author": "Eleni (Northlight)"
+        }
+      ],
+      "actor": "Synthetic Traffic Reviewer T",
+      "updated_at": "2026-09-22T21:30:22.050810+00:00",
+      "refs": [
+        "deliverables:0"
+      ]
+    },
+    {
+      "channel": "TikTok",
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "format": "In-feed video",
+      "file_type": "MP4",
+      "duration": "9-60s",
+      "id": "tiktok-cut",
+      "spec_id": "tiktok_infeed_video",
+      "quantity": 2,
+      "languages": [
+        "el"
+      ],
+      "deadline": "2026-09-12",
+      "owner": "Production lead",
+      "approval_owner": "Account lead",
+      "dependencies": [
+        "key-visual"
+      ],
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+          "anchor": "τελικό approval του brief",
+          "speaker_or_author": "Eleni (Northlight)"
+        }
+      ],
+      "actor": "Synthetic Traffic Reviewer T",
+      "updated_at": "2026-09-22T21:30:22.143451+00:00",
+      "refs": [
+        "deliverables:0"
+      ],
+      "duration_seconds": 15.0
+    }
+  ],
+  "notices": []
+}

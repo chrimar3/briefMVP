@@ -1,0 +1,14 @@
+{
+  "actor": "Synthetic Bilingual Reviewer B",
+  "notes": "Rehearsal attestation on synthetic renders; Greek checked against the sources.",
+  "greek_register": 4,
+  "checks": {
+    "source_completeness": true,
+    "el_meaning": true,
+    "en_meaning": true,
+    "qualifiers_and_commitments": true,
+    "brand_voice": true
+  },
+  "fingerprint": "865b2a17b0cd31c36c6fdf03be563dcc18533f6c76ebf8b8f3e098a74af849b1",
+  "reviewed_at": "2026-09-22T21:30:22.329416+00:00"
+}

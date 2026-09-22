@@ -13,6 +13,11 @@ def _manifest(out_dir, run_id="testrun"):
     return json.loads((out_dir / run_id / "run_manifest.json").read_text(encoding="utf-8"))
 
 
+def _declare_synthetic(project):
+    """Every project folder declares its data class (owner decision 4, 2026-09-22)."""
+    (project / "data_declaration.json").write_text('{"data_class": "synthetic"}\n', encoding="utf-8")
+
+
 def test_step_sequence_matches_prd_section_5():
     """Sequence is spec, not implementation detail. Human sign-off (PRD step 8) is deliberately
     absent: it is the gate the runner stops at, not a step it executes (DR-8). Step 9 (creative)
@@ -129,6 +134,7 @@ def test_run_refuses_when_the_rfp_is_removed(fixture_project, tmp_path):
     for src in fixture_project.glob("*.md"):
         if "rfp" not in src.name:
             shutil.copy(src, project / src.name)
+    _declare_synthetic(project)
 
     out = tmp_path / "runs"
     code = runner.main(["--project", str(project), "--out", str(out), "--run-id", "testrun"])
@@ -146,6 +152,7 @@ def test_run_reports_an_undeclared_input_folder(tmp_path):
     project = tmp_path / "project"
     project.mkdir()
     (project / "notes.md").write_text("# scratch notes, no header\n", encoding="utf-8")
+    _declare_synthetic(project)
 
     code = runner.main(["--project", str(project), "--out", str(tmp_path / "runs"), "--run-id", "testrun"])
     assert code == runner.EXIT_GATE_ERROR
@@ -165,6 +172,7 @@ def test_demo_profile_overrides_refusal_loudly_and_is_recorded(tmp_path, fixture
     (project / "only_transcript.md").write_text(
         "# T\nsource_id: t1 · source_type: transcript · source_date: 2026-01-01\n"
         "[00:01:00] A: budget εξήντα χιλιάδες, launch τον Μάρτιο.\n", encoding="utf-8")
+    _declare_synthetic(project)
     policy = tmp_path / "demo_policy.json"
     policy.write_text('{"min_fields_with_evidence": 2, "max_low_confidence_share": 0.6}',
                       encoding="utf-8")
@@ -191,6 +199,7 @@ def test_without_demo_profile_thin_input_still_refuses(tmp_path):
     (project / "only_transcript.md").write_text(
         "# T\nsource_id: t1 · source_type: transcript · source_date: 2026-01-01\n"
         "[00:01:00] A: budget εξήντα χιλιάδες, launch τον Μάρτιο.\n", encoding="utf-8")
+    _declare_synthetic(project)
     code = runner.main([
         "--project", str(project), "--out", str(tmp_path / "out"), "--run-id", "refusal-test",
         "--glossary", str(gates.REPO_ROOT / "glossary" / "meltemi.json")])

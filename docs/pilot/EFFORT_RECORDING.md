@@ -6,6 +6,16 @@ approval artifacts. A PILOT row is the scorecard's measurement format, not evide
 of a real-client pilot or permission to run one. The `live` phase is usable here
 only for synthetic rehearsal. Real data remains prohibited.
 
+## Purpose limitation
+
+Effort and handoff records measure the brief workflow: whether it saves attention and reduces
+rework, per brief and per role. They are not used for individual performance evaluation,
+discipline, pay or ranking of staff, and they are not shown per person outside the operator
+and the sponsor. Before any real record, staff receive the information step described in
+`DATA_PROTECTION.md` §9; the purpose, basis and retention are open decisions for the agency's
+data-protection lead (`GO_LIVE_DECISIONS.md` D-12, D-07). Use role or pseudonymous actor IDs
+where the record does not need a name; the scorecard carries lead IDs L1/L2 only.
+
 ## Commands
 
 From the repository root, using an existing synthetic run directory:

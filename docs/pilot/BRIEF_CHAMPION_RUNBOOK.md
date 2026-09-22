@@ -1,4 +1,9 @@
-# Brief champion runbook — synthetic agency rehearsal
+# Brief champion runbook — detailed review guide
+
+The one-page daily card is `PILOT_RUNBOOK.md`; who does what is `ROLES.md`; what to do when
+something fails is `INCIDENT_RECOVERY.md`. This guide is the detail behind step 4 of the card.
+In the commands below `$RUNS` is the runs folder (`$PILOT/runs` in the pilot, any scratch folder
+in a synthetic rehearsal) and `$WORK` a working folder outside the run.
 
 Purpose: preserve information, ask each useful question once, and hand over an identifiable,
 reviewed brief. One operator owns a run directory at a time. Account lead owns decisions;
@@ -6,14 +11,16 @@ a bilingual reviewer owns meaning/register checks; traffic owns deliverables/spe
 Name a second trained champion for cover. These are roles, not assumed assigned people.
 
 The repository still permits synthetic fixtures only. The operating terms decision is not
-resolved by this tooling. This runbook does not authorize real client data. Creative can proceed to delivery through
+resolved by this tooling. This runbook does not authorize real client data; every project folder
+declares its data class (`data_declaration.json`, owner decision 4) and the runner refuses one
+that does not. Creative can proceed to delivery through
 `docs/pilot/CREATIVE_DELIVERY.md` after explicit human creative approval.
 The existing pipeline model routing is unchanged. Do not switch its models to get a pass.
 
 ## 1. Assemble once, reuse approved references
 
-Collect the fixture sources in one project folder. Use the existing intake command documented
-in `docs/DEMO_PLAYBOOK.md` for raw text. Always pass the project, glossary and output paths
+Collect the fixture sources in one project folder. Use the intake command for raw text; it
+requires an explicit `--data-class` (`synthetic` for rehearsal) and writes the declaration. Always pass the project, glossary and output paths
 explicitly. The glossary's client ID must match the project. Do not use a different client's
 single default glossary. Never copy answer keys into an input work order.
 
@@ -33,7 +40,7 @@ Use only actual human approvals, never an AI-generated approver name.
 ```
 
 ```sh
-python3 -m pipeline.agency client-pack /tmp/synthetic-pack.json --client synthetic-example --output /tmp/synthetic-project/reference-v1.md
+python3 -m pipeline.agency client-pack $WORK/synthetic-pack.json --client synthetic-example --output $WORK/synthetic-project/reference-v1.md
 ```
 
 Expired, unsourced or wrong-client packs fail validation. Materialization refuses to overwrite
@@ -47,9 +54,9 @@ of a signature or truth of the supplied source reference.
 For an authorized synthetic model run, the existing command is:
 
 ```sh
-python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out /tmp/agency-runs --run-id rehearsal-01
-python3 -m pipeline.agency init /tmp/agency-runs/rehearsal-01 --project fixtures/northlight_01 --glossary glossary/meltemi.json --profile creative_production --actor "Your name"
-python3 -m pipeline.agency audit /tmp/agency-runs/rehearsal-01
+python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01
+python3 -m pipeline.agency init $RUNS/rehearsal-01 --project fixtures/northlight_01 --glossary glossary/meltemi.json --profile creative_production --actor "Your name"
+python3 -m pipeline.agency audit $RUNS/rehearsal-01
 ```
 
 The runner still uses the pre-existing Claude CLI routing. No model runs are part of the
@@ -77,9 +84,9 @@ Repair the brief from validated evidence, or record a justified human exclusion 
 a duplicate source fact). An exclusion is visible and attributed, not deletion of history.
 
 ```sh
-python3 -m pipeline.agency exclude /tmp/agency-runs/rehearsal-01 --fact FACT_ID --actor "Your name" --reason "Specific explanation of why this fact is intentionally excluded"
-python3 -m pipeline.agency queue /tmp/agency-runs/rehearsal-01
-python3 -m pipeline.agency answer /tmp/agency-runs/rehearsal-01 --id QUESTION_ID --status open --actor "Your name" --text "Reason this question does not block the agreed work" --owner "Account lead" --priority nonblocking
+python3 -m pipeline.agency exclude $RUNS/rehearsal-01 --fact FACT_ID --actor "Your name" --reason "Specific explanation of why this fact is intentionally excluded"
+python3 -m pipeline.agency queue $RUNS/rehearsal-01
+python3 -m pipeline.agency answer $RUNS/rehearsal-01 --id QUESTION_ID --status open --actor "Your name" --text "Reason this question does not block the agreed work" --owner "Account lead" --priority nonblocking
 ```
 
 `FACT_ID` and `QUESTION_ID` are printed by audit/queue; copy the actual IDs.
@@ -100,9 +107,9 @@ Human content amendments use a copied, schema-valid canonical JSON with `apply` 
 ## 4. Resolve, amend and re-render
 
 ```sh
-python3 -m pipeline.agency resolve /tmp/agency-runs/rehearsal-01 --index 0 --actor "Your name" --text "Your decision and its rationale"
-python3 -m pipeline.agency apply /tmp/agency-runs/rehearsal-01 --candidate /tmp/reviewed-brief.json --actor "Your name" --reason "What was corrected and why"
-python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out /tmp/agency-runs --run-id rehearsal-01 --stage render
+python3 -m pipeline.agency resolve $RUNS/rehearsal-01 --index 0 --actor "Your name" --text "Your decision and its rationale"
+python3 -m pipeline.agency apply $RUNS/rehearsal-01 --candidate $WORK/reviewed-brief.json --actor "Your name" --reason "What was corrected and why"
+python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01 --stage render
 ```
 
 Conflict indexes are zero-based as printed by audit. Resolve records the human resolution in
@@ -143,11 +150,11 @@ and brand voice. Record Greek naturalness on the existing 1–5 scale; no new nu
 threshold has been invented. Each checked dimension is an explicit human pass judgment.
 
 ```sh
-python3 -m pipeline.agency attest /tmp/agency-runs/rehearsal-01 --actor "Bilingual reviewer's name" --greek-register 4 --notes "Actual review observations" --checks source_completeness el_meaning en_meaning qualifiers_and_commitments brand_voice
-python3 -m pipeline.agency audit /tmp/agency-runs/rehearsal-01
-python3 -m pipeline.agency approve /tmp/agency-runs/rehearsal-01 --actor "Account lead's name" --summary "Actual decisions and changes reviewed"
-python3 -m pipeline.agency handover /tmp/agency-runs/rehearsal-01
-python3 pipeline/publish.py /tmp/agency-runs/rehearsal-01
+python3 -m pipeline.agency attest $RUNS/rehearsal-01 --actor "Bilingual reviewer's name" --greek-register 4 --notes "Actual review observations" --checks source_completeness el_meaning en_meaning qualifiers_and_commitments brand_voice
+python3 -m pipeline.agency audit $RUNS/rehearsal-01
+python3 -m pipeline.agency approve $RUNS/rehearsal-01 --actor "Account lead's name" --summary "Actual decisions and changes reviewed"
+python3 -m pipeline.agency handover $RUNS/rehearsal-01
+python3 pipeline/publish.py $RUNS/rehearsal-01
 ```
 
 These are human commands, not work orders for an AI to impersonate the reviewers. The role
@@ -169,9 +176,9 @@ strategy, creative and production attention without double-counting people. Traf
 first-handoff acceptance and the main return reason. Review recurring causes weekly.
 
 ```sh
-python3 eval/pilot_scorecard.py /tmp/scorecard.csv --output /tmp/scorecard-report.json
-python3 eval/pilot_scorecard.py --draft /tmp/original-draft.md --final /tmp/human-edited-final.md
-python3 eval/agency_benchmark.py --output /tmp/agency-benchmark.json
+python3 eval/pilot_scorecard.py $WORK/scorecard.csv --output $WORK/scorecard-report.json
+python3 eval/pilot_scorecard.py --draft $WORK/original-draft.md --final $WORK/human-edited-final.md
+python3 eval/agency_benchmark.py --output $WORK/agency-benchmark.json
 ```
 
 Use archived original drafts and human-edited final copies for survival; do not compare a

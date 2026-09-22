@@ -1,4 +1,8 @@
-"""Validate and summarize recorded pilot data. Missing is never zero; examples never count."""
+"""Validate and summarize recorded pilot data, and evaluate every SCORECARD.md §4 pass rule.
+
+Missing is never zero and never a pass; examples never count. Each rule reports
+pass / fail / insufficient_data per phase (end of week 3 = retro, end of week 4 = live).
+"""
 from __future__ import annotations
 
 import argparse
@@ -91,6 +95,156 @@ def _summarize(rows):
             "boundary": "Descriptive measurements, not a pilot go/no-go decision or a cash-savings estimate. Baselines and owner approvals remain required."}
 
 
+PASS, FAIL, INSUFFICIENT = "pass", "fail", "insufficient_data"
+
+#: SCORECARD.md §4: the end-of-week-3 gate set is 2 leads x 3 past projects.
+RETRO_SET_SIZE = 6
+
+
+def _flag(row, key):
+    """yes/no columns; anything else that is not missing is a data error."""
+    value = row.get(key)
+    if value in MISSING:
+        return None
+    if value not in ("yes", "no"):
+        raise ValueError(f"{row.get('brief_id', '?')}: {key} must be yes/no/not_recorded")
+    return value == "yes"
+
+
+def _rule(rule_id, measure, target, observed, status, n, note=None):
+    rule = {"rule": rule_id, "measure": measure, "target": target, "observed": observed, "status": status, "n": n}
+    if note:
+        rule["note"] = note
+    return rule
+
+
+def _central(rows, key, how, compare, target_text, rule_id):
+    """Median/mean rule: every row must carry a measured value, else insufficient_data."""
+    values = [number(row, key) for row in rows]
+    if not rows or any(v is None for v in values):
+        missing = sum(v is None for v in values)
+        return _rule(rule_id, f"{how}({key})", target_text, None, INSUFFICIENT, len(values) - missing,
+                     f"{missing} of {len(values)} brief(s) not measured" if rows else "no briefs in this phase")
+    observed = median(values) if how == "median" else mean(values)
+    return _rule(rule_id, f"{how}({key})", target_text, observed, PASS if compare(observed) else FAIL, len(values))
+
+
+def _precision_rule(rows, rule_id):
+    """Per-brief mean (SCORECARD §2). A brief with no questions has no precision: it is
+    excluded from the mean and counted in the note, never scored as 100%."""
+    measured, incomplete, no_questions = [], 0, 0
+    for row in rows:
+        total = number(row, "oq_total")
+        classes = [number(row, k) for k in CLASSES]
+        if total is None or any(v is None for v in classes):
+            incomplete += 1
+        elif total == 0:
+            no_questions += 1
+        else:
+            measured.append(100 * classes[0] / total)
+    note = f"{no_questions} brief(s) with no open questions excluded" if no_questions else None
+    if not rows or incomplete or not measured:
+        reason = (f"{incomplete} of {len(rows)} brief(s) without a complete question classification" if incomplete
+                  else "no brief with open questions" if rows else "no briefs in this phase")
+        return _rule(rule_id, "mean(oq_real / oq_total)", "> 80%", None, INSUFFICIENT, len(measured),
+                     reason + (f"; {note}" if note else ""))
+    observed = mean(measured)
+    return _rule(rule_id, "mean(oq_real / oq_total)", "> 80%", observed, PASS if observed > 80 else FAIL,
+                 len(measured), note)
+
+
+def _all_rule(rows, key, rule_id, measure, target, ok):
+    values = [row.get(key) for row in rows]
+    if not rows or any(v in MISSING for v in values):
+        missing = sum(v in MISSING for v in values)
+        return _rule(rule_id, measure, target, None, INSUFFICIENT, len(values) - missing,
+                     f"{missing} of {len(values)} brief(s) not recorded" if rows else "no briefs in this phase")
+    failing = [row.get("brief_id", "?") for row in rows if not ok(row)]
+    return _rule(rule_id, measure, target, f"{len(rows) - len(failing)}/{len(rows)}",
+                 FAIL if failing else PASS, len(rows), f"failing: {failing}" if failing else None)
+
+
+def _adoption_rule(pilots, live_rows):
+    leads = sorted({row.get("lead_id") for row in pilots if row.get("lead_id") not in MISSING})
+    if not live_rows or not leads:
+        return _rule("adoption_2_of_2", "pilot leads with a live brief initiated_by=lead", "2/2", None,
+                     INSUFFICIENT, 0, "no live briefs or no lead_id recorded")
+    chose = sorted({row.get("lead_id") for row in live_rows if row.get("initiated_by") == "lead"})
+    observed = f"{len(chose)}/{len(leads)}"
+    status = PASS if len(leads) >= 2 and set(chose) >= set(leads) else FAIL
+    note = None if len(leads) >= 2 else "fewer than two pilot leads recorded"
+    return _rule("adoption_2_of_2", "pilot leads with a live brief initiated_by=lead", "2/2", observed, status,
+                 len(live_rows), note)
+
+
+def _gate(rules):
+    statuses = [r["status"] for r in rules]
+    if FAIL in statuses:
+        return FAIL
+    return INSUFFICIENT if INSUFFICIENT in statuses else PASS
+
+
+def pass_rules(rows):
+    """Evaluate every SCORECARD.md §4 pass rule per phase: pass / fail / insufficient_data.
+
+    Missing is never a pass. Manual-fallback briefs (a brief written by hand after a refusal,
+    `manual_fallback=yes`) are counted and reported but excluded from the timing and quality
+    rules, because they have no draft; the week-3 set needs six non-fallback retro briefs.
+    Immediate-stop events (S2/S3 material, a critical error reaching a client) are incidents,
+    not CSV rows: they are recorded in the incident log (docs/pilot/INCIDENT_RECOVERY.md) and
+    stop the pilot regardless of this report.
+    """
+    pilots = [row for row in rows if row.get("row_type") == "PILOT"]
+    fallback = [row for row in pilots if _flag(row, "manual_fallback")]
+    scored = [row for row in pilots if not _flag(row, "manual_fallback")]
+    for row in pilots:
+        for key in ("schema_valid", "signed_off", "creative_approved", "creative_released",
+                    "creative_withdrawn", "sod_waiver"):
+            _flag(row, key)
+    by_phase = {"retro": [r for r in scored if r.get("phase") == "retro"],
+                "live": [r for r in scored if r.get("phase") == "live"]}
+    result = {}
+    for phase, group in by_phase.items():
+        wk = "end_week_3" if phase == "retro" else "end_week_4"
+        rules = [
+            _central(group, "assembly_min", "median", lambda v: v <= 20, "<= 20", "assembly_le_20"),
+            _central(group, "review_min", "median", lambda v: v < 30, "< 30", "review_under_30"),
+            _central(group, "total_attention_min", "median", lambda v: v <= 50, "<= 50", "total_attention_le_50"),
+            _precision_rule(group, "question_precision_gt_80"),
+            _all_rule(group, "ce_total", "critical_errors_zero", "ce_total per brief", "0 on every brief",
+                      lambda row: number(row, "ce_total") == 0),
+            _all_rule(group, "schema_valid", "schema_valid_all", "schema_valid", "yes on every brief",
+                      lambda row: row.get("schema_valid") == "yes"),
+        ]
+        if phase == "retro":
+            # Survival is reported, not gated, at the end of week 3 (SCORECARD §2).
+            size_ok = len(group) >= RETRO_SET_SIZE
+            rules.append(_rule("retro_set_complete", "non-fallback retro briefs", f">= {RETRO_SET_SIZE}",
+                               len(group), PASS if size_ok else INSUFFICIENT, len(group)))
+        else:
+            rules += [
+                _central(group, "survival_en_pct", "mean", lambda v: v > 70, "> 70%", "survival_en_gt_70"),
+                _central(group, "survival_el_pct", "mean", lambda v: v > 70, "> 70%", "survival_el_gt_70"),
+                _adoption_rule(pilots, group),
+            ]
+        result[wk] = {"phase": phase, "gate": _gate(rules), "rules": rules}
+    result["reported"] = {
+        "manual_fallback_briefs": len(fallback),
+        "manual_fallback_share_pct": 100 * len(fallback) / len(pilots) if pilots else None,
+        "creative_released": sum(bool(_flag(r, "creative_released")) for r in pilots),
+        "creative_withdrawn": sum(bool(_flag(r, "creative_withdrawn")) for r in pilots),
+        "sod_waivers": sum(bool(_flag(r, "sod_waiver")) for r in pilots),
+        "not_machine_evaluated": ["immediate-stop events (incident log)", "stop-rule decision (sponsor)",
+                                  "month-2 onboarding requests (report)"],
+    }
+    if result["reported"]["sod_waivers"]:
+        result["reported"]["warning"] = ("A separation-of-duties waiver is recorded on a PILOT row; waivers are "
+                                         "for synthetic rehearsal only (docs/pilot/ROLES.md).")
+    result["boundary"] = ("Rule evaluation against SCORECARD §4 as proposed; targets marked OWNER TO CONFIRM there "
+                          "remain proposals. insufficient_data is never a pass.")
+    return result
+
+
 def summarize(rows):
     rows = list(rows)
     result = _summarize(rows)
@@ -101,6 +255,7 @@ def summarize(rows):
             phase = "not_recorded" if phase in MISSING else phase
             phases.setdefault(phase, []).append(row)
     result["by_phase"] = {phase: _summarize(group) for phase, group in phases.items()}
+    result["pass_rules"] = pass_rules(rows)
     return result
 
 
