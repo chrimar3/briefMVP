@@ -68,8 +68,23 @@ def withdraw(run, actor, reason):
         # Persist recall information first; a crash must not leave a release unmarked.
         events = revisions.load(run/'approval_withdrawals.json', [])
         revisions.write_json(run/'approval_withdrawals.json', events + [event])
+        revisions.append_audit(run, 'approval_withdrawn', actor,
+                               record={'file': 'approval_withdrawals.json', 'entry': event},
+                               details={'reason': reason, 'withdrawn': sorted(approvals),
+                                        'affected_releases': len(receipts)})
         revisions.archive(run, list(approvals))
         return event
+
+
+def verify_log(run):
+    """Integrity of the run's hash-chained decision log (revisions.verify_audit_log)."""
+    run = Path(run)
+    problems = revisions.verify_audit_log(run)
+    path = run / revisions.AUDIT_LOG
+    lines = path.read_text(encoding='utf-8').splitlines() if path.is_file() else []
+    return {'valid': not problems, 'errors': problems, 'entries': len(lines),
+            'boundary': 'Detects edited, removed, reordered or unlogged decision records. Names are '
+                        'typed by people and are not authenticated; this is tamper evidence, not a signature.'}
 
 
 def require_not_withdrawn(run, *, include_creative=False):
@@ -93,9 +108,16 @@ def main(argv=None):
     revoke.add_argument('run', type=Path)
     revoke.add_argument('--actor', required=True)
     revoke.add_argument('--reason', required=True)
+    log = subs.add_parser('verify-log', help='Check the run audit log chain and that every decision record is logged')
+    log.add_argument('run', type=Path)
     args = parser.parse_args(argv)
     try:
-        result = verify(args.package, args.run) if args.command == 'verify' else withdraw(args.run, args.actor, args.reason)
+        if args.command == 'verify':
+            result = verify(args.package, args.run)
+        elif args.command == 'verify-log':
+            result = verify_log(args.run)
+        else:
+            result = withdraw(args.run, args.actor, args.reason)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 2 if result.get('valid') is False else 0
     except (ValueError, OSError, KeyError, TypeError) as exc:

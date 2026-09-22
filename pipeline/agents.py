@@ -14,10 +14,20 @@ Clean substrate (PRD DR-1, README "substrate-dependent"): in production these st
 metered API calls whose system prompt is the skeleton file alone. To model that here — and to
 stop the repo's build-time `CLAUDE.md` leaking into a *runtime* agent's context — each subagent
 is invoked with its definition passed inline (`--agents`) and run from a neutral working
-directory that has no `CLAUDE.md` in its ancestry. `--add-dir` grants read/write only to the
-specific project, schema, glossary, template and run directories, none of which is the repo
-root. Verified empirically: `--agent` from the repo root loads `CLAUDE.md`; this path does not.
-See `runs/tier_2_report.md` and the substrate-fix note.
+directory that has no `CLAUDE.md` in its ancestry. Verified empirically: `--agent` from the
+repo root loads `CLAUDE.md`; this path does not. See `runs/tier_2_report.md` and the
+substrate-fix note.
+
+Least privilege (docs/SECURITY.md). A runtime agent reads client-authored text, so it is
+treated as a component that may be steered by what it reads. `AccessScope` separates the ONE
+directory it may write (the run directory) from the directories it may only read (schema/,
+templates/, config/), and names the records inside the run directory it must never write
+(staged inputs, human decisions, evidence copies, the audit log). `build_command` turns that
+scope into CLI permission rules: path-scoped allow rules, explicit deny rules for every
+read-only directory and protected record, a deny rule for any `answer_key.json`, no shell or
+web tools, no user/project settings, hooks or MCP servers, and no interactive permission
+prompts (anything not pre-approved is refused). The CLI enforces the rules; the runner's
+post-stage integrity check (pipeline/runner.py) detects a write that got through anyway.
 """
 
 from __future__ import annotations
@@ -40,9 +50,25 @@ AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
 #: Overridable so tests never shell out to a real model.
 CLAUDE_BIN = os.environ.get("BRIEF_BUILDER_CLAUDE_BIN", "claude")
 
-#: Runtime agents read sources and write artifacts. This mirrors the `tools:` frontmatter —
-#: belt and braces, because a permission prompt in a non-interactive run would hang it.
+#: Runtime agents read sources and write artifacts. This mirrors the `tools:` frontmatter and
+#: is passed as `--tools`, so no other built-in tool is even available to the session.
 ALLOWED_TOOLS = ("Read", "Write")
+
+#: Denied outright, whatever an agent definition says (belt and braces over `--tools`).
+DENIED_TOOLS = ("Bash", "WebFetch", "WebSearch", "NotebookEdit")
+
+#: Setting sources the runtime CLI may load. Both resolve against the neutral cwd, which has no
+#: `.claude/` directory, so in practice nothing loads: the operator's user-level settings, hooks,
+#: permission rules and plugins never reach a runtime agent. (`user` is deliberately absent.)
+SETTING_SOURCES = "project,local"
+
+#: File names no runtime agent may read or write, wherever they are (the exam never sees itself
+#: being taken). Mirrors gates.HARNESS_ONLY_FILES, which only governs source discovery.
+HARNESS_ONLY_NAMES = ("answer_key.json",)
+
+#: Repo directories that are specification, never output. A plain list of access dirs (legacy
+#: callers such as demo/run_demo.py) is split with this: these are read-only, the rest writable.
+READ_ONLY_REPO_DIRS = tuple(REPO_ROOT / d for d in ("schema", "config", "templates", "glossary", "skills", "fixtures"))
 
 #: Measured stage durations run up to ~580s (render, the longest stage — see run manifests);
 #: the original 600s ceiling was a coin flip that cost-audit C1 attempt 2 finally lost on a
@@ -118,6 +144,123 @@ def build_inline_agent(name: str, model_override: Optional[str] = None) -> dict:
 
 class SubagentError(Exception):
     """The subagent could not be run at all (binary missing, timeout, non-JSON output)."""
+
+
+def _unique(paths) -> tuple:
+    seen, out = set(), []
+    for p in paths:
+        s = str(p)
+        if s not in seen:
+            seen.add(s)
+            out.append(s)
+    return tuple(out)
+
+
+@dataclass(frozen=True)
+class AccessScope:
+    """What one runtime agent may touch.
+
+    `writable` — directories the agent may write (in practice: the run directory only).
+    `read_only` — directories it may read and never write (schema/, templates/, config/).
+    `protected` — files or directories INSIDE a writable directory that it must never write:
+    staged inputs, human decision records, evidence copies, the audit log. Iterating a scope
+    yields every granted directory, so older callers that treat it as a list keep working.
+    """
+
+    writable: tuple = ()
+    read_only: tuple = ()
+    protected: tuple = ()
+
+    def dirs(self) -> list:
+        return list(_unique(list(self.writable) + list(self.read_only)))
+
+    def __iter__(self):
+        return iter(self.dirs())
+
+    @classmethod
+    def coerce(cls, access_dirs) -> "AccessScope":
+        """A scope as-is; a plain list split into read-only repo skeleton dirs and the rest."""
+        if isinstance(access_dirs, cls):
+            return access_dirs
+        read_only_roots = [d.resolve() for d in READ_ONLY_REPO_DIRS]
+        writable, read_only = [], []
+        for directory in access_dirs or ():
+            resolved = Path(directory).resolve()
+            if any(resolved == r or r in resolved.parents for r in read_only_roots):
+                read_only.append(str(directory))
+            else:
+                writable.append(str(directory))
+        return cls(writable=_unique(writable), read_only=_unique(read_only))
+
+
+def _rule_paths(path, recursive: bool) -> list:
+    """Absolute-path permission-rule specifiers (`//abs/path`, gitignore-style) for one path.
+
+    Both the path as given and its resolved form are emitted when they differ (macOS /tmp is a
+    symlink to /private/tmp), so a rule cannot be sidestepped by the other spelling.
+    """
+    forms = _unique([Path(path).absolute(), Path(path).resolve()])
+    suffix = "/**" if recursive else ""
+    return ["/" + f.rstrip("/") + suffix for f in forms]
+
+
+def permission_rules(scope: AccessScope) -> tuple:
+    """(allow_rules, deny_rules) for one invocation, in Claude Code permission-rule syntax.
+
+    Allow: Read on every granted directory; Write/Edit on the writable ones only.
+    Deny (deny always wins): Write/Edit on every read-only directory and every protected
+    record, Read/Write/Edit on any harness-only file anywhere, and the shell/web tools.
+    """
+    allow, deny = [], []
+    for directory in scope.dirs():
+        allow += [f"Read({p})" for p in _rule_paths(directory, True)]
+    for directory in scope.writable:
+        for p in _rule_paths(directory, True):
+            allow += [f"Write({p})", f"Edit({p})"]
+    for directory in scope.read_only:
+        for p in _rule_paths(directory, True):
+            deny += [f"Write({p})", f"Edit({p})"]
+    for record in scope.protected:
+        recursive = not Path(record).suffix  # directories are named without an extension
+        for p in _rule_paths(record, recursive):
+            deny += [f"Write({p})", f"Edit({p})"]
+    for name in HARNESS_ONLY_NAMES:
+        deny += [f"{tool}(//**/{name})" for tool in ("Read", "Write", "Edit")]
+    deny += list(DENIED_TOOLS)
+    return list(_unique(allow)), list(_unique(deny))
+
+
+def build_command(agent: str, prompt: str, access_dirs, model_override: Optional[str] = None) -> list:
+    """The exact argv for one runtime invocation — pure, so its security flags are testable.
+
+    `access_dirs` is an AccessScope, or a plain list (split by AccessScope.coerce).
+    """
+    scope = AccessScope.coerce(access_dirs)
+    inline_agents = build_inline_agent(agent, model_override=model_override)
+    tools = inline_agents[agent].get("tools") or list(ALLOWED_TOOLS)
+    allow, deny = permission_rules(scope)
+    cmd = [
+        CLAUDE_BIN,
+        "-p", prompt,
+        "--agents", json.dumps(inline_agents, ensure_ascii=False),
+        "--agent", agent,
+        "--permission-mode", "acceptEdits",
+        # Nobody answers a prompt in a pipeline run: anything not pre-approved is refused
+        # outright instead of hanging or being waved through.
+        "--permission-prompts", "none",
+        "--setting-sources", SETTING_SOURCES,
+        "--strict-mcp-config",  # no --mcp-config is passed, so no MCP server loads
+        "--output-format", "json",
+        "--tools", ",".join(tools),
+        "--allowedTools", *allow,
+        "--disallowedTools", *deny,
+    ]
+    effort = stage_effort(agent)
+    if effort:
+        cmd += ["--effort", effort]
+    for directory in scope.dirs():
+        cmd += ["--add-dir", directory]
+    return cmd
 
 
 def stage_effort(agent: str, path: Optional[Path] = None) -> Optional[str]:
@@ -196,8 +339,9 @@ def invoke(
 ) -> SubagentResult:
     """Run one Claude Code subagent non-interactively, on a clean substrate, and report cost.
 
-    `access_dirs` are the only directories the agent may read or write — the project sources,
-    the schema, the glossary, the templates and the run output. The agent definition is passed
+    `access_dirs` is the agent's AccessScope (or a plain list, see AccessScope.coerce): the run
+    directory it may write, the skeleton directories it may only read, and the records inside
+    the run directory it may never write. The agent definition is passed
     inline and the process runs from a neutral cwd, so the repo's build-time CLAUDE.md is never
     auto-loaded into a runtime agent (see the module docstring). `model_override` swaps the
     model alias for this one call (the Tier-4 A/B runs the same agent on sonnet and opus).
@@ -212,25 +356,7 @@ def invoke(
             f"set BRIEF_BUILDER_CLAUDE_BIN if the CLI lives elsewhere."
         )
 
-    inline_agents = build_inline_agent(agent, model_override=model_override)
-    cmd = [
-        CLAUDE_BIN,
-        "-p", prompt,
-        "--agents", json.dumps(inline_agents, ensure_ascii=False),
-        "--agent", agent,
-        "--permission-mode", "acceptEdits",
-        "--output-format", "json",
-        "--allowedTools", *ALLOWED_TOOLS,
-    ]
-    effort = stage_effort(agent)
-    if effort:
-        cmd += ["--effort", effort]
-    seen = set()
-    for directory in access_dirs:
-        d = str(directory)
-        if d not in seen:
-            cmd += ["--add-dir", d]
-            seen.add(d)
+    cmd = build_command(agent, prompt, access_dirs, model_override=model_override)
 
     try:
         proc = subprocess.run(

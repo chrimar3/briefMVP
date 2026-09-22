@@ -106,7 +106,37 @@ def register(run, draft_path, actor, assets=()):
               'registered_at': revisions.timestamp(), 'claims': claims,
               'files': [{'file': str((root/name).relative_to(run)), 'name': name, 'sha256': hashlib.sha256(data).hexdigest()} for name, data in payloads]}
     revisions.write_json(run / 'creative_draft.json', record)
+    revisions.append_audit(run, 'creative_registered', actor, record='creative_draft.json',
+                           details={'revision': identity})
     return record
+
+
+def _separation(run, approver, draft, solo_rehearsal=False):
+    """Owner decision 2026-09-22 #3: the creative approver is neither the person who registered
+    the draft nor the brief signer. A synthetic rehearsal may waive it explicitly (recorded)."""
+    registrant = draft.get('registered_by')
+    signer = revisions.load(run / 'approval.json', {}).get('actor')
+    if solo_rehearsal:
+        return agency.solo_rehearsal_waiver(run, ('creative_registrant', 'creative_approver', 'brief_signer'))
+    agency.require_distinct('creative registrant', registrant, 'creative approver', approver)
+    agency.require_distinct('brief signer', signer, 'creative approver', approver)
+    return {'enforced': ['creative_registrant != creative_approver', 'brief_signer != creative_approver']}
+
+
+def _recheck_separation(run, approval, draft):
+    """Release-time re-check from the records themselves, so a hand-edited record cannot slip
+    a same-person approval through. A recorded waiver must still be valid (synthetic data)."""
+    separation = approval.get('separation_of_duties') or {}
+    if separation.get('waived') == 'solo_rehearsal':
+        agency.solo_rehearsal_waiver(run, separation.get('roles') or ())
+    else:
+        _separation(run, approval.get('actor'), draft)
+    brief_approval = revisions.load(run / 'approval.json', {})
+    if (brief_approval.get('separation_of_duties') or {}).get('waived') == 'solo_rehearsal':
+        agency.solo_rehearsal_waiver(run, ('language_attester', 'brief_signer'))
+    else:
+        agency.require_distinct('language/source reviewer', revisions.load(run / 'language_review.json', {}).get('actor'),
+                                'brief signer', brief_approval.get('actor'))
 
 
 def current_draft(run):
@@ -137,7 +167,7 @@ def current_draft(run):
     return record
 
 
-def approve(run, actor, notes, checks):
+def approve(run, actor, notes, checks, solo_rehearsal=False):
     if not actor.strip() or not notes.strip() or set(checks) != set(CHECKS):
         raise ValueError('Named creative lead, notes and every creative review check are required')
     brief = context(run)
@@ -152,12 +182,17 @@ def approve(run, actor, notes, checks):
     errors += creative.check_creative_brief(run / record['files'][0]['file'], selected_table, mode='draft')
     if problems or errors:
         raise ValueError('; '.join(problems + errors))
+    separation = _separation(run, actor, record, solo_rehearsal)
+    revisions.require_intact_audit_log(run)
     revisions.archive(run, ['creative_approval.json'], copy_only=True)
     approval = {'actor': actor, 'notes': notes, 'checks': {key: True for key in CHECKS},
                 'approved_at': revisions.timestamp(), 'draft_sha256': revisions.file_hash(run / 'creative_draft.json'),
                 'brief_approval_sha256': revisions.file_hash(run / 'approval.json'),
-                'language_review_sha256': revisions.file_hash(run / 'language_review.json')}
+                'language_review_sha256': revisions.file_hash(run / 'language_review.json'),
+                'separation_of_duties': separation}
     revisions.write_json(run / 'creative_approval.json', approval)
+    revisions.append_audit(run, 'creative_approved', actor, record='creative_approval.json',
+                           details={'revision': record['revision'], 'separation_of_duties': separation})
     return approval
 
 
@@ -190,9 +225,15 @@ def require_creative_approval(run):
     return record, approval, rows
 
 
-def release(run, output):
+def release(run, output, actor):
+    """Create the approved local package. `actor` is the named person producing it — recorded
+    in release.json, in the run's receipt and in the audit log."""
+    if not isinstance(actor, str) or not actor.strip():
+        raise ValueError('Named releasing operator required (--actor)')
     context(run)
     record, approval, rows = require_creative_approval(run)
+    _recheck_separation(run, approval, record)
+    revisions.require_intact_audit_log(run)
     output = Path(output).resolve()
     if output.exists() or output == run.resolve() or run.resolve() in output.parents:
         raise ValueError('Release output must be a new directory outside the run')
@@ -212,7 +253,7 @@ def release(run, output):
         brief = agency.read_run(run)
         manifest = {'status': 'APPROVED FOR DELIVERY', 'project_id': brief['meta']['project_id'],
                     'creative_revision': record['revision'], 'approved_by': approval['actor'],
-                    'approved_at': approval['approved_at'],
+                    'approved_at': approval['approved_at'], 'released_by': actor,
                     'files': {p.name: revisions.file_hash(p) for p in staging.iterdir() if p.is_file()}}
         revisions.write_json(staging / 'release.json', manifest)
         # Exclusive creation protects earlier deliveries; files are complete before rename.
@@ -224,8 +265,12 @@ def release(run, output):
         if staging.exists():
             shutil.rmtree(staging)
     releases = revisions.load(run / 'releases.json', [])
-    releases.append({'path': str(output), 'manifest_sha256': revisions.file_hash(output/'release.json'), 'at': revisions.timestamp()})
+    receipt = {'path': str(output), 'manifest_sha256': revisions.file_hash(output/'release.json'),
+               'at': revisions.timestamp(), 'released_by': actor}
+    releases.append(receipt)
     revisions.write_json(run / 'releases.json', releases)
+    revisions.append_audit(run, 'creative_released', actor, record={'file': 'releases.json', 'entry': receipt},
+                           details={'manifest_sha256': receipt['manifest_sha256'], 'revision': record['revision']})
     return output
 
 
@@ -235,14 +280,16 @@ def main(argv=None):
     for name in ('register', 'approve', 'release'):
         sub = subs.add_parser(name)
         sub.add_argument('run', type=Path)
-        if name != 'release':
-            sub.add_argument('--actor', required=True)
+        sub.add_argument('--actor', required=True)
         if name == 'register':
             sub.add_argument('--draft', type=Path, required=True)
             sub.add_argument('--asset', type=Path, action='append', default=[])
         if name == 'approve':
             sub.add_argument('--notes', required=True)
             sub.add_argument('--checks', nargs='+', choices=CHECKS, required=True)
+            sub.add_argument('--solo-rehearsal', action='store_true',
+                             help='Waive separation of duties for a SYNTHETIC rehearsal only; recorded '
+                                  'in creative_approval.json and the audit log')
         if name == 'release':
             sub.add_argument('--output', type=Path, required=True)
     args = parser.parse_args(argv)
@@ -252,9 +299,9 @@ def main(argv=None):
             if args.command == 'register':
                 result = register(run, args.draft, args.actor, args.asset)
             elif args.command == 'approve':
-                result = approve(run, args.actor, args.notes, args.checks)
+                result = approve(run, args.actor, args.notes, args.checks, solo_rehearsal=args.solo_rehearsal)
             else:
-                result = str(release(run, args.output))
+                result = str(release(run, args.output, args.actor))
             print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except (ValueError, OSError, KeyError, TypeError, gates.GateError) as exc:

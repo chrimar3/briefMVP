@@ -27,6 +27,6 @@ def test_reply_blocks_approved_release_until_explicit_review(tmp_path):
     proposal = question_exchange.import_replies(run, pack, reply, 'Synthetic importer')
     assert any('Unreviewed clarification' in p for p in agency.audit(run, persist=False)['blockers'])
     with pytest.raises(ValueError, match='Unreviewed clarification'):
-        delivery.release(run, tmp_path/'blocked')
+        delivery.release(run, tmp_path/'blocked', 'Synthetic releaser')
     question_exchange.dismiss(run, proposal['proposal_id'], actor='Synthetic lead', reason='Wrong campaign; verified irrelevant')
-    assert delivery.release(run, tmp_path/'approved').is_dir()
+    assert delivery.release(run, tmp_path/'approved', 'Synthetic releaser').is_dir()

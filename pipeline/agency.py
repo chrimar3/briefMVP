@@ -16,6 +16,97 @@ from pipeline import clarifications, client_pack, gates, handover, quality, revi
 
 PROFILES = gates.CONFIG_DIR / "campaign_profiles.json"
 
+#: The project folder's data declaration (owner decision 2026-09-22 #4; W6 owns the gate).
+DATA_DECLARATION = "data_declaration.json"
+
+
+class SeparationOfDutiesError(ValueError):
+    """One person tried to hold two roles that must be held by different people."""
+
+
+def same_person(a, b) -> bool:
+    """Actors are typed names, so compare them the way a reviewer would read them."""
+    norm = lambda s: " ".join(str(s or "").casefold().split())
+    return bool(norm(a)) and norm(a) == norm(b)
+
+
+def project_data_class(run):
+    """The data_class declared by the project this run was made from, or None.
+
+    The project folder is where the run's recorded sources live (input_snapshot.json). No
+    snapshot, sources spread over several folders, or a missing/invalid declaration all mean
+    "not known to be synthetic" — the safe reading.
+    """
+    snapshot = revisions.load(Path(run) / "input_snapshot.json", {}) or {}
+    folders = {Path(item["path"]).parent for key, item in snapshot.items()
+               if key.startswith("source:") and isinstance(item, dict) and item.get("path")}
+    if len(folders) != 1:
+        return None
+    try:
+        declaration = json.loads((folders.pop() / DATA_DECLARATION).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return declaration.get("data_class") if isinstance(declaration, dict) else None
+
+
+def solo_rehearsal_waiver(run, role_pair):
+    """The recorded waiver for `--solo-rehearsal`, refused unless the project is synthetic."""
+    data_class = project_data_class(run)
+    if data_class != "synthetic":
+        raise SeparationOfDutiesError(
+            f"--solo-rehearsal is only for synthetic rehearsals; this project declares "
+            f"data_class={data_class!r} (a missing declaration counts as non-synthetic)")
+    return {"waived": "solo_rehearsal", "roles": list(role_pair), "data_class": data_class,
+            "at": revisions.timestamp()}
+
+
+def require_distinct(role_a, actor_a, role_b, actor_b):
+    if same_person(actor_a, actor_b):
+        raise SeparationOfDutiesError(
+            f"Separation of duties: the {role_b} ({actor_b!r}) must be a different person from the "
+            f"{role_a}. Use a second reviewer, or --solo-rehearsal on a synthetic rehearsal only.")
+
+
+def brief_binding(brief) -> str:
+    """What a coverage exclusion is bound to: the brief's content, not its sign-off state."""
+    return revisions.digest({k: v for k, v in brief.items() if k not in ("signoff", "readiness")})
+
+
+def _question_removal_allowed(run, old, candidate):
+    """Problems with open questions the candidate drops. A question may leave the brief only
+    after a human triage decision closed it (answered / duplicate / not worth asking)."""
+    kept = candidate.get("open_questions") or []
+    removed = [q for q in old.get("open_questions") or [] if q not in kept]
+    if not removed:
+        return []
+    decided = {item["id"]: item["decision"] for item in clarifications.queue(
+        old, revisions.load(run / "clarifications.json", {}))}
+    problems = []
+    for question in removed:
+        qid = clarifications.queue({"open_questions": [question]})[0]["id"]
+        decision = decided.get(qid) or {}
+        if decision.get("status") not in ("answered", "duplicate", "not_worth_asking"):
+            problems.append(f"open question {question.get('suggested_question_for_client', '')!r} is removed "
+                            f"or reworded without a human triage decision closing it (`agency answer`)")
+    return problems
+
+
+def _conflict_changes(old, candidate):
+    """Problems with conflict edits. Existing conflicts are evidence plus a human-only
+    resolution: they stay exactly as they are here and change only through `agency resolve`."""
+    before, after = old.get("conflicts") or [], candidate.get("conflicts") or []
+    problems = []
+    if len(after) < len(before):
+        problems.append(f"the candidate drops {len(before) - len(after)} conflict(s)")
+    for i, (was, now) in enumerate(zip(before, after)):
+        if was != now:
+            fields = sorted(k for k in set(was) | set(now) if was.get(k) != now.get(k))
+            problems.append(f"conflict {i} changes {fields}")
+    for i, added in enumerate(after[len(before):], len(before)):
+        if added.get("status") != "open" or added.get("resolution") or added.get("resolved_by"):
+            problems.append(f"new conflict {i} must be added as status 'open' with no resolution")
+    return problems
+
 
 def read_run(run):
     brief = revisions.load(run / "brief.json")
@@ -65,10 +156,17 @@ def audit(run, *, persist=True):
         problems.append("No validated extracts available for coverage review")
     records = quality.coverage(brief, extracts)
     exclusions = revisions.load(run / "coverage_decisions.json", {})
+    binding = brief_binding(brief)
     for record in records:
         decision = exclusions.get(record["id"], {})
-        if not record["destinations"] and not (decision.get("actor") and decision.get("reason")):
-            problems.append(f"coverage.{record['id']}: {record['field']} fact has no destination")
+        # An exclusion holds only for the brief content it was decided against: amend the
+        # brief and the human looks again. An unbound (legacy or hand-written) entry counts
+        # for nothing.
+        excluded = (decision.get("actor") and decision.get("reason")
+                    and decision.get("brief_binding") == binding)
+        if not record["destinations"] and not excluded:
+            stale = " (exclusion was made against an earlier brief revision)" if decision else ""
+            problems.append(f"coverage.{record['id']}: {record['field']} fact has no destination{stale}")
     # Re-run structural synthesis checks as draft without erasing stored human decisions.
     # Schema, evidence, render fidelity and human semantic reviews are separate checks.
     known_sources = {s["source_id"] for s in brief["meta"]["sources"]}
@@ -189,6 +287,8 @@ def resolve(run, index, actor, resolution):
     # Preserve the actual pre-review draft for scoring and history.
     revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_el.md", "brief_en.md", "brief_el.html", "brief_en.html", "brief_review.html", "creative"])
     revisions.write_json(run / "brief.json", candidate)
+    revisions.append_audit(run, "conflict_resolved", actor, record="brief.json",
+                           details={"conflict": index, "resolution": resolution})
 
 
 def apply_candidate(run, candidate_path, actor, reason):
@@ -199,22 +299,38 @@ def apply_candidate(run, candidate_path, actor, reason):
     gates.validate_brief(candidate)
     if candidate["meta"] != old["meta"]:
         raise ValueError("Amendments cannot change project/source identity; create a new run")
+    # Conflict resolution and question closure have their own attributed commands; an
+    # amendment cannot do either on the side (PRD DR-10: resolution is human-only, by name).
+    guarded = _conflict_changes(old, candidate) + _question_removal_allowed(run, old, candidate)
+    if guarded:
+        raise ValueError("Amendment refused — conflicts change only through `agency resolve`, and open "
+                         "questions leave the brief only after `agency answer` closes them: " + "; ".join(guarded))
     candidate["signoff"] = {"status": "draft"}
     candidate["readiness"] = gates.compute_readiness_block(candidate)
     revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_el.md", "brief_en.md",
                             "brief_el.html", "brief_en.html", "brief_review.html", "creative"])
     revisions.write_json(run / "brief.json", candidate)
     history = revisions.load(run / "amendments.json", [])
-    history.append({"actor": actor, "reason": reason, "at": revisions.timestamp(), "changes": revisions.changes(old, candidate)})
+    entry = {"actor": actor, "reason": reason, "at": revisions.timestamp(), "changes": revisions.changes(old, candidate)}
+    history.append(entry)
     revisions.write_json(run / "amendments.json", history)
+    revisions.append_audit(run, "brief_amended", actor, record={"file": "amendments.json", "entry": entry},
+                           details={"reason": reason})
 
 
-def approve(run, actor, summary):
+def approve(run, actor, summary, solo_rehearsal=False):
     if not actor.strip() or not summary.strip():
         raise ValueError("Human actor and edit/review summary are required")
     result = audit(run)
     if result["blockers"]:
         raise ValueError("Approval blocked: " + "; ".join(result["blockers"]))
+    attester = revisions.load(run / "language_review.json", {}).get("actor")
+    if solo_rehearsal:
+        separation = solo_rehearsal_waiver(run, ("language_attester", "brief_signer"))
+    else:
+        require_distinct("language/source reviewer", attester, "brief signer", actor)
+        separation = {"enforced": ["language_attester != brief_signer"]}
+    revisions.require_intact_audit_log(run)
     brief = read_run(run)
     revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_review.html", "brief_el.html", "brief_en.html"], copy_only=True)
     brief["signoff"] = {"status": "signed_off", "signed_by": actor, "signed_ts": revisions.timestamp(), "edits_summary": summary}
@@ -227,7 +343,10 @@ def approve(run, actor, summary):
     attestation = revisions.load(run / "language_review.json")
     attestation["fingerprint"] = revisions.fingerprint(run)
     revisions.write_json(run / "language_review.json", attestation)
-    revisions.write_json(run / "approval.json", {"actor": actor, "signed_at": revisions.timestamp(), "fingerprint": revisions.fingerprint(run), "language_review_sha256": revisions.file_hash(run / "language_review.json")})
+    revisions.write_json(run / "approval.json", {"actor": actor, "signed_at": revisions.timestamp(), "fingerprint": revisions.fingerprint(run), "language_review_sha256": revisions.file_hash(run / "language_review.json"),
+                                                 "separation_of_duties": separation})
+    revisions.append_audit(run, "brief_approved", actor, record="approval.json",
+                           details={"summary": summary, "separation_of_duties": separation})
 
 
 def main(argv=None):
@@ -266,6 +385,9 @@ def main(argv=None):
             p.add_argument("--notes", required=True)
         if name == "approve":
             p.add_argument("--summary", required=True)
+            p.add_argument("--solo-rehearsal", action="store_true",
+                           help="Waive attester≠signer for a SYNTHETIC rehearsal only; recorded in "
+                                "approval.json and the audit log, refused for non-synthetic projects")
         if name == "diff":
             p.add_argument("--before", type=Path, required=True, help="Earlier brief.json")
     p = commands.add_parser("client-pack")
@@ -291,6 +413,8 @@ def main(argv=None):
                     print(json.dumps(q, ensure_ascii=False, indent=2))
                 else:
                     clarifications.record(run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority)
+                    revisions.append_audit(run, "question_triaged", args.actor, record="clarifications.json",
+                                           details={"question": args.id, "status": args.status})
             elif args.command == "carry-decisions":
                 with revisions.run_lock(args.parent):
                     print(json.dumps(revisions.carry_decisions(args.parent, run, args.actor), indent=2))
@@ -299,12 +423,16 @@ def main(argv=None):
             elif args.command == "resolve":
                 resolve(run, args.index, args.actor, args.text)
             elif args.command == "exclude":
-                records = quality.coverage(read_run(run), extract_records(run))
+                brief = read_run(run)
+                records = quality.coverage(brief, extract_records(run))
                 if args.fact not in {r["id"] for r in records} or not args.reason.strip() or not args.actor.strip():
                     raise ValueError("Existing fact ID, human actor and reason are required")
                 decisions = revisions.load(run / "coverage_decisions.json", {})
-                decisions[args.fact] = {"actor": args.actor, "reason": args.reason, "at": revisions.timestamp()}
+                decisions[args.fact] = {"actor": args.actor, "reason": args.reason, "at": revisions.timestamp(),
+                                        "brief_binding": brief_binding(brief)}
                 revisions.write_json(run / "coverage_decisions.json", decisions)
+                revisions.append_audit(run, "coverage_excluded", args.actor, record="coverage_decisions.json",
+                                       details={"fact": args.fact, "reason": args.reason})
             elif args.command == "attest":
                 read_run(run)
                 if not args.actor.strip() or not args.notes.strip():
@@ -312,8 +440,10 @@ def main(argv=None):
                 revisions.write_json(run / "language_review.json", {"actor": args.actor, "notes": args.notes,
                     "greek_register": args.greek_register, "checks": {k: k in args.checks for k in quality.field_review_checklist()},
                     "fingerprint": revisions.fingerprint(run), "reviewed_at": revisions.timestamp()})
+                revisions.append_audit(run, "language_attested", args.actor, record="language_review.json",
+                                       details={"checks": sorted(args.checks), "greek_register": args.greek_register})
             elif args.command == "approve":
-                approve(run, args.actor, args.summary)
+                approve(run, args.actor, args.summary, solo_rehearsal=args.solo_rehearsal)
             elif args.command == "diff":
                 print(json.dumps(revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2))
             elif args.command == "handover":
