@@ -18,7 +18,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
+import re
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -137,18 +139,139 @@ class RunContext:
         return chosen
 
 
-def _access_dirs(ctx: "RunContext") -> list:
-    """The only directories a subagent may touch: project sources, run output, and the three
-    read-only skeleton dirs. Deliberately NOT the repo root — that is where CLAUDE.md lives,
-    and a runtime agent has no business seeing build governance (see pipeline/agents.py)."""
-    return [
-        str(ctx.project_dir),
-        str(ctx.run_dir),
-        str(gates.SCHEMA_DIR),
-        str(Path(ctx.glossary_path).parent),
-        str(gates.REPO_ROOT / "templates"),
-        str(gates.CONFIG_DIR),  # channel_specs.json for the creative stage (DR-7 spec table)
-    ]
+#: Where a run keeps byte-identical copies of the declared sources and the client config it
+#: hands to agents. Agents never get the project folder itself: it may hold harness-only files
+#: (answer_key.json) and it is the human's original, not the run's working copy.
+STAGED_INPUTS_DIR = "inputs"
+
+#: Paths inside the run directory that no runtime agent may write: the staged inputs, the
+#: evidence copies, every human decision record, and the durable logs. Denied to the agent by
+#: permission rule (pipeline/agents.py) and re-checked by hash after every model step.
+PROTECTED_RUN_PATHS = (
+    STAGED_INPUTS_DIR, "evidence", "history", "creative_versions", "question_exchange", "diagnostics",
+    "input_snapshot.json", "evidence_index.json", "run_manifest.json", "agency_inputs.json",
+    "approval.json", "language_review.json", "coverage_decisions.json", "clarifications.json",
+    "amendments.json", "agency_audit.json", "creative_draft.json", "creative_approval.json",
+    "approval_withdrawals.json", "releases.json", "handover.json", "revision_lineage.json",
+    "audit_log.jsonl",
+)
+
+#: Written by the runner itself while a model step runs, so left out of the integrity check
+#: (still denied to agents by permission rule).
+_RUNNER_WRITES_DURING_STEPS = ("diagnostics",)
+
+#: A source_id becomes a file name (extracts/<id>.json, verification/, fidelity/). Anything that
+#: could name a different directory is refused before any path is built from it.
+SAFE_SOURCE_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*")
+
+
+def unsafe_source_ids(sources) -> list:
+    """Every declared source_id that must not become part of a file path, with the reason.
+
+    Deliberately a separate check from `gates.parse_source_header` (whose behaviour the frozen
+    harness depends on): the header contract says what a source IS; this says whether the
+    runner may build paths from it.
+    """
+    problems = []
+    for source in sources:
+        sid = source.source_id
+        if not SAFE_SOURCE_ID_RE.fullmatch(sid) or ".." in sid:
+            problems.append(
+                f"{Path(source.path).name}: source_id {sid!r} is not a safe identifier — use "
+                f"letters, digits, '_', '-' or '.', starting with a letter or digit, and no '..'"
+            )
+    return problems
+
+
+def stage_inputs(run_dir: Path, sources, glossary_path: Path) -> tuple:
+    """Copy the declared sources and the client config into <run_dir>/inputs/, read-only.
+
+    Byte-identical copies — the text the gates verify citations against is the same text — so
+    work orders point agents at the run directory, never at the project folder. An existing
+    staged copy must match byte for byte: a difference means something wrote to the run's
+    inputs, and the run refuses rather than silently re-staging. Returns
+    (staged_sources, staged_glossary_path).
+    """
+    target = Path(run_dir) / STAGED_INPUTS_DIR
+    client_dir = target / "client"
+    client_dir.mkdir(parents=True, exist_ok=True)
+    wanted = {(target / Path(s.path).name): Path(s.path) for s in sources}
+    wanted[client_dir / Path(glossary_path).name] = Path(glossary_path)
+    extra = sorted(str(p.relative_to(target)) for p in target.rglob("*")
+                   if p.is_file() and p not in wanted)
+    if extra:
+        raise gates.InputContractError(
+            f"{target}: staged inputs contain files this run did not declare {extra}; "
+            f"use a new run directory")
+    for staged, original in wanted.items():
+        if original.name in gates.HARNESS_ONLY_FILES:
+            raise gates.InputContractError(f"{original}: harness-only files are never staged")
+        data = original.read_bytes()
+        if staged.exists() or staged.is_symlink():
+            if staged.is_symlink() or staged.read_bytes() != data:
+                raise gates.InputContractError(
+                    f"{staged}: staged input differs from {original}; the run's inputs were "
+                    f"modified — use a new run directory")
+            continue
+        staged.write_bytes(data)
+        staged.chmod(0o444)
+    staged_sources = [dataclasses.replace(s, path=target / Path(s.path).name) for s in sources]
+    return staged_sources, client_dir / Path(glossary_path).name
+
+
+def _access_dirs(ctx: "RunContext") -> agents.AccessScope:
+    """What a subagent may touch. It may WRITE the run directory only — minus the protected
+    records inside it — and READ the staged inputs there plus the skeleton directories
+    (schema/, templates/, config/), which are read-only by permission rule.
+
+    Never granted: the project folder (it can hold harness-only files; agents read the staged
+    copies instead), the glossary's own folder (staged too), and the repo root, where CLAUDE.md
+    lives — a runtime agent has no business seeing build governance (see pipeline/agents.py).
+    """
+    run_dir = Path(ctx.run_dir)
+    return agents.AccessScope(
+        writable=(str(run_dir),),
+        read_only=(
+            str(gates.SCHEMA_DIR),
+            str(gates.REPO_ROOT / "templates"),
+            str(gates.CONFIG_DIR),  # channel_specs.json for the creative stage (DR-7 spec table)
+        ),
+        protected=tuple(str(run_dir / name) for name in PROTECTED_RUN_PATHS),
+    )
+
+
+def _hash_tree(path: Path) -> dict:
+    """{relative name: sha256} for a file, or for every file under a directory; {} if absent."""
+    path = Path(path)
+    if path.is_file():
+        return {".": revisions.file_hash(path)}
+    if not path.is_dir():
+        return {}
+    return {str(p.relative_to(path)): revisions.file_hash(p)
+            for p in sorted(path.rglob("*")) if p.is_file()}
+
+
+def integrity_state(ctx: "RunContext", originals=()) -> dict:
+    """Hashes of everything a model step must leave untouched: the read-only skeleton dirs,
+    the protected records inside the run directory, and the original project inputs."""
+    scope = agents.AccessScope.coerce(_access_dirs(ctx))
+    watched = list(scope.read_only)
+    watched += [p for p in scope.protected if Path(p).name not in _RUNNER_WRITES_DURING_STEPS]
+    watched += [str(p) for p in originals]
+    return {p: _hash_tree(Path(p)) for p in watched}
+
+
+def integrity_violations(before: dict, after: dict) -> list:
+    """Every watched path whose content changed between two `integrity_state` snapshots."""
+    problems = []
+    for path in sorted(set(before) | set(after)):
+        old, new = before.get(path, {}), after.get(path, {})
+        for name in sorted(set(old) | set(new)):
+            if old.get(name) != new.get(name):
+                change = "created" if name not in old else "removed" if name not in new else "modified"
+                shown = path if name == "." else f"{path}/{name}"
+                problems.append(f"{shown} was {change} during a model step")
+    return problems
 
 
 def _summarise(attempts: list) -> str:
@@ -329,6 +452,8 @@ class Runner:
         self.steps: list[dict] = []
         self.sources: list = []
         self.started_ts: str = ""
+        #: The human's original input files (sources + client config) — watched, never granted.
+        self._originals: list = []
 
     # -- plumbing ----------------------------------------------------------------
 
@@ -461,6 +586,13 @@ class Runner:
             self._write_manifest("input_contract_error", EXIT_GATE_ERROR)
             return EXIT_GATE_ERROR
 
+        unsafe = unsafe_source_ids(self.sources)
+        if unsafe:
+            # Before any path is built from a source_id (extracts/, fidelity/, verification/).
+            print("[input contract] " + "; ".join(unsafe), file=sys.stderr)
+            self._write_manifest("input_contract_error", EXIT_GATE_ERROR)
+            return EXIT_GATE_ERROR
+
         for s in self.sources:
             print(f"  · {s.source_id} ({s.source_type}, {s.source_date})")
         print()
@@ -512,11 +644,29 @@ class Runner:
         if (self.run_dir / "agency_inputs.json").exists() and bound:
             paths["channel_specs"] = Path(bound["path"])
         paths.update({f"skill:{p.name}": p for p in (gates.REPO_ROOT / "skills").glob("*.md")})
+        # The schemas and templates are read at runtime by gates and agents, so they are bound
+        # too. A snapshot recorded before they were bound stays as recorded — adding keys to it
+        # would read as an input change and strand every legacy run.
+        skeleton = {f"schema:{p.name}": p for p in sorted(gates.SCHEMA_DIR.glob("*.json"))}
+        skeleton.update({f"template:{p.name}": p for p in sorted((gates.REPO_ROOT / "templates").iterdir())
+                         if p.is_file()})
+        recorded = revisions.load(self.run_dir / "input_snapshot.json")
+        if recorded is None or any(key in recorded for key in skeleton):
+            paths.update(skeleton)
         try:
             revisions.prepare_run(self.run_dir, paths, self.stage)
         except (ValueError, OSError) as exc:
             print(f"[revision safety] {exc}", file=sys.stderr)
             return EXIT_GATE_ERROR
+
+        # Agents read staged copies inside the run directory, never the project folder.
+        try:
+            ctx.sources, ctx.glossary_path = stage_inputs(self.run_dir, self.sources, glossary_path)
+        except (gates.GateError, OSError) as exc:
+            print(f"[input staging] {exc}", file=sys.stderr)
+            self._write_manifest("input_contract_error", EXIT_GATE_ERROR)
+            return EXIT_GATE_ERROR
+        self._originals = [s.path for s in self.sources] + [glossary_path]
 
         try:
             self._hydrate(ctx)
@@ -583,8 +733,23 @@ class Runner:
             return "pending_stage", EXIT_PENDING_STAGE
 
         print(f"{label}: dispatching '{step.agent}'…")
+        before = integrity_state(ctx, self._originals)
+
+        def check_integrity() -> None:
+            # Permission rules are the first line; this is the second. Whatever the CLI
+            # allowed, a model step that changed a read-only or human-owned file fails.
+            tampered = integrity_violations(before, integrity_state(ctx, self._originals))
+            if tampered:
+                raise gates.GateError("integrity: " + "; ".join(tampered)
+                                      + " — runtime agents may write only their own outputs")
+
         try:
-            payload = handler(ctx, step)
+            try:
+                payload = handler(ctx, step)
+            except stages.HaltForHuman:
+                check_integrity()  # a halt must not hide a tampered file
+                raise
+            check_integrity()
         except stages.HaltForHuman as exc:
             # Not a failure: the system asked instead of guessing (DR-9, DR-12).
             self._record(step, "halted_for_human", agent=step.agent, question=str(exc))

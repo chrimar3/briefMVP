@@ -85,9 +85,9 @@ def test_full_release_is_curated_and_approval_bound(tmp_path):
     run=prepare_release(tmp_path)
     output=tmp_path/'released'
     with pytest.raises(ValueError,match='approval'):
-        delivery.release(run,output)
+        delivery.release(run,output, 'Synthetic releaser')
     delivery.approve(run,'Synthetic creative lead','Reviewed fixture only',delivery.CHECKS)
-    delivery.release(run,output)
+    delivery.release(run,output, 'Synthetic releaser')
     assert {p.name for p in output.iterdir()} == {'creative.md','deliverables.json','release.json'}
     assert 'SHADOW' not in (output/'creative.md').read_text()
     assert '[brief:' not in (output/'creative.md').read_text()
@@ -95,11 +95,11 @@ def test_full_release_is_curated_and_approval_bound(tmp_path):
     assert manifest['status']=='APPROVED FOR DELIVERY'
     assert all(revisions.file_hash(output/name)==hash for name,hash in manifest['files'].items())
     with pytest.raises(ValueError,match='new directory'):
-        delivery.release(run,output)
+        delivery.release(run,output, 'Synthetic releaser')
     registered=revisions.load(run/'creative_draft.json')
     (run/registered['files'][0]['file']).write_text('Changed after approval')
     with pytest.raises(ValueError,match='changed'):
-        delivery.release(run,tmp_path/'bad')
+        delivery.release(run,tmp_path/'bad', 'Synthetic releaser')
 
 
 def test_stub_catalog_blocks_creative_approval(tmp_path):
@@ -118,7 +118,7 @@ def test_stale_brief_or_revoked_language_review_blocks_release(tmp_path):
     delivery.approve(run,'Synthetic lead','Review',delivery.CHECKS)
     revisions.write_json(run/'language_review.json',{'checks':{}})
     with pytest.raises(ValueError,match='review'):
-        delivery.release(run,tmp_path/'bad')
+        delivery.release(run,tmp_path/'bad', 'Synthetic releaser')
 
 
 def test_catalog_rebinding_allows_changed_specs_but_invalidates_review(tmp_path):
@@ -194,14 +194,14 @@ def test_withdrawal_blocks_release_and_marks_existing_package(tmp_path):
     from pipeline import release_control
     run = prepare_release(tmp_path)
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
-    output = delivery.release(run, tmp_path/'released')
+    output = delivery.release(run, tmp_path/'released', 'Synthetic releaser')
     assert release_control.verify(output, run)['valid']
     result = release_control.withdraw(run, 'Synthetic lead', 'Wrong campaign selected')
     assert len(result['affected_releases']) == 1
     assert (output/'release.json').exists()
     assert not release_control.verify(output, run)['valid']
     with pytest.raises(ValueError, match='approval'):
-        delivery.release(run, tmp_path/'again')
+        delivery.release(run, tmp_path/'again', 'Synthetic releaser')
     assert revisions.load(run/'approval_withdrawals.json')[0]['reason'] == 'Wrong campaign selected'
 
 
@@ -210,7 +210,7 @@ def test_release_verifier_detects_package_changes(tmp_path, change):
     from pipeline import release_control
     run = prepare_release(tmp_path)
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
-    output = delivery.release(run, tmp_path/'released')
+    output = delivery.release(run, tmp_path/'released', 'Synthetic releaser')
     if change == 'extra':
         (output/'internal.md').write_text('Not approved')
     elif change == 'changed':
@@ -228,7 +228,7 @@ def test_withdrawal_of_release_survives_catalog_rebind(tmp_path):
     from pipeline import release_control, spec_catalog
     run = prepare_release(tmp_path)
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
-    output = delivery.release(run, tmp_path/'released')
+    output = delivery.release(run, tmp_path/'released', 'Synthetic releaser')
     spec_catalog.bind(run, tmp_path/'catalog.json', actor='Synthetic traffic')
     assert not (run/'approval.json').exists()
     assert not (run/'creative_approval.json').exists()
@@ -248,8 +248,8 @@ def test_interrupted_withdrawal_allows_fresh_human_reapproval(tmp_path, monkeypa
         with pytest.raises(OSError):
             release_control.withdraw(run, 'Synthetic lead', 'Correct campaign')
     with pytest.raises(ValueError, match='withdrawn'):
-        delivery.release(run, tmp_path/'not-allowed')
+        delivery.release(run, tmp_path/'not-allowed', 'Synthetic releaser')
     approve_synthetic(run)
     delivery.register(run, tmp_path/'draft.txt', 'Synthetic operator')
     delivery.approve(run, 'Synthetic lead', 'Fresh human review', delivery.CHECKS)
-    assert delivery.release(run, tmp_path/'fresh').is_dir()
+    assert delivery.release(run, tmp_path/'fresh', 'Synthetic releaser').is_dir()

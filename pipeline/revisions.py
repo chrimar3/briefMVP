@@ -270,3 +270,112 @@ def carry_decisions(parent, child, actor):
     history.append(result)
     write_json(child / 'revision_lineage.json', history)
     return result
+
+
+# --------------------------------------------------------------------------------------
+# Append-only, hash-chained audit log of human decisions (docs/SECURITY.md)
+# --------------------------------------------------------------------------------------
+
+AUDIT_LOG = "audit_log.jsonl"
+GENESIS_SHA256 = "0" * 64
+
+#: Records a human decision leaves behind, and the log event that must vouch for each one.
+#: `verify_audit_log` cross-checks them, so deleting the tail of the log (which a chain alone
+#: cannot see) is caught while the record it explained still exists.
+_VOUCHED_RECORDS = {"approval.json": "brief_approved", "creative_approval.json": "creative_approved"}
+_VOUCHED_LISTS = {"amendments.json": "brief_amended", "approval_withdrawals.json": "approval_withdrawn",
+                  "releases.json": "creative_released"}
+
+
+def _line_hash(line):
+    return hashlib.sha256(line.encode("utf-8")).hexdigest()
+
+
+def append_audit(run_dir, event, actor, record=None, details=None):
+    """Append one decision to <run>/audit_log.jsonl, chained to the previous line's SHA-256.
+
+    `record` names the file the decision wrote (hashed as written), or a list entry appended
+    to one (`{"file": name, "entry": value}`, hashed with `digest`). The log is local
+    tamper-EVIDENCE for a cooperating team, not identity: actors are the names people typed.
+    Callers hold the run lock, so appends are serialised.
+    """
+    run_dir = Path(run_dir)
+    if not isinstance(actor, str) or not actor.strip():
+        raise ValueError("An audit entry needs a named human actor")
+    path = run_dir / AUDIT_LOG
+    lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+    entry = {"seq": len(lines) + 1, "at": timestamp(), "event": event, "actor": actor,
+             "prev_sha256": _line_hash(lines[-1]) if lines else GENESIS_SHA256}
+    if isinstance(record, dict):
+        entry["record"] = record["file"]
+        entry["entry_sha256"] = digest(record["entry"])
+    elif record is not None:
+        entry["record"] = str(record)
+        entry["record_sha256"] = file_hash(run_dir / record)
+    if details:
+        entry["details"] = details
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
+    return entry
+
+
+def read_audit_log(run_dir):
+    path = Path(run_dir) / AUDIT_LOG
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def verify_audit_log(run_dir):
+    """Every reason the audit trail cannot be trusted as written; [] when it is intact.
+
+    Detects an edited, inserted, reordered or deleted line (chain or sequence break), and a
+    decision record no log entry vouches for: a current approval.json or creative_approval.json
+    whose exact bytes were never logged, or an amendment, withdrawal or release receipt with no
+    matching entry (a truncated log, or a record written around the commands). It does not
+    authenticate who typed a name.
+    """
+    run_dir = Path(run_dir)
+    path = run_dir / AUDIT_LOG
+    problems, entries = [], []
+    lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+    previous = GENESIS_SHA256
+    for number, line in enumerate(lines, 1):
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            problems.append(f"audit log line {number} is not valid JSON")
+            previous = _line_hash(line)
+            continue
+        if not isinstance(entry, dict):
+            problems.append(f"audit log line {number} is not an entry object")
+            previous = _line_hash(line)
+            continue
+        if entry.get("seq") != number:
+            problems.append(f"audit log line {number}: sequence {entry.get('seq')!r} — a line was "
+                            f"removed, inserted or reordered")
+        if entry.get("prev_sha256") != previous:
+            problems.append(f"audit log line {number}: previous-entry hash does not match — an "
+                            f"earlier line was edited or removed")
+        previous = _line_hash(line)
+        entries.append(entry)
+    for name, event in _VOUCHED_RECORDS.items():
+        if (run_dir / name).is_file():
+            sha = file_hash(run_dir / name)
+            if not any(e.get("event") == event and e.get("record_sha256") == sha for e in entries):
+                problems.append(f"{name} is not vouched for by any '{event}' audit entry — written "
+                                f"outside the commands, or the log was truncated")
+    for name, event in _VOUCHED_LISTS.items():
+        logged = {e.get("entry_sha256") for e in entries if e.get("event") == event}
+        items = load(run_dir / name, [])
+        for index, item in enumerate(items if isinstance(items, list) else []):
+            if digest(item) not in logged:
+                problems.append(f"{name}[{index}] has no matching '{event}' audit entry")
+    return problems
+
+
+def require_intact_audit_log(run_dir):
+    """Raise ValueError (the Tier 5–7 refusal type) when `verify_audit_log` finds anything."""
+    problems = verify_audit_log(run_dir)
+    if problems:
+        raise ValueError("Audit log check failed: " + "; ".join(problems))

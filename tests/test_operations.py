@@ -55,4 +55,4 @@ def test_incomplete_creative_approval_never_reports_ready(tmp_path, timestamp):
     revisions.write_json(run/'creative_approval.json', record)
     assert operations.status(run)['stage'] == 'creative_review'
     with pytest.raises(ValueError, match='metadata'):
-        delivery.release(run, tmp_path/'bad')
+        delivery.release(run, tmp_path/'bad', 'Synthetic releaser')
