@@ -166,3 +166,144 @@ def test_missing_usage_fields_do_not_crash_the_ruler():
                     "render": {"attempts": [{"attempt": 1, "subagent": {"cost_usd": 1.0}}]}}]}
     stages = cost.token_breakdown([("r1", m)])
     assert stages["render"]["output_tokens"] == 0 and stages["render"]["cost"] == 1.0
+
+
+# --------------------------------------------------------------------------------------
+# r1-W3: verify-extract counted, tokens by model as the default unit, repairs not hidden
+# --------------------------------------------------------------------------------------
+
+
+def _usage_sub(session, model, inp, out, cr, cw, cost=0.0, turns=5):
+    return {"attempt": 1, "subagent": {
+        "agent": "x", "session_id": session, "model_ids": [model], "cost_usd": cost, "num_turns": turns,
+        "usage": {"input_tokens": inp, "output_tokens": out,
+                  "cache_read_input_tokens": cr, "cache_creation_input_tokens": cw},
+    }}
+
+
+def _routing_validate_shape():
+    """The usage recorded in runs/routing-validate-01 (local run store, 2026-07-29): one source,
+    an extraction repaired once and a sonnet verify-extract. Numbers copied from its manifest."""
+    return ("routing-validate-01", {"started_ts": "2026-07-29T21:42:30", "steps": [
+        {"name": "extraction", "kind": "model", "status": "pass", "extracts": [{
+            "source_id": "transcript_kickoff",
+            "attempts": [_usage_sub("e1", "claude-sonnet-5", 6, 26634, 24710, 40568),
+                         _usage_sub("e2", "claude-sonnet-5", 34, 12987, 399611, 49498)],
+            "verification": {"model": "sonnet", "risk_classes": ["figures"],
+                             "attempts": [_usage_sub("v1", "claude-sonnet-5", 6, 6587, 20413, 17689)]},
+        }]},
+    ]})
+
+
+def test_verify_extract_attempts_are_counted_as_their_own_stage():
+    ledger = cost.token_ledger([_routing_validate_shape()])
+    assert ledger["rows"][("extraction", "sonnet")]["total"] == 554_048
+    assert ledger["rows"][("verification", "sonnet")]["total"] == 44_695
+    assert ledger["rows"][("verification", "sonnet")]["calls"] == 1
+
+
+def test_routing_validate_shape_totals_598743_tokens():
+    """The figure the stakeholder material had to sum by hand now comes out of the ruler."""
+    assert cost.token_ledger([_routing_validate_shape()])["total"]["total"] == 598_743
+
+
+def test_token_breakdown_has_a_verification_row():
+    stages = cost.token_breakdown([_routing_validate_shape()])
+    assert stages["verification"]["attempts"] == 1
+    assert stages["verification"]["output_tokens"] == 6_587
+    assert stages["extraction"]["attempts"] == 2
+
+
+def test_ledger_keys_tokens_by_resolved_model():
+    m = {"steps": [
+        {"name": "classification", "kind": "model", "status": "pass",
+         "classification": {"attempts": [_usage_sub("c", "claude-haiku-4-5-20251001", 1, 10, 100, 1000)]}},
+        {"name": "synthesis", "kind": "model", "status": "pass",
+         "synthesis": {"attempts": [_usage_sub("s", "claude-sonnet-5", 2, 20, 200, 2000)]}},
+    ]}
+    ledger = cost.token_ledger([("r", m)])
+    assert ledger["by_model"]["haiku"] == {"calls": 1, "fresh_input": 1, "output": 10, "cache_read": 100,
+                                           "cache_write": 1000, "total": 1111}
+    assert ledger["by_model"]["sonnet"]["total"] == 2222
+
+
+def test_attempts_copied_into_a_resumed_run_are_counted_once():
+    run_a = ("a", {"steps": [{"name": "synthesis", "kind": "model", "status": "pass",
+                              "synthesis": {"attempts": [_usage_sub("same", "claude-sonnet-5", 0, 10, 0, 0)]}}]})
+    run_b = ("b", {"steps": [{"name": "synthesis", "kind": "model", "status": "pass", "from_earlier_run": True,
+                              "synthesis": {"attempts": [_usage_sub("same", "claude-sonnet-5", 0, 10, 0, 0)]}}]})
+    ledger = cost.token_ledger([run_a, run_b])
+    assert ledger["total"]["output"] == 10 and ledger["duplicates"] == 1
+    assert cost.token_ledger([run_a, run_b], dedupe=False)["total"]["output"] == 20
+
+
+def test_verification_repair_marks_a_run_not_clean():
+    run_id, m = _full_run("r1", 0.70)
+    m["steps"][2]["extracts"][0]["verification"] = {"attempts": [_sub(0.05), _sub(0.05)]}
+    result = cost.analyse([(run_id, m)])
+    assert result["stage1"][0]["clean"] is False
+    assert result["stage1"][0]["by_stage"]["verification"]["attempts"] == 2
+
+
+def test_verification_cost_is_in_the_stage1_total():
+    run_id, m = _full_run("r1", 0.70)
+    m["steps"][2]["extracts"][0]["verification"] = {"attempts": [_sub(0.05)]}
+    assert round(cost.analyse([(run_id, m)])["stage1"][0]["total"], 2) == 2.02
+
+
+def test_per_brief_view_lists_repaired_runs_next_to_clean_ones(capsys):
+    clean = _full_run("clean-run", 0.70)
+    rid, repaired = _full_run("repaired-run", 0.70)
+    repaired["steps"][3]["synthesis"]["attempts"].append(_sub(0.80, "claude-sonnet-5"))
+    runs = [clean, (rid, repaired)]
+    briefs = cost.complete_briefs(runs)
+    assert {b["run"]: b["clean"] for b in briefs} == {"clean-run": True, "repaired-run": False}
+    means = cost.brief_means(briefs)
+    assert means["all"]["n"] == 2 and means["clean"]["n"] == 1
+    cost.report_ledger(cost.token_ledger(runs), briefs, as_json=False)
+    out = capsys.readouterr().out
+    assert "repaired-run" in out and "clean-run" in out
+    assert "all complete runs" in out and "clean runs only" in out
+
+
+def test_default_view_is_tokens_and_prints_no_dollars(capsys):
+    cost.report_ledger(cost.token_ledger([_routing_validate_shape()]), [], as_json=False)
+    out = capsys.readouterr().out
+    assert "TOKENS BY MODEL" in out and "598,743" in out
+    assert "$" not in out
+
+
+def test_usd_view_is_labelled_a_footnote(capsys):
+    cost.report(cost.analyse([_full_run("r1", 0.70)]), 38.0, as_json=False)
+    out = capsys.readouterr().out
+    assert out.lstrip().startswith("USD FOOTNOTE") and "not the stakeholder unit" in out.lower()
+
+
+def test_main_defaults_to_the_token_ledger(tmp_path, capsys):
+    run = tmp_path / "routing-validate-01"
+    run.mkdir()
+    (run / "run_manifest.json").write_text(json.dumps(_routing_validate_shape()[1]), encoding="utf-8")
+    assert cost.main([str(run)]) == 0
+    assert "598,743" in capsys.readouterr().out
+
+
+def test_routing_era_reads_the_extraction_models():
+    assert cost.routing_era(_routing_validate_shape()[1]) == ("current", "extraction models")
+    assert cost.routing_era(_full_run("r1", 0.70)[1])[0] == "haiku-era"
+    assert cost.routing_era({"started_ts": "2026-07-24T10:00:00", "steps": []}) == ("haiku-era", "run date")
+
+
+def test_risk_replay_counts_the_base_branch_and_skips_copies(tmp_path):
+    run_a = tmp_path / "a" / "extracts"
+    run_b = tmp_path / "b" / "extracts"
+    run_a.mkdir(parents=True)
+    run_b.mkdir(parents=True)
+    quiet = {"source_id": "s1", "objectives": [{"value": "grow awareness", "confidence": "high"}]}
+    risky = {"source_id": "s2", "budget": [{"value": "€90.000", "confidence": "high"}]}
+    (run_a / "s1.json").write_text(json.dumps(quiet), encoding="utf-8")
+    (run_a / "s2.json").write_text(json.dumps(risky), encoding="utf-8")
+    (run_b / "s2.json").write_text(json.dumps(risky), encoding="utf-8")  # byte-identical copy
+    result = cost.risk_replay([tmp_path])
+    assert result["unique_extracts"] == 2 and result["duplicate_copies_skipped"] == 1
+    assert result["base_branch"] == 1 and result["per_class"]["figures"] == 1
+    assert result["sole_trigger"]["figures"] == 1
