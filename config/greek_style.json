@@ -1,0 +1,24 @@
+{
+  "_what_this_is": "Agency-Greek style table for the render stage. skills/TRANSLATION.md tells the render model to follow it; pipeline/stages.py render_language_warnings reads it and REPORTS matches as non-blocking warnings in the render step's manifest entry (a blocking refusal needs owner approval). Values are generic agency-register preferences, never fixture content.",
+  "_owner": "Bilingual reviewer / agency Greek editor. Proposed synthetic default — review before pilot use.",
+  "_status": "Warnings only. The deterministic lint is high-precision and narrow; the human language attestation remains the Greek quality gate.",
+  "preferred_terms": [
+    {"concept": "account lead", "el": "account lead", "avoid": ["επικεφαλής λογαριασμού", "υπεύθυνος λογαριασμού", "υπεύθυνη λογαριασμού"], "why": "One fixed rendering in every document; the agency writes the role in English."},
+    {"concept": "entries (in a brief section)", "el": "στοιχεία", "avoid": ["καταχωρήσεις", "καταχωρίσεις"], "why": "«Καταχώρηση» is database vocabulary, not brief vocabulary."},
+    {"concept": "input coverage", "el": "πεδία με τεκμηρίωση", "avoid": ["κάλυψη εισερχομένων"], "why": "«Εισερχόμενα» reads as an inbox."},
+    {"concept": "conflict between sources", "el": "αντίφαση μεταξύ πηγών", "avoid": ["αντικρούσεις", "αντικρούσεων", "αντίκρουση"], "why": "«Αντίκρουση» means a rebuttal, not a contradiction."},
+    {"concept": "approver", "el": "ο υπεύθυνος έγκρισης / η υπεύθυνη έγκρισης", "avoid": ["εγκριτής", "εγκριτή", "εγκριτών"], "why": "«Εγκριτής» is not agency Greek."},
+    {"concept": "is split / allocated", "el": "κατανέμεται", "avoid": ["διαμερίζεται", "διαμερίζονται"], "why": "«Διαμερίζεται» is a calque; a budget «κατανέμεται»."},
+    {"concept": "in full (a name written out)", "el": "ολόκληρο", "avoid": ["ολογράφως"], "why": "«Ολογράφως» means spelled out in words (for numbers), not written in full."},
+    {"concept": "messaging angle", "el": "βασική οπτική του μηνύματος", "avoid": ["μηνυματικό angle", "μηνυματική γωνία"], "why": "Calque of 'messaging angle'."}
+  ],
+  "temporal_deixis": {
+    "el": ["σήμερα", "χθες", "χτες", "αύριο", "προχθές", "μεθαύριο", "αυτή την εβδομάδα", "την περασμένη εβδομάδα", "την επόμενη εβδομάδα"],
+    "en": ["today", "yesterday", "tomorrow", "this week", "last week", "next week"],
+    "why": "A brief is read days after the source was written. Name the meeting and its date instead (e.g. «στο kickoff της 3ης Μαρτίου»)."
+  },
+  "range_drift_en": ["in the twenties", "in the thirties", "in the forties", "in the fifties", "in the sixties", "in the seventies", "in the eighties", "in the nineties"],
+  "range_drift_why": "A spoken hedge ('around sixty') must not widen into a decade range ('in the sixties' = 60–69) in either language.",
+  "organisation_names": ["Northlight"],
+  "organisation_names_why": "Company names take the feminine article agreeing with «εταιρεία» («η Northlight», «της Northlight»). Glossary terms whose note says 'company' are added automatically."
+}
