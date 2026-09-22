@@ -1,0 +1,18 @@
+[
+  {
+    "actor": "Synthetic Account Lead A",
+    "reason": "Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.",
+    "at": "2026-09-22T21:30:23.056270+00:00",
+    "approval_hashes": {
+      "approval.json": "f1f0edbdef0b6fee64f580083adfbaa83f0b60a278ca9feb5ea69c6f2015248b",
+      "creative_approval.json": "85810195fac8a0b423b12ae1221659d66edb8894f2f1cc0e0a2d87a60f098a79"
+    },
+    "affected_releases": [
+      {
+        "path": "$PACKAGE",
+        "manifest_sha256": "a6723e5606c3dbe828f69e5ab94989d426d1bde5335be832fa9c318bafee00f5",
+        "at": "2026-09-22T21:30:22.990204+00:00"
+      }
+    ]
+  }
+]

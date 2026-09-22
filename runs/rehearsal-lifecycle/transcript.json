@@ -1,0 +1,234 @@
+[
+  {
+    "step": "init",
+    "command": "python3 -m pipeline.agency init $RUN --project $REPO/fixtures/northlight_01 --glossary $REPO/glossary/meltemi.json --profile creative_production --actor 'Synthetic Operator O'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "audit (before review)",
+    "command": "python3 -m pipeline.agency audit $RUN",
+    "exit_code": 2,
+    "expected_exit_code": 2,
+    "highlights": [
+      "status: blocked",
+      "blockers: 19 {\"missing render\": 2, \"question\": 4, \"conflict\": 1, \"campaign\": 10, \"A sourced deliverables matrix is required\": 1, \"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
+      "notice: Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim."
+    ]
+  },
+  {
+    "step": "resolve timeline conflict",
+    "command": "python3 -m pipeline.agency resolve $RUN --index 2 --actor 'Synthetic Account Lead A' --text 'Launch 15 September — the board'\\''s decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP'\\''s first week of October.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "render replay",
+    "command": "(copy the prepared renders into $RUN; live runs use `python3 pipeline/runner.py ... --stage render`, a model call)",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "brief_el.md",
+      "brief_en.md"
+    ]
+  },
+  {
+    "step": "question queue",
+    "command": "python3 -m pipeline.agency queue $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "4 question group(s)"
+    ]
+  },
+  {
+    "step": "triage 93530066d10af8b06ea9",
+    "command": "python3 -m pipeline.agency answer $RUN --id 93530066d10af8b06ea9 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage cc6218600702b2d844ba",
+    "command": "python3 -m pipeline.agency answer $RUN --id cc6218600702b2d844ba --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage a0010af1cf0982b06093",
+    "command": "python3 -m pipeline.agency answer $RUN --id a0010af1cf0982b06093 --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "triage d725026bab3d2b45218c",
+    "command": "python3 -m pipeline.agency answer $RUN --id d725026bab3d2b45218c --status open --text 'Put to the client in the question pack; does not block the agreed creative work.' --owner 'Account lead' --priority nonblocking --actor 'Synthetic Account Lead A'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "checklist objective_and_audience",
+    "command": "python3 -m pipeline.agency_edit checklist $RUN --key objective_and_audience --value 'Launch objectives as signed off; audience per the resolved conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref objectives:0 --ref objectives:1",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "checklist deliverables_and_variants",
+    "command": "python3 -m pipeline.agency_edit checklist $RUN --key deliverables_and_variants --value 'Deliverables as listed in the signed brief.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref deliverables:0 --ref deliverables:1",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "checklist mandatories_and_rights",
+    "command": "python3 -m pipeline.agency_edit checklist $RUN --key mandatories_and_rights --value 'Brand mandatories apply verbatim.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:0 --ref mandatories:4",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "checklist dependencies",
+    "command": "python3 -m pipeline.agency_edit checklist $RUN --key dependencies --value 'Brand guidelines version stated in the brief govern the work.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref mandatories:7",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "checklist approvals_and_dates",
+    "command": "python3 -m pipeline.agency_edit checklist $RUN --key approvals_and_dates --value 'Launch date per the resolved timeline conflict.' --owner 'Account lead' --actor 'Synthetic Account Lead A' --ref timeline:0",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "bind traffic catalog",
+    "command": "python3 -m pipeline.spec_catalog $RUN $WORK/synthetic-traffic-catalog-v1.json --actor 'Synthetic Traffic Reviewer T'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "deliverable key-visual",
+    "command": "python3 -m pipeline.agency_edit deliverable $RUN --id key-visual --spec-id key_visual_digital_master --quantity 1 --language el --language en --deadline 2026-09-08 --owner 'Production lead' --approval-owner 'Account lead' --actor 'Synthetic Traffic Reviewer T' --ref deliverables:0",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "deliverable tiktok-cut (depends on key-visual)",
+    "command": "python3 -m pipeline.agency_edit deliverable $RUN --id tiktok-cut --spec-id tiktok_infeed_video --quantity 2 --language el --deadline 2026-09-12 --owner 'Production lead' --approval-owner 'Account lead' --actor 'Synthetic Traffic Reviewer T' --ref deliverables:0 --dependency key-visual --duration-seconds 15",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "audit (before language review)",
+    "command": "python3 -m pipeline.agency audit $RUN",
+    "exit_code": 2,
+    "expected_exit_code": 2,
+    "highlights": [
+      "status: blocked",
+      "blockers: 1 {\"Current source-completeness, bilingual meaning, qualifiers a\": 1}"
+    ]
+  },
+  {
+    "step": "attest (bilingual reviewer)",
+    "command": "python3 -m pipeline.agency attest $RUN --actor 'Synthetic Bilingual Reviewer B' --greek-register 4 --notes 'Rehearsal attestation on synthetic renders; Greek checked against the sources.' --checks source_completeness el_meaning en_meaning qualifiers_and_commitments brand_voice",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "audit (clean)",
+    "command": "python3 -m pipeline.agency audit $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "status: reviewed",
+      "blockers: 0 {}"
+    ]
+  },
+  {
+    "step": "approve brief (account lead)",
+    "command": "python3 -m pipeline.agency approve $RUN --actor 'Synthetic Account Lead A' --summary 'Rehearsal: timeline conflict resolved; questions triaged non-blocking; checklist and matrix reviewed.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "handover",
+    "command": "python3 -m pipeline.agency handover $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "register creative (operator)",
+    "command": "python3 -m pipeline.delivery register $RUN --draft $WORK/creative-draft-rehearsal.md --actor 'Synthetic Operator O'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "registered_by: \"Synthetic Operator O\"",
+      "revision: \"d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba\""
+    ]
+  },
+  {
+    "step": "approve creative (creative lead)",
+    "command": "python3 -m pipeline.delivery approve $RUN --actor 'Synthetic Creative Lead C' --notes 'Rehearsal review: references, mandatories and deliverables checked on synthetic material.' --checks all_facts_cited qualifiers mandatories brand_voice deliverables rights_and_permissions client_safe",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "actor: \"Synthetic Creative Lead C\"",
+      "approved_at: \"2026-09-22T21:30:22.839293+00:00\""
+    ]
+  },
+  {
+    "step": "release package",
+    "command": "python3 -m pipeline.delivery release $RUN --output $PACKAGE",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "\"$PACKAGE\""
+    ]
+  },
+  {
+    "step": "verify package against the run",
+    "command": "python3 -m pipeline.release_control verify $PACKAGE --run $RUN",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "valid: true",
+      "receipt_matched: true",
+      "withdrawn: false",
+      "errors: []"
+    ]
+  },
+  {
+    "step": "withdraw approval (account lead)",
+    "command": "python3 -m pipeline.release_control withdraw $RUN --actor 'Synthetic Account Lead A' --reason 'Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": [
+      "actor: \"Synthetic Account Lead A\"",
+      "reason: \"Rehearsal: client asked to pause the campaign; withdrawal exercised end to end.\""
+    ]
+  },
+  {
+    "step": "verify package after withdrawal",
+    "command": "python3 -m pipeline.release_control verify $PACKAGE --run $RUN",
+    "exit_code": 2,
+    "expected_exit_code": 2,
+    "highlights": [
+      "valid: false",
+      "receipt_matched: true",
+      "withdrawn: true",
+      "errors: [\"Approval was withdrawn for this release; do not use\"]"
+    ]
+  }
+]

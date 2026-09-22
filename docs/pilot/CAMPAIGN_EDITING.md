@@ -23,13 +23,21 @@ incomplete citations, and blank answers or attribution are rejected.
 
 ```sh
 python -m pipeline.agency_edit deliverable RUN \
+  --id synthetic-artwork --spec-id key_visual_digital_master --quantity 1 \
+  --language el --deadline 2026-11-20 \
+  --owner 'Synthetic production' --approval-owner 'Synthetic lead' \
+  --actor 'Synthetic editor' --ref deliverables:0
+python -m pipeline.agency_edit deliverable RUN \
   --id synthetic-story --spec-id instagram_story --quantity 2 \
   --language el --language en --deadline 2026-12-01 \
   --owner 'Synthetic production' --approval-owner 'Synthetic lead' \
   --actor 'Synthetic editor' --ref deliverables:0 \
-  --dependency 'Synthetic artwork' --duration-seconds 30
+  --dependency synthetic-artwork --duration-seconds 30
 ```
 
+A dependency is another deliverable's `--id`, so the predecessor row is added first and is
+due on or before its dependent (`handover.validate_dependencies`; `COORDINATION.md`). A free-text
+dependency such as a team or asset name is rejected. The static key visual takes no duration.
 The command inserts or replaces the asset with the given `--id`. Languages,
 dependencies and references can repeat; omitted dependencies become an explicit
 empty list. Spec-owned channel, resolution, aspect ratio, format, file type and

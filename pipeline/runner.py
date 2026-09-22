@@ -4,7 +4,9 @@ The runner owns *sequence and refusal*; the subagents own judgment. Every step i
 declared below with the kind of thing it is — `deterministic` steps execute here,
 `model` steps dispatch to a Claude Code subagent through `AGENT_HANDLERS`.
 
-All seven Stage-1 steps are built. A run either completes, refuses (insufficient input),
+All seven Stage-1 steps are built. Before any of them, the project folder must carry a valid
+`data_declaration.json` (pipeline/data_policy.py); without one the run is refused with exit 6.
+A run either completes, refuses (insufficient input),
 halts for a human (low classification confidence, or a transcript the fidelity gate will not
 vouch for), or fails a gate — and the exit code says which. Human sign-off is PRD step 8 and
 deliberately absent: it is not a step the system executes, it is the gate it stops at.
@@ -29,13 +31,16 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, docview, extraction, gates, publish, review, run_review, stages, revisions
+from pipeline import agents, conflicts, creative, data_policy, docview, extraction, gates, publish, review, run_review, stages, revisions
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
 EXIT_PENDING_STAGE = 3
 EXIT_GATE_ERROR = 4
 EXIT_HALTED_FOR_HUMAN = 5
+#: The project folder has no valid data declaration, or its data class forbids the paths given
+#: (owner decision 4, 2026-09-22; pipeline/data_policy.py). Refused before any source is read.
+EXIT_DATA_DECLARATION = 6
 
 DETERMINISTIC = "deterministic"
 MODEL = "model"
@@ -308,6 +313,8 @@ class Runner:
         self.source = source
         self.demo_profile = Path(demo_profile) if demo_profile else None
         self.steps: list[dict] = []
+        self.sources: list = []
+        self.data_declaration: Optional[dict] = None
 
     # -- plumbing ----------------------------------------------------------------
 
@@ -327,6 +334,7 @@ class Runner:
             "exit_code": exit_code,
             "stage": self.stage,
             "demo_profile": str(self.demo_profile) if self.demo_profile else None,
+            "data_declaration": self.data_declaration,
             "sources": [s.as_meta() for s in self.sources],
             "steps": self.steps,
         }
@@ -340,6 +348,11 @@ class Runner:
             print(f"        run review page skipped: {exc}")
         # Completed runs also land on the shareable reviews/ shelf (email / synced
         # folder distribution — mission §8). Refusals stay in runs/ for the operator.
+        # The shelf lives inside the repository, so only synthetic material goes there.
+        if (self.data_declaration or {}).get("data_class") != data_policy.SYNTHETIC:
+            if outcome == "complete":
+                print("        reviews/ shelf skipped: only synthetic runs publish into the repository")
+            return path
         try:
             published = publish._publish_locked(self.run_dir)
             if published:
@@ -417,6 +430,21 @@ class Runner:
         print(f"Brief Builder {PIPELINE_VERSION} · run {self.run_id}")
         print(f"  input : {self.project_dir}")
         print(f"  output: {self.run_dir}\n")
+
+        # Input contract, first clause: what kind of material is this? Refused before any
+        # source is read, so an undeclared folder never reaches a work order or a model.
+        try:
+            declaration = data_policy.require_for_run(
+                self.project_dir, out_dir=self.out_dir, glossary=self.glossary)
+        except data_policy.DataDeclarationError as exc:
+            self.data_declaration = {"refused": str(exc)}
+            print(f"[data declaration] {exc}", file=sys.stderr)
+            self._write_manifest("data_declaration_refused", EXIT_DATA_DECLARATION)
+            return EXIT_DATA_DECLARATION
+        self.data_declaration = declaration.as_record()
+        print(f"  data  : {declaration.data_class}"
+              + ("" if declaration.is_synthetic else f" · approval {declaration.approval_ref}"
+                 f" by {declaration.approved_by} on {declaration.approved_on}") + "\n")
 
         try:
             self.sources = gates.discover_sources(self.project_dir)
@@ -560,7 +588,8 @@ class Runner:
 
 def main(argv: Optional[list] = None) -> int:
     parser = argparse.ArgumentParser(description="Run the Brief Builder Stage-1 pipeline.")
-    parser.add_argument("--project", required=True, help="Input folder (any folder honouring the source-header contract)")
+    parser.add_argument("--project", required=True, help="Input folder: data_declaration.json at its root plus *.md sources "
+                             "honouring the source-header contract")
     parser.add_argument("--out", default=str(gates.REPO_ROOT / "runs"), help="Where run directories are written")
     parser.add_argument("--run-id", default=None, help="Override the timestamp run id (tests, reruns)")
     parser.add_argument(

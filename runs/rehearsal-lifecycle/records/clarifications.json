@@ -1,0 +1,46 @@
+{
+  "93530066d10af8b06ea9": {
+    "status": "open",
+    "actor": "Synthetic Account Lead A",
+    "text": "Put to the client in the question pack; does not block the agreed creative work.",
+    "evidence": "",
+    "owner": "Account lead",
+    "priority": "nonblocking",
+    "evidence_hash": "020e216c29731af87e4e156cf24c00e387010331ded27caa57ee439b43048263",
+    "recorded_at": "2026-09-22T21:30:21.170229+00:00",
+    "history": []
+  },
+  "cc6218600702b2d844ba": {
+    "status": "open",
+    "actor": "Synthetic Account Lead A",
+    "text": "Put to the client in the question pack; does not block the agreed creative work.",
+    "evidence": "",
+    "owner": "Account lead",
+    "priority": "nonblocking",
+    "evidence_hash": "4b6e77c3300d8f393db67970502d6ce25f43cb11d2d4609cfd65880971e2a36d",
+    "recorded_at": "2026-09-22T21:30:21.258452+00:00",
+    "history": []
+  },
+  "a0010af1cf0982b06093": {
+    "status": "open",
+    "actor": "Synthetic Account Lead A",
+    "text": "Put to the client in the question pack; does not block the agreed creative work.",
+    "evidence": "",
+    "owner": "Account lead",
+    "priority": "nonblocking",
+    "evidence_hash": "cfbb780146b7640ee57da7fadb2e0965d0ed61b45082bfd9830609dd5f116d12",
+    "recorded_at": "2026-09-22T21:30:21.345694+00:00",
+    "history": []
+  },
+  "d725026bab3d2b45218c": {
+    "status": "open",
+    "actor": "Synthetic Account Lead A",
+    "text": "Put to the client in the question pack; does not block the agreed creative work.",
+    "evidence": "",
+    "owner": "Account lead",
+    "priority": "nonblocking",
+    "evidence_hash": "57b46510504244a0c43bbde578521f90a3fb4ba7ec149671c4fd7d60fe0a5100",
+    "recorded_at": "2026-09-22T21:30:21.435425+00:00",
+    "history": []
+  }
+}

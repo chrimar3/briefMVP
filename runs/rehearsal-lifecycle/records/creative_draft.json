@@ -1,0 +1,213 @@
+{
+  "revision": "d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba",
+  "brief_fingerprint": "865b2a17b0cd31c36c6fdf03be563dcc18533f6c76ebf8b8f3e098a74af849b1",
+  "registered_by": "Synthetic Operator O",
+  "registered_at": "2026-09-22T21:30:22.733110+00:00",
+  "claims": [
+    {
+      "text": "- Campaign objective 1, as signed off. [brief:objectives:0]",
+      "references": [
+        {
+          "field": "objectives",
+          "index": 0,
+          "content": "Meltemi wants to catch the end of the soft-drinks season with this launch (timing pressure driving the schedule).",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Campaign objective 2, as signed off. [brief:objectives:1]",
+      "references": [
+        {
+          "field": "objectives",
+          "index": 1,
+          "content": "Successful launch of the new product line in the Greek market.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Campaign objective 3, as signed off. [brief:objectives:2]",
+      "references": [
+        {
+          "field": "objectives",
+          "index": 2,
+          "content": "Building brand awareness is central: Meltemi Fizz enters a new category (sparkling tea) for the company, and they want to enter it strongly.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Key message 1, as signed off. [brief:key_messages:0]",
+      "references": [
+        {
+          "field": "key_messages",
+          "index": 0,
+          "content": "Tone of voice: confident, modern Greek with natural use of English category terms; humor is allowed but sarcasm about competitors is not.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Key message 2, as signed off. [brief:key_messages:1]",
+      "references": [
+        {
+          "field": "key_messages",
+          "index": 1,
+          "content": "Core message angle: refreshment without the sugar guilt — zero sugar, natural ingredients.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Key message 3, as signed off. [brief:key_messages:2]",
+      "references": [
+        {
+          "field": "key_messages",
+          "index": 2,
+          "content": "Positioning: a Greek brand that owns the modern category (sparkling tea).",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Key message 4, as signed off. [brief:key_messages:3]",
+      "references": [
+        {
+          "field": "key_messages",
+          "index": 3,
+          "content": "Visual direction: the key visual should evoke summer, but premium summer — not a generic beach-party feel.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- The product name Meltemi Fizz is always written in Latin script, in full — never transliterated, never abbreviated to \"Fizz\". [brief:mandatories:0]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 0,
+          "content": "The product name Meltemi Fizz is always written in Latin script, in full — never transliterated, never abbreviated to \"Fizz\".",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Logo clear space: minimum 1× the height of the wordmark on all sides. [brief:mandatories:1]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 1,
+          "content": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography. [brief:mandatories:2]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 2,
+          "content": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518. Backgrounds must not use gradients over photography.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Permitted claims: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list). [brief:mandatories:3]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 3,
+          "content": "Permitted claims: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Not permitted: any health or weight-loss claim; any comparison naming a competitor brand. [brief:mandatories:4]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 4,
+          "content": "Not permitted: any health or weight-loss claim; any comparison naming a competitor brand.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- No alcohol association of any kind (imagery, occasions, co-branding). [brief:mandatories:5]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 5,
+          "content": "No alcohol association of any kind (imagery, occasions, co-branding).",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break. [brief:mandatories:6]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 6,
+          "content": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Brand guidelines version 3.1 is the applicable version (attached by Dimitris). [brief:mandatories:7]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 7,
+          "content": "Brand guidelines version 3.1 is the applicable version (attached by Dimitris).",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- Strategy is TikTok-first: the entire creative approach must be designed primarily for TikTok. [brief:mandatories:8]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 8,
+          "content": "Strategy is TikTok-first: the entire creative approach must be designed primarily for TikTok.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- The brand guidelines in the attached document govern the creative work. [brief:mandatories:9]",
+      "references": [
+        {
+          "field": "mandatories",
+          "index": 9,
+          "content": "The brand guidelines in the attached document govern the creative work.",
+          "qualifier": "stated"
+        }
+      ]
+    },
+    {
+      "text": "- The resolved audience differs from the RFP's original audience; which executions change? [brief:objectives:0]",
+      "references": [
+        {
+          "field": "objectives",
+          "index": 0,
+          "content": "Meltemi wants to catch the end of the soft-drinks season with this launch (timing pressure driving the schedule).",
+          "qualifier": "stated"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "creative_versions/d94b11e50b1c4bb8e0dd619299219db74a0f51346fc9fbfe2a2d2d714b9648ba/creative.md",
+      "name": "creative.md",
+      "sha256": "c5a3d23f5862a70c822cecaa6fc7a8a59feeeb6e752e23041c01c21e09587420"
+    }
+  ]
+}

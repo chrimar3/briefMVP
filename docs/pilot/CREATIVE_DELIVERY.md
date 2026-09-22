@@ -1,10 +1,13 @@
 # Creative delivery — operator and creative-lead guide
 
 Creative is no longer restricted to shadow use. The owner authorized human-approved
-delivery on 2026-09-20; see `docs/OPERATING_DECISIONS.md`. Generated output is a draft.
-A separate creative lead approves the exact selected files; release creates a local package.
-It does not send messages, upload campaigns or buy media. Fixtures-only data policy still
-applies until separately changed; the new lifecycle can be rehearsed with synthetic material.
+delivery on 2026-09-20 and put it in the pilot from week 1 under separation of duties on
+2026-09-22; see `docs/OPERATING_DECISIONS.md`. Generated output is a draft. A separate creative
+lead approves the exact selected files; release creates a local package. It does not send
+messages, upload campaigns or buy media. Real client material needs an `approved` data
+declaration and the go-live decisions (`GO_LIVE_DECISIONS.md`); until then rehearse with
+synthetic material. The whole lifecycle has been rehearsed end to end on a synthetic copy of the
+graded run: `runs/rehearsal-lifecycle/TRANSCRIPT.md`.
 
 Use the champion runbook for the client brief. Use this guide after that brief is ready.
 
@@ -77,6 +80,13 @@ agency audit, current selected catalog rows and all seven creative checks. It re
 reviewer's attribution; it is not an identity-verification system. No model should execute
 this command while pretending to be a human reviewer.
 
+Separation of duties (owner decision 3): the creative approver must be a different person from
+the one who registered the draft and from the brief signer, and the language attester must not
+be the brief signer. The commands refuse the same name in those roles by default. A
+`--solo-rehearsal` waiver is available for synthetic rehearsals only; it is recorded with the
+approval and refused when the project's `data_declaration.json` is not `synthetic`. Roles and
+backups: `ROLES.md`. Names are attribution, not identity verification.
+
 Changing selected creative/assets, changing the brief or companion records, withdrawing a
 language review, changing source files or letting the selected specs expire prevents release.
 A new draft registration or editing a reviewed companion invalidates the existing approval.
@@ -85,10 +95,11 @@ Reapprove only after inspecting the changes.
 ## 4. Create and inspect the delivery package
 
 ```sh
-python3 -m pipeline.delivery release RUN --output /path/to/new-delivery-folder
+python3 -m pipeline.delivery release RUN --output /path/to/new-delivery-folder --actor "Operator name"
 ```
 
-The destination must not exist and must be outside RUN. Output includes:
+The releasing operator is recorded. The destination must not exist and must be outside RUN.
+In the pilot it is under `$PILOT/packages/` (`PILOT_RUNBOOK.md`). Output includes:
 
 - `creative.md`: the approved creative brief, without the draft banner or internal entry tags.
 - Selected creative assets, byte-identical to the approved copies.

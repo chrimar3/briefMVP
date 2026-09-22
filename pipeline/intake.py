@@ -5,13 +5,22 @@ The runner's input contract (`gates.parse_source_header`) requires every source 
 never arrive that way. This tool stamps the header deterministically, so an arbitrary pile
 of transcript/RFP/email files becomes a runnable project folder in one command:
 
-    python pipeline/intake.py raw_docs/ --out fixtures/acme_01 --client acme --tier S1
+    python pipeline/intake.py raw_docs/ --out fixtures/acme_01 --client acme --tier S1 --data-class synthetic
+
+Non-synthetic material needs the agency's recorded data-policy approval and paths outside
+this repository (tracked folders are pushed):
+
+    python pipeline/intake.py /pilot/raw/acme --out /pilot/projects/acme_01 \
+        --glossary-dir /pilot/clients --client acme --tier S1 --data-class approved \
+        --approval-ref DP-2026-014 --approved-by "Data-protection lead" --approved-on 2026-10-01
 
 Ethos matches the rest of the pipeline: no model calls, no guessing. Where a document's
 type is evident from strong signals (transcript timestamps, email headers), it is inferred
 and announced; where it is not, intake refuses and asks for an explicit `--type` — a file
 that will not say what it is does not get read into a brief. The sensitivity tier is NEVER
 inferred (PRD DR-11): it is a required argument, validated against the permitted tiers.
+The data class is never inferred either (owner decision 4, 2026-09-22): `--data-class` is
+required and intake writes it to `data_declaration.json`, which the runner refuses to run without.
 """
 
 from __future__ import annotations
@@ -27,9 +36,9 @@ from pathlib import Path
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from pipeline import gates
+    from pipeline import data_policy, gates
 else:
-    from . import gates
+    from . import data_policy, gates
 
 
 class IntakeError(Exception):
@@ -204,12 +213,42 @@ def write_project(items: list[IntakeItem], out_dir: Path, force: bool) -> list[P
     return written
 
 
+def write_declaration(out_dir: Path, payload: dict) -> bool:
+    """Write `data_declaration.json` once. Returns True when written.
+
+    An existing declaration is never silently changed from the intake CLI, mirroring the
+    glossary tier rule: a folder that was declared one class does not become another by a rerun.
+    """
+    path = out_dir / data_policy.DECLARATION_FILE
+    if path.exists():
+        existing = data_policy.load_declaration(out_dir)
+        current = {"data_class": existing.data_class}
+        if not existing.is_synthetic:
+            current.update(approval_ref=existing.approval_ref, approved_by=existing.approved_by,
+                           approved_on=existing.approved_on)
+        if current != payload:
+            raise IntakeError(
+                f"{path} already declares {current}; refusing to change it to {payload} from the "
+                "intake CLI — edit the declaration deliberately, with the approval record at hand."
+            )
+        return False
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return True
+
+
 def main(argv: list | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("raw", help="Folder of raw documents (or a single file)")
     parser.add_argument("--out", required=True, help="Project folder to create, e.g. fixtures/acme_01")
     parser.add_argument("--client", required=True, help="client_id for the glossary scaffold")
     parser.add_argument("--tier", required=True, help="Onboarding sensitivity tier (never inferred — PRD DR-11)")
+    parser.add_argument("--data-class", required=True, choices=data_policy.DATA_CLASSES,
+                        help="What the documents are (never inferred): 'synthetic' for invented material, "
+                             "'approved' for material covered by a recorded data-policy approval")
+    parser.add_argument("--approval-ref", default=None, help="With --data-class approved: the approval record's reference")
+    parser.add_argument("--approved-by", default=None, help="With --data-class approved: who approved the processing")
+    parser.add_argument("--approved-on", default=None, help="With --data-class approved: approval date, YYYY-MM-DD")
     parser.add_argument("--type", action="append", default=[], metavar="FILE=TYPE",
                         help="Explicit source_type for a file, e.g. --type notes.txt=background")
     parser.add_argument("--date", action="append", default=[], metavar="FILE=YYYY-MM-DD",
@@ -238,9 +277,21 @@ def main(argv: list | None = None) -> int:
         return out
 
     try:
+        declaration = data_policy.build_declaration(args.data_class, args.approval_ref,
+                                                    args.approved_by, args.approved_on)
         items = plan_intake(raw_files, parse_kv(args.type, "--type"), parse_kv(args.date, "--date"))
         glossary_dir = Path(args.glossary_dir) if args.glossary_dir else Path(args.out)
         glossary_path = glossary_dir / f"client_{args.client}.json"
+        if declaration["data_class"] != data_policy.SYNTHETIC:
+            # Checked before anything is written: approved material never lands in a tracked folder.
+            problems = data_policy.check_locations(
+                data_policy.DataDeclaration(data_class=declaration["data_class"], path=Path(args.out)),
+                project_dir=Path(args.out), glossary=glossary_path)
+            if problems:
+                raise data_policy.DataDeclarationError("; ".join(problems))
+        print(f"Data class: {declaration['data_class']}"
+              + ("" if declaration["data_class"] == data_policy.SYNTHETIC
+                 else f" (approval {declaration['approval_ref']} by {declaration['approved_by']} on {declaration['approved_on']})"))
         print(f"Intake plan for {len(items)} source(s) → {args.out}")
         for item in items:
             note = "header already compliant" if item.already_compliant else f"date: {item.date_provenance}"
@@ -248,9 +299,13 @@ def main(argv: list | None = None) -> int:
         if args.dry_run:
             print("[dry-run] nothing written")
             return 0
+        if (Path(args.out) / data_policy.DECLARATION_FILE).exists():
+            write_declaration(Path(args.out), declaration)  # refuses a class change before any write
         written = write_project(items, Path(args.out), args.force)
+        write_declaration(Path(args.out), declaration)
         scaffolded = scaffold_glossary(glossary_path, args.client, args.tier)
-        sources = gates.discover_sources(Path(args.out))  # prove the contract holds
+        data_policy.load_declaration(Path(args.out))  # prove the contract holds
+        sources = gates.discover_sources(Path(args.out))
         verdict = gates.readiness_gate(sources)
     except (IntakeError, gates.InputContractError, gates.ScopeError) as exc:
         print(f"[intake] {exc}", file=sys.stderr)
@@ -260,7 +315,8 @@ def main(argv: list | None = None) -> int:
           + (f"scaffolded at {glossary_path} — REVIEW TERMS before the run" if scaffolded
              else f"already present at {glossary_path} (untouched)"))
     print(f"readiness: {verdict.message}")
-    print(f"\nRun:\n  python pipeline/runner.py --project {args.out} --glossary {glossary_path}")
+    run_out = "" if declaration["data_class"] == data_policy.SYNTHETIC else " --out <pilot runs folder outside the repository>"
+    print(f"\nRun:\n  python pipeline/runner.py --project {args.out} --glossary {glossary_path}{run_out}")
     return 0 if verdict.ok else 1
 
 

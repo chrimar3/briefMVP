@@ -1,0 +1,17 @@
+{
+  "actor": "Synthetic Creative Lead C",
+  "notes": "Rehearsal review: references, mandatories and deliverables checked on synthetic material.",
+  "checks": {
+    "all_facts_cited": true,
+    "qualifiers": true,
+    "mandatories": true,
+    "brand_voice": true,
+    "deliverables": true,
+    "rights_and_permissions": true,
+    "client_safe": true
+  },
+  "approved_at": "2026-09-22T21:30:22.839293+00:00",
+  "draft_sha256": "38d55f29445b4807cdc8f851d71b9f63823e0214fbced00bdd2f9d2521d5c0a5",
+  "brief_approval_sha256": "f1f0edbdef0b6fee64f580083adfbaa83f0b60a278ca9feb5ea69c6f2015248b",
+  "language_review_sha256": "0e7883eb4a22329a53c4fba6087394f40160aeefce29ebeceffcd59163e3da9a"
+}

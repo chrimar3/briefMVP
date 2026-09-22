@@ -1,0 +1,193 @@
+{
+  "campaign_profile": "creative_production",
+  "initialized_by": "Synthetic Operator O",
+  "baseline_origin": "human-adopted legacy evidence; source completeness review required",
+  "checklist": {
+    "objective_and_audience": {
+      "prompt": "What objective, audience and proposition govern production?",
+      "value": "Launch objectives as signed off; audience per the resolved conflict.",
+      "owner": "Account lead",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+          "speaker_or_author": "Dimitris (Meltemi)"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "location": "## 2. Στόχος",
+          "anchor": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+          "speaker_or_author": "Meltemi Beverages"
+        }
+      ],
+      "actor": "Synthetic Account Lead A",
+      "updated_at": "2026-09-22T21:30:21.520843+00:00",
+      "refs": [
+        "objectives:0",
+        "objectives:1"
+      ]
+    },
+    "deliverables_and_variants": {
+      "prompt": "Which deliverables, quantities, variants and languages are required?",
+      "value": "Deliverables as listed in the signed brief.",
+      "owner": "Account lead",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+          "anchor": "τελικό approval του brief",
+          "speaker_or_author": "Eleni (Northlight)"
+        },
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 3** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-15 10:05",
+          "anchor": "θα σας στείλουμε αναθεωρημένο πλάνο",
+          "speaker_or_author": "Eleni (Northlight)"
+        }
+      ],
+      "actor": "Synthetic Account Lead A",
+      "updated_at": "2026-09-22T21:30:21.607375+00:00",
+      "refs": [
+        "deliverables:0",
+        "deliverables:1"
+      ]
+    },
+    "mandatories_and_rights": {
+      "prompt": "Which restrictions, brand requirements and usage rights apply?",
+      "value": "Brand mandatories apply verbatim.",
+      "owner": "Account lead",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Brand name usage",
+          "anchor": "The product name **Meltemi Fizz** is always written in Latin script, in full.",
+          "speaker_or_author": "Meltemi Beverages (Brand Guidelines)"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Claims — hard rules",
+          "anchor": "**Not permitted:** any health or weight-loss claim; any comparison naming a competitor brand.",
+          "speaker_or_author": "Meltemi Beverages (Brand Guidelines)"
+        }
+      ],
+      "actor": "Synthetic Account Lead A",
+      "updated_at": "2026-09-22T21:30:21.693308+00:00",
+      "refs": [
+        "mandatories:0",
+        "mandatories:4"
+      ]
+    },
+    "dependencies": {
+      "prompt": "Which supplied assets or other teams does production depend on?",
+      "value": "Brand guidelines version stated in the brief govern the work.",
+      "owner": "Account lead",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "Επισυνάπτω τα brand guidelines (ισχύει η έκδοση 3.1)",
+          "speaker_or_author": "Dimitris (Meltemi)"
+        }
+      ],
+      "actor": "Synthetic Account Lead A",
+      "updated_at": "2026-09-22T21:30:21.779898+00:00",
+      "refs": [
+        "mandatories:7"
+      ]
+    },
+    "approvals_and_dates": {
+      "prompt": "Who approves each milestone, and by which dates?",
+      "value": "Launch date per the resolved timeline conflict.",
+      "owner": "Account lead",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "Ξέρω ότι στενεύει το χρονοδιάγραμμα",
+          "speaker_or_author": "Dimitris (Meltemi)"
+        }
+      ],
+      "actor": "Synthetic Account Lead A",
+      "updated_at": "2026-09-22T21:30:21.865359+00:00",
+      "refs": [
+        "timeline:0"
+      ]
+    }
+  },
+  "deliverables": [
+    {
+      "channel": "Cross-channel",
+      "resolution": "2048x2048",
+      "aspect_ratio": "1:1",
+      "format": "Key visual — digital master",
+      "file_type": "PNG",
+      "duration": "n/a",
+      "id": "key-visual",
+      "spec_id": "key_visual_digital_master",
+      "quantity": 1,
+      "languages": [
+        "el",
+        "en"
+      ],
+      "deadline": "2026-09-08",
+      "owner": "Production lead",
+      "approval_owner": "Account lead",
+      "dependencies": [],
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+          "anchor": "τελικό approval του brief",
+          "speaker_or_author": "Eleni (Northlight)"
+        }
+      ],
+      "actor": "Synthetic Traffic Reviewer T",
+      "updated_at": "2026-09-22T21:30:22.050810+00:00",
+      "refs": [
+        "deliverables:0"
+      ]
+    },
+    {
+      "channel": "TikTok",
+      "resolution": "1080x1920",
+      "aspect_ratio": "9:16",
+      "format": "In-feed video",
+      "file_type": "MP4",
+      "duration": "9-60s",
+      "id": "tiktok-cut",
+      "spec_id": "tiktok_infeed_video",
+      "quantity": 2,
+      "languages": [
+        "el"
+      ],
+      "deadline": "2026-09-12",
+      "owner": "Production lead",
+      "approval_owner": "Account lead",
+      "dependencies": [
+        "key-visual"
+      ],
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40",
+          "anchor": "τελικό approval του brief",
+          "speaker_or_author": "Eleni (Northlight)"
+        }
+      ],
+      "actor": "Synthetic Traffic Reviewer T",
+      "updated_at": "2026-09-22T21:30:22.143451+00:00",
+      "refs": [
+        "deliverables:0"
+      ],
+      "duration_seconds": 15.0
+    }
+  ],
+  "catalog_binding": {
+    "path": "$WORK/synthetic-traffic-catalog-v1.json",
+    "sha256": "a73cea264c25aac47f2b0014768ec07557a2a31db36822a053102e71f389c900",
+    "actor": "Synthetic Traffic Reviewer T",
+    "bound_at": "2026-09-22T21:30:21.956523+00:00",
+    "recheck_deliverables": []
+  }
+}

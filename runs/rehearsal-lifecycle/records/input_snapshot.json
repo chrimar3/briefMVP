@@ -1,0 +1,30 @@
+{
+  "campaign_profiles": {
+    "path": "$REPO/config/campaign_profiles.json",
+    "sha256": "491a174761c10861dd98ec27f4a625c9648f6ee7540f355053146c8f86b3ba6c"
+  },
+  "channel_specs": {
+    "path": "$WORK/synthetic-traffic-catalog-v1.json",
+    "sha256": "a73cea264c25aac47f2b0014768ec07557a2a31db36822a053102e71f389c900"
+  },
+  "glossary": {
+    "path": "$REPO/glossary/meltemi.json",
+    "sha256": "118ed98313438452e3972806b3888e445a6097d73e6db3d0cc62ffc6c609a792"
+  },
+  "source:background_brand_guidelines": {
+    "path": "$REPO/fixtures/northlight_01/background_brand_guidelines.md",
+    "sha256": "bd512b91fd833cef00326117aed2b50f5501a9c56a6ca8a6296d0f3b90f0dff6"
+  },
+  "source:emails_thread": {
+    "path": "$REPO/fixtures/northlight_01/emails_thread.md",
+    "sha256": "2789aedd6e3fa9ceeafe0913d717c66ab6dd848ea6e7437ab69b5000abf44426"
+  },
+  "source:rfp_meltemi": {
+    "path": "$REPO/fixtures/northlight_01/rfp_meltemi.md",
+    "sha256": "db92ac103bf8d221a255f1b34900146c4866154bd4522d21d0ea846da6fa564c"
+  },
+  "source:transcript_kickoff": {
+    "path": "$REPO/fixtures/northlight_01/transcript_kickoff.md",
+    "sha256": "387abf43c46e136dac8a3d4f5d131a43694bec72ca2c69c4a4f7e5af34f33f58"
+  }
+}
