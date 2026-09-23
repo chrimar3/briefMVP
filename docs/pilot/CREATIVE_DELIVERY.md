@@ -2,7 +2,10 @@
 
 Creative is no longer restricted to shadow use. The owner authorized human-approved
 delivery on 2026-09-20 and put it in the pilot from week 1 under separation of duties on
-2026-09-22; see `docs/OPERATING_DECISIONS.md`. Generated output is a draft. A separate creative
+2026-09-22; see `docs/OPERATING_DECISIONS.md`. In the pilot calendar that means: week 1, the
+creative lead rehearses one synthetic release end to end (T-08); weeks 2–3, creative drafts are
+reviewed and struck on the retro briefs, which are past projects, so nothing is released; the
+first client release is possible in week 4, on a live brief (`SCORECARD.md` §3, §5). Generated output is a draft. A separate creative
 lead approves the exact selected files; release creates a local package. It does not send
 messages, upload campaigns or buy media. Real client material needs an `approved` data
 declaration and the go-live decisions (`GO_LIVE_DECISIONS.md`); until then rehearse with

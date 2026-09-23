@@ -131,3 +131,115 @@ def test_template_example_row_evaluates_to_insufficient_data(repo_root):
     assert report["briefs"] == 0
     assert report["pass_rules"]["end_week_3"]["gate"] == "insufficient_data"
     assert report["pass_rules"]["end_week_4"]["gate"] == "insufficient_data"
+
+
+# -- round 2: reported-only measures, the n/a rule, and survival on what approval binds ---------
+
+def test_placeholder_text_other_than_not_recorded_is_a_data_error():
+    """SCORECARD.md §6: no cell carries any text other than its values or not_recorded."""
+    rows = retro_set()
+    rows[0]["review_min"] = "n/a"
+    with pytest.raises(ValueError, match="review_min must be numeric or not_recorded"):
+        sc.summarize(rows)
+
+
+def test_agency_steps_are_a_subset_of_review_time():
+    rows = retro_set(agency_steps_min="10")
+    reported = sc.summarize(rows)["pass_rules"]["reported"]
+    assert reported["agency_steps_min"]["median"] == 10
+    assert reported["agency_steps_min"]["share_of_review_pct_median"] == pytest.approx(40)
+    rows[0]["agency_steps_min"] = "26"  # review_min is 25
+    with pytest.raises(ValueError, match="subset of review_min"):
+        sc.summarize(rows)
+
+
+def test_net_team_minutes_is_exact_when_measured_and_incomplete_otherwise():
+    team = dict(operator_min="5", strategy_min="0", creative_min="10", production_min="5", total_team_min="60",
+                baseline_team_min="150", baseline_min="120")
+    rows = retro_set(**team)
+    reported = sc.summarize(rows)["pass_rules"]["reported"]
+    assert reported["net_team_minutes"]["median"] == 90 and reported["net_team_minutes"]["complete"] is True
+    assert reported["net_lead_minutes"]["median"] == 80  # 120 - 40
+    rows[3]["production_min"] = "not_recorded"
+    rows[3]["total_team_min"] = "not_recorded"
+    net = sc.summarize(rows)["pass_rules"]["reported"]["net_team_minutes"]
+    assert net["complete"] is False and net["missing"] == 1 and net["measured"] == 5
+    # Reported only: the week-3 gate is unaffected by the missing team component.
+    assert sc.summarize(rows)["pass_rules"]["end_week_3"]["gate"] == "pass"
+
+
+def test_retro_side_by_side_is_counted_and_integer():
+    rows = retro_set(human_conflicts_missed="1", human_gaps_unasked="2", draft_facts_missing="0",
+                     human_facts_unsourced="not_recorded")
+    side = sc.summarize(rows)["pass_rules"]["reported"]["retro_side_by_side"]
+    assert side["human_conflicts_missed"]["sum"] == 6 and side["human_gaps_unasked"]["mean_per_brief"] == 2
+    assert side["human_facts_unsourced"]["measured"] == 0 and side["human_facts_unsourced"]["sum"] is None
+    rows[0]["human_gaps_unasked"] = "1.5"
+    with pytest.raises(ValueError, match="integer count"):
+        sc.summarize(rows)
+
+
+def test_timed_baseline_is_reported_beside_the_recalled_one():
+    rows = retro_set(baseline_min="120")
+    rows[0]["baseline_timed_min"] = "95"
+    check = sc.summarize(rows)["pass_rules"]["reported"]["baseline_check"]
+    assert check["measured"] == 1 and check["median"] == 25 and check["complete"] is False
+
+
+def test_template_carries_the_round_2_columns(repo_root):
+    with (repo_root / "docs" / "pilot" / "scorecard_template.csv").open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    for column in ("baseline_timed_min", "baseline_team_min", "agency_steps_min", "survival_canonical_pct",
+                   *sc.SIDE_BY_SIDE):
+        assert rows[0][column] == "not_recorded"
+    assert "n/a" not in rows[0].values()
+
+
+def _approved_run_with_draft(tmp_path):
+    from test_agency_operations import make_review_run
+
+    from pipeline import agency
+    run = make_review_run(tmp_path)
+    draft = tmp_path / "draft"
+    draft.mkdir()
+    for name in ("brief_en.md", "brief_el.md", "brief.json"):
+        (draft / name).write_bytes((run / name).read_bytes())
+    assert agency.main(["attest", str(run), "--actor", "Synthetic reviewer", "--greek-register", "4",
+                        "--notes", "Synthetic test attestation",
+                        "--checks", *agency.quality.field_review_checklist()]) == 0
+    assert agency.main(["approve", str(run), "--actor", "Synthetic lead", "--summary", "Synthetic test only"]) == 0
+    return draft, run
+
+
+def test_survival_is_measured_against_what_approval_binds(tmp_path):
+    """Temp-dir synthetic run only (round-2 rule 9): approve binds brief.json and both renders."""
+    draft, run = _approved_run_with_draft(tmp_path)
+    # Approval only stamps signoff; the reader-facing text is unchanged, so survival is 100.
+    assert sc.survival_bundle(draft, run) == {"survival_en_pct": 100, "survival_el_pct": 100,
+                                              "survival_canonical_pct": 100}
+    extra = (draft / "brief_en.md").read_text(encoding="utf-8") + "\nA line the lead cut."
+    (draft / "brief_en.md").write_text(extra, encoding="utf-8")
+    assert sc.survival_bundle(draft, run)["survival_en_pct"] < 100
+    # A render changed after approval: no survival figure for a revision nobody approved.
+    (run / "brief_en.md").write_text("Changed after approval", encoding="utf-8")
+    with pytest.raises(ValueError, match="stale human approval"):
+        sc.survival_bundle(draft, run)
+    with pytest.raises(SystemExit) as exc:
+        sc.main(["--draft-dir", str(draft), "--approved-run", str(run)])
+    assert exc.value.code == 2
+
+
+def test_survival_cli_requires_both_paths(tmp_path, capsys):
+    with pytest.raises(SystemExit) as exc:
+        sc.main(["--draft-dir", str(tmp_path)])
+    assert exc.value.code == 2 and "Both --draft-dir and --approved-run" in capsys.readouterr().err
+
+
+def test_canonical_text_ignores_evidence_and_signoff():
+    brief = {"objectives": [{"content": "Launch", "evidence": [{"source_id": "a"}]}],
+             "open_questions": [{"field": "budget", "gap": "Unknown", "suggested_question_for_client": "Budget?"}],
+             "conflicts": [], "signoff": {"status": "draft"}}
+    moved = {**brief, "objectives": [{"content": "Launch", "evidence": [{"source_id": "b"}]}],
+             "signoff": {"status": "signed_off", "signed_by": "Synthetic lead"}}
+    assert sc.canonical_text(brief) == sc.canonical_text(moved)
+    assert sc.survival(sc.canonical_text(brief), sc.canonical_text(moved)) == 100

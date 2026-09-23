@@ -127,8 +127,26 @@ attention drops to the PRD's <30-min review target *and* assembly time is ignore
 conservative floor". The floor is 210 h and **€4.0–4.2k**, and that is the figure to use. The PRD
 itself is frozen and keeps its original sentence.
 
+The floor counts account-lead minutes only. Two corrections apply before it is set against what
+the pilot costs:
+
+- **Net of the Tier 5–7 roles.** The agency layer adds minutes for the bilingual reviewer,
+  traffic, the creative lead, champions and the operator. The net measure is per brief,
+  `baseline_team_min − total_team_min` (`net_team_minutes`, reported by `eval/pilot_scorecard.py`
+  from the retro rows; `docs/pilot/SCORECARD.md` §3). Every 10 added non-lead minutes per brief
+  remove 30 h a year (10 × 180 ÷ 60), about €570–600 at A4.
+- **The cost side.** The pilot's people hours are a planning range of 68.8–116.2 h over four
+  weeks across all roles (`docs/pilot/PILOT_INVESTMENT.md` §1); rates other than A4, seats and
+  usage are owner inputs, and usage under the current routing waits for the re-baseline (§3).
+  Net value per year = returned hours × rate − running cost (seats or usage, upkeep of glossaries
+  and the spec catalog). Break-even of the pilot's hours at the 70-minute floor is 59–100 briefs,
+  3.9–6.6 months at A2 (`PILOT_INVESTMENT.md` §4). Go-live decision D-27 turns this into a
+  spending ceiling; an unset ceiling means no start.
+
 Either way, returned hours only fund the pilot. The case rests on the variance floor and reduced
-downstream rework (PRD §10), which the pilot scorecard measures (`docs/pilot/SCORECARD.md`).
+downstream rework (PRD §10). The pilot does not price either: it counts the variance floor
+through the retro side-by-side against the briefs the agency actually wrote
+(`docs/pilot/SCORECARD.md` §2, reported only), and downstream rework waits for quarter 1 (`docs/pilot/GO_LIVE_DECISIONS.md` D-19).
 
 ## 5. Open owner decision — the value unit
 

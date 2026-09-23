@@ -1,0 +1,194 @@
+{
+  "_what_this_is": "Keyword list for the advisory personal-data pre-screen (pipeline/prescreen.py). GDPR Art. 9 special categories, Art. 10 criminal-offence data, and data about children, in Greek and English. A hit means 'a person should look at this line', never 'this is special-category data'; a miss proves nothing.",
+  "_status": "Advisory only. Never blocking, never a control: the human screening step in docs/pilot/DATA_PROTECTION.md section 10 remains the control. Proposed synthetic default; the data-protection lead reviews and extends it before pilot use (OWNER/DPO TO CONFIRM).",
+  "_matching": "Text and terms are both normalised: Unicode NFD, combining marks (Greek tonos, dialytika) removed, casefolded, final sigma folded to sigma. 'prefix' terms match at the start of a word (so 'diagnos' matches 'diagnosis' and 'diagnosed'); 'word' terms match a whole word or phrase only (for short or ambiguous stems). Spaces inside a term match any run of whitespace.",
+  "_known_limits": "High recall on purpose: health-product, political-campaign or children's-product clients will produce hits on ordinary brief language. Greek 'πολιτική' (also 'policy') is deliberately NOT a term. No term list can find a special category expressed indirectly.",
+  "categories": {
+    "health": {
+      "article": "Art. 9",
+      "prefix": [
+        "diagnos",
+        "illness",
+        "disease",
+        "pregnan",
+        "disabilit",
+        "hospitali",
+        "medication",
+        "mental health",
+        "cancer",
+        "diabet",
+        "chronic condition",
+        "medical condition",
+        "medical history",
+        "διαγνω",
+        "ασθενει",
+        "ασθενη",
+        "νοσοκομ",
+        "νοσηλ",
+        "νοσημ",
+        "εγκυ",
+        "εγκυμοσυν",
+        "αναπηρ",
+        "φαρμακευτικη αγωγη",
+        "ψυχικη υγει",
+        "καρκιν",
+        "διαβητ",
+        "χρονια παθηση",
+        "ιατρικο ιστορικο"
+      ],
+      "word": [
+        "hiv",
+        "aids",
+        "sick leave",
+        "αδεια ασθενειας"
+      ]
+    },
+    "racial_or_ethnic_origin": {
+      "article": "Art. 9",
+      "prefix": [
+        "ethnic",
+        "racial",
+        "immigrant",
+        "refugee",
+        "εθνοτικ",
+        "φυλετικ",
+        "μεταναστ",
+        "προσφυγ",
+        "τσιγγαν"
+      ],
+      "word": [
+        "race",
+        "roma",
+        "ρομα"
+      ]
+    },
+    "political_opinions": {
+      "article": "Art. 9",
+      "prefix": [
+        "political view",
+        "political opinion",
+        "political affiliation",
+        "party member",
+        "voted for",
+        "πολιτικες πεποιθησ",
+        "πολιτικες αποψ",
+        "πολιτικη τοποθετησ",
+        "κομματικ",
+        "ψηφισε",
+        "ψηφιζει"
+      ],
+      "word": [
+        "left-wing",
+        "right-wing"
+      ]
+    },
+    "religious_or_philosophical_beliefs": {
+      "article": "Art. 9",
+      "prefix": [
+        "religio",
+        "atheis",
+        "θρησκ",
+        "αθεισ",
+        "αθεος",
+        "εκκλησι",
+        "τζαμι",
+        "συναγωγ"
+      ],
+      "word": [
+        "church",
+        "churches",
+        "mosque",
+        "synagogue",
+        "faith"
+      ]
+    },
+    "trade_union_membership": {
+      "article": "Art. 9",
+      "prefix": [
+        "trade union",
+        "union member",
+        "συνδικαλ",
+        "συνδικατ",
+        "απεργ"
+      ],
+      "word": [
+        "strike",
+        "on strike"
+      ]
+    },
+    "genetic_or_biometric_data": {
+      "article": "Art. 9",
+      "prefix": [
+        "genetic",
+        "biometric",
+        "fingerprint",
+        "facial recognition",
+        "γενετικ",
+        "βιομετρικ",
+        "δακτυλικα αποτυπωματ",
+        "δακτυλικο αποτυπωμα",
+        "αναγνωριση προσωπου"
+      ],
+      "word": [
+        "dna"
+      ]
+    },
+    "sex_life_or_sexual_orientation": {
+      "article": "Art. 9",
+      "prefix": [
+        "sexual orientation",
+        "sex life",
+        "homosexual",
+        "σεξουαλικ",
+        "ομοφυλοφ",
+        "ερωτικη ζωη"
+      ],
+      "word": [
+        "gay",
+        "lesbian",
+        "lgbt",
+        "lgbtq",
+        "λοατκι"
+      ]
+    },
+    "criminal_offences": {
+      "article": "Art. 10",
+      "prefix": [
+        "criminal record",
+        "convicted",
+        "conviction",
+        "arrested",
+        "ποινικ",
+        "καταδικ",
+        "συνελαβ",
+        "συλληψ",
+        "αδικημ"
+      ],
+      "word": [
+        "offence",
+        "offense",
+        "arrest"
+      ]
+    },
+    "children": {
+      "article": "Art. 8 / recital 38",
+      "prefix": [
+        "children",
+        "under 18",
+        "under-18",
+        "underage",
+        "ανηλικ",
+        "παιδια",
+        "παιδιων",
+        "κατω των 18"
+      ],
+      "word": [
+        "child",
+        "minor",
+        "minors",
+        "kids",
+        "παιδι"
+      ]
+    }
+  }
+}

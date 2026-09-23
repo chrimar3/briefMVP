@@ -171,18 +171,22 @@ an old link now points to the latest revision. No emailing is automated.
 ## 7. Measure effort and stop recurring rework
 
 Copy `docs/pilot/scorecard_template.csv` for the rehearsal. EXAMPLE rows do not count as pilot
-observations. Use `not_recorded` for missing data. Capture account assembly/review, operator,
+observations. Use `not_recorded` for missing data; any other placeholder (such as `n/a`) is a
+data error. Capture account assembly/review, operator,
 strategy, creative and production attention without double-counting people. Traffic records
 first-handoff acceptance and the main return reason. Review recurring causes weekly.
 
 ```sh
 python3 eval/pilot_scorecard.py $WORK/scorecard.csv --output $WORK/scorecard-report.json
-python3 eval/pilot_scorecard.py --draft $WORK/original-draft.md --final $WORK/human-edited-final.md
+python3 eval/pilot_scorecard.py --draft-dir $WORK/draft --approved-run $RUNS/rehearsal-01
 python3 eval/agency_benchmark.py --output $WORK/agency-benchmark.json
 ```
 
-Use archived original drafts and human-edited final copies for survival; do not compare a
-regenerated draft with itself. The scorecard validates arithmetic and reports observed sample
+Survival compares the first draft with what `agency approve` bound (`SCORECARD.md` §2): copy
+`brief_en.md`, `brief_el.md` and `brief.json` to `$WORK/draft/` when the run exits 0, before
+`agency init`; after approval, `--draft-dir` / `--approved-run` refuses unless the approval is
+current and reports EN, EL and canonical survival. Lead edits go through `resolve` and `apply`,
+never into separate file copies, and a regenerated draft is never compared with itself. The scorecard validates arithmetic and reports observed sample
 sizes. It does not claim a cash saving or a pilot go/no-go from incomplete measurements.
 The benchmark exercises synthetic faults, not fresh model outputs or native Greek quality.
 
