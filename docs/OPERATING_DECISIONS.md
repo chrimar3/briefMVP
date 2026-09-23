@@ -47,3 +47,27 @@ The owner decided, in answer to explicit questions:
    declaration is refused. Fixtures declare `synthetic`; any non-synthetic project must carry a
    recorded approval reference. Real client data still requires the agency's data-policy
    approval; this decision adds the control, it does not grant that approval.
+
+## 2026-09-23 — Round-2 owner decisions
+
+After the round-1 re-score (every aspect 5.3–7.3), the owner decided:
+
+1. **Garble carry-through rule adopted.** `skills/SYNTHESIS.md` gains the rule queued since the July
+   voreas rehearsal: a garbled (rule-G) token stays visible in reader-facing content next to its proposed
+   match, never silently normalised, with a deterministic synthesis check. Applied before the live
+   re-baseline.
+2. **Blind third keyed fixture.** A fresh author that has never seen the runtime prompts or gates writes
+   a new synthetic keyed fixture with new trap classes. Its answer-key hash is committed before any run,
+   and it gets one graded live run under the current routing. Pipeline developers do not open it before
+   that run.
+3. **Injection canary.** One live run on `tests/injection_project` under the current agent flags, to
+   show that the CLI enforces the permission rules and that agents do not follow planted instructions.
+4. **Coding agents are blocked from human-decision commands.** A tracked `.claude/settings.json` deny
+   rule plus a hook prevent AI coding agents from running `agency approve|attest|resolve|apply` and
+   `delivery approve|release`.
+5. **Verifier routing is declared sonnet-only.** The risk classes route every stored extract to sonnet
+   (0 of 66 take the haiku branch). Config, CLAUDE.md and cost documents are corrected to match what
+   runs. No behaviour change; the re-baseline measures the true cost.
+6. **The owner records the human decisions on the regenerated graded brief.** After the re-baseline,
+   the owner runs the resolve/attest/approve commands prepared for them. Only then is the creative A/B
+   regenerated. The system still never signs off on its own.
