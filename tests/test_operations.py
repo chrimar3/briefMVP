@@ -1,7 +1,7 @@
 import pytest
 from pipeline import revisions
 from test_delivery import prepare_release
-from test_agency_operations import make_review_run, approve_synthetic
+from test_agency_operations import make_review_run, approve_synthetic, vouch_forged
 
 
 def test_status_uses_current_data_and_does_not_rewrite_reports(tmp_path):
@@ -53,6 +53,10 @@ def test_incomplete_creative_approval_never_reports_ready(tmp_path, timestamp):
     else:
         record['approved_at'] = timestamp
     revisions.write_json(run/'creative_approval.json', record)
+    assert operations.status(run)['stage'] == 'blocked'          # unvouched hand edit
+    with pytest.raises(ValueError, match='creative_approval.json is not vouched'):
+        delivery.release(run, tmp_path/'bad', 'Synthetic releaser')
+    vouch_forged(run, 'creative_approval.json', 'creative_approved')   # a forger who also writes the log
     assert operations.status(run)['stage'] == 'creative_review'
     with pytest.raises(ValueError, match='metadata'):
         delivery.release(run, tmp_path/'bad', 'Synthetic releaser')

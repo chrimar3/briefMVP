@@ -1,8 +1,8 @@
 {
   "actor": "Synthetic Account Lead A",
-  "signed_at": "2026-09-22T21:56:32.206485+00:00",
-  "fingerprint": "8a83e8ba33794bafa94eae0f00d36081ba5663946867fb03b313b6915a759437",
-  "language_review_sha256": "b48a89670fe406a4984e59b9fb8abc4723bb505a1c5e10f69abe92d16293e089",
+  "signed_at": "2026-09-23T20:23:14.825386+00:00",
+  "fingerprint": "277f05e52ade4d794ae276a2218ede40ba48b20accaf1ddcc5349516a3913e31",
+  "language_review_sha256": "6cd97c536d71dd37496d12296ac4fd769437673bd741c9b5155c324bd4902dcc",
   "separation_of_duties": {
     "enforced": [
       "language_attester != brief_signer"

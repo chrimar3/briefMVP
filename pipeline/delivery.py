@@ -9,6 +9,7 @@ import argparse
 from datetime import datetime
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
@@ -230,15 +231,19 @@ def require_creative_approval(run: Path) -> tuple:
     return record, approval, rows
 
 
-def release(run, output, actor):
+def release(run: Path, output: Union[str, Path], actor: str) -> Path:
     """Create the approved local package. `actor` is the named person producing it — recorded
-    in release.json, in the run's receipt and in the audit log."""
+    in release.json, in the run's receipt and in the audit log. The receipt and its audit entry
+    are written before the package is moved into place, so no package ever lacks a receipt.
+    The receipt records the absolute path as the operator named it; every check uses the
+    resolved path."""
     if not isinstance(actor, str) or not actor.strip():
         raise ValueError('Named releasing operator required (--actor)')
     context(run)
     record, approval, rows = require_creative_approval(run)
     _recheck_separation(run, approval, record)
     revisions.require_intact_audit_log(run)
+    named = Path(os.path.abspath(output))
     output = Path(output).resolve()
     if output.exists() or output == run.resolve() or run.resolve() in output.parents:
         raise ValueError('Release output must be a new directory outside the run')
@@ -262,20 +267,29 @@ def release(run, output, actor):
                     'files': {p.name: revisions.file_hash(p) for p in staging.iterdir() if p.is_file()}}
         revisions.write_json(staging / 'release.json', manifest)
         # Exclusive creation protects earlier deliveries; files are complete before rename.
+        # The receipt and its audit entry are written BEFORE the package appears, so a crash can
+        # never leave a package without a receipt: at worst a receipt (with a logged
+        # 'creative_release_aborted') names a package that was never created.
         with revisions.run_lock(output.parent):
             if output.exists():
                 raise ValueError('Release destination already exists')
-            staging.rename(output)
+            receipt = {'path': str(named), 'manifest_sha256': revisions.file_hash(staging / 'release.json'),
+                       'at': revisions.timestamp(), 'released_by': actor}
+            releases = revisions.load(run / 'releases.json', [])
+            revisions.write_json(run / 'releases.json', releases + [receipt])
+            revisions.append_audit(run, 'creative_released', actor, record={'file': 'releases.json', 'entry': receipt},
+                                   details={'manifest_sha256': receipt['manifest_sha256'],
+                                            'revision': record['revision']})
+            try:
+                staging.rename(output)
+            except OSError:
+                revisions.append_audit(run, 'creative_release_aborted', actor,
+                                       details={'manifest_sha256': receipt['manifest_sha256'],
+                                                'reason': 'package could not be moved into place'})
+                raise
     finally:
         if staging.exists():
             shutil.rmtree(staging)
-    releases = revisions.load(run / 'releases.json', [])
-    receipt = {'path': str(output), 'manifest_sha256': revisions.file_hash(output/'release.json'),
-               'at': revisions.timestamp(), 'released_by': actor}
-    releases.append(receipt)
-    revisions.write_json(run / 'releases.json', releases)
-    revisions.append_audit(run, 'creative_released', actor, record={'file': 'releases.json', 'entry': receipt},
-                           details={'manifest_sha256': receipt['manifest_sha256'], 'revision': record['revision']})
     return output
 
 

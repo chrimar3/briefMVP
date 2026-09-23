@@ -159,20 +159,47 @@ is rewritten.
   creative registrant, creative approver ≠ brief signer, language/source attester ≠ brief signer.
   Names are compared case- and whitespace-insensitively. Re-checked from the records at release.
   `--solo-rehearsal` waives it explicitly, is recorded in the approval record and the audit log,
-  and is refused unless the project's `data_declaration.json` says `"data_class": "synthetic"` (a
-  missing declaration counts as non-synthetic). A waiver lapses if the declaration changes.
-  Registrant ≠ brief signer is not enforced: the owner decision names the approver only.
-- **Attributed release.** `delivery release` requires `--actor`, recorded in `release.json`
-  (`released_by`), the run's receipt and the audit log.
-- **Append-only, hash-chained audit log** `<run>/audit_log.jsonl`: every approval, attestation,
-  amendment, resolution, triage, exclusion, creative registration/approval, release and withdrawal
+  and is refused unless the run's **recorded** data class is `synthetic`
+  (`approval.recorded_data_class`): the project's `data_declaration.json` is bound into
+  `input_snapshot.json` when the run is prepared (`approval.prepare_run`) or initialised
+  (`agency init`), must still hash as recorded, must pass `data_policy.validate_payload` and must
+  agree with the class in `run_manifest.json`. A declaration relabelled after the run is unknown,
+  not its new value (and `verify_inputs` then refuses approval and release outright). A run with
+  no bound declaration counts as non-synthetic. Registrant ≠ brief signer is not enforced: the
+  owner decision names the approver only.
+- **Attributed release, receipt first.** `delivery release` requires `--actor`, recorded in
+  `release.json` (`released_by`), the run's receipt and the audit log. The receipt and its log
+  entry are written before the package is moved into place, so a crash can never leave a package
+  without a receipt; a failed move is logged as `creative_release_aborted`, and `verify-log` lists
+  receipts whose package is not at its recorded path (`receipts_without_package`).
+- **Append-only, hash-chained audit log** `<run>/audit_log.jsonl`: every approval, attestation (and
+  the attestation rebind `agency approve` performs), amendment, resolution, triage, carried
+  decision, exclusion, sign-off regime, creative registration/approval, release and withdrawal
   appends `{seq, at, event, actor, record, record_sha256|entry_sha256, prev_sha256, details}`.
   `python3 -m pipeline.release_control verify-log RUN` detects an edited, inserted, reordered or
-  deleted line, and any current approval/creative approval, amendment, withdrawal or release receipt
-  that no entry vouches for (which catches a truncated tail). Brief approval, creative approval and
-  release refuse to proceed on a broken log.
+  deleted line, and **every human-decision record no entry vouches for**: approval, creative
+  approval, language attestation, creative registration and sign-off regime by their exact bytes;
+  amendments, withdrawals and release receipts per entry; triage decisions and coverage exclusions
+  per entry (a digest bound to the question or fact id), or by the file's logged bytes; and every
+  conflict marked `resolved_by_human`, which must match the last `conflict_resolved` entry for its
+  index (actor, resolution text, conflict). `agency audit` turns every such problem into a blocker,
+  so a resolution, attestation, triage or exclusion written around the commands blocks approval;
+  approval, creative approval and release also refuse on a broken log.
+- **Sign-off regime recorded, never inferred.** The creative stage asks the run's recorded regime
+  (`signoff_regime.json`, written by `agency init` and vouched by the log): `agency_approval` needs a
+  current content-bound approval; the historical `brief_signoff` regime is only recordable for a
+  synthetic, non-agency run. An unrecorded run gets the strict regime, so deleting
+  `agency_inputs.json` no longer downgrades anything.
+- **Source safety and personal-data notices.** `agency audit` lists every extraction note of the
+  form `embedded instruction not followed: …` (rule U) and the advisory `pipeline.prescreen`
+  findings (counts and line numbers, never values) as notices, and warns when a resolved conflict
+  leaves its field empty or a question on the same field untriaged or open.
+- **The reviews shelf.** `python3 -m pipeline.publish` refuses a run whose recorded data class is not
+  `synthetic`, because the shelf is inside the repository.
 
-*Proof:* `tests/test_governance_controls.py`.
+*Proof:* `tests/test_governance_controls.py`, `tests/test_governance_vouching.py` (each bypass the
+round-1 trust judges reproduced), `tests/test_rehearsal_records.py` (the committed rehearsal
+re-verifies).
 
 ### 3.7 Supply chain
 
@@ -204,17 +231,40 @@ stage fails with a non-JSON-output error) rather than running without the restri
    one person pass. The audit log is tamper-evident for a cooperating team, not proof against a
    determined insider with filesystem access, who could rewrite the whole log and every record
    consistently. Signed or externally anchored logs are out of scope (no integrations).
-6. **Coding agents can run the human-decision commands.** The repo is operated by AI coding
-   agents; nothing technical stops one from running `agency approve` or `delivery approve`. A
-   `.claude/settings.json` deny rule for those commands (and the Codex equivalent) is an
-   open item for the orchestrator; the policy that no model runs them stays in force.
-7. **Legacy runs.** Committed evidence runs (`runs/tier3`, …) predate staging, the audit log and
-   separation of duties. They are historical records, not approvable revisions.
+6. **Coding agents and the human-decision commands — controlled for Claude Code, open for Codex.**
+   Owner decision 2026-09-23 #4. The tracked `.claude/settings.json` denies the plain spellings
+   (`python3|python -m pipeline.agency approve|attest|resolve|apply|answer|exclude|carry-decisions`,
+   `pipeline.delivery register|approve|release`, `pipeline.release_control withdraw`, and the
+   `pipeline/<module>.py` path forms), and its PreToolUse hook
+   (`tools/hooks/guard_human_decisions.py`) refuses the same commands however they are spelled:
+   `cd … &&` and other compound prefixes, env assignments and wrappers (`env`, `timeout`, `uv run`,
+   …), `bash -c`/`eval`, interpreter flags, the subcommand anywhere after the module, `retention
+   purge` without `--dry-run`, and `python -c`/heredoc code that calls the decision functions
+   in-process. `tests/test_decision_command_guard.py` checks the hook on synthetic command strings
+   and fails if a module gains a subcommand nobody has classified. What it does not stop: a script
+   file an agent writes and then runs (not inspected), a process started outside Claude Code, or
+   someone who edits the settings. Those are caught after the fact, not prevented: every decision
+   record must be vouched by the audit log, and separation of duties compares the recorded names.
+   **Open item — Codex:** Codex reads `AGENTS.md` (policy text only) and has no equivalent of the
+   PreToolUse hook here; a Codex execpolicy/sandbox rule refusing the same commands is still to be
+   written and tested. Until then the policy that no model runs these commands is the only control
+   for Codex sessions. Humans run the commands in their own terminal; the hook does not affect them.
+7. **Legacy runs.** Committed evidence runs (`runs/tier3`, …) predate staging, the audit log, the
+   declaration binding and separation of duties. Their conflict resolutions are not vouched by any
+   log, so `agency audit` on a copy blocks until each is resolved again with `agency resolve` (the
+   rehearsal does exactly this). They are historical records, not approvable revisions.
+8. **The audit log is tamper-evident, not tamper-proof.** Anyone with write access can append a
+   well-formed entry that vouches a hand-edited record; the chain then shows the extra entry and
+   its actor. The deeper checks (separation of duties, content-addressed creative revisions,
+   fingerprints) stay in place behind it for that case.
 
 ## 5. How to check
 
 ```bash
 python3 -m pytest -o addopts='' -q tests/test_agent_security.py tests/test_verifier_findings.py \
-    tests/test_governance_controls.py tests/test_prompt_hygiene.py
+    tests/test_governance_controls.py tests/test_governance_vouching.py tests/test_prompt_hygiene.py \
+    tests/test_decision_command_guard.py tests/test_rehearsal_records.py
 python3 -m pipeline.release_control verify-log <run_dir>
+python3 -m pipeline.release_control verify-log runs/rehearsal-lifecycle/records   # committed evidence
+python3 tools/hooks/guard_human_decisions.py --check "cd x && python3 -m pipeline.agency approve r --actor A"
 ```

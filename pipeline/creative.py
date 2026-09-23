@@ -12,7 +12,10 @@ spec table (DR-7: dimensions and durations are facts, not creative decisions).
 Two deterministic guarantees this module enforces, because a model cannot be trusted to enforce
 them on itself:
 
-* **Signed-off input.** `creative_shadow` refuses unless `signoff.status == "signed_off"`.
+* **Signed-off input.** `creative_shadow` refuses unless `signoff.status == "signed_off"` AND the
+  run's recorded sign-off regime is satisfied (`pipeline.approval.require_creative_signoff`): by
+  default a current content-bound human approval; the historical brief-signoff-only regime only
+  when it was explicitly recorded, audit-logged, on a synthetic run.
 * **No invented specs.** `check_creative_brief` scans the draft for spec-shaped tokens
   (resolutions like 1080x1920, aspect ratios like 9:16) and fails if any does not appear in the
   spec table. This is the Tier-4 machine check. For newly generated CREATIVE DRAFT output
@@ -374,11 +377,12 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
                     model_alias: str, spec_table_path: Path = None) -> dict:
     """Run the creative-shadow subagent once, on the given model, gated on its artifact."""
     require_signed_off(brief)
-    if (Path(run_dir) / "agency_inputs.json").exists():
-        try:
-            approval.require_current_approval(run_dir)
-        except ValueError as exc:
-            raise NotSignedOff(str(exc)) from exc
+    # The run's RECORDED sign-off regime decides what else is required (approval.signoff_regime);
+    # it is never inferred from whether agency_inputs.json happens to exist.
+    try:
+        approval.require_creative_signoff(run_dir)
+    except ValueError as exc:
+        raise NotSignedOff(str(exc)) from exc
     spec_table = load_spec_table(spec_table_path)
     resolved_spec_path = Path(spec_table_path) if spec_table_path else gates.CONFIG_DIR / "channel_specs.json"
 

@@ -2,11 +2,24 @@
   "source": "runs/tier3 (committed graded run), copied; the original is never modified",
   "pseudonymised": "the developer's name (signer and resolver of record) → Synthetic Account Lead A",
   "signoff_reset": "signed_off → draft (sign-off is what this rehearsal exercises)",
-  "conflict_reset": {
-    "field": "timeline",
-    "index": 2,
-    "resolution_text_reused": "Launch 15 September — the board's decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP's first week of October."
-  },
+  "conflicts_reset": [
+    {
+      "field": "audiences",
+      "index": 0,
+      "resolution_text_reused": "25–40 urban professionals — the CMO's explicit correction at kickoff (00:03:41) supersedes the RFP's Gen Z 18–24, which the previous agency had carried over in positioning."
+    },
+    {
+      "field": "budget",
+      "index": 1,
+      "resolution_text_reused": "Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client's media shop and is not yet known — total including media remains unconfirmed and stays an open question."
+    },
+    {
+      "field": "timeline",
+      "index": 2,
+      "resolution_text_reused": "Launch 15 September — the board's decision reported by email on 2026-07-14 is the most recent state and supersedes the RFP's first week of October."
+    }
+  ],
+  "conflicts_note": "every copied resolution predates the audit log, so each conflict is reset to open and resolved again with `agency resolve` and its original text; a resolution no audit entry vouches for blocks approval",
   "questions_kept": 10,
   "questions_with_timestamp_evidence": 6,
   "questions_note": "every open question stays in the brief. Before go-live precondition T-01 was fixed (pipeline/quality.py tag_location), render_coverage could not verify a question whose evidence is a bracketed transcript timestamp such as [00:03:41], and earlier versions of this rehearsal moved those questions out. The script now refuses any question the check cannot verify instead of working around it.",

@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import pytest
 from pipeline import revisions, delivery
+from test_agency_operations import vouch_forged
 
 
 def test_draft_fact_references_reject_unknown_entry_and_missing_mandatory():
@@ -68,10 +69,10 @@ SYNTHETIC_DRAFT = ('> CREATIVE DRAFT\nSynthetic campaign [brief:objectives:0]\nS
                    '\n## Strategic tensions\nNone identified.\n')
 
 
-def prepare_release(tmp_path, draft_text=None):
+def prepare_release(tmp_path, draft_text=None, data_class=None):
     from test_agency_operations import make_review_run, approve_synthetic
     from pipeline import spec_catalog
-    run=make_review_run(tmp_path)
+    run=make_review_run(tmp_path, data_class=data_class)
     inputs=revisions.load(run/'agency_inputs.json')
     row=dict(inputs['deliverables'][0])
     row['id']=row['spec_id']
@@ -174,6 +175,9 @@ def test_registered_manifest_cannot_escape_delivery_folder(tmp_path):
     record=revisions.load(run/'creative_draft.json')
     record['files'][0]['name']='../escape.md'
     revisions.write_json(run/'creative_draft.json',record)
+    with pytest.raises(ValueError,match='creative_draft.json is not vouched'):
+        delivery.approve(run,'Synthetic lead','Review',delivery.CHECKS)
+    vouch_forged(run,'creative_draft.json','creative_registered')   # a forger who also writes the log
     with pytest.raises(ValueError,match='filename'):
         delivery.approve(run,'Synthetic lead','Review',delivery.CHECKS)
 
@@ -199,6 +203,9 @@ def test_manifest_cannot_substitute_raw_evidence_as_artwork(tmp_path):
     evidence = next(iter(revisions.load(run/'evidence_index.json').values()))
     record['files'].append({'name': 'artwork.pdf', 'file': evidence['file'], 'sha256': evidence['sha256']})
     revisions.write_json(run/'creative_draft.json', record)
+    with pytest.raises(ValueError, match='creative_draft.json is not vouched'):
+        delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
+    vouch_forged(run, 'creative_draft.json', 'creative_registered')
     with pytest.raises(ValueError, match='revision'):
         delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
     assert not (run/'creative_approval.json').exists()
@@ -212,6 +219,9 @@ def test_manifest_revision_must_match_registered_payloads(tmp_path):
     asset.write_bytes(b'Synthetic artwork')
     record['files'].append({'name':'artwork.pdf','file':str(asset.relative_to(run)), 'sha256':revisions.file_hash(asset)})
     revisions.write_json(run/'creative_draft.json', record)
+    with pytest.raises(ValueError, match='creative_draft.json is not vouched'):
+        delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
+    vouch_forged(run, 'creative_draft.json', 'creative_registered')
     with pytest.raises(ValueError, match='revision'):
         delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
 

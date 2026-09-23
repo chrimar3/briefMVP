@@ -10,10 +10,10 @@
     "rights_and_permissions": true,
     "client_safe": true
   },
-  "approved_at": "2026-09-22T21:56:32.502888+00:00",
-  "draft_sha256": "215d2774be6985785ea099c410413ade78509094cc4d2df94d3f194a3f820831",
-  "brief_approval_sha256": "701d5b136e40e040c4a46c4437c2a776c14c922a6dcfbd3e15c5b09a6317caca",
-  "language_review_sha256": "b48a89670fe406a4984e59b9fb8abc4723bb505a1c5e10f69abe92d16293e089",
+  "approved_at": "2026-09-23T20:23:15.177556+00:00",
+  "draft_sha256": "a683ce56491b17a8d2b6251eac5a69b6e5a5093114e1aabc17bfa8722fce1c10",
+  "brief_approval_sha256": "6e64e93fd932bbbd5bf53cc36ee7e1867aa8f6595fcd2fe10bf1644cc1008778",
+  "language_review_sha256": "6cd97c536d71dd37496d12296ac4fd769437673bd741c9b5155c324bd4902dcc",
   "separation_of_duties": {
     "enforced": [
       "creative_registrant != creative_approver",

@@ -19,7 +19,9 @@ Preparation (recorded in PREPARATION.json, stated in TRANSCRIPT.md) is a rehears
 how a live brief is handled:
   * the committed tier3 artifacts are copied; the developer's real name (signer and resolver of
     record) is replaced by a fictional actor, and sign-off is reset to draft;
-  * the timeline conflict is reset to open so the lifecycle can resolve it again (same text);
+  * every resolved conflict is reset to open so the lifecycle resolves it again with `agency resolve`
+    (same text): the copied resolutions predate the audit log, and a resolution no
+    `conflict_resolved` entry vouches for blocks approval;
   * the question blocks in the stored renders get their exact linked-evidence tags — a
     deterministic stand-in for a current-template re-render, which would need a model call.
     All ten questions stay in the brief: until go-live precondition T-01 was fixed
@@ -162,11 +164,19 @@ def prepare(run: Path, renders_aside: Path) -> dict:
     keep = list(range(len(original_questions)))
     timestamped = sum(any(str(r.get("location", "")).startswith("[") for r in q.get("linked_evidence") or [])
                       for q in original_questions)
-    timeline = next(i for i, c in enumerate(brief["conflicts"]) if c["field"] == "timeline")
-    reset_resolution = brief["conflicts"][timeline]["resolution"]
-    brief["conflicts"][timeline] = {k: v for k, v in brief["conflicts"][timeline].items()
-                                    if k not in ("resolution", "resolved_by")}
-    brief["conflicts"][timeline]["status"] = "open"
+    # Every resolution in the copied brief was made before the audit log existed, so none is
+    # vouched for by a `conflict_resolved` entry and `agency audit` would (rightly) block on it.
+    # All are reset to open and resolved again through `agency resolve`, with the same text.
+    conflicts_reset = []
+    for index, conflict in enumerate(brief["conflicts"]):
+        if conflict.get("status") != "resolved_by_human":
+            continue
+        conflicts_reset.append({"field": conflict["field"], "index": index,
+                                "resolution_text_reused": conflict["resolution"]})
+        brief["conflicts"][index] = {k: v for k, v in conflict.items() if k not in ("resolution", "resolved_by")}
+        brief["conflicts"][index]["status"] = "open"
+    if not any(c["field"] == "timeline" for c in conflicts_reset):
+        raise RehearsalError("the copied brief has no resolved timeline conflict to exercise")
     brief["signoff"] = {"status": "draft"}
     brief["readiness"] = gates.compute_readiness_block(brief)
     gates.validate_brief(brief)
@@ -188,7 +198,10 @@ def prepare(run: Path, renders_aside: Path) -> dict:
         "source": "runs/tier3 (committed graded run), copied; the original is never modified",
         "pseudonymised": "the developer's name (signer and resolver of record) → " + ACCOUNT_LEAD,
         "signoff_reset": "signed_off → draft (sign-off is what this rehearsal exercises)",
-        "conflict_reset": {"field": "timeline", "index": timeline, "resolution_text_reused": reset_resolution},
+        "conflicts_reset": conflicts_reset,
+        "conflicts_note": ("every copied resolution predates the audit log, so each conflict is reset to open and "
+                           "resolved again with `agency resolve` and its original text; a resolution no audit entry "
+                           "vouches for blocks approval"),
         "questions_kept": len(keep),
         "questions_with_timestamp_evidence": timestamped,
         "questions_note": ("every open question stays in the brief. Before go-live precondition T-01 was fixed "
@@ -206,7 +219,10 @@ def prepare(run: Path, renders_aside: Path) -> dict:
 class Transcript:
     def __init__(self, work: Path, run: Path, package: Path):
         self.steps = []
-        self.subs = [(str(run), "$RUN"), (str(package), "$PACKAGE"), (str(work), "$WORK"), (str(REPO), "$REPO")]
+        # The resolved spellings first: on macOS /tmp is /private/tmp, and a resolved path
+        # contains the unresolved one as a substring.
+        pairs = [(run, "$RUN"), (package, "$PACKAGE"), (work, "$WORK"), (REPO, "$REPO")]
+        self.subs = [(str(p.resolve()), name) for p, name in pairs] + [(str(p), name) for p, name in pairs]
 
     def norm(self, text: str) -> str:
         for real, placeholder in self.subs:
@@ -318,10 +334,9 @@ def lifecycle(work: Path) -> tuple:
         "--profile", "creative_production", "--actor", OPERATOR)
     cli(t, "audit (before review)", "pipeline.agency", "audit", run, expect=2, pick=_blockers)
 
-    brief = json.loads((run / "brief.json").read_text(encoding="utf-8"))
-    timeline = preparation["conflict_reset"]["index"]
-    cli(t, "resolve timeline conflict", "pipeline.agency", "resolve", run, "--index", timeline,
-        "--actor", ACCOUNT_LEAD, "--text", preparation["conflict_reset"]["resolution_text_reused"])
+    for reset in preparation["conflicts_reset"]:
+        cli(t, f"resolve {reset['field']} conflict", "pipeline.agency", "resolve", run, "--index", reset["index"],
+            "--actor", ACCOUNT_LEAD, "--text", reset["resolution_text_reused"])
     for lang in ("el", "en"):
         shutil.copy2(aside / f"brief_{lang}.md", run / f"brief_{lang}.md")
     t.steps.append({"step": "render replay", "command": "(copy the prepared renders into $RUN; live runs use "
@@ -398,7 +413,24 @@ def lifecycle(work: Path) -> tuple:
 
 RECORDS = ("brief.json", "agency_inputs.json", "clarifications.json", "language_review.json", "creative_draft.json",
            "releases.json", "approval_withdrawals.json", "handover.json", "agency_audit.md", "input_snapshot.json",
-           "audit_log.jsonl", "amendments.json", "coverage_decisions.json")
+           "audit_log.jsonl", "amendments.json", "coverage_decisions.json", "signoff_regime.json")
+#: Records the audit log vouches for (by hash or by decision content), and the log itself. They are
+#: copied byte for byte so `release_control verify-log records/` re-verifies the committed evidence;
+#: the rehearsal keeps machine paths out of them by working under an unresolved /tmp directory.
+VERBATIM = ("brief.json", "clarifications.json", "language_review.json", "creative_draft.json", "releases.json",
+            "approval_withdrawals.json", "audit_log.jsonl", "amendments.json", "coverage_decisions.json",
+            "signoff_regime.json")
+
+
+def _copy(source: Path, target: Path, t: Transcript, verbatim: bool) -> None:
+    if verbatim:
+        text = source.read_text(encoding="utf-8")
+        if any(marker in text for marker in ("/Users/", "/home/", "/private/", str(REPO))):
+            raise RehearsalError(f"{source.name} is vouched for by the audit log (copied byte for byte) "
+                                 f"but carries a machine path")
+        shutil.copyfile(source, target)
+    else:
+        target.write_text(t.norm(source.read_text(encoding="utf-8")), encoding="utf-8")
 
 
 def write_evidence(out: Path, preparation: dict, t: Transcript, run: Path, package: Path) -> None:
@@ -408,16 +440,18 @@ def write_evidence(out: Path, preparation: dict, t: Transcript, run: Path, packa
     (records / "package").mkdir(parents=True)
     for name in RECORDS:
         if (run / name).is_file():
-            (records / name).write_text(t.norm((run / name).read_text(encoding="utf-8")), encoding="utf-8")
-    # The approvals the withdrawal archived, found by the hashes it recorded.
+            _copy(run / name, records / name, t, name in VERBATIM)
+    # The approvals the withdrawal archived, found by the hashes it recorded (verbatim: the
+    # withdrawal entry vouches for them by those hashes).
     withdrawn = {sha: name for event in json.loads((run / "approval_withdrawals.json").read_text(encoding="utf-8"))
                  for name, sha in event["approval_hashes"].items()}
     for path in sorted((run / "history").glob("*/*approval.json")):
         name = withdrawn.get(hashlib.sha256(path.read_bytes()).hexdigest())
         if name:
-            (records / f"withdrawn_{name}").write_text(t.norm(path.read_text(encoding="utf-8")), encoding="utf-8")
+            _copy(path, records / f"withdrawn_{name}", t, True)
+    # The package verbatim too: its release.json hash is the receipt's manifest_sha256.
     for path in sorted(package.iterdir()):
-        (records / "package" / path.name).write_text(t.norm(path.read_text(encoding="utf-8")), encoding="utf-8")
+        _copy(path, records / "package" / path.name, t, True)
     (out / "PREPARATION.json").write_text(json.dumps(preparation, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (out / "transcript.json").write_text(json.dumps(t.steps, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = ["# Agency lifecycle rehearsal — transcript", "",
@@ -440,7 +474,11 @@ def write_evidence(out: Path, preparation: dict, t: Transcript, run: Path, packa
             lines.append(f"**{i}. {step['step']}**")
             lines += [f"    {h}" for h in step["highlights"]]
             lines.append("")
-    lines += ["Records: `records/` (final run records and the delivered package, paths normalised to $RUN / $PACKAGE / $WORK).", ""]
+    lines += ["Records: `records/` — the final run records and the delivered package. Records the audit log vouches "
+              "for (and the log itself, the withdrawn approvals and the package) are byte-for-byte copies, so "
+              "`python3 -m pipeline.release_control verify-log runs/rehearsal-lifecycle/records` re-verifies them "
+              "(tests/test_rehearsal_records.py); their package path is the rehearsal's temporary /tmp directory. "
+              "Other records have paths normalised to $RUN / $PACKAGE / $WORK.", ""]
     (out / "TRANSCRIPT.md").write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -449,7 +487,10 @@ def main(argv=None) -> int:
     parser.add_argument("--out", type=Path, default=HERE, help="Where TRANSCRIPT.md, transcript.json and records/ go")
     parser.add_argument("--keep-workdir", action="store_true", help="Do not delete the temporary working directory")
     args = parser.parse_args(argv)
-    work = Path(tempfile.mkdtemp(prefix="bb-rehearsal-")).resolve()
+    # Unresolved /tmp: the release receipt records the package path as named, and the receipt is
+    # hashed into the audit log, so it is committed byte for byte (no /Users/ or /private/ in it).
+    base = "/tmp" if Path("/tmp").is_dir() else None
+    work = Path(tempfile.mkdtemp(prefix="bb-rehearsal-", dir=base))
     try:
         preparation, transcript, run, package = lifecycle(work)
         args.out.mkdir(parents=True, exist_ok=True)

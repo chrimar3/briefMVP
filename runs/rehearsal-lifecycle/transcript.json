@@ -13,9 +13,23 @@
     "expected_exit_code": 2,
     "highlights": [
       "status: blocked",
-      "blockers: 25 {\"missing render\": 2, \"question\": 10, \"conflict\": 1, \"campaign\": 10, \"A sourced deliverables matrix is required\": 1, \"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
+      "blockers: 27 {\"missing render\": 2, \"question\": 10, \"conflict\": 3, \"campaign\": 10, \"A sourced deliverables matrix is required\": 1, \"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
       "notice: Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim."
     ]
+  },
+  {
+    "step": "resolve audiences conflict",
+    "command": "python3 -m pipeline.agency resolve $RUN --index 0 --actor 'Synthetic Account Lead A' --text '25–40 urban professionals — the CMO'\\''s explicit correction at kickoff (00:03:41) supersedes the RFP'\\''s Gen Z 18–24, which the previous agency had carried over in positioning.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
+  },
+  {
+    "step": "resolve budget conflict",
+    "command": "python3 -m pipeline.agency resolve $RUN --index 1 --actor 'Synthetic Account Lead A' --text 'Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client'\\''s media shop and is not yet known — total including media remains unconfirmed and stays an open question.'",
+    "exit_code": 0,
+    "expected_exit_code": 0,
+    "highlights": []
   },
   {
     "step": "resolve timeline conflict",
@@ -176,7 +190,12 @@
     "expected_exit_code": 2,
     "highlights": [
       "status: blocked",
-      "blockers: 1 {\"Current source-completeness, bilingual meaning, qualifiers a\": 1}"
+      "blockers: 1 {\"Current source-completeness, bilingual meaning, qualifiers a\": 1}",
+      "notice: conflict.0: resolved, but the brief's audiences field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+      "notice: conflict.0: resolved, but question 2862e1ceed80bea16d6f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+      "notice: conflict.1: resolved, but the brief's budget field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+      "notice: conflict.1: resolved, but question 9866a11081952c55e20f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+      "notice: conflict.2: resolved, but question 9bb7ea4af126a45bd816 on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it"
     ]
   },
   {
@@ -193,7 +212,12 @@
     "expected_exit_code": 0,
     "highlights": [
       "status: reviewed",
-      "blockers: 0 {}"
+      "blockers: 0 {}",
+      "notice: conflict.0: resolved, but the brief's audiences field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+      "notice: conflict.0: resolved, but question 2862e1ceed80bea16d6f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+      "notice: conflict.1: resolved, but the brief's budget field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+      "notice: conflict.1: resolved, but question 9866a11081952c55e20f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+      "notice: conflict.2: resolved, but question 9bb7ea4af126a45bd816 on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it"
     ]
   },
   {
@@ -227,7 +251,7 @@
     "expected_exit_code": 0,
     "highlights": [
       "actor: \"Synthetic Creative Lead C\"",
-      "approved_at: \"2026-09-22T21:56:32.502888+00:00\""
+      "approved_at: \"2026-09-23T20:23:15.177556+00:00\""
     ]
   },
   {
@@ -280,7 +304,7 @@
     "expected_exit_code": 0,
     "highlights": [
       "valid: true",
-      "entries: 17",
+      "entries: 21",
       "errors: []"
     ]
   },
@@ -304,7 +328,7 @@
     "expected_exit_code": 0,
     "highlights": [
       "dry_run: true",
-      "audit_log_deleted: entries 17, verified_intact true",
+      "audit_log_deleted: entries 21, verified_intact true",
       "release_packages_not_deleted: 1"
     ]
   }

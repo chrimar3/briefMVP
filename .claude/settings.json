@@ -1,0 +1,65 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(python3 -m pipeline.agency approve *)",
+      "Bash(python3 -m pipeline.agency attest *)",
+      "Bash(python3 -m pipeline.agency resolve *)",
+      "Bash(python3 -m pipeline.agency apply *)",
+      "Bash(python3 -m pipeline.agency answer *)",
+      "Bash(python3 -m pipeline.agency exclude *)",
+      "Bash(python3 -m pipeline.agency carry-decisions *)",
+      "Bash(python3 -m pipeline.delivery register *)",
+      "Bash(python3 -m pipeline.delivery approve *)",
+      "Bash(python3 -m pipeline.delivery release *)",
+      "Bash(python3 -m pipeline.release_control withdraw *)",
+      "Bash(python -m pipeline.agency approve *)",
+      "Bash(python -m pipeline.agency attest *)",
+      "Bash(python -m pipeline.agency resolve *)",
+      "Bash(python -m pipeline.agency apply *)",
+      "Bash(python -m pipeline.agency answer *)",
+      "Bash(python -m pipeline.agency exclude *)",
+      "Bash(python -m pipeline.agency carry-decisions *)",
+      "Bash(python -m pipeline.delivery register *)",
+      "Bash(python -m pipeline.delivery approve *)",
+      "Bash(python -m pipeline.delivery release *)",
+      "Bash(python -m pipeline.release_control withdraw *)",
+      "Bash(python3 pipeline/agency.py approve *)",
+      "Bash(python3 pipeline/agency.py attest *)",
+      "Bash(python3 pipeline/agency.py resolve *)",
+      "Bash(python3 pipeline/agency.py apply *)",
+      "Bash(python3 pipeline/agency.py answer *)",
+      "Bash(python3 pipeline/agency.py exclude *)",
+      "Bash(python3 pipeline/agency.py carry-decisions *)",
+      "Bash(python3 pipeline/delivery.py register *)",
+      "Bash(python3 pipeline/delivery.py approve *)",
+      "Bash(python3 pipeline/delivery.py release *)",
+      "Bash(python3 pipeline/release_control.py withdraw *)",
+      "Bash(python pipeline/agency.py approve *)",
+      "Bash(python pipeline/agency.py attest *)",
+      "Bash(python pipeline/agency.py resolve *)",
+      "Bash(python pipeline/agency.py apply *)",
+      "Bash(python pipeline/agency.py answer *)",
+      "Bash(python pipeline/agency.py exclude *)",
+      "Bash(python pipeline/agency.py carry-decisions *)",
+      "Bash(python pipeline/delivery.py register *)",
+      "Bash(python pipeline/delivery.py approve *)",
+      "Bash(python pipeline/delivery.py release *)",
+      "Bash(python pipeline/release_control.py withdraw *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/hooks/guard_human_decisions.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking for human-decision commands"
+          }
+        ]
+      }
+    ]
+  }
+}

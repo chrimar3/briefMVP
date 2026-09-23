@@ -13,12 +13,16 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from pipeline import approval, clarifications, client_pack, gates, handover, quality, revisions, stages, review, docview
+from pipeline import (approval, clarifications, client_pack, data_policy, gates, handover, prescreen, quality,
+                      revisions, stages, review, docview)
 
 PROFILES = gates.CONFIG_DIR / "campaign_profiles.json"
 
-#: The project folder's data declaration (owner decision 2026-09-22 #4; W6 owns the gate).
-DATA_DECLARATION = "data_declaration.json"
+#: The project folder's data declaration (owner decision 2026-09-22 #4; data_policy owns the gate).
+DATA_DECLARATION = data_policy.DECLARATION_FILE
+
+#: The form SOURCES.md rule U asks an extractor to record an instruction it did not follow in.
+EMBEDDED_INSTRUCTION_NOTE = "embedded instruction not followed"
 
 
 class SeparationOfDutiesError(ValueError):
@@ -31,32 +35,23 @@ def same_person(a, b) -> bool:
     return bool(norm(a)) and norm(a) == norm(b)
 
 
-def project_data_class(run):
-    """The data_class declared by the project this run was made from, or None.
+def project_data_class(run: Path) -> Optional[str]:
+    """The data class RECORDED for this run (`approval.recorded_data_class`), or None.
 
-    The project folder is where the run's recorded sources live (input_snapshot.json). No
-    snapshot, sources spread over several folders, or a missing/invalid declaration all mean
-    "not known to be synthetic" — the safe reading.
+    Never the project folder's live declaration: the declaration bound into input_snapshot.json
+    must still hash as recorded, validate through data_policy and agree with the run manifest.
+    No binding, a changed or invalid declaration all mean "not known to be synthetic".
     """
-    snapshot = revisions.load(Path(run) / "input_snapshot.json", {}) or {}
-    folders = {Path(item["path"]).parent for key, item in snapshot.items()
-               if key.startswith("source:") and isinstance(item, dict) and item.get("path")}
-    if len(folders) != 1:
-        return None
-    try:
-        declaration = json.loads((folders.pop() / DATA_DECLARATION).read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return None
-    return declaration.get("data_class") if isinstance(declaration, dict) else None
+    return approval.recorded_data_class(run)
 
 
-def solo_rehearsal_waiver(run, role_pair):
-    """The recorded waiver for `--solo-rehearsal`, refused unless the project is synthetic."""
+def solo_rehearsal_waiver(run: Path, role_pair) -> dict:
+    """The recorded waiver for `--solo-rehearsal`, refused unless the run's recorded class is synthetic."""
     data_class = project_data_class(run)
-    if data_class != "synthetic":
+    if data_class != data_policy.SYNTHETIC:
         raise SeparationOfDutiesError(
-            f"--solo-rehearsal is only for synthetic rehearsals; this project declares "
-            f"data_class={data_class!r} (a missing declaration counts as non-synthetic)")
+            f"--solo-rehearsal is only for synthetic rehearsals; this run's recorded data class is "
+            f"{data_class!r} (no declaration bound to the run, or one changed since, counts as non-synthetic)")
     return {"waived": "solo_rehearsal", "roles": list(role_pair), "data_class": data_class,
             "at": revisions.timestamp()}
 
@@ -139,7 +134,79 @@ def campaign_check(inputs, brief):
     return problems
 
 
-def audit(run, *, persist=True):
+def resolution_notices(brief: dict, queue: list) -> list:
+    """Warnings (not blockers) for resolved conflicts whose decision has not reached the brief:
+    the conflict's field is still empty, or a question on the same field / evidence is still
+    untriaged or kept open after the resolution may already have answered it."""
+    notices = []
+    for index, conflict in enumerate(brief.get("conflicts") or []):
+        if conflict.get("status") != "resolved_by_human":
+            continue
+        field = conflict.get("field")
+        if field in gates.BRIEF_FIELDS and not brief.get(field):
+            notices.append(f"conflict.{index}: resolved, but the brief's {field} field is still empty — carry "
+                           f"the decided value into the brief (`agency apply`) or record why it stays empty")
+        for item in queue:
+            related = item["field"] == field or any(
+                hint.startswith(f"Shares evidence with conflict {index};") for hint in item["review_hints"])
+            status = (item["decision"] or {}).get("status")
+            if related and status in (None, "open"):
+                notices.append(f"conflict.{index}: resolved, but question {item['id']} on the same field is "
+                               f"{status or 'untriaged'} — close it as duplicate or answered (`agency answer`) "
+                               f"if the resolution settles it")
+    return notices
+
+
+def source_safety_notices(extracts: dict) -> list:
+    """One notice per extraction note recording an embedded instruction the extractor did not
+    follow (SOURCES.md rule U): a hostile or compromised source reaches a human reviewer."""
+    notices = []
+    for source_id, extract in sorted(extracts.items()):
+        for note in (extract or {}).get("extraction_notes") or []:
+            if EMBEDDED_INSTRUCTION_NOTE in str(note).casefold():
+                notices.append(f"source safety: {source_id} contains text addressed to the AI that the extractor "
+                               f"did not follow — review the source before relying on it: {str(note)[:240]}")
+    return notices
+
+
+def prescreen_notices(run: Path, snapshot: dict) -> list:
+    """Advisory personal-data pre-screen findings as notices (counts and line numbers, never values).
+
+    Uses the runner's `prescreen` report from run_manifest.json when there is one; otherwise
+    screens the run's recorded source files (and only those) with `pipeline.prescreen`.
+    """
+    try:
+        manifest = revisions.load(run / "run_manifest.json", {}) or {}
+    except revisions.CorruptRecordError:
+        manifest = {}
+    report = manifest.get("prescreen") if isinstance(manifest, dict) else None
+    if isinstance(report, dict) and isinstance(report.get("sources"), list):
+        sources = report["sources"]
+    else:
+        terms = prescreen.load_terms()
+        sources = []
+        for key, item in sorted(snapshot.items()):
+            path = Path(item["path"]) if key.startswith("source:") and isinstance(item, dict) else None
+            if path is not None and path.is_file() and not path.is_symlink():
+                try:
+                    text = path.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
+                sources.append({"file": path.name, "findings": prescreen.scan_text(text, terms)})
+    notices = []
+    for source in sources:
+        findings = source.get("findings") if isinstance(source, dict) else None
+        if not isinstance(findings, dict) or not findings:
+            continue
+        parts = ", ".join(f"{category} ×{entry.get('count')} (lines {', '.join(map(str, entry.get('lines') or []))})"
+                          for category, entry in sorted(findings.items()) if isinstance(entry, dict))
+        notices.append(f"personal-data pre-screen (advisory; values are never recorded): {source.get('file')}: "
+                       f"{parts} — a person checks these lines before any non-synthetic use")
+    return notices
+
+
+def audit(run: Path, *, persist: bool = True) -> dict:
+    """Evidence, structure and decision-record checks of a run: blockers stop approval, notices inform."""
     run = Path(run)
     brief = read_run(run)
     inputs = revisions.load(run / "agency_inputs.json", {})
@@ -212,6 +279,12 @@ def audit(run, *, persist=True):
     for i, conflict in enumerate(brief.get("conflicts") or []):
         if conflict.get("status") != "resolved_by_human" or not all(conflict.get(k, "").strip() for k in ("resolution", "resolved_by")):
             problems.append(f"conflict.{i}: needs a human resolution")
+    # Every human decision this approval relies on must be vouched by the audit log: a
+    # resolution, attestation, triage or exclusion written around the commands blocks.
+    problems.extend(f"audit log: {p}" for p in revisions.verify_audit_log(run))
+    notices.extend(resolution_notices(brief, q))
+    notices.extend(source_safety_notices(extracts))
+    notices.extend(prescreen_notices(run, snapshot))
     problems.extend(campaign_check(inputs, brief))
     spec_path = snapshot.get("channel_specs", {}).get("path", str(gates.CONFIG_DIR / "channel_specs.json"))
     specs = revisions.load(spec_path)
@@ -243,7 +316,8 @@ def audit(run, *, persist=True):
     return result
 
 
-def initialize(run, project, glossary, profile, actor):
+def initialize(run: Path, project: Path, glossary: Path, profile: str, actor: str) -> None:
+    """Bind inputs and the data declaration to the run, create agency_inputs.json, record the regime."""
     brief = read_run(run)
     if not actor.strip():
         raise ValueError("Human actor required")
@@ -255,8 +329,12 @@ def initialize(run, project, glossary, profile, actor):
         raise ValueError("Glossary client does not match brief")
     if {s.source_id for s in sources} != {s['source_id'] for s in brief['meta']['sources']}:
         raise ValueError("Project sources do not match the brief")
+    # The project's data declaration is validated and bound to the run here, so the solo waiver,
+    # the creative regime and the reviews shelf read the class recorded now, not a later edit.
+    data_policy.load_declaration(project)
     paths = {f"source:{s.source_id}": s.path for s in sources}
-    paths.update({"glossary": glossary, "channel_specs": gates.CONFIG_DIR / "channel_specs.json", "campaign_profiles": PROFILES})
+    paths.update({"glossary": glossary, "channel_specs": gates.CONFIG_DIR / "channel_specs.json",
+                  "campaign_profiles": PROFILES, approval.DECLARATION_KEY: Path(project) / DATA_DECLARATION})
     prior = revisions.load(run / "input_snapshot.json", {})
     current = revisions.input_state(paths)
     if prior:
@@ -273,9 +351,12 @@ def initialize(run, project, glossary, profile, actor):
         "checklist": {k: {"prompt": v, "value": "", "owner": "", "evidence": []} for k, v in profiles[profile].items()},
         "deliverables": []})
     revisions.capture_evidence(run, {key: value["path"] for key, value in current.items()})
+    # The creative stage of this run now needs the content-bound approval, recorded explicitly.
+    approval.record_regime(run, approval.AGENCY_APPROVAL, actor, "agency init: content-bound approval regime")
 
 
-def resolve(run, index, actor, resolution):
+def resolve(run: Path, index: int, actor: str, resolution: str) -> None:
+    """Record a named human's resolution of conflict `index`, logged with digests the log vouches by."""
     brief = read_run(run)
     if not actor.strip() or not resolution.strip():
         raise ValueError("Named human and resolution are required")
@@ -289,7 +370,9 @@ def resolve(run, index, actor, resolution):
     revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_el.md", "brief_en.md", "brief_el.html", "brief_en.html", "brief_review.html", "creative"])
     revisions.write_json(run / "brief.json", candidate)
     revisions.append_audit(run, "conflict_resolved", actor, record="brief.json",
-                           details={"conflict": index, "resolution": resolution})
+                           details={"conflict": index, "resolution": resolution,
+                                    "resolution_sha256": revisions.text_digest(resolution),
+                                    "conflict_sha256": revisions.conflict_digest(candidate["conflicts"][index])})
 
 
 def apply_candidate(run, candidate_path, actor, reason):
@@ -319,7 +402,8 @@ def apply_candidate(run, candidate_path, actor, reason):
                            details={"reason": reason})
 
 
-def approve(run, actor, summary, solo_rehearsal=False):
+def approve(run: Path, actor: str, summary: str, solo_rehearsal: bool = False) -> None:
+    """Sign off a blocker-free brief; logs the attestation rebind and the approval."""
     if not actor.strip() or not summary.strip():
         raise ValueError("Human actor and edit/review summary are required")
     result = audit(run)
@@ -344,6 +428,10 @@ def approve(run, actor, summary, solo_rehearsal=False):
     attestation = revisions.load(run / "language_review.json")
     attestation["fingerprint"] = revisions.fingerprint(run)
     revisions.write_json(run / "language_review.json", attestation)
+    # The rewrite moves the record's hash away from its `language_attested` entry; log it so the
+    # attestation stays vouched (by the signer who moved it, naming the attester who made it).
+    revisions.append_audit(run, "language_attestation_rebound", actor, record="language_review.json",
+                           details={"attested_by": attestation.get("actor"), "fingerprint": attestation["fingerprint"]})
     revisions.write_json(run / "approval.json", {"actor": actor, "signed_at": revisions.timestamp(), "fingerprint": revisions.fingerprint(run), "language_review_sha256": revisions.file_hash(run / "language_review.json"),
                                                  "separation_of_duties": separation})
     revisions.append_audit(run, "brief_approved", actor, record="approval.json",
@@ -415,11 +503,19 @@ def main(argv: Optional[list] = None) -> int:
                     print(json.dumps(q, ensure_ascii=False, indent=2))
                 else:
                     clarifications.record(run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority)
+                    decision = revisions.load(run / "clarifications.json", {})[args.id]
                     revisions.append_audit(run, "question_triaged", args.actor, record="clarifications.json",
-                                           details={"question": args.id, "status": args.status})
+                                           details={"question": args.id, "status": args.status,
+                                                    "entry_digests": [revisions.keyed_entry_digest(args.id, decision)]})
             elif args.command == "carry-decisions":
                 with revisions.run_lock(args.parent):
-                    print(json.dumps(clarifications.carry_decisions(args.parent, run, args.actor), indent=2))
+                    result = clarifications.carry_decisions(args.parent, run, args.actor)
+                decisions = revisions.load(run / "clarifications.json", {})
+                revisions.append_audit(run, "decisions_carried", args.actor, record="clarifications.json",
+                                       details={"parent": result["parent"], "carried": result["carried"],
+                                                "entry_digests": [revisions.keyed_entry_digest(k, decisions[k])
+                                                                  for k in result["carried"]]})
+                print(json.dumps(result, indent=2))
             elif args.command == "apply":
                 apply_candidate(run, args.candidate, args.actor, args.reason)
             elif args.command == "resolve":
@@ -433,8 +529,10 @@ def main(argv: Optional[list] = None) -> int:
                 decisions[args.fact] = {"actor": args.actor, "reason": args.reason, "at": revisions.timestamp(),
                                         "brief_binding": brief_binding(brief)}
                 revisions.write_json(run / "coverage_decisions.json", decisions)
+                entry_digest = revisions.keyed_entry_digest(args.fact, decisions[args.fact])
                 revisions.append_audit(run, "coverage_excluded", args.actor, record="coverage_decisions.json",
-                                       details={"fact": args.fact, "reason": args.reason})
+                                       details={"fact": args.fact, "reason": args.reason,
+                                                "entry_digests": [entry_digest]})
             elif args.command == "attest":
                 read_run(run)
                 if not args.actor.strip() or not args.notes.strip():

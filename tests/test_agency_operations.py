@@ -51,8 +51,9 @@ def test_exactly_30_minutes_does_not_pass_under_30_target():
     assert report["review_under_30"] is False
 
 
-def make_review_run(tmp_path):
-    """Synthetic minimal complete handover. It does not assert model quality."""
+def make_review_run(tmp_path, data_class=None):
+    """Synthetic minimal complete handover. It does not assert model quality. With `data_class`,
+    tmp_path (the project folder) declares it and the run's snapshot binds it, as the runner does."""
     run = tmp_path / 'review'
     run.mkdir()
     ref = {'source_id': 'rfp', 'location': 'L1', 'anchor': 'Synthetic campaign', 'speaker_or_author': 'Synthetic client'}
@@ -76,6 +77,8 @@ def make_review_run(tmp_path):
     specs = revisions.load(gates.CONFIG_DIR / 'channel_specs.json')['specs'][-1]
     row = {**specs, 'id': 'asset-1', 'spec_id': specs['id'], 'quantity': 1, 'languages': ['el'], 'deadline': '2026-12-01', 'owner': 'Synthetic production', 'approval_owner': 'Synthetic lead', 'dependencies': [], 'evidence': [ref]}
     revisions.write_json(run / 'agency_inputs.json', {'campaign_profile': 'creative_production', 'checklist': answers, 'deliverables': [row]})
+    if data_class:
+        bind_declaration(run, tmp_path, data_class)
     return run
 
 
@@ -140,6 +143,23 @@ def test_render_question_requires_its_own_evidence_not_a_citation_elsewhere():
     b = {'open_questions': [{'field': 'budget', 'linked_evidence': [{'source_id': 'email', 'location': 'L1', 'anchor': 'uncertain'}]}]}
     text = '## 1 Objectives\n- Something [email L1]\n## ⚠ Open questions\n1. What budget?\n'
     assert any('question' in p for p in agency.quality.render_coverage(b, text, 'en'))
+
+
+def bind_declaration(run, project_dir, data_class, bind=True):
+    """Write the project's data declaration and, like the runner and `agency init`, bind it into
+    the run's input snapshot (bind=False writes the file only: a later, unbound edit)."""
+    path = Path(project_dir) / 'data_declaration.json'
+    path.write_text(json.dumps({'data_class': data_class}), encoding='utf-8')
+    if bind:
+        snapshot = revisions.load(run / 'input_snapshot.json', {})
+        snapshot.update(revisions.input_state({'data_declaration': path}))
+        revisions.write_json(run / 'input_snapshot.json', snapshot)
+
+
+def vouch_forged(run, record, event):
+    """Append a well-formed log entry for a hand-edited record. The log is tamper-EVIDENT, not
+    tamper-proof: this lets a test reach the defence-in-depth check behind the vouching check."""
+    revisions.append_audit(run, event, 'Forger', record=record)
 
 
 def approve_synthetic(run):

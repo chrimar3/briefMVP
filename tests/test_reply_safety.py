@@ -17,7 +17,8 @@ def test_reply_blocks_approved_release_until_explicit_review(tmp_path):
         with (run/f'brief_{lang}.md').open('a') as handle:
             handle.write('\n## ⚠ Open questions\n1. Who reviews? [rfp L1]\n')
     queue = clarifications.queue(brief)
-    clarifications.record(run, queue, queue[0]['id'], 'open', 'Synthetic lead', 'Can wait', '', 'Synthetic account', 'nonblocking')
+    assert agency.main(['answer', str(run), '--id', queue[0]['id'], '--status', 'open', '--actor', 'Synthetic lead',
+                        '--text', 'Can wait', '--owner', 'Synthetic account', '--priority', 'nonblocking']) == 0
     approve_synthetic(run)
     delivery.register(run, tmp_path/'draft.txt', 'Synthetic operator')
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)

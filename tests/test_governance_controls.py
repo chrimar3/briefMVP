@@ -10,7 +10,7 @@ import json
 import pytest
 
 from pipeline import agency, delivery, quality, release_control, revisions
-from test_agency_operations import approve_synthetic, make_review_run
+from test_agency_operations import approve_synthetic, bind_declaration, make_review_run, vouch_forged
 from test_delivery import prepare_release
 
 CHECKS = quality.field_review_checklist()
@@ -33,9 +33,10 @@ def _apply(run, tmp_path, candidate, actor="Synthetic editor"):
     return agency.main(["apply", str(run), "--candidate", str(path), "--actor", actor, "--reason", "Edit"])
 
 
-def _declare(tmp_path, data_class):
-    """make_review_run's source lives in tmp_path, so that is the project folder."""
-    (tmp_path / "data_declaration.json").write_text(json.dumps({"data_class": data_class}), encoding="utf-8")
+def _declare(tmp_path, data_class, bind=True):
+    """make_review_run's source lives in tmp_path, so that is the project folder. The runner and
+    `agency init` bind the declaration into the run's snapshot; bind=False is a later, unbound edit."""
+    bind_declaration(tmp_path / "review", tmp_path, data_class, bind=bind)
 
 
 # -- amendments ----------------------------------------------------------------------------
@@ -160,15 +161,21 @@ def test_creative_approver_must_differ_from_registrant_and_brief_signer(tmp_path
 
 
 def test_creative_solo_rehearsal_is_recorded_and_rechecked_at_release(tmp_path):
-    run = prepare_release(tmp_path)
+    unbound = prepare_release(tmp_path)          # no declaration bound to the run
     with pytest.raises(agency.SeparationOfDutiesError, match="synthetic"):
-        delivery.approve(run, "Synthetic operator", "Solo", delivery.CHECKS, solo_rehearsal=True)
-    _declare(tmp_path, "synthetic")
+        delivery.approve(unbound, "Synthetic operator", "Solo", delivery.CHECKS, solo_rehearsal=True)
+    (tmp_path / "bound").mkdir()
+    run = prepare_release(tmp_path / "bound", data_class="synthetic")
     approval = delivery.approve(run, "Synthetic operator", "Solo", delivery.CHECKS, solo_rehearsal=True)
     assert approval["separation_of_duties"]["waived"] == "solo_rehearsal"
-    _declare(tmp_path, "approved")      # the project stops being synthetic: the waiver lapses
+    # the project stops being synthetic after the run: the waiver lapses
+    bind_declaration(run, tmp_path / "bound", "approved", bind=False)
     with pytest.raises(agency.SeparationOfDutiesError):
+        delivery._recheck_separation(run, revisions.load(run / "creative_approval.json"),
+                                     revisions.load(run / "creative_draft.json"))
+    with pytest.raises(ValueError, match="data_declaration changed"):
         delivery.release(run, tmp_path / "out", "Synthetic releaser")
+    assert not (tmp_path / "out").exists()
 
 
 def test_a_hand_edited_creative_approval_cannot_smuggle_a_same_person_release(tmp_path):
@@ -177,6 +184,9 @@ def test_a_hand_edited_creative_approval_cannot_smuggle_a_same_person_release(tm
     record = revisions.load(run / "creative_approval.json")
     record["actor"] = "Synthetic operator"
     revisions.write_json(run / "creative_approval.json", record)
+    with pytest.raises(ValueError, match="creative_approval.json is not vouched"):
+        delivery.release(run, tmp_path / "out", "Synthetic releaser")
+    vouch_forged(run, "creative_approval.json", "creative_approved")   # a forger who also writes the log
     with pytest.raises(agency.SeparationOfDutiesError):
         delivery.release(run, tmp_path / "out", "Synthetic releaser")
 
@@ -211,8 +221,8 @@ def test_every_decision_is_chained_in_order(tmp_path):
     run = _released(tmp_path)
     log = revisions.read_audit_log(run)
     events = [e["event"] for e in log]
-    assert events[-5:] == ["language_attested", "brief_approved", "creative_registered",
-                           "creative_approved", "creative_released"]
+    assert events[-6:] == ["language_attested", "language_attestation_rebound", "brief_approved",
+                           "creative_registered", "creative_approved", "creative_released"]
     assert [e["seq"] for e in log] == list(range(1, len(log) + 1))
     assert log[0]["prev_sha256"] == revisions.GENESIS_SHA256
     assert revisions.verify_audit_log(run) == []
@@ -249,8 +259,10 @@ def test_a_broken_log_blocks_the_next_release(tmp_path):
     path = run / revisions.AUDIT_LOG
     lines = path.read_text(encoding="utf-8").splitlines()
     path.write_text("\n".join(lines[1:]) + "\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="Audit log"):
+    with pytest.raises(ValueError, match="(?i)audit log"):
         delivery.release(run, tmp_path / "again", "Traffic lead")
+    with pytest.raises(ValueError, match="Audit log check failed"):
+        revisions.require_intact_audit_log(run)
 
 
 def test_withdrawal_and_resolution_are_logged(tmp_path):
