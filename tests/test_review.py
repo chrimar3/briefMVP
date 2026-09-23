@@ -14,13 +14,11 @@ import types
 from pathlib import Path
 
 import pytest
+from conftest import STORED_RUNS, stored_run
 
 from pipeline import review
 
-from review_cases import stored_run
-
 REPO = Path(__file__).resolve().parents[1]
-STORED_RUNS = ("runs/tier3", "runs/live", "runs/evidence-20260729")
 
 FORBIDDEN = re.compile(r"cost|model|claude|sonnet|haiku|opus", re.IGNORECASE)
 
@@ -250,7 +248,7 @@ def test_greek_first_chrome_with_a_data_lang_toggle():
 def test_health_strip_shows_the_readiness_block_verbatim():
     """The strip mirrors brief['readiness'] — no recomputation, so the page can
     never disagree with the gates."""
-    brief = _brief("runs/evidence-20260729")
+    brief = _brief("synthetic-draft-case")
     page = review.render_review(brief)
     readiness = brief["readiness"]
     assert f"{readiness['fields_with_evidence']}/7" in page
@@ -263,13 +261,13 @@ def test_health_strip_shows_the_readiness_block_verbatim():
 
 
 def test_empty_field_arrays_and_zero_conflicts_render_quiet_placeholders():
-    """tier3 ships empty audiences/budget and runs/live ships zero conflicts — the
+    """tier3 ships empty audiences/budget and the synthetic demo case ships zero conflicts — the
     page must show an explicit absence, never a broken or missing section."""
     tier3_page = review.render_review(_brief("runs/tier3"))
     assert 'id="field-audiences"' in tier3_page
     assert 'id="field-budget"' in tier3_page
     assert "Καμία τεκμηριωμένη εγγραφή" in tier3_page
-    live_page = review.render_review(_brief("runs/live"))
+    live_page = review.render_review(_brief("synthetic-demo-case"))
     assert "Καμία σύγκρουση μεταξύ των πηγών" in live_page
 
 

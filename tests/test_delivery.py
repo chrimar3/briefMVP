@@ -1,17 +1,22 @@
 """Creative release contracts on synthetic evidence, no runtime model calls."""
-import json
-from pathlib import Path
+
 import pytest
-from pipeline import revisions, delivery
-from test_agency_operations import vouch_forged
+from conftest import SYNTHETIC_DRAFT, approve_synthetic, make_review_run, prepare_release, vouch_forged
+
+from pipeline import delivery, revisions
 
 
 def test_draft_fact_references_reject_unknown_entry_and_missing_mandatory():
-    brief = {'objectives': [{'content': 'Awareness', 'qualifier': 'stated'}], 'mandatories': [{'content': 'No health claims', 'qualifier': 'stated'}]}
+    brief = {
+        'objectives': [{'content': 'Awareness', 'qualifier': 'stated'}],
+        'mandatories': [{'content': 'No health claims', 'qualifier': 'stated'}],
+    }
     errors, claims = delivery.inspect_creative('> CREATIVE DRAFT\nAwareness [brief:objectives:9]', brief)
     assert any('reference' in e for e in errors)
     assert any('mandatory' in e for e in errors)
-    errors, claims = delivery.inspect_creative('> CREATIVE DRAFT\nAwareness [brief:objectives:0]\nNo health claims [brief:mandatories:0]', brief)
+    errors, claims = delivery.inspect_creative(
+        '> CREATIVE DRAFT\nAwareness [brief:objectives:0]\nNo health claims [brief:mandatories:0]', brief
+    )
     assert not errors
     assert len(claims) == 2
 
@@ -46,8 +51,13 @@ def test_evidence_copy_preserves_original_and_detects_tampering(tmp_path):
 
 def test_decision_carry_forward_requires_same_identity_and_same_evidence(tmp_path):
     old, new = tmp_path/'old', tmp_path/'new'
-    old.mkdir(); new.mkdir()
-    q={'field':'budget','suggested_question_for_client':'Who approves?', 'linked_evidence':[{'source_id':'rfp','location':'L1','anchor':'Name unknown'}]}
+    old.mkdir()
+    new.mkdir()
+    q = {
+        'field': 'budget',
+        'suggested_question_for_client': 'Who approves?',
+        'linked_evidence': [{'source_id': 'rfp', 'location': 'L1', 'anchor': 'Name unknown'}],
+    }
     b={'meta':{'client_id':'synthetic','project_id':'one'},'open_questions':[q]}
     for path in (old,new):
         revisions.write_json(path/'brief.json',b)
@@ -61,31 +71,6 @@ def test_decision_carry_forward_requires_same_identity_and_same_evidence(tmp_pat
     revisions.write_json(new/'brief.json',b)
     with pytest.raises(ValueError, match='identity'):
         revisions.carry_decisions(old,new,'Operator')
-
-
-#: A draft that passes every approval-time check, including W4's fact checks on the signed brief
-#: (a draft must carry a strategic-tensions section, even when it lists none).
-SYNTHETIC_DRAFT = ('> CREATIVE DRAFT\nSynthetic campaign [brief:objectives:0]\nSynthetic campaign [brief:mandatories:0]\n'
-                   '\n## Strategic tensions\nNone identified.\n')
-
-
-def prepare_release(tmp_path, draft_text=None, data_class=None):
-    from test_agency_operations import make_review_run, approve_synthetic
-    from pipeline import spec_catalog
-    run=make_review_run(tmp_path, data_class=data_class)
-    inputs=revisions.load(run/'agency_inputs.json')
-    row=dict(inputs['deliverables'][0])
-    row['id']=row['spec_id']
-    row.update(source_url='https://specs.example.invalid/synthetic', checked_on='2020-01-01', review_due='2099-01-01', checked_by='Synthetic traffic')
-    table={'owner':'Synthetic traffic','specs':[row]}
-    path=tmp_path/'catalog.json'
-    revisions.write_json(path,table)
-    spec_catalog.bind(run,path,actor='Synthetic traffic')
-    approve_synthetic(run)
-    draft=tmp_path/'draft.txt'
-    draft.write_text(draft_text or SYNTHETIC_DRAFT)
-    delivery.register(run,draft,'Synthetic operator')
-    return run
 
 
 def test_full_release_is_curated_and_approval_bound(tmp_path):
@@ -130,7 +115,6 @@ def test_approval_requires_the_strategic_tensions_section(tmp_path):
 
 
 def test_stub_catalog_blocks_creative_approval(tmp_path):
-    from test_agency_operations import make_review_run, approve_synthetic
     run=make_review_run(tmp_path)
     approve_synthetic(run)
     draft=tmp_path/'draft.txt'
@@ -149,12 +133,19 @@ def test_stale_brief_or_revoked_language_review_blocks_release(tmp_path):
 
 
 def test_catalog_rebinding_allows_changed_specs_but_invalidates_review(tmp_path):
-    from test_agency_operations import make_review_run
     from pipeline import spec_catalog
     run=make_review_run(tmp_path)
     row=dict(revisions.load(run/'agency_inputs.json')['deliverables'][0])
-    row.update(id=row['spec_id'], resolution='1000x1000',source_url='https://specs.example.invalid/test',checked_by='Synthetic traffic',checked_on='2020-01-01',review_due='2099-01-01')
-    path=tmp_path/'spec.json';revisions.write_json(path,{'owner':'Synthetic traffic','specs':[row]})
+    row.update(
+        id=row['spec_id'],
+        resolution='1000x1000',
+        source_url='https://specs.example.invalid/test',
+        checked_by='Synthetic traffic',
+        checked_on='2020-01-01',
+        review_due='2099-01-01',
+    )
+    path = tmp_path/'spec.json'
+    revisions.write_json(path, {'owner': 'Synthetic traffic', 'specs': [row]})
     spec_catalog.bind(run,path,actor='Synthetic traffic')
     from pipeline import agency
     assert any('resolution' in e for e in agency.audit(run)['blockers'])
@@ -163,7 +154,8 @@ def test_catalog_rebinding_allows_changed_specs_but_invalidates_review(tmp_path)
 
 def test_publisher_refuses_busy_run(tmp_path):
     from pipeline import publish
-    run=tmp_path/'run';run.mkdir()
+    run = tmp_path/'run'
+    run.mkdir()
     (run/'brief_review.html').write_text('<p>synthetic</p>')
     with revisions.run_lock(run):
         with pytest.raises(ValueError,match='busy'):
@@ -184,8 +176,16 @@ def test_registered_manifest_cannot_escape_delivery_folder(tmp_path):
 
 def test_decision_carry_does_not_reuse_triage_after_source_changes(tmp_path):
     from pipeline import clarifications
-    old,new=tmp_path/'old',tmp_path/'new';old.mkdir();new.mkdir()
-    q={'field':'budget','gap':'Unknown approver','why_it_matters':'Approval','suggested_question_for_client':'Who approves?', 'linked_evidence':[{'source_id':'rfp','location':'L1','anchor':'Name unknown'}]}
+    old, new = tmp_path/'old', tmp_path/'new'
+    old.mkdir()
+    new.mkdir()
+    q = {
+        'field': 'budget',
+        'gap': 'Unknown approver',
+        'why_it_matters': 'Approval',
+        'suggested_question_for_client': 'Who approves?',
+        'linked_evidence': [{'source_id': 'rfp', 'location': 'L1', 'anchor': 'Name unknown'}],
+    }
     b={'meta':{'client_id':'synthetic','project_id':'one'},'open_questions':[q]}
     for path,sha in ((old,'before'),(new,'after')):
         revisions.write_json(path/'brief.json',b)
@@ -217,7 +217,9 @@ def test_manifest_revision_must_match_registered_payloads(tmp_path):
     root = run/'creative_versions'/record['revision']
     asset = root/'artwork.pdf'
     asset.write_bytes(b'Synthetic artwork')
-    record['files'].append({'name':'artwork.pdf','file':str(asset.relative_to(run)), 'sha256':revisions.file_hash(asset)})
+    record['files'].append(
+        {'name': 'artwork.pdf', 'file': str(asset.relative_to(run)), 'sha256': revisions.file_hash(asset)}
+    )
     revisions.write_json(run/'creative_draft.json', record)
     with pytest.raises(ValueError, match='creative_draft.json is not vouched'):
         delivery.approve(run, 'Synthetic lead', 'Review', delivery.CHECKS)
@@ -274,7 +276,6 @@ def test_withdrawal_of_release_survives_catalog_rebind(tmp_path):
 
 def test_interrupted_withdrawal_allows_fresh_human_reapproval(tmp_path, monkeypatch):
     from pipeline import release_control
-    from test_agency_operations import approve_synthetic
     run = prepare_release(tmp_path)
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
     def fail_archive(*args, **kwargs):

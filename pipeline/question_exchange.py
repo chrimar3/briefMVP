@@ -2,46 +2,52 @@
 
 No external messaging, canonical edits, triage decisions or implicit approvals.
 """
+
 from __future__ import annotations
 
 import argparse
-from contextlib import ExitStack
 import json
 import os
-from pathlib import Path
 import re
 import sys
 import tempfile
+from collections.abc import Callable, Mapping, Sequence
+from contextlib import ExitStack
+from pathlib import Path
+from typing import Any, Optional, Union
 
-from pipeline import agency, clarifications, quality, revisions
-
+from pipeline import agency, clarifications, gates, quality, revisions
+from pipeline.records import PathLike
 
 PACK_VERSION = 1
 
+#: A pack or replies document: a path to a JSON file, or the parsed object itself.
+JsonInput = Union[PathLike, Mapping[str, Any]]
 
-def _text(value, label):
+
+def _text(value: Any, label: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f'{label} must be nonempty text')
     return value
 
 
-def _run(path):
+def _run(path: PathLike) -> Path:
     path = Path(path).resolve()
     if not path.is_dir() or not (path / 'brief.json').is_file():
         raise ValueError('Run must already exist with brief.json')
     return path
 
 
-def _identity(brief):
+def _identity(brief: Mapping[str, Any]) -> dict[str, str]:
     meta = brief.get('meta', {})
     return {key: _text(meta.get(key), key) for key in ('client_id', 'project_id')}
 
 
-def _binding(run):
+def _binding(run: Path) -> str:
     return revisions.digest(str(run.resolve()))
 
 
-def _read(value):
+def _read(value: JsonInput) -> dict[str, Any]:
     if isinstance(value, (str, Path)):
         value = revisions.load(value)
     if not isinstance(value, dict):
@@ -49,18 +55,18 @@ def _read(value):
     return value
 
 
-def _directory(run, name):
+def _directory(run: Path, name: str) -> Path:
     path = run / 'question_exchange' / name
     if not path.resolve().is_relative_to(run):
         raise ValueError('Exchange directory must remain inside the run')
     return path
 
 
-def _create_json(path, value):
+def _create_json(path: PathLike, value: Any) -> None:
     """Publish a complete file atomically with hard-link no-clobber semantics."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    temp = None
+    temp: Optional[Path] = None
     try:
         with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
                                          prefix='.question-exchange-', delete=False) as handle:
@@ -78,11 +84,11 @@ def _create_json(path, value):
             temp.unlink(missing_ok=True)
 
 
-def _snapshot(run):
+def _snapshot(run: Path) -> dict[str, dict[str, Any]]:
     snapshot = revisions.load(run / 'input_snapshot.json')
     if not isinstance(snapshot, dict):
         raise ValueError('Run needs an input_snapshot.json baseline')
-    sources = {}
+    sources: dict[str, dict[str, Any]] = {}
     for key, record in snapshot.items():
         if key.startswith('source:'):
             if (not isinstance(record, dict) or not isinstance(record.get('sha256'), str)
@@ -95,7 +101,7 @@ def _snapshot(run):
     return sources
 
 
-def _current(run):
+def _current(run: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     brief = agency.read_run(run)
     _snapshot(run)
     revisions.verify_inputs(run)
@@ -106,7 +112,8 @@ def _current(run):
     return brief, clarifications.queue(brief, decisions)
 
 
-def _questions(items, selected=None):
+def _questions(items: Sequence[Mapping[str, Any]],
+               selected: Optional[Sequence[str]] = None) -> list[dict[str, Any]]:
     unresolved = {item['id']: item for item in items
                   if not item['decision'] or item['decision'].get('status') == 'open'}
     if selected is None:
@@ -132,7 +139,8 @@ def _questions(items, selected=None):
     return questions
 
 
-def export_questions(run, output, question_ids=None):
+def export_questions(run: PathLike, output: PathLike,
+                     question_ids: Optional[Sequence[str]] = None) -> dict[str, Any]:
     """Export unresolved, explicitly triaged questions; retain a local pack receipt."""
     run, output = _run(run), Path(output).absolute()
     with revisions.run_lock(run):
@@ -142,11 +150,13 @@ def export_questions(run, output, question_ids=None):
         resolved_output = output.resolve()
         if (resolved_output.is_relative_to(run)
                 and not resolved_output.is_relative_to(run / 'question_exports')):
-            raise ValueError('Export outside the run or inside RUN/question_exports; run artifacts are reserved')
+            raise ValueError('Export outside the run or inside RUN/question_exports; '
+                             'run artifacts are reserved')
         brief, items = _current(run)
-        pack = {'version': PACK_VERSION, 'identity': _identity(brief),
-                'run_binding': _binding(run), 'fingerprint': revisions.fingerprint(run),
-                'created_at': revisions.timestamp(), 'questions': _questions(items, question_ids)}
+        pack: dict[str, Any] = {'version': PACK_VERSION, 'identity': _identity(brief),
+                                'run_binding': _binding(run), 'fingerprint': revisions.fingerprint(run),
+                                'created_at': revisions.timestamp(),
+                                'questions': _questions(items, question_ids)}
         pack['pack_id'] = revisions.digest(pack)
         receipt = _directory(run, 'packs') / (pack['pack_id'] + '.json')
         _create_json(receipt, pack)
@@ -155,7 +165,8 @@ def export_questions(run, output, question_ids=None):
     return pack
 
 
-def _validate_pack(run, pack, brief, items):
+def _validate_pack(run: Path, pack: Mapping[str, Any], brief: Mapping[str, Any],
+                   items: Sequence[Mapping[str, Any]]) -> None:
     ident = pack.get('pack_id')
     if not isinstance(ident, str) or not re.fullmatch(r'[0-9a-f]{64}', ident):
         raise ValueError('Invalid pack_id')
@@ -177,7 +188,7 @@ def _validate_pack(run, pack, brief, items):
         raise ValueError('Pack questions no longer match current unresolved triage')
 
 
-def _proposal_records(run):
+def _proposal_records(run: Path) -> list[dict[str, Any]]:
     """Validate immutable receipts, including attribution and the registered pack."""
     records = []
     for path in sorted(_directory(run, 'proposals').glob('*.json')):
@@ -200,10 +211,12 @@ def _proposal_records(run):
                 or any(record.get(key) != pack.get(key) for key in ('run_binding', 'identity', 'fingerprint'))):
             raise ValueError('Proposal run, identity or fingerprint does not match its pack')
         questions = pack.get('questions')
-        if not isinstance(questions, list) or not all(isinstance(q, dict) and isinstance(q.get('id'), str) for q in questions):
+        if (not isinstance(questions, list)
+                or not all(isinstance(q, dict) and isinstance(q.get('id'), str) for q in questions)):
             raise ValueError('Invalid proposal pack questions')
         known = {q['id'] for q in questions}
-        rows, seen = record.get('replies'), set()
+        rows = record.get('replies')
+        seen: set[str] = set()
         if not isinstance(rows, list) or not rows:
             raise ValueError('Corrupt proposal replies')
         for row in rows:
@@ -223,9 +236,9 @@ def _proposal_records(run):
     return records
 
 
-def _dismissed(run, records):
+def _dismissed(run: Path, records: Sequence[Mapping[str, Any]]) -> set[str]:
     proposals = {record['proposal_id']: record for record in records}
-    dismissed = set()
+    dismissed: set[str] = set()
     for path in sorted(_directory(run, 'dismissals').glob('*.json')):
         record = _read(path)
         ident = record.get('dismissal_id')
@@ -245,7 +258,7 @@ def _dismissed(run, records):
     return dismissed
 
 
-def pending_proposals(run) -> list[dict]:
+def pending_proposals(run: PathLike) -> list[dict[str, Any]]:
     """Validated current-version proposals without an explicit human dismissal.
 
     Read-only and safe to call inside an already-held run_lock. Approval/release
@@ -263,7 +276,7 @@ def pending_proposals(run) -> list[dict]:
     return result
 
 
-def dismiss(run, proposal_id, *, actor, reason):
+def dismiss(run: PathLike, proposal_id: str, *, actor: str, reason: str) -> dict[str, Any]:
     """Append an explicit human rejection; retain the proposal and canonical state."""
     run = _run(run)
     _text(actor, 'actor')
@@ -284,12 +297,12 @@ def dismiss(run, proposal_id, *, actor, reason):
     return record
 
 
-def _prior_proposals(run, fingerprint):
+def _prior_proposals(run: Path, fingerprint: str) -> set[str]:
     return {row['question_id'] for record in _proposal_records(run)
             if record['fingerprint'] == fingerprint for row in record['replies']}
 
 
-def import_replies(run, pack, replies, actor):
+def import_replies(run: PathLike, pack: JsonInput, replies: JsonInput, actor: str) -> dict[str, Any]:
     """Record a complete valid batch as proposals; duplicates reject the whole batch.
 
     pack/replies accept paths or JSON objects. Partial coverage of a pack is valid.
@@ -308,7 +321,7 @@ def import_replies(run, pack, replies, actor):
             raise ValueError('A nonempty replies list is required')
         known = {q['id'] for q in pack['questions']}
         seen = _prior_proposals(run, pack['fingerprint'])
-        batch_ids = set()
+        batch_ids: set[str] = set()
         for row in rows:
             if not isinstance(row, dict) or set(row) != {'question_id', 'text', 'evidence'}:
                 raise ValueError('Each reply requires only question_id, text and evidence')
@@ -316,7 +329,8 @@ def import_replies(run, pack, replies, actor):
             if ident not in known:
                 raise ValueError(f'Unknown question ID for this pack: {ident}')
             if ident in seen or ident in batch_ids:
-                raise ValueError(f'Duplicate reply: question {ident} already has a proposal for this version')
+                raise ValueError(f'Duplicate reply: question {ident} already has a proposal '
+                                 'for this version')
             batch_ids.add(ident)
             _text(row['text'], 'reply text')
             evidence = row['evidence']
@@ -329,29 +343,31 @@ def import_replies(run, pack, replies, actor):
                   'fingerprint': pack['fingerprint'], 'actor': actor,
                   'recorded_at': revisions.timestamp(), 'replies': rows,
                   'pending_question_ids': sorted(known - seen - batch_ids),
-                  'required_review': 'Verify reply attribution and meaning; ingest authorized synthetic evidence, '
-                                     'revise and review the brief explicitly. No question was resolved or work approved.'}
+                  'required_review': 'Verify reply attribution and meaning; ingest authorized synthetic '
+                                     'evidence, revise and review the brief explicitly. No question was '
+                                     'resolved or work approved.'}
         record['proposal_id'] = revisions.digest(record)
         _create_json(_directory(run, 'proposals') / (record['proposal_id'] + '.json'), record)
     return record
 
 
-def _drift(sources):
-    result = {}
+def _drift(sources: Mapping[str, Mapping[str, Any]]) -> dict[str, dict[str, Any]]:
+    result: dict[str, dict[str, Any]] = {}
     # Match verify_inputs: resolved, nonrecursive *.md files in each tracked
     # source directory. Keep membership changes separate from per-source hashes.
     recorded = {Path(source['path']).resolve() for source in sources.values()}
     for directory in sorted({path.parent for path in recorded}, key=str):
         expected = {path for path in recorded if path.parent == directory}
-        current = {path.resolve() for path in directory.glob('*.md') if path.is_file()}
-        if current != expected:
+        members = {path.resolve() for path in directory.glob('*.md') if path.is_file()}
+        if members != expected:
             result['source-directory:' + str(directory)] = {
                 'status': 'membership_changed', 'directory': str(directory),
-                'added_paths': sorted(str(path) for path in current - expected),
-                'removed_paths': sorted(str(path) for path in expected - current),
+                'added_paths': sorted(str(path) for path in members - expected),
+                'removed_paths': sorted(str(path) for path in expected - members),
             }
     for key, source in sources.items():
         path = Path(source['path'])
+        current: Optional[str]
         try:
             current = revisions.file_hash(path)
         except OSError:
@@ -362,15 +378,19 @@ def _drift(sources):
     return result
 
 
-def _evidence_by_field(brief):
-    fields = {}
+def _evidence_by_field(brief: Mapping[str, Any]) -> dict[str, dict[str, list[Any]]]:
+    fields: dict[str, dict[str, list[Any]]] = {}
     for field, destination, refs in quality.destinations(brief):
         if refs:
             fields.setdefault(field, {})[destination] = refs
     return fields
 
 
-def impact(before, after):
+def _hashes(sources: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    return {key: record['sha256'] for key, record in sources.items()}
+
+
+def impact(before: PathLike, after: PathLike) -> dict[str, Any]:
     """Compare canonical records and source baselines; report live drift separately."""
     before, after = _run(before), _run(after)
     with ExitStack() as stack:
@@ -380,34 +400,38 @@ def impact(before, after):
         if _identity(old) != _identity(new):
             raise ValueError('Impact requires the same client/project identity')
         old_sources, new_sources = _snapshot(before), _snapshot(after)
-        hashes = lambda sources: {key: record['sha256'] for key, record in sources.items()}
-        source_changes = revisions.changes(hashes(old_sources), hashes(new_sources))
+        source_changes = revisions.changes(_hashes(old_sources), _hashes(new_sources))
         field_changes = revisions.changes(old, new)
         evidence_changes = revisions.changes(_evidence_by_field(old), _evidence_by_field(new))
         drift = {'before': _drift(old_sources), 'after': _drift(new_sources)}
         affected_sources = set(source_changes) | set(drift['before']) | set(drift['after'])
         affected_fields = sorted({field for brief in (old, new)
                                   for field, _, refs in quality.destinations(brief)
-                                  if field and any('source:' + ref.get('source_id', '') in affected_sources for ref in refs)})
-        reviews = []
+                                  if field and any('source:' + ref.get('source_id', '') in affected_sources
+                                                   for ref in refs)})
+        reviews: list[str] = []
         if field_changes:
-            reviews.append('Review changed canonical fields, bilingual renders, downstream deliverables and creative; obtain fresh approval for any adopted revision.')
+            reviews.append('Review changed canonical fields, bilingual renders, downstream deliverables and '
+                           'creative; obtain fresh approval for any adopted revision.')
         if source_changes or any(drift.values()):
-            reviews.append('Review added, changed or missing sources and their citations even when brief text is unchanged; re-extract or reconcile evidence before carrying decisions or approving.')
+            reviews.append('Review added, changed or missing sources and their citations even when brief text '
+                           'is unchanged; re-extract or reconcile evidence before carrying decisions or approving.')
         if evidence_changes:
             reviews.append('Verify changed citation anchors, attribution and meaning against sources.')
         if 'open_questions' in field_changes or 'conflicts' in field_changes:
             reviews.append('Re-triage changed questions and conflicts explicitly; no prior resolution is inferred.')
-        return {'identity': _identity(old), 'before_fingerprint': revisions.fingerprint(before),
-                'after_fingerprint': revisions.fingerprint(after),
-                'changed_fields': sorted(field_changes), 'field_changes': field_changes,
-                'evidence_changes': evidence_changes, 'source_changes': source_changes,
-                'source_drift': drift, 'source_affected_fields': affected_fields,
-                'review_required': bool(reviews), 'required_review': reviews,
-                'approval_effect': 'Informational only; no canonical record, decision or approval was changed.'}
+        report = {'identity': _identity(old), 'before_fingerprint': revisions.fingerprint(before),
+                  'after_fingerprint': revisions.fingerprint(after),
+                  'changed_fields': sorted(field_changes), 'field_changes': field_changes,
+                  'evidence_changes': evidence_changes, 'source_changes': source_changes,
+                  'source_drift': drift, 'source_affected_fields': affected_fields,
+                  'review_required': bool(reviews), 'required_review': reviews,
+                  'approval_effect': 'Informational only; no canonical record, decision or approval was changed.'}
+    return report
 
 
-def main(argv=None):
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    """CLI: export, import, dismiss or impact; prints the JSON result, exit 2 with the reason on refusal."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
     export = commands.add_parser('export')
@@ -429,9 +453,11 @@ def main(argv=None):
     compare.add_argument('after', type=Path)
     args = vars(parser.parse_args(argv))
     command = args.pop('command')
+    handlers: dict[str, Callable[..., dict[str, Any]]] = {
+        'export': export_questions, 'import': import_replies, 'impact': impact, 'dismiss': dismiss}
     try:
-        result = {'export': export_questions, 'import': import_replies, 'impact': impact, 'dismiss': dismiss}[command](**args)
-    except (ValueError, OSError) as exc:
+        result = handlers[command](**args)
+    except (ValueError, OSError, gates.GateError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2))

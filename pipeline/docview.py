@@ -25,7 +25,7 @@ from pathlib import Path
 if __package__ in (None, ""):  # allow `python3 pipeline/docview.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline.review import THEME_CSS, ReviewInputError
+from pipeline.review import THEME_CSS  # noqa: E402
 
 #: source markdown name → (output name, html lang tag)
 DOCUMENTS = (("brief_el.md", "brief_el.html", "el"), ("brief_en.md", "brief_en.html", "en"))
@@ -113,8 +113,8 @@ def render_document(md_text: str, lang: str = "el") -> str:
                 out.append("<ul>")
                 mode = "ul"
             out.append(f"<li>{_inline(line[len('- '):])}</li>")
-        elif _OL_RE.match(stripped):
-            number, rest = _OL_RE.match(stripped).groups()
+        elif (ol := _OL_RE.match(stripped)) is not None:
+            number, rest = ol.groups()
             if mode != "ol":
                 close()
                 out.append("<ol>")

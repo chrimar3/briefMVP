@@ -31,6 +31,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -59,6 +60,7 @@ def build_system_prompt() -> str:
 
 
 def build_user_prompt(source: gates.SourceDoc, project_id: str, client_config: dict) -> str:
+    """The per-call user message: the work-order parameters plus the inlined source document."""
     return (
         f"EXTRACTION WORK ORDER — single-call substrate (cost-audit C4).\n\n"
         f"Parameters:\n"
@@ -82,7 +84,7 @@ def _strip_fences(text: str) -> str:
     return text.strip()
 
 
-def run_cli(system_prompt: str, user_prompt: str) -> tuple:
+def run_cli(system_prompt: str, user_prompt: str) -> tuple[str, dict[str, Any]]:
     """One single-turn subagent call: same billing substrate as the pipeline, zero tools."""
     inline = {"c4-extract": {"description": "single-call extraction spike", "prompt": system_prompt,
                              "tools": [], "model": "haiku"}}
@@ -106,13 +108,13 @@ def run_cli(system_prompt: str, user_prompt: str) -> tuple:
 _HAIKU = (1.00, 5.00, 0.10, 1.25)
 
 
-def run_api(system_prompt: str, user_prompt: str) -> tuple:
+def run_api(system_prompt: str, user_prompt: str) -> tuple[str, dict[str, Any]]:
     """One metered API call (production shape). Loud preflight: this is the only sanctioned
     non-subagent model path (CLAUDE.md rule 4, C4 amendment) and it never runs implicitly."""
     try:
         import anthropic
-    except ImportError:
-        raise SystemExit("[spike] the api transport needs `pip install anthropic`")
+    except ImportError as exc:
+        raise SystemExit("[spike] the api transport needs `pip install anthropic`") from exc
     client = anthropic.Anthropic()  # resolves ANTHROPIC_API_KEY / ant-auth profile; errors if neither
     response = client.messages.create(
         model="claude-haiku-4-5",
@@ -132,7 +134,8 @@ def run_api(system_prompt: str, user_prompt: str) -> tuple:
     return text, {"cost_usd": round(cost, 6), "num_turns": 1, "usage": tokens}
 
 
-def main(argv=None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: extract every fixture source over one transport and gate each reply; exit 1 unless all clean."""
     parser = argparse.ArgumentParser(description="Single-call substrate spike (extraction).")
     parser.add_argument("--transport", choices=("cli", "api"), required=True)
     parser.add_argument("--project", default=str(REPO_ROOT / "fixtures" / "northlight_01"))
@@ -147,7 +150,8 @@ def main(argv=None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     runner = run_cli if args.transport == "cli" else run_api
-    results, total = [], 0.0
+    results: list[dict[str, Any]] = []
+    total = 0.0
     for source in sources:
         text, meter = runner(system_prompt, build_user_prompt(
             source, Path(args.project).name, client_config))

@@ -36,7 +36,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Callable, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -70,6 +70,7 @@ FILE_TYPES = ("MP4", "MOV", "PNG", "JPG", "JPEG", "GIF", "PDF", "TIFF", "PSD", "
 
 
 def resolve_project(manifest: dict, override: Optional[Path] = None) -> Optional[Path]:
+    """The run's project folder: the override, else the manifest's project_dir if it exists here."""
     if override:
         return Path(override)
     raw = manifest.get("project_dir")
@@ -83,23 +84,24 @@ def resolve_project(manifest: dict, override: Optional[Path] = None) -> Optional
     return next((c for c in candidates if c.is_dir()), None)
 
 
-def _load_json(path: Path):
+def _load_json(path: Path) -> Any:
     """A run record, or None when absent; a corrupt record raises CorruptRecordError (never skipped)."""
     return records.load_strict(path) if path.is_file() else None
 
 
-def load_run(run_dir: Path, project: Optional[Path] = None) -> dict:
+def load_run(run_dir: Path, project: Optional[Path] = None) -> dict[str, Any]:
+    """Everything the checks read: manifest, brief, renders, extracts, annotations, creative drafts, sources."""
     run_dir = Path(run_dir)
     manifest = _load_json(run_dir / "run_manifest.json") or {}
     project_dir = resolve_project(manifest, project)
     sources = {s.source_id: s.text for s in gates.discover_sources(project_dir)} if project_dir else {}
-    creative = {}
+    creative: dict[str, str] = {}
     for path in sorted((run_dir / "creative").glob("*.md")) if (run_dir / "creative").is_dir() else []:
         text = path.read_text(encoding="utf-8")
         first = text.splitlines()[0] if text.splitlines() else ""
         if any(b in first for b in CREATIVE_BANNERS):
             creative[path.name] = text
-    annotated = {}
+    annotated: dict[str, str] = {}
     fid = run_dir / "fidelity"
     for path in sorted(fid.glob("*.annotated.md")) if fid.is_dir() else []:
         annotated[path.name[: -len(".annotated.md")]] = path.read_text(encoding="utf-8")
@@ -137,7 +139,7 @@ def _norm(text: str) -> str:
     return " ".join(re.sub(r"[^\w' ]+", " ", text.lower()).split())
 
 
-def _entries(brief: dict) -> list:
+def _entries(brief: dict) -> list[tuple[str, int, dict[str, Any]]]:
     return [(f, i, e) for f in gates.BRIEF_FIELDS for i, e in enumerate(brief.get(f) or [])]
 
 
@@ -163,7 +165,7 @@ def cited_span(source_text: str, anchor: str) -> str:
     return source_text[start: end if end >= 0 else len(source_text)]
 
 
-def _finding(check: str, status: str, detail: str, items: Optional[list] = None, **extra) -> dict:
+def _finding(check: str, status: str, detail: str, items: Optional[list] = None, **extra: Any) -> dict[str, Any]:
     return {"check": check, "status": status, "detail": detail, "items": items or [], **extra}
 
 
@@ -173,6 +175,7 @@ def _finding(check: str, status: str, detail: str, items: Optional[list] = None,
 
 
 def check_speculative_coverage(run: dict) -> dict:
+    """S1: conditional extract items dropped from the brief or reaching it without the hedge."""
     name = "S1 speculative_coverage"
     brief = run["brief"]
     if not brief or not run["extracts"]:
@@ -205,6 +208,7 @@ def check_speculative_coverage(run: dict) -> dict:
 
 
 def check_stale_questions(run: dict) -> dict:
+    """S2: open questions left in a field whose conflict a human already resolved."""
     name = "S2 stale_questions"
     brief = run["brief"]
     if not brief:
@@ -242,6 +246,7 @@ def garbled_tokens(run: dict) -> dict:
 
 
 def check_garble_visibility(run: dict) -> dict:
+    """S3: ASR-garbled tokens resolved silently in brief content or missing from a render."""
     name = "S3 garble_visibility"
     brief = run["brief"]
     garbles = garbled_tokens(run)
@@ -272,6 +277,7 @@ def check_garble_visibility(run: dict) -> dict:
 
 
 def check_citation_content(run: dict) -> dict:
+    """S4: distinctive content (compounds, quotes, glossary terms) absent from the cited line(s)."""
     name = "S4 citation_content"
     brief = run["brief"]
     if not brief or not run["sources"]:
@@ -318,11 +324,12 @@ def check_citation_content(run: dict) -> dict:
     return _finding(name, "flag" if items else "ok", f"{checked} distinctive phrase(s) probed (heuristic)", items)
 
 
-def _words(text: str) -> set:
+def _words(text: str) -> set[str]:
     return {w for w in _norm(text).split() if len(w) > 3}
 
 
 def check_duplicate_questions(run: dict, threshold: float = 0.6) -> dict:
+    """S5: near-duplicate questions within a field, or questions re-asking an open conflict."""
     name = "S5 duplicate_questions"
     brief = run["brief"]
     if not brief:
@@ -337,7 +344,8 @@ def check_duplicate_questions(run: dict, threshold: float = 0.6) -> dict:
             wb = _words((qs[b].get("gap") or "") + " " + (qs[b].get("suggested_question_for_client") or ""))
             jac = len(wa & wb) / len(wa | wb) if wa | wb else 0.0
             if jac >= threshold:
-                items.append(f"open_questions[{a}] ~ open_questions[{b}] ({qs[a].get('field')}): word overlap {jac:.2f}")
+                items.append(f"open_questions[{a}] ~ open_questions[{b}] ({qs[a].get('field')}): "
+                             f"word overlap {jac:.2f}")
     for i, q in enumerate(qs):
         q_refs = {(r.get("source_id"), r.get("anchor")) for r in q.get("linked_evidence") or q.get("evidence") or []}
         for c_idx, c in enumerate(brief.get("conflicts") or []):
@@ -346,7 +354,8 @@ def check_duplicate_questions(run: dict, threshold: float = 0.6) -> dict:
             c_refs = {((p.get("evidence") or {}).get("source_id"), (p.get("evidence") or {}).get("anchor"))
                       for p in c.get("positions") or []}
             if q_refs & c_refs:
-                items.append(f"open_questions[{i}] re-asks open conflicts[{c_idx}] ({c.get('field')}) — shared evidence")
+                items.append(f"open_questions[{i}] re-asks open conflicts[{c_idx}] ({c.get('field')}) "
+                             f"— shared evidence")
     return _finding(name, "flag" if items else "ok",
                     f"{len(qs)} question(s); near-duplicate threshold {threshold} word overlap within a field", items)
 
@@ -356,6 +365,7 @@ def _money_norm(token: str) -> str:
 
 
 def check_creative_currency(run: dict) -> dict:
+    """S6: currency/unit amounts in creative drafts that the brief's text never states."""
     name = "S6 creative_currency"
     if not run["creative"]:
         return _finding(name, "n/a", "no creative drafts in this run")
@@ -373,6 +383,7 @@ def check_creative_currency(run: dict) -> dict:
 
 
 def check_creative_spec_tokens(run: dict, spec_table: Optional[dict] = None) -> dict:
+    """S7: spec tokens on `[spec: id]` lines not byte-identical to the cited spec-table row."""
     name = "S7 creative_spec_tokens"
     if not run["creative"]:
         return _finding(name, "n/a", "no creative drafts in this run")
@@ -401,6 +412,7 @@ def check_creative_spec_tokens(run: dict, spec_table: Optional[dict] = None) -> 
 
 
 def check_glossary_coverage(run: dict) -> dict:
+    """S8: keep_latin glossary terms used in the brief but not character-exact in a render."""
     name = "S8 glossary_coverage"
     if not run["brief"] or len(run["renders"]) < 2:
         return _finding(name, "n/a", "needs a brief and both renders")
@@ -417,6 +429,7 @@ def check_glossary_coverage(run: dict) -> dict:
 
 
 def check_hedge_drift(run: dict) -> dict:
+    """S9: decade-range phrasing ("in the eighties") for a spoken figure."""
     name = "S9 hedge_drift"
     if not run["brief"]:
         return _finding(name, "n/a", "needs a brief")
@@ -427,12 +440,14 @@ def check_hedge_drift(run: dict) -> dict:
                     items)
 
 
-CHECKS = (check_speculative_coverage, check_stale_questions, check_garble_visibility, check_citation_content,
-          check_duplicate_questions, check_creative_currency, check_creative_spec_tokens,
-          check_glossary_coverage, check_hedge_drift)
+CHECKS: tuple[Callable[[dict[str, Any]], dict[str, Any]], ...] = (
+    check_speculative_coverage, check_stale_questions, check_garble_visibility, check_citation_content,
+    check_duplicate_questions, check_creative_currency, check_creative_spec_tokens,
+    check_glossary_coverage, check_hedge_drift)
 
 
-def score(run_dir: Path, project: Optional[Path] = None) -> dict:
+def score(run_dir: Path, project: Optional[Path] = None) -> dict[str, Any]:
+    """Run S1–S9 on one run and summarise the statuses."""
     run = load_run(run_dir, project)
     results = [check(run) for check in CHECKS]
     return {"run": Path(run_dir).name, "project_dir": str(run["project_dir"]) if run["project_dir"] else None,
@@ -440,7 +455,8 @@ def score(run_dir: Path, project: Optional[Path] = None) -> dict:
             "summary": {s: sum(1 for r in results if r["status"] == s) for s in ("flag", "vacuous", "ok", "n/a")}}
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: score each run and print the findings (or JSON); exit 2 when a run is not a directory."""
     p = argparse.ArgumentParser(description="Report-only scorer for the frozen harness's blind spots.")
     p.add_argument("runs", nargs="+")
     p.add_argument("--project", help="project folder (default: from run_manifest.json)")

@@ -6,27 +6,35 @@ permissions:
   contents: read
 jobs:
   quality:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        # The floor declared in pyproject.toml (requires-python >= 3.9) and a current release.
-        python-version: ["3.9", "3.12"]
-    env:
-      PYTHONPYCACHEPREFIX: /tmp/brief-builder-ci-cache
+        # The floor declared in pyproject.toml (requires-python >= 3.9; EOL since October 2025, a
+        # known item there) and a current release, on Linux; plus the operators' platform (macOS:
+        # fcntl run locks, the `open` command in run_full.sh) on the current release.
+        include:
+          - os: ubuntu-latest
+            python-version: "3.9"
+          - os: ubuntu-latest
+            python-version: "3.12"
+          - os: macos-latest
+            python-version: "3.12"
     steps:
-      # Pinned by tag, not commit SHA: the SHAs could not be looked up offline when this was
-      # written. Replace each tag with its full commit SHA (keeping the tag as a comment).
+      # Pinned by tag, not commit SHA: the SHAs could not be verified offline when this was
+      # written (round 2, W-Q). Replace each tag with its full commit SHA, keeping the tag as a
+      # comment (`uses: actions/checkout@<sha> # v4`), once they can be looked up.
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install the locked deterministic toolchain
+      - name: Install the locked toolchain (runtime, tests, ruff, mypy, pytest-cov)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.lock ruff==0.6.9
-      - name: Lint (ruff, pyflakes-level rules from pyproject.toml)
-        run: ruff check .
-      - name: Tests, read-only frozen grade, agency benchmark (the same command humans run)
-        run: PYTHON=python scripts/check.sh --no-lint
+          python -m pip install -r requirements-dev.lock
+      # The decision-paper gate runs `node --check`; Node.js is preinstalled on GitHub-hosted runners.
+      - name: Lint, type check, tests with the coverage floor, frozen grade, agency benchmark, decision-paper gate
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/brief-builder-pycache
+        run: PYTHON=python scripts/check.sh

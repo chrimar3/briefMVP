@@ -34,7 +34,8 @@ ANSWER_KEY = {
     "expected_classification": {"project_type": "advertising_creative", "sensitivity_tier": "S1"},
     "seeded_conflicts": [
         {
-            "id": "C1", "field": "budget",
+            "id": "C1",
+            "field": "budget",
             "position_a": {"source_id": "paper", "signal": "70.000"},
             "position_b": {"source_id": "talk", "signal": "πενήντα"},
         }
@@ -43,7 +44,9 @@ ANSWER_KEY = {
         {"id": "G1", "field_any_of": ["budget"], "keyword_any_of": ["media spend"]},
         {"id": "G2", "field_any_of": ["objectives"], "keyword_any_of": ["KPI"]},
     ],
-    "seeded_garbling": [{"id": "T1", "source_id": "talk", "corrupted": "μπραντ αγουέρνες", "intended": "brand awareness"}],
+    "seeded_garbling": [
+        {"id": "T1", "source_id": "talk", "corrupted": "μπραντ αγουέρνες", "intended": "brand awareness"}
+    ],
     "traps": [
         {"id": "X1", "type": "retraction", "forbidden_as_committed_keywords": ["OOH", "μετρό"]},
         {"id": "X2", "type": "speculation", "keywords": ["TikTok dance"]},
@@ -252,7 +255,7 @@ def test_orphan_prose_is_caught(synth):
 
 
 def test_cited_claim_lines_pass(synth):
-    renders = {lang: f"# Brief\n\n## 1. Objectives\nGrow. [talk 00:02:00]\n\n## 6. Budget\nAround fifty. [paper §6]\n"
+    renders = {lang: "# Brief\n\n## 1. Objectives\nGrow. [talk 00:02:00]\n\n## 6. Budget\nAround fifty. [paper §6]\n"
                for lang in ("en", "el")}
     run = synth(extract=_extract(), brief=_brief(), renders=renders)
     assert harness.check_no_orphan_prose(run).status == "pass"

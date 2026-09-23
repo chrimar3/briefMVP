@@ -28,7 +28,7 @@ from pathlib import Path
 if __package__ in (None, ""):  # allow `python3 pipeline/share.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline.review import THEME_CSS, ReviewInputError
+from pipeline.review import THEME_CSS, ReviewInputError  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 EXAMPLE_RUN = REPO_ROOT / "runs" / "tier3"

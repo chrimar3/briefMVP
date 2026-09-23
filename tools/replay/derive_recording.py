@@ -50,6 +50,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from pipeline import extract_rules, gates, quality  # noqa: E402
+
 SOURCE_RUN = REPO_ROOT / "runs" / "tier3"
 TARGET = Path(__file__).resolve().parent / "recordings" / "northlight_01"
 

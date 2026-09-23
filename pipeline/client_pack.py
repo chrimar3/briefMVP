@@ -1,15 +1,20 @@
 """Explicitly approved reference material, imported as evidence, never hidden memory."""
+
 from __future__ import annotations
 
+import re
 from datetime import date
 from pathlib import Path
-import re
+from typing import Any, Optional
+
+from pipeline.records import PathLike
 
 KINDS = {"positioning", "tone", "approved_claim", "prohibited_claim", "terminology", "brand_requirement"}
 
 
-def validate(pack, client_id, today=None):
-    problems = []
+def validate(pack: Any, client_id: str, today: Optional[date] = None) -> list[str]:
+    """Problems with a client pack (shape, identity, expiry, sourced items); empty when usable."""
+    problems: list[str] = []
     if not isinstance(pack, dict):
         return ["Client pack must be an object"]
     if not re.fullmatch(r"[A-Za-z0-9._-]+", str(pack.get("version", ""))):
@@ -38,7 +43,8 @@ def validate(pack, client_id, today=None):
     return problems
 
 
-def materialize(pack, client_id, output):
+def materialize(pack: Any, client_id: str, output: PathLike) -> Path:
+    """Write a validated pack as a new background source file; never overwrites."""
     problems = validate(pack, client_id)
     if problems:
         raise ValueError("; ".join(problems))
@@ -46,9 +52,14 @@ def materialize(pack, client_id, output):
     if output.exists():
         raise ValueError("Reference output already exists; use a new version filename")
     # Matches the intake/source header contract; conflicting campaign claims remain visible.
-    text = (f"source_id: client_reference_{pack['version']}\nsource_type: background\nsource_date: {date.today().isoformat()}\n\n"
-            f"# Approved reference for {client_id}\n\nVersion: {pack['version']}\nApproved by: {pack['approved_by']}\n"
-            f"Review due: {pack['review_due']}\n\nThese references do not override campaign sources; report disagreements.\n\n")
+    text = (
+        f"source_id: client_reference_{pack['version']}\nsource_type: background\n"
+        f"source_date: {date.today().isoformat()}\n\n"
+        f"# Approved reference for {client_id}\n\nVersion: {pack['version']}\n"
+        f"Approved by: {pack['approved_by']}\n"
+        f"Review due: {pack['review_due']}\n\n"
+        "These references do not override campaign sources; report disagreements.\n\n"
+    )
     for item in pack["items"]:
         text += f"- {item['kind']}: {item['text']} (source: {item['source']})\n"
     output.write_text(text, encoding="utf-8")

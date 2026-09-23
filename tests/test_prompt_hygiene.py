@@ -75,8 +75,8 @@ def fixture_ngrams(repo_root):
 
 def test_the_detector_catches_a_quoted_fixture_line(fixture_ngrams, repo_root):
     """Guard the guard: the old SOURCES.md §9 example quoted the graded budget line."""
-    line = next(l for l in (repo_root / "fixtures" / "northlight_01" / "transcript_kickoff.md")
-                .read_text(encoding="utf-8").splitlines() if l.startswith("[00:14:32]"))
+    line = next(text for text in (repo_root / "fixtures" / "northlight_01" / "transcript_kickoff.md")
+                .read_text(encoding="utf-8").splitlines() if text.startswith("[00:14:32]"))
     assert _ngrams(line) & fixture_ngrams
 
 

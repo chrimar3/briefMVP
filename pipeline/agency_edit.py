@@ -1,35 +1,41 @@
 """Attributed checklist and deliverable edits without hand-editing companion JSON."""
+
 from __future__ import annotations
 
 import argparse
 import copy
 import re
-from pathlib import Path
 import sys
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Any, Optional
 
 from pipeline import agency, gates, handover, quality, revisions
+from pipeline.records import PathLike
 
 
-def _required(**values):
+def _required(**values: Any) -> None:
     for key, value in values.items():
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f'{key} must be nonempty text')
 
 
-def _context(run):
+def _context(run: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     brief = agency.read_run(run)
     inputs = revisions.load(run / 'agency_inputs.json')
     if not isinstance(inputs, dict):
         raise ValueError('Initialize agency_inputs first')
+    if not isinstance(revisions.load(run / 'input_snapshot.json', {}), dict):
+        raise ValueError('input_snapshot.json must be a JSON object')
     revisions.verify_inputs(run)
     return brief, inputs
 
 
-def _evidence(brief, refs):
+def _evidence(brief: dict[str, Any], refs: Sequence[str]) -> list[dict[str, Any]]:
     if not refs:
         raise ValueError('At least one canonical FIELD:INDEX ref required')
     targets = {name: evidence for _, name, evidence in quality.destinations(brief)}
-    evidence = []
+    evidence: list[dict[str, Any]] = []
     for ref in refs:
         match = re.fullmatch(r'([a-z_]+):(0|[1-9]\d*)', ref)
         if not match or match[1] not in gates.BRIEF_FIELDS:
@@ -43,19 +49,22 @@ def _evidence(brief, refs):
     return evidence
 
 
-def _save(run, inputs):
+def _save(run: Path, inputs: dict[str, Any]) -> None:
     revisions.archive(run, ['agency_inputs.json'], copy_only=True)
-    revisions.archive(run, ['approval.json', 'language_review.json', 'agency_audit.json', 'handover.json', 'creative_approval.json'])
+    revisions.archive(run, ['approval.json', 'language_review.json', 'agency_audit.json', 'handover.json',
+                            'creative_approval.json'])
     revisions.write_json(run / 'agency_inputs.json', inputs)
 
 
-def checklist(run, *, key, value, owner, actor, refs):
+def checklist(run: PathLike, *, key: str, value: str, owner: str, actor: str, refs: Sequence[str]) -> dict[str, Any]:
     """Upsert a recognized profile answer with exact canonical evidence."""
     run = Path(run).resolve()
     _required(key=key, value=value, owner=owner, actor=actor)
     with revisions.run_lock(run):
         brief, inputs = _context(run)
         profiles = revisions.load(agency.PROFILES)['profiles']
+        if not isinstance(profiles, dict):
+            raise ValueError('Campaign profiles config must map profile names to checklists')
         profile = profiles.get(inputs.get('campaign_profile'), {})
         if key not in profile:
             raise ValueError(f'Unknown checklist key for campaign profile: {key}')
@@ -67,20 +76,27 @@ def checklist(run, *, key, value, owner, actor, refs):
     return row
 
 
-def deliverable(run, *, id, spec_id, quantity, languages, deadline, owner,
-                approval_owner, actor, refs, dependencies=(), duration_seconds=None):
+def deliverable(run: PathLike, *, id: str, spec_id: str, quantity: int, languages: list[str], deadline: str,
+                owner: str, approval_owner: str, actor: str, refs: Sequence[str],
+                dependencies: Sequence[str] = (), duration_seconds: Optional[float] = None) -> dict[str, Any]:
     """Upsert by asset ID, copying spec-owned values without reinterpretation."""
     run = Path(run).resolve()
     _required(id=id, spec_id=spec_id, deadline=deadline, owner=owner,
               approval_owner=approval_owner, actor=actor)
-    if not isinstance(dependencies, (list, tuple)) or any(not isinstance(v, str) or not v.strip() for v in dependencies):
+    if (not isinstance(dependencies, (list, tuple))
+            or any(not isinstance(v, str) or not v.strip() for v in dependencies)):
         raise ValueError('dependencies must contain nonempty text')
     with revisions.run_lock(run):
         brief, inputs = _context(run)
         snapshot = revisions.load(run / 'input_snapshot.json', {})
-        path = snapshot.get('channel_specs', {}).get('path', gates.CONFIG_DIR / 'channel_specs.json')
+        binding = snapshot.get('channel_specs', {})
+        if not isinstance(binding, dict):
+            raise ValueError('input_snapshot.json channel_specs must be a JSON object')
+        path = binding.get('path', gates.CONFIG_DIR / 'channel_specs.json')
         table = revisions.load(path)
         specs = table.get('specs', []) if isinstance(table, dict) else []
+        if not all(isinstance(r, dict) for r in specs):
+            raise ValueError('Channel spec catalog rows must be JSON objects')
         ids = [r.get('id') for r in specs]
         if len(ids) != len(set(ids)):
             raise ValueError('Duplicate spec IDs in catalog')
@@ -98,6 +114,8 @@ def deliverable(run, *, id, spec_id, quantity, languages, deadline, owner,
         if duration_seconds is not None:
             row['duration_seconds'] = duration_seconds
         rows = inputs.setdefault('deliverables', [])
+        if not isinstance(rows, list) or not all(isinstance(item, dict) for item in rows):
+            raise ValueError('agency_inputs.json deliverables must be a list of objects')
         matches = [i for i, item in enumerate(rows) if item.get('id') == id]
         if len(matches) > 1:
             raise ValueError('Duplicate deliverable IDs; repair companion record first')
@@ -112,7 +130,8 @@ def deliverable(run, *, id, spec_id, quantity, languages, deadline, owner,
     return row
 
 
-def main(argv=None):
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    """CLI: record one attributed checklist answer or deliverable; exit 2 with the reason on refusal."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('checklist', 'deliverable'):
@@ -134,8 +153,11 @@ def main(argv=None):
     args = vars(parser.parse_args(argv))
     command = args.pop('command')
     try:
-        (checklist if command == 'checklist' else deliverable)(**args)
-    except (ValueError, OSError, AttributeError) as exc:
+        if command == 'checklist':
+            checklist(**args)
+        else:
+            deliverable(**args)
+    except (ValueError, OSError, gates.GateError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     return 0

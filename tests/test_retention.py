@@ -5,9 +5,10 @@ import json
 
 import pytest
 
-from pipeline import revisions, retention
+from pipeline import retention, revisions
 
-SOURCE_TEXT = "# Synthetic RFP\nsource_id: rfp · source_type: rfp · source_date: 2026-09-01\n\nSynthetic Person A asks for a launch.\n"
+SOURCE_TEXT = ("# Synthetic RFP\nsource_id: rfp · source_type: rfp · source_date: 2026-09-01\n\n"
+               "Synthetic Person A asks for a launch.\n")
 
 
 def make_run(tmp_path, name="run-1", with_package=True):
@@ -31,9 +32,16 @@ def make_run(tmp_path, name="run-1", with_package=True):
     (history / "extracts" / "rfp.json").write_text("{}", encoding="utf-8")
     (history / "rfp-copy.md").write_bytes(source.read_bytes())
     revisions.write_json(history / "brief.json", {"old": True})
-    revisions.write_json(run / "run_manifest.json", {
-        "run_id": name, "sources": [{"source_id": "rfp"}],
-        "steps": [{"name": "extraction", "extracts": [{"attempts": [{"subagent": {"session_id": "sess-synthetic-1"}}]}]}]})
+    revisions.write_json(
+        run / "run_manifest.json",
+        {
+            "run_id": name,
+            "sources": [{"source_id": "rfp"}],
+            "steps": [
+                {"name": "extraction", "extracts": [{"attempts": [{"subagent": {"session_id": "sess-synthetic-1"}}]}]}
+            ],
+        },
+    )
     revisions.write_json(run / "effort.json", {"events": [{"actor": "synthetic-account"}]})
     package = None
     if with_package:
@@ -65,7 +73,11 @@ def test_inventory_finds_every_copy_and_derivative(tmp_path):
     areas = sorted(c["area"] for c in entry["copies"])
     assert areas == ["evidence", "history", "package"]
     derived = {p["path"].split("run-1/")[-1] for p in entry["per_source_derivatives"]}
-    assert {"extracts/rfp.json", "fidelity/rfp.annotated.md", "history/20260901T000000-abcdef12/extracts/rfp.json"} <= derived
+    assert {
+        "extracts/rfp.json",
+        "fidelity/rfp.annotated.md",
+        "history/20260901T000000-abcdef12/extracts/rfp.json",
+    } <= derived
     assert any(p.endswith("brief.json") for p in entry["run_level_derived"])
     assert entry["originals_present"] == [str(source.resolve())]
     (run_report,) = report["runs"]

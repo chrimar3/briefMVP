@@ -65,9 +65,14 @@ def _doc(lang, brief, **swap):
     resolved = [c for c in brief["conflicts"] if c["status"] == "resolved_by_human"]
     links = stages.resolution_links(brief)
     signed = brief["signoff"]["status"] == "signed_off"
-    lines = [lab["title"], "",
-             (lab["banner_signed_prefix"] + "Synthetic lead, 2026-03-05**") if signed else lab["banner_draft"], "",
-             f"{lab['header_client']} Aurora Foods · p1", f"{lab['header_sources']} call (2026-03-03) · rfp (2026-03-01)"]
+    lines = [
+        lab["title"],
+        "",
+        (lab["banner_signed_prefix"] + "Synthetic lead, 2026-03-05**") if signed else lab["banner_draft"],
+        "",
+        f"{lab['header_client']} Aurora Foods · p1",
+        f"{lab['header_sources']} call (2026-03-03) · rfp (2026-03-01)",
+    ]
     for field in gates.BRIEF_FIELDS:
         lines += ["", lab["sections"][field]]
         for c in resolved:
@@ -136,7 +141,10 @@ def test_greek_boilerplate_passes_the_greek_lint(tmp_path):
     template = tmp_path / "t_el.md"
     template.write_text((REPO / "templates" / "northlight_client_brief.el.md").read_text(encoding="utf-8"),
                         encoding="utf-8")
-    assert stages.render_language_warnings(template, tmp_path / "none.md", brief, CLIENT, style=stages.load_greek_style()) == []
+    assert (
+        stages.render_language_warnings(template, tmp_path / "none.md", brief, CLIENT, style=stages.load_greek_style())
+        == []
+    )
 
 
 # -- template selection ------------------------------------------------------------------
@@ -244,7 +252,9 @@ def test_answered_question_rendered_as_a_live_question_is_caught(tmp_path):
 
 def test_live_question_marked_answered_is_caught(tmp_path):
     brief = _brief()
-    el, en = _write(tmp_path, brief, en_swap={"2. **objectives**": "2. **objectives** " + LABELS["en"]["question_answered"]})
+    el, en = _write(
+        tmp_path, brief, en_swap={"2. **objectives**": "2. **objectives** " + LABELS["en"]["question_answered"]}
+    )
     assert any("open question 2 is marked answered" in v for v in stages.check_render_template(el, en, brief, LABELS))
 
 

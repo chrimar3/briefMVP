@@ -2,8 +2,6 @@
 
 import json
 
-import pytest
-
 from pipeline import conflicts, gates, stages
 
 CLIENT_CONFIG = {

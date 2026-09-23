@@ -196,7 +196,7 @@ def test_template_carries_the_round_2_columns(repo_root):
 
 
 def _approved_run_with_draft(tmp_path):
-    from test_agency_operations import make_review_run
+    from conftest import make_review_run
 
     from pipeline import agency
     run = make_review_run(tmp_path)

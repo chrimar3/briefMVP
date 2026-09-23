@@ -1,11 +1,11 @@
 import pytest
+from conftest import approve_synthetic, make_review_run, prepare_release, vouch_forged
+
 from pipeline import revisions
-from test_delivery import prepare_release
-from test_agency_operations import make_review_run, approve_synthetic, vouch_forged
 
 
 def test_status_uses_current_data_and_does_not_rewrite_reports(tmp_path):
-    from pipeline import operations, delivery
+    from pipeline import delivery, operations
     run = prepare_release(tmp_path)
     audit_before = (run/'agency_audit.json').read_bytes()
     assert operations.status(run)['stage'] == 'creative_review'
@@ -44,7 +44,7 @@ def test_withdrawn_approval_is_not_shown_as_ready(tmp_path):
 
 @pytest.mark.parametrize('timestamp', [None, 'not-a-date', '2026-09-20'])
 def test_incomplete_creative_approval_never_reports_ready(tmp_path, timestamp):
-    from pipeline import operations, delivery
+    from pipeline import delivery, operations
     run = prepare_release(tmp_path)
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
     record = revisions.load(run/'creative_approval.json')

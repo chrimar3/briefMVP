@@ -1,7 +1,9 @@
 from copy import deepcopy
+
 import pytest
-from pipeline import handover, revisions, gates
-from test_agency_operations import make_review_run
+from conftest import make_review_run
+
+from pipeline import gates, handover, revisions
 
 
 def setup_rows(tmp_path):
@@ -23,9 +25,14 @@ def test_valid_dependencies(tmp_path):
 @pytest.mark.parametrize('issue', ['unknown', 'self', 'cycle', 'late', 'duplicate'])
 def test_invalid_dependencies_block_handover(tmp_path, issue):
     rows, specs, brief = setup_rows(tmp_path)
-    if issue == 'unknown': rows[1]['dependencies']=['missing']
-    if issue == 'self': rows[1]['dependencies']=['crop']
-    if issue == 'cycle': rows[0]['dependencies']=['crop']
-    if issue == 'late': rows[0]['deadline']='2026-09-22'
-    if issue == 'duplicate': rows[1]['dependencies']=['master','master']
+    if issue == 'unknown':
+        rows[1]['dependencies'] = ['missing']
+    if issue == 'self':
+        rows[1]['dependencies'] = ['crop']
+    if issue == 'cycle':
+        rows[0]['dependencies'] = ['crop']
+    if issue == 'late':
+        rows[0]['deadline'] = '2026-09-22'
+    if issue == 'duplicate':
+        rows[1]['dependencies'] = ['master', 'master']
     assert any('dependenc' in p for p in handover.validate(rows, specs, brief))

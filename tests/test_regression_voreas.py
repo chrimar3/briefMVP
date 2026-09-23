@@ -172,8 +172,7 @@ def _extract_items(extract: dict):
     """Every cited item an extract holds: the seven fields plus both sides of each
     internal conflict. Extract open questions and notes are model prose, not evidence."""
     for field in gates.BRIEF_FIELDS:
-        for item in extract.get(field) or []:
-            yield item
+        yield from extract.get(field) or []
     for conflict in extract.get("internal_conflicts") or []:
         for side in ("value_a", "value_b"):
             if conflict.get(side):

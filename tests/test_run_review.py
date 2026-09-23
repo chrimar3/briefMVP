@@ -14,13 +14,11 @@ import re
 from pathlib import Path
 
 import pytest
+from conftest import STORED_RUNS, stored_run
 
 from pipeline import review, run_review
 
-from review_cases import stored_run
-
 REPO = Path(__file__).resolve().parents[1]
-STORED_RUNS = ("runs/tier3", "runs/live", "runs/evidence-20260729")
 
 FORBIDDEN = re.compile(r"cost|model|claude|sonnet|haiku|opus", re.IGNORECASE)
 
@@ -127,7 +125,7 @@ def test_every_pipeline_step_and_conflict_candidate_appears(run):
 def test_fidelity_verdict_rides_with_its_transcript():
     """The fidelity gate's judgement is the transcript's health certificate — it must
     appear with the source card, flagged-token count included."""
-    data = _collect("runs/evidence-20260729")
+    data = _collect("synthetic-draft-case")
     page = run_review.render_run_review(data)
     assert data["fidelity"], "evidence run lost its fidelity report"
     for report in data["fidelity"].values():
@@ -197,15 +195,15 @@ def test_greek_first_chrome_with_a_data_lang_toggle(tmp_path):
 
 
 def test_demo_override_and_refusal_statuses_are_visible():
-    """runs/live went through the demo profile: the gate refused, the profile overrode
+    """The synthetic demo case went through the demo profile: the gate refused, the profile overrode
     it — the walkthrough must show that honestly, never hide it."""
-    page = run_review.render_run_review(_collect("runs/live"))
+    page = run_review.render_run_review(_collect("synthetic-demo-case"))
     assert "παράκαμψη demo" in page
     assert "προφίλ demo" in page
 
 
 def test_synthesis_section_links_to_the_brief_page_when_it_exists():
-    data = _collect("runs/evidence-20260729")
+    data = _collect("synthetic-draft-case")
     assert data["has_brief_page"], "evidence run lost brief_review.html"
     page = run_review.render_run_review(data)
     assert 'href="brief_review.html"' in page
@@ -230,7 +228,7 @@ def test_render_is_deterministic(tmp_path):
 def test_raw_source_documents_are_embedded_when_the_project_resolves():
     """fixtures/northlight_01 still exists beside the evidence run, so the original
     RFP/emails/transcript ride along for reference — capped, escaped."""
-    data = _collect("runs/evidence-20260729")
+    data = _collect("synthetic-draft-case")
     if not data["raw_sources"]:
         pytest.skip("project dir not resolvable on this machine")
     page = run_review.render_run_review(data)

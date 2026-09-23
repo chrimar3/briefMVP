@@ -2,6 +2,12 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+# Toolchain byproducts of scripts/check.sh (coverage data, mypy and ruff caches).
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
 
 # Run outputs are artifacts, not source. Tier reports and blockers are the exception:
 # they are the record of the build and must survive in git.
@@ -43,8 +49,8 @@ tools/walkthrough/_s*.js
 !runs/routing-validate-01
 
 # Codex round runner: per-agent logs and scratch dirs are regenerated; results (out/, result.json, report.md) are kept.
-tools/walkthrough/codex_round/*/logs/
-tools/walkthrough/codex_round/*/work/
-tools/walkthrough/codex_round/*.log
-tools/walkthrough/redesign/*.log
-tools/walkthrough/redesign/chrome/
+tools/walkthrough/archive/codex_round/*/logs/
+tools/walkthrough/archive/codex_round/*/work/
+tools/walkthrough/archive/codex_round/*.log
+tools/walkthrough/archive/redesign/*.log
+tools/walkthrough/archive/redesign/chrome/

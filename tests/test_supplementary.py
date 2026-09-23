@@ -161,7 +161,9 @@ def test_s5_flags_near_duplicate_questions_and_conflict_re_asks(tmp_path):
 
 def test_s6_flags_currency_the_brief_never_stated(tmp_path):
     brief = _brief(open_questions=[{"field": "budget", "gap": "RFP states €50,000 including media"}])
-    creative = {"creative_brief_x.md": "> CREATIVE DRAFT — not approved\nBudget: around forty (€40–45k); RFP €50,000.\n"}
+    creative = {
+        "creative_brief_x.md": "> CREATIVE DRAFT — not approved\nBudget: around forty (€40–45k); RFP €50,000.\n"
+    }
     result = _result(_make(tmp_path, brief, creative=creative), "S6")
     assert result["status"] == "flag"
     assert [i.split(": ", 1)[1] for i in result["items"]] == ["'€40–45k' — no such amount in the brief"]

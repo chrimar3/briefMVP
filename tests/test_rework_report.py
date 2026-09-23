@@ -1,8 +1,6 @@
 """Cross-run reporting uses synthetic events only."""
 import json
 
-import pytest
-
 from eval import rework_report
 from pipeline import effort
 

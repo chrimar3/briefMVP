@@ -2,16 +2,15 @@
 p2_account_director), each as a regression test. Every "forged" record below is written by hand,
 around the commands, exactly as the judges' probes did; each must now block.
 
-Synthetic runs in tmp dirs only (tests/test_agency_operations.make_review_run); no model calls.
+Synthetic runs in tmp dirs only (tests/conftest.make_review_run); no model calls.
 """
 
 import json
 
 import pytest
+from conftest import approve_synthetic, bind_declaration, make_review_run, prepare_release
 
 from pipeline import (agency, approval, creative, delivery, publish, quality, release_control, revisions)
-from test_agency_operations import approve_synthetic, bind_declaration, make_review_run
-from test_delivery import prepare_release
 
 CHECKS = quality.field_review_checklist()
 

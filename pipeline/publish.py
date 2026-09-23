@@ -131,7 +131,7 @@ def publish_locked(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, P
                 handle.write(data)
         except FileExistsError:
             if target.read_bytes() != data:
-                raise ReviewInputError(f"Immutable publication collision: {target}")
+                raise ReviewInputError(f"Immutable publication collision: {target}") from None
         published.append(target)
     return published
 

@@ -30,8 +30,9 @@ import json
 import math
 import os
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Any, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from cost_report import ERA_LABELS, _stage_attempts, routing_era  # noqa: E402
@@ -64,8 +65,10 @@ def wilson(passed: int, n: int, z: float = 1.96) -> tuple:
     return (max(0.0, centre - half), min(1.0, centre + half))
 
 
-def find_reports(roots: Iterable[Path]) -> list:
-    seen, out = set(), []
+def find_reports(roots: Iterable[Path]) -> list[Path]:
+    """Every harness_report.json under the roots (symlinked dirs not followed), deduplicated and sorted."""
+    seen: set[Path] = set()
+    out: list[Path] = []
     for root in roots:
         root = Path(root)
         if (root / "harness_report.json").is_file():
@@ -96,7 +99,8 @@ def _stage_sessions(manifest: dict) -> dict:
     return sessions
 
 
-def load_record(report_path: Path) -> Optional[dict]:
+def load_record(report_path: Path) -> Optional[dict[str, Any]]:
+    """One harness report paired with its manifest's era and stage sessions; None if the report is unreadable."""
     try:
         report = json.loads(report_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -121,7 +125,7 @@ def load_record(report_path: Path) -> Optional[dict]:
 
 
 def _leg_key(record: dict, check_id: str) -> tuple:
-    parts = []
+    parts: list[tuple[str, tuple[str, ...]]] = []
     for stage in graded_stages(check_id):
         sids = record["sessions"].get(stage)
         if not sids:
@@ -175,7 +179,8 @@ def _check_order(cid: str) -> tuple:
 
 
 def render_markdown(groups: dict) -> str:
-    lines = []
+    """The per-fixture, per-era pass-rate tables as Markdown."""
+    lines: list[str] = []
     for (fixture, era), g in sorted(groups.items()):
         lines.append(f"### {fixture} · {ERA_LABELS.get(era, era)}")
         lines.append("")
@@ -186,7 +191,7 @@ def render_markdown(groups: dict) -> str:
         lines.append("|---|---|---|---|---|")
         for cid, c in sorted(g["checks"].items(), key=lambda kv: _check_order(kv[0])):
             lo, hi = c["wilson95"]
-            notes = []
+            notes: list[str] = []
             if c["unknown_legs"]:
                 notes.append(f"{c['unknown_legs']} leg(s) unknown")
             if c["legs_inconsistent"]:
@@ -197,7 +202,8 @@ def render_markdown(groups: dict) -> str:
     return "\n".join(lines)
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: print the pass-rate tables (text, Markdown or JSON); exit 2 when no report is found."""
     p = argparse.ArgumentParser(description="Per-check pass rates across stored harness reports.")
     p.add_argument("roots", nargs="*", default=[str(REPO_ROOT / "runs")])
     p.add_argument("--json", action="store_true")

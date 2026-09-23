@@ -2,20 +2,24 @@
 from __future__ import annotations
 
 import argparse
-from contextlib import contextmanager
 import csv
 import fcntl
 import io
 import json
 import math
-import os  # noqa: F401  (records.atomic_write_text replaces via os; tests patch effort.os)
-from pathlib import Path
 import sys
+from collections.abc import Iterator
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, Callable, Optional
 
 if __package__ in (None, ""):  # allow `python3 pipeline/effort.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import clock, records  # noqa: E402
+from pipeline.records import PathLike  # noqa: E402
+
+Event = dict[str, Any]
 
 ROLES = {
     'account_assembly': 'assembly_min', 'account_review': 'review_min',
@@ -26,20 +30,21 @@ TEMPLATE = Path(__file__).resolve().parents[1] / 'docs/pilot/scorecard_template.
 MISSING = 'not_recorded'
 
 
-def _text(value, name):
+def _text(value: Any, name: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f'{name} must be nonempty text')
     return value
 
 
-def _validate(event):
+def _validate(event: Event) -> None:
     for name in ('event_id', 'actor'):
         _text(event.get(name), name)
     if event.get('kind') == 'effort':
         if not isinstance(event.get('role'), str) or event['role'] not in ROLES:
             raise ValueError('unknown effort role')
         minutes = event.get('minutes')
-        if isinstance(minutes, bool) or not isinstance(minutes, (int, float)) or not math.isfinite(minutes) or minutes < 0:
+        if (isinstance(minutes, bool) or not isinstance(minutes, (int, float))
+                or not math.isfinite(minutes) or minutes < 0):
             raise ValueError('minutes must be finite and nonnegative')
         if event.get('reason') is not None:
             _text(event['reason'], 'reason')
@@ -67,14 +72,16 @@ def _validate(event):
         raise ValueError('unknown event kind')
 
 
-def effective_events(events):
+def effective_events(events: list[Event]) -> list[Event]:
     """Validate history and fold amendments, retaining original observation order.
 
     Only earlier, currently active measurements can be targets. Correction IDs
     become the active IDs; void events can never be targeted. These rules forbid
     forward references, self references, cycles, and repeated invalidation.
     """
-    active, positions, seen = [], {}, set()
+    active: list[Optional[Event]] = []
+    positions: dict[str, int] = {}
+    seen: set[str] = set()
     for event in events:
         if not isinstance(event, dict):
             raise ValueError('invalid effort event')
@@ -95,7 +102,8 @@ def effective_events(events):
             active[position] = None
         else:
             replacement = event['replacement']
-            if replacement['kind'] != active[position]['kind']:
+            current = active[position]
+            if current is None or replacement['kind'] != current['kind']:
                 raise ValueError('correction must preserve measurement kind')
             active[position] = {**replacement, 'event_id': event_id,
                                 'recorded_at': event.get('recorded_at'),
@@ -105,7 +113,7 @@ def effective_events(events):
 
 
 @contextmanager
-def _lock(run, *, shared=False):
+def _lock(run: PathLike, *, shared: bool = False) -> Iterator[Path]:
     """Blocking ledger lock. Writers take it exclusive; `shared=True` is for readers.
 
     A reader never creates the lock file: with no lock file, no writer has ever run here and
@@ -128,7 +136,7 @@ def _lock(run, *, shared=False):
             fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
-def _load(run):
+def _load(run: Path) -> dict[str, Any]:
     data = records.load_optional(run / 'effort.json')
     if data is None:
         return {'version': 1, 'events': []}
@@ -142,7 +150,7 @@ def _load(run):
     return data
 
 
-def read_events(run):
+def read_events(run: PathLike) -> Optional[list[Event]]:
     """Locked effective snapshot; None means no ledger, [] an empty active set."""
     with _lock(run, shared=True) as directory:
         if not (directory / 'effort.json').exists():
@@ -150,10 +158,12 @@ def read_events(run):
         return effective_events(_load(directory)['events'])
 
 
-_atomic_write = records.atomic_write_text
+def _atomic_write(path: Path, text: str) -> None:
+    """Effort records name agency staff: every write (ledger and export) is owner-only (0600)."""
+    records.atomic_write_text(path, text, private=True)
 
 
-def _append(run, event):
+def _append(run: PathLike, event: Event) -> Event:
     _validate(event)
     with _lock(run) as directory:
         data = _load(directory)
@@ -170,28 +180,35 @@ def _append(run, event):
         return saved
 
 
-def record(run, *, actor, role, minutes, event_id, reason=None):
+def record(run: PathLike, *, actor: str, role: str, minutes: float, event_id: str,
+           reason: Optional[str] = None) -> Event:
+    """Record minutes of effort for one role (idempotent per event id)."""
     return _append(run, dict(kind='effort', actor=actor, role=role, minutes=minutes,
                              event_id=event_id, reason=reason))
 
 
-def handoff(run, *, actor, accepted, event_id, return_reason=None):
+def handoff(run: PathLike, *, actor: str, accepted: str, event_id: str,
+            return_reason: Optional[str] = None) -> Event:
+    """Record whether a handoff was accepted ('yes'/'no', a return reason when 'no')."""
     return _append(run, dict(kind='handoff', actor=actor, accepted=accepted,
                              event_id=event_id, return_reason=return_reason))
 
 
-def void(run, *, target_event_id, actor, reason, event_id):
+def void(run: PathLike, *, target_event_id: str, actor: str, reason: str, event_id: str) -> Event:
+    """Void an earlier active measurement, with an attributed reason."""
     return _append(run, dict(kind='void', target_event_id=target_event_id,
                              actor=actor, reason=reason, event_id=event_id))
 
 
-def correct(run, *, target_event_id, actor, reason, event_id, replacement):
+def correct(run: PathLike, *, target_event_id: str, actor: str, reason: str, event_id: str,
+            replacement: Event) -> Event:
+    """Replace an earlier active measurement with a corrected payload of the same kind."""
     return _append(run, dict(kind='correction', target_event_id=target_event_id,
                              actor=actor, reason=reason, event_id=event_id,
                              replacement=replacement))
 
 
-def export(run, output, *, brief_id, phase):
+def export(run: PathLike, output: PathLike, *, brief_id: str, phase: str) -> dict[str, Any]:
     """Export a snapshot; totals require every contributing role to be recorded."""
     _text(brief_id, 'brief_id')
     if phase not in ('retro', 'live'):
@@ -204,7 +221,7 @@ def export(run, output, *, brief_id, phase):
         events = effective_events(data['events'])
         with TEMPLATE.open(encoding='utf-8', newline='') as handle:
             fields = next(csv.reader(handle))
-        row = dict.fromkeys(fields, MISSING)
+        row: dict[str, Any] = dict.fromkeys(fields, MISSING)
         row.update(row_type='PILOT', brief_id=brief_id, phase=phase,
                    run_id=directory.name, notes='Synthetic measurements only; self-reported human effort.')
         for role, field in ROLES.items():
@@ -235,37 +252,39 @@ def export(run, output, *, brief_id, phase):
         return row
 
 
-def main(argv=None):
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry point: one subcommand per ledger operation; prints the saved event (or exported row) as JSON."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
     for name in ('record', 'handoff', 'export', 'correct', 'void'):
-        command = commands.add_parser(name)
-        command.add_argument('run', type=Path)
+        sub = commands.add_parser(name)
+        sub.add_argument('run', type=Path)
         if name == 'export':
-            command.add_argument('--output', required=True, type=Path)
-            command.add_argument('--brief-id', required=True)
-            command.add_argument('--phase', required=True, choices=('retro', 'live'))
+            sub.add_argument('--output', required=True, type=Path)
+            sub.add_argument('--brief-id', required=True)
+            sub.add_argument('--phase', required=True, choices=('retro', 'live'))
         else:
-            command.add_argument('--actor', required=True)
-            command.add_argument('--event-id', required=True)
+            sub.add_argument('--actor', required=True)
+            sub.add_argument('--event-id', required=True)
             if name == 'record':
-                command.add_argument('--role', required=True, choices=tuple(ROLES))
-                command.add_argument('--minutes', required=True, type=float)
-                command.add_argument('--reason')
+                sub.add_argument('--role', required=True, choices=tuple(ROLES))
+                sub.add_argument('--minutes', required=True, type=float)
+                sub.add_argument('--reason')
             elif name == 'handoff':
-                command.add_argument('--accepted', required=True, choices=('yes', 'no'))
-                command.add_argument('--return-reason')
+                sub.add_argument('--accepted', required=True, choices=('yes', 'no'))
+                sub.add_argument('--return-reason')
             else:
-                command.add_argument('--target-event-id', required=True)
-                command.add_argument('--reason', required=True)
+                sub.add_argument('--target-event-id', required=True)
+                sub.add_argument('--reason', required=True)
                 if name == 'correct':
-                    command.add_argument('--replacement', required=True, type=json.loads,
-                                         help='Complete effort/handoff payload as JSON (no event_id or timestamp)')
+                    sub.add_argument('--replacement', required=True, type=json.loads,
+                                     help='Complete effort/handoff payload as JSON (no event_id or timestamp)')
     args = vars(parser.parse_args(argv))
     command = args.pop('command')
+    handlers: dict[str, Callable[..., dict[str, Any]]] = {
+        'record': record, 'handoff': handoff, 'export': export, 'correct': correct, 'void': void}
     try:
-        result = {'record': record, 'handoff': handoff, 'export': export,
-                  'correct': correct, 'void': void}[command](**args)
+        result = handlers[command](**args)
     except (ValueError, OSError) as exc:
         parser.exit(2, f'effort: {exc}\n')
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))

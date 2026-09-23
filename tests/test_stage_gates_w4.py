@@ -97,11 +97,25 @@ def test_low_confidence_with_a_question_passes(tmp_path):
 
 # -- creative draft gate ------------------------------------------------------------------
 
-TABLE = {"specs": [
-    {"id": "tiktok_infeed_video", "aspect_ratio": "9:16", "resolution": "1080x1920", "duration": "9-60s", "file_type": "MP4"},
-    {"id": "instagram_reel", "aspect_ratio": "9:16", "resolution": "1080x1920", "duration": "up to 90s", "file_type": "MP4"},
-    {"id": "feed_image", "aspect_ratio": "4:5", "resolution": "1080x1350", "duration": "n/a", "file_type": "JPG"},
-]}
+TABLE = {
+    "specs": [
+        {
+            "id": "tiktok_infeed_video",
+            "aspect_ratio": "9:16",
+            "resolution": "1080x1920",
+            "duration": "9-60s",
+            "file_type": "MP4",
+        },
+        {
+            "id": "instagram_reel",
+            "aspect_ratio": "9:16",
+            "resolution": "1080x1920",
+            "duration": "up to 90s",
+            "file_type": "MP4",
+        },
+        {"id": "feed_image", "aspect_ratio": "4:5", "resolution": "1080x1350", "duration": "n/a", "file_type": "JPG"},
+    ]
+}
 BANNER = "> CREATIVE DRAFT — requires creative-lead approval before release.\n\n"
 BRIEF = {
     "objectives": [{"content": "Launch the range; budget around sixty, units unstated", "evidence": [
@@ -211,7 +225,9 @@ def test_draft_gate_catches_the_verified_defects_in_the_stored_drafts(model, exp
     """Read-only regression: re-bannered as CREATIVE DRAFT, the committed tier3 drafts fail the
     new gate for exactly the defects the r0 output panel verified."""
     brief = json.loads((REPO / "runs" / "tier3" / "brief.json").read_text(encoding="utf-8"))
-    lines = (REPO / "runs" / "tier3" / "creative" / f"creative_brief_{model}.md").read_text(encoding="utf-8").splitlines()
+    lines = (
+        (REPO / "runs" / "tier3" / "creative" / f"creative_brief_{model}.md").read_text(encoding="utf-8").splitlines()
+    )
     lines[0] = BANNER.strip()
     path = Path(tempfile.mkdtemp()) / "draft.md"
     path.write_text("\n".join(lines), encoding="utf-8")

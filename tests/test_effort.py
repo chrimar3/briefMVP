@@ -2,14 +2,13 @@
 import csv
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 
 import pytest
 
 from eval import pilot_scorecard
-from pipeline import effort
+from pipeline import effort, records
 
 
 def record(run, event_id="e1", **changes):
@@ -99,7 +98,7 @@ def test_atomic_failure_preserves_existing_ledger(tmp_path, monkeypatch):
     before = (tmp_path / 'effort.json').read_bytes()
     def fail(*args):
         raise OSError('synthetic replace failure')
-    monkeypatch.setattr(effort.os, 'replace', fail)
+    monkeypatch.setattr(records.os, 'replace', fail)  # effort writes through records.atomic_write_text
     with pytest.raises(OSError):
         record(tmp_path, 'second')
     assert (tmp_path / 'effort.json').read_bytes() == before
@@ -118,8 +117,38 @@ def test_cli_required_id_and_export(tmp_path):
     with pytest.raises(SystemExit) as error:
         effort.main(['record', str(tmp_path), '--actor', 'Synthetic', '--role', 'operator', '--minutes', '1'])
     assert error.value.code == 2
-    assert effort.main(['record', str(tmp_path), '--actor', 'Synthetic', '--role', 'operator', '--minutes', '1', '--event-id', 'cli']) == 0
-    assert effort.main(['export', str(tmp_path), '--brief-id', 'synthetic', '--phase', 'retro', '--output', str(tmp_path / 'out.csv')]) == 0
+    assert (
+        effort.main(
+            [
+                'record',
+                str(tmp_path),
+                '--actor',
+                'Synthetic',
+                '--role',
+                'operator',
+                '--minutes',
+                '1',
+                '--event-id',
+                'cli',
+            ]
+        )
+        == 0
+    )
+    assert (
+        effort.main(
+            [
+                'export',
+                str(tmp_path),
+                '--brief-id',
+                'synthetic',
+                '--phase',
+                'retro',
+                '--output',
+                str(tmp_path / 'out.csv'),
+            ]
+        )
+        == 0
+    )
 
 
 def question_row(brief, phase, real, total):
@@ -278,4 +307,18 @@ def test_conflicting_void_retry_is_rejected(tmp_path):
     record(tmp_path)
     effort.void(tmp_path, target_event_id='e1', actor='Synthetic', reason='Wrong run', event_id='v1')
     with pytest.raises(ValueError, match='event-id'):
-        effort.void(tmp_path, target_event_id='e1', actor='Different synthetic actor', reason='Wrong run', event_id='v1')
+        effort.void(
+            tmp_path, target_event_id='e1', actor='Different synthetic actor', reason='Wrong run', event_id='v1'
+        )
+
+
+def test_effort_ledger_and_export_are_owner_only(tmp_path):
+    """Effort records name agency staff and their minutes: both files are 0600 whatever the umask."""
+    previous = os.umask(0o022)
+    try:
+        record(tmp_path)
+        effort.export(tmp_path, tmp_path / 'row.csv', brief_id='B1', phase='retro')
+    finally:
+        os.umask(previous)
+    assert (tmp_path / 'effort.json').stat().st_mode & 0o777 == 0o600
+    assert (tmp_path / 'row.csv').stat().st_mode & 0o777 == 0o600

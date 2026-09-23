@@ -1,11 +1,10 @@
 """Agency workflow contracts; synthetic data only, no model calls."""
 import copy
 import json
-from pathlib import Path
 
 import pytest
 
-from pipeline import quality, clarifications, revisions, client_pack, handover
+from pipeline import clarifications, client_pack, handover, quality, revisions
 
 
 def evidence(source="rfp", anchor="Build awareness", location="L1"):
@@ -41,16 +40,35 @@ def test_coverage_does_not_accept_same_anchor_from_another_source_or_field():
 
 
 def test_internal_conflict_positions_are_accounted_for():
-    e = {"rfp": {"internal_conflicts": [{"field": "timeline", "value_a": {"value": "June", "anchor": "June", "location": "L1"}, "value_b": {"value": "July", "anchor": "July", "location": "L2"}}]}}
+    e = {
+        "rfp": {
+            "internal_conflicts": [
+                {
+                    "field": "timeline",
+                    "value_a": {"value": "June", "anchor": "June", "location": "L1"},
+                    "value_b": {"value": "July", "anchor": "July", "location": "L2"},
+                }
+            ]
+        }
+    }
     assert len(quality.coverage(brief(), e)) == 2
 
 
 def test_question_grouping_merges_evidence_but_not_every_question_in_a_field():
     b = brief()
     b["open_questions"] = [
-        {"field": "budget", "suggested_question_for_client": "What is the media budget?", "linked_evidence": [evidence()]},
-        {"field": "budget", "suggested_question_for_client": "What is the media budget?", "linked_evidence": [evidence("email")]},
-        {"field": "budget", "suggested_question_for_client": "Who approves production costs?"}]
+        {
+            "field": "budget",
+            "suggested_question_for_client": "What is the media budget?",
+            "linked_evidence": [evidence()],
+        },
+        {
+            "field": "budget",
+            "suggested_question_for_client": "What is the media budget?",
+            "linked_evidence": [evidence("email")],
+        },
+        {"field": "budget", "suggested_question_for_client": "Who approves production costs?"},
+    ]
     q = clarifications.queue(b)
     assert len(q) == 2
     assert len(q[0]["evidence"]) == 2
@@ -66,7 +84,10 @@ def test_question_answer_requires_attribution_and_does_not_edit_brief(tmp_path):
         clarifications.record(tmp_path, q, q[0]["id"], "answered", "", "20", "rfp L1", "account", "blocking")
     clarifications.record(tmp_path, q, q[0]["id"], "answered", "Lead", "20", "rfp L1", "account", "blocking")
     assert b == original
-    assert clarifications.queue(b, json.loads((tmp_path / "clarifications.json").read_text()))[0]["decision"]["actor"] == "Lead"
+    assert (
+        clarifications.queue(b, json.loads((tmp_path / "clarifications.json").read_text()))[0]["decision"]["actor"]
+        == "Lead"
+    )
 
 
 def test_fingerprint_changes_for_render_but_not_generated_report(tmp_path):
@@ -102,7 +123,13 @@ def test_input_change_refuses_resume_before_mutating_outputs(tmp_path):
 
 
 def test_client_pack_rejects_expired_or_unsourced_claims():
-    pack = {"client_id": "synthetic", "version": "1", "approved_by": "Lead", "review_due": "2000-01-01", "items": [{"kind": "tone", "text": "Plain", "source": ""}]}
+    pack = {
+        "client_id": "synthetic",
+        "version": "1",
+        "approved_by": "Lead",
+        "review_due": "2000-01-01",
+        "items": [{"kind": "tone", "text": "Plain", "source": ""}],
+    }
     problems = client_pack.validate(pack, "synthetic")
     assert any("expired" in p for p in problems)
     assert any("source" in p for p in problems)
@@ -110,8 +137,32 @@ def test_client_pack_rejects_expired_or_unsourced_claims():
 
 
 def test_handover_cannot_mix_spec_values_from_different_rows():
-    specs = {"specs": [{"id": "portrait", "resolution": "1080x1920", "aspect_ratio": "9:16", "format": "MP4", "duration_seconds": {"min": 9, "max": 60}}]}
-    row = {"id": "a", "spec_id": "portrait", "resolution": "1920x1080", "aspect_ratio": "9:16", "format": "MP4", "duration_seconds": 100, "quantity": 1, "languages": ["el"], "deadline": "2026-12-01", "owner": "Production", "approval_owner": "Lead", "dependencies": [], "evidence": [evidence()]}
+    specs = {
+        "specs": [
+            {
+                "id": "portrait",
+                "resolution": "1080x1920",
+                "aspect_ratio": "9:16",
+                "format": "MP4",
+                "duration_seconds": {"min": 9, "max": 60},
+            }
+        ]
+    }
+    row = {
+        "id": "a",
+        "spec_id": "portrait",
+        "resolution": "1920x1080",
+        "aspect_ratio": "9:16",
+        "format": "MP4",
+        "duration_seconds": 100,
+        "quantity": 1,
+        "languages": ["el"],
+        "deadline": "2026-12-01",
+        "owner": "Production",
+        "approval_owner": "Lead",
+        "dependencies": [],
+        "evidence": [evidence()],
+    }
     problems = handover.validate([row], specs, brief())
     assert any("resolution" in p for p in problems)
     assert any("duration" in p for p in problems)

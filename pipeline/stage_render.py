@@ -16,8 +16,12 @@ from typing import Optional
 from pipeline import agents
 from pipeline.greek_lint import GREEK_STYLE_PATH, render_language_warnings
 from pipeline.render_checks import check_render
-from pipeline.render_template import (check_render_template, load_template_labels, resolution_links,
-                                      resolve_brief_template)
+from pipeline.render_template import (
+    check_render_template,
+    load_template_labels,
+    resolution_links,
+    resolve_brief_template,
+)
 from pipeline.stage_common import restating_repair_order, stage_failure
 
 

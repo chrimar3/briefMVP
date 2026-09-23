@@ -8,7 +8,6 @@ to edit the copy inside the agent.
 """
 
 import pytest
-
 from conftest import split_frontmatter
 
 #: The routing table of CLAUDE.md, as a test. Schema-following work -> haiku;
@@ -30,13 +29,22 @@ AGENT_SPEC = {
 FORBIDDEN_TOOLS = {"Bash", "WebFetch", "WebSearch", "Task", "NotebookEdit"}
 
 
-@pytest.fixture(params=sorted(AGENT_SPEC))
-def agent(request, repo_root):
-    name = request.param
+#: The two agent families, as parametrisation lists: each check runs only where it applies.
+SKILL_BACKED = sorted(name for name, (_model, skill) in AGENT_SPEC.items() if skill is not None)
+INLINE = sorted(name for name, (_model, skill) in AGENT_SPEC.items() if skill is None)
+
+
+def load_agent(repo_root, name):
+    """(name, frontmatter, body) of one runtime agent definition."""
     path = repo_root / ".claude" / "agents" / f"{name}.md"
     assert path.is_file(), f"missing agent definition: {path}"
     frontmatter, body = split_frontmatter(path)
     return name, frontmatter, body
+
+
+@pytest.fixture(params=sorted(AGENT_SPEC))
+def agent(request, repo_root):
+    return load_agent(repo_root, request.param)
 
 
 def test_agent_name_matches_filename(agent):
@@ -75,16 +83,15 @@ def test_agent_tools_are_least_privilege(agent):
     assert not leaked, f"{name}: forbidden tool(s) {sorted(leaked)}"
 
 
-def test_skill_is_injected_verbatim(agent, repo_root):
+@pytest.mark.parametrize("name", SKILL_BACKED)
+def test_skill_is_injected_verbatim(name, repo_root):
     """DoD 2b — the four skill-backed agents carry their skill file byte-exact.
 
     `extract` <- SOURCES.md · `synthesize` <- SYNTHESIS.md
     `render`  <- TRANSLATION.md · `fidelity-check` <- TRANSCRIPTS.md
     """
-    name, _frontmatter, body = agent
+    _name, _frontmatter, body = load_agent(repo_root, name)
     _model, skill = AGENT_SPEC[name]
-    if skill is None:
-        pytest.skip(f"{name} carries inline instructions by design")
 
     skill_text = (repo_root / skill).read_text(encoding="utf-8")
     begin = f"===== BEGIN INJECTED SKILL: {skill} ====="
@@ -98,14 +105,18 @@ def test_skill_is_injected_verbatim(agent, repo_root):
     )
 
 
-def test_inline_agents_declare_no_skill_injection(agent):
-    """`classify` and `creative-shadow` are inline by design — no half-injected state."""
-    name, _frontmatter, body = agent
-    _model, skill = AGENT_SPEC[name]
-    if skill is not None:
-        pytest.skip(f"{name} is skill-backed")
+@pytest.mark.parametrize("name", INLINE)
+def test_inline_agents_declare_no_skill_injection(name, repo_root):
+    """`classify`, `creative-shadow` and `verify-extract` are inline by design — no half-injected state."""
+    _name, _frontmatter, body = load_agent(repo_root, name)
     assert "BEGIN INJECTED SKILL" not in body
     assert len(body.strip()) >= 500, f"{name}: inline instructions are too thin to govern a stage"
+
+
+def test_agent_families_cover_the_routing_table():
+    """Every agent is exactly one of skill-backed or inline, so no check is silently not applied."""
+    assert sorted(SKILL_BACKED + INLINE) == sorted(AGENT_SPEC)
+    assert len(SKILL_BACKED) == 4
 
 
 def test_no_stray_agent_definitions(repo_root):
@@ -152,6 +163,7 @@ def test_build_inline_agent_routes_judgment_work_to_sonnet():
 def test_build_inline_agent_is_json_serialisable():
     """It is passed to the CLI as one argv element via json.dumps — Greek, quotes and all."""
     import json as _json
+
     from pipeline import agents
 
     for name in ("extract", "synthesize", "render", "fidelity-check"):
@@ -184,6 +196,7 @@ def test_run_gated_repairs_once_and_logs_every_attempt(tmp_path, monkeypatch):
     """One loop serves every model stage: gate fails once, the repair prompt goes out, and
     both attempts land in the durable repair log with the caller's stage/site labels."""
     import json as _json
+
     from pipeline import agents
 
     calls = []
@@ -248,6 +261,7 @@ def test_stage_effort_missing_file_means_cli_default(tmp_path):
 
 def test_stage_effort_reads_the_level(tmp_path):
     import json as _json
+
     from pipeline import agents
 
     p = tmp_path / "routing.json"

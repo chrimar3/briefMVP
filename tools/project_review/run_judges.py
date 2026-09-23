@@ -9,7 +9,15 @@ round is copied into tools/project_review/rounds/r<N>/.
                     Claude subagent that writes out/<judge>.json, then re-runs this with --aggregate.
 
 Usage: python3 tools/project_review/run_judges.py --round 0 --engine claude [--aggregate] [--prev 0]"""
-import argparse, hashlib, json, pathlib, shutil, statistics, subprocess, sys, time
+import argparse
+import hashlib
+import json
+import pathlib
+import shutil
+import statistics
+import subprocess
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -148,9 +156,13 @@ result = {'round': A.round, 'head': HEAD, 'dirty': DIRTY, 'rubric_sha256': RUBRI
           'model': MODEL, 'judges': sorted(judges), 'problems': problems, 'table': table, 'target_met': met}
 (R / 'scores.json').write_text(json.dumps(result, indent=1, ensure_ascii=False), encoding='utf-8')
 
-lines = [f'# Project review round {A.round}', '',
-         f'HEAD `{HEAD[:12]}` · rubric+panels sha256 `{RUBRIC_SHA[:12]}` · {len(judges)}/{len(JUDGES)} judges on '
-         f'`{MODEL}` ({A.engine}) · target (every aspect mean > 8, no judge < 8): **{"MET" if met else "not met"}**', '']
+lines = [
+    f'# Project review round {A.round}',
+    '',
+    f'HEAD `{HEAD[:12]}` · rubric+panels sha256 `{RUBRIC_SHA[:12]}` · {len(judges)}/{len(JUDGES)} judges on '
+    f'`{MODEL}` ({A.engine}) · target (every aspect mean > 8, no judge < 8): **{"MET" if met else "not met"}**',
+    '',
+]
 if problems:
     lines += ['**Problems:** ' + '; '.join(problems), '']
 lines += ['| layer | aspect | judge scores | mean | min |' + (' Δmean |' if prev else ''),

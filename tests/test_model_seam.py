@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import agents, extraction, gates, prescreen, publish, runner, stages
+from pipeline import agents, approval, extraction, gates, prescreen, publish, runner, stages
 
 REPO = gates.REPO_ROOT
 INJECTION = Path(__file__).resolve().parent / "injection_project"
@@ -191,6 +191,9 @@ def test_a_render_or_creative_step_that_rewrites_an_earlier_artifact_fails(proje
     run_dir = _seed_brief_run(project, out, monkeypatch)
     if stage == "creative":   # render outputs exist only after render; the creative leg keeps them
         (run_dir / "brief_en.md").write_text("# rendered\n", encoding="utf-8")
+        # The creative leg starts only under a recorded sign-off regime (W-G); this synthetic run
+        # records the brief-signoff one so the leg reaches the integrity check under test.
+        approval.record_regime(run_dir, approval.BRIEF_SIGNOFF, "Synthetic operator", "seam integrity test")
 
     def obedient(ctx, step):
         path = Path(ctx.run_dir) / target

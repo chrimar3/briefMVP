@@ -24,6 +24,7 @@ if __package__ in (None, ""):  # allow `python3 pipeline/run_review.py`
 
 from pipeline import records  # noqa: E402
 from pipeline.review import (  # noqa: E402
+    _PAGE_CSS,
     BRIEF_FIELDS,
     CONFIDENCE_LABELS,
     FIELD_LABELS,
@@ -31,7 +32,6 @@ from pipeline.review import (  # noqa: E402
     QUALIFIER_LABELS,
     THEME_CSS,
     ReviewInputError,
-    _PAGE_CSS,
     _bil,
     _e,
     _pct,

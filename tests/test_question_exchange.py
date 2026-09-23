@@ -4,9 +4,11 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import make_review_run
 
-from pipeline import clarifications, gates, question_exchange as exchange, revisions
-from test_agency_operations import make_review_run
+from pipeline import clarifications, gates
+from pipeline import question_exchange as exchange
+from pipeline import revisions
 
 
 @pytest.fixture
@@ -48,7 +50,9 @@ def protected(run):
 def test_export_original_ids_owner_priority_without_evidence(run, tmp_path):
     path, pack = exported(run, tmp_path)
     assert revisions.load(path) == pack
-    assert [q['id'] for q in pack['questions']] == [q['id'] for q in clarifications.queue(revisions.load(run / 'brief.json'))]
+    assert [q['id'] for q in pack['questions']] == [
+        q['id'] for q in clarifications.queue(revisions.load(run / 'brief.json'))
+    ]
     assert pack['fingerprint'] == revisions.fingerprint(run)
     assert all(q['owner'] == 'Synthetic account' and q['priority'] == 'blocking' for q in pack['questions'])
     assert all(set(q) == {'id', 'field', 'question', 'owner', 'priority'} for q in pack['questions'])
@@ -77,7 +81,9 @@ def test_unassigned_question_refused(run, tmp_path):
 
 
 def test_partial_import_is_proposal_and_preserves_approval(run, tmp_path):
-    revisions.write_json(run / 'approval.json', {'actor': 'Synthetic approver', 'fingerprint': revisions.fingerprint(run)})
+    revisions.write_json(
+        run / 'approval.json', {'actor': 'Synthetic approver', 'fingerprint': revisions.fingerprint(run)}
+    )
     path, pack = exported(run, tmp_path)
     before = protected(run)
     first = exchange.import_replies(run, path, replies(pack, [pack['questions'][0]['id']]), 'Synthetic importer')
@@ -93,7 +99,9 @@ def test_partial_import_is_proposal_and_preserves_approval(run, tmp_path):
     assert protected(run) == before
 
 
-@pytest.mark.parametrize('fault', ['unknown', 'duplicate', 'wrong_pack', 'blank_actor', 'no_attribution', 'empty', 'approval_field'])
+@pytest.mark.parametrize(
+    'fault', ['unknown', 'duplicate', 'wrong_pack', 'blank_actor', 'no_attribution', 'empty', 'approval_field']
+)
 def test_invalid_batch_writes_nothing(run, tmp_path, fault):
     path, pack = exported(run, tmp_path)
     batch = replies(pack)
@@ -309,7 +317,9 @@ def test_pending_current_then_explicit_dismissal_preserves_fingerprint(run, tmp_
     before = protected(run)
     fingerprint = revisions.fingerprint(run)
     assert exchange.pending_proposals(run) == [proposal]
-    dismissal = exchange.dismiss(run, proposal['proposal_id'], actor='Synthetic reviewer', reason='Synthetic irrelevant response')
+    dismissal = exchange.dismiss(
+        run, proposal['proposal_id'], actor='Synthetic reviewer', reason='Synthetic irrelevant response'
+    )
     assert dismissal['actor'] == 'Synthetic reviewer' and dismissal['reason']
     assert exchange.pending_proposals(run) == []
     assert protected(run) == before and revisions.fingerprint(run) == fingerprint

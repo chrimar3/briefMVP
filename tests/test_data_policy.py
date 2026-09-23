@@ -96,7 +96,9 @@ def test_symlinked_declaration_is_refused(tmp_path):
 
 
 def test_approved_declaration_records_its_approval(tmp_path):
-    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, "_note": "synthetic test"}), encoding="utf-8")
+    (tmp_path / "data_declaration.json").write_text(
+        json.dumps({**APPROVED, "_note": "synthetic test"}), encoding="utf-8"
+    )
     declaration = data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
     assert not declaration.is_synthetic
     record = declaration.as_record()

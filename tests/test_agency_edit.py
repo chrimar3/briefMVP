@@ -4,9 +4,9 @@ from contextlib import contextmanager
 from datetime import date
 
 import pytest
+from conftest import make_review_run
 
-from pipeline import agency_edit, spec_catalog, revisions
-from test_agency_operations import make_review_run
+from pipeline import agency_edit, revisions, spec_catalog
 
 
 @pytest.fixture
@@ -187,8 +187,6 @@ def test_unknown_cli_field_rejected(run):
 
 
 def test_integrated_run_lock_blocks_edit(run):
-    if not hasattr(revisions.run_lock, '__module__') or revisions.run_lock.__module__ != revisions.__name__:
-        pytest.skip('Shared lock integration is not available yet')
     before = (run / 'agency_inputs.json').read_bytes()
     with revisions.run_lock(run):
         assert agency_edit.main(['checklist', str(run), '--key', 'objective_and_audience',

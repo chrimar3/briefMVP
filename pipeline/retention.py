@@ -48,13 +48,14 @@ import re
 import shutil
 import subprocess
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Any, Optional
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import clock, gates, records, revisions
+from pipeline import clock, gates, records, revisions  # noqa: E402
 
 TOMBSTONE_FILE = "retention_tombstones.jsonl"
 #: The run's staged, read-only input copies (pipeline/runner.py STAGED_INPUTS_DIR).
@@ -71,10 +72,8 @@ RUN_LEVEL_DERIVED = ("brief.json", "brief_el.md", "brief_en.md", "brief_el.html"
                      "question_exchange")
 
 #: Governance and effort records: personal data about agency staff (names, minutes, decisions).
-PERSONAL_RECORDS = ("approval.json", "language_review.json", "creative_draft.json", "creative_approval.json",
-                    "amendments.json", "clarifications.json", "coverage_decisions.json", "releases.json",
-                    "approval_withdrawals.json", "effort.json", "agency_inputs.json", "revision_lineage.json",
-                    "audit_log.jsonl")
+#: Defined with the record I/O, which writes every one of them owner-only (0600).
+PERSONAL_RECORDS = records.PERSONAL_RECORDS
 
 
 class RetentionError(ValueError):
@@ -90,7 +89,7 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _load(path: Path, default=None):
+def _load(path: Path, default: Any = None) -> Any:
     """A run record, or `default` when absent. A corrupt record raises CorruptRecordError (refusal)."""
     return records.load_optional(path, default)
 
@@ -121,7 +120,7 @@ def find_runs(roots: Iterable[Path]) -> list:
 def _files(directory: Path) -> list:
     """Regular files under a directory, without following symlinks."""
     out = []
-    for dirpath, dirnames, filenames in os.walk(directory, followlinks=False):
+    for dirpath, _dirnames, filenames in os.walk(directory, followlinks=False):
         for name in filenames:
             path = Path(dirpath) / name
             if path.is_file() and not path.is_symlink():
@@ -170,7 +169,7 @@ def _legacy_sources(run: Path) -> dict:
         discovered = gates.discover_sources(folder)
     except gates.GateError:
         return {}
-    sources = {}
+    sources: dict[str, dict[str, Any]] = {}
     for source in discovered:
         if source.source_id in wanted:
             sha = sha256_file(source.path)
@@ -191,9 +190,10 @@ def release_packages(run: Path) -> list:
 
 def session_ids(run: Path) -> list:
     """`claude -p` session IDs recorded in the run's artifacts (transcripts live in the CLI profile)."""
-    found = set()
+    found: set[str] = set()
 
-    def walk(value):
+    def walk(value: Any) -> None:
+        """Collect every non-empty `session_id` string, at any depth."""
         if isinstance(value, dict):
             for key, inner in value.items():
                 if key == "session_id" and isinstance(inner, str) and inner:
@@ -216,8 +216,8 @@ def session_ids(run: Path) -> list:
     return sorted(found)
 
 
-def _per_source_derivatives(run: Path, source_ids: Iterable[str]) -> list:
-    out = []
+def _per_source_derivatives(run: Path, source_ids: Iterable[str]) -> list[Path]:
+    out: list[Path] = []
     for sid in source_ids:
         for pattern in (f"fidelity/{sid}.*", f"extracts/{sid}.json", f"verification/{sid}.*",
                         f"history/*/fidelity/{sid}.*", f"history/*/extracts/{sid}.json",
@@ -257,6 +257,7 @@ class _Protection:
         self.tracked = _tracked(self.repo_root)
 
     def is_committed(self, path: Path) -> bool:
+        """True when `path` is (or, for a directory, holds) a tracked file; anything in the repo without VCS data."""
         path = Path(path).resolve()
         if self.tracked is None:
             return self.repo_root == path or self.repo_root in path.parents
@@ -344,12 +345,13 @@ def audit_log_tombstone(run: Path) -> Optional[dict]:
     if not path.is_file() or path.is_symlink():
         return None
     lines = [line for line in path.read_text(encoding="utf-8", errors="replace").splitlines() if line.strip()]
-    events: dict = {}
+    events: dict[str, int] = {}
     for line in lines:
         try:
-            event = json.loads(line).get("event", "?")
-        except (ValueError, AttributeError):
-            event = "unreadable"
+            parsed = json.loads(line)
+        except ValueError:
+            parsed = None
+        event = str(parsed.get("event", "?")) if isinstance(parsed, dict) else "unreadable"
         events[event] = events.get(event, 0) + 1
     problems = revisions.verify_audit_log(run)
     return {"path": str(path), "sha256": sha256_file(path), "entries": len(lines),
@@ -359,7 +361,7 @@ def audit_log_tombstone(run: Path) -> Optional[dict]:
 
 
 def _delete(path: Path) -> dict:
-    record = {"path": str(path)}
+    record: dict[str, Any] = {"path": str(path)}
     if path.is_dir() and not path.is_symlink():
         record.update(kind="directory", file_count=len(_files(path)))
         shutil.rmtree(path)
@@ -375,10 +377,12 @@ def _plan_record(path: Path) -> dict:
     return {"path": str(path), "kind": "file", "sha256": sha256_file(path), "bytes": path.stat().st_size}
 
 
-def _guard(targets: list, named_dirs: list, include_committed: bool, protection: _Protection):
+def _guard(targets: list[Path], named_dirs: list[Path], include_committed: bool,
+           protection: _Protection) -> tuple[list[Path], list[Path]]:
     """Split targets into deletable and protected (committed evidence not explicitly named)."""
     named = [Path(d).resolve() for d in named_dirs]
-    allowed, protected = [], []
+    allowed: list[Path] = []
+    protected: list[Path] = []
     for path in targets:
         if protection.is_committed(path):
             explicit = include_committed and any(path == d or d in path.parents for d in named)
@@ -391,12 +395,12 @@ def _guard(targets: list, named_dirs: list, include_committed: bool, protection:
 def _write_tombstone(location: Path, record: dict) -> Path:
     path = Path(location) / TOMBSTONE_FILE
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
+    # A tombstone names the actor who purged: owner-only, like the other staff-data records.
+    records.append_text(path, json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n", private=True)
     return path
 
 
-def _require_attribution(actor: str, reason: str):
+def _require_attribution(actor: str, reason: str) -> None:
     if not (actor or "").strip() or not (reason or "").strip():
         raise RetentionError("A named actor and a reason are required for every purge")
 
@@ -466,7 +470,8 @@ def purge_run(run: Path, *, actor: str, reason: str, dry_run: bool = False, incl
     return record
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry point: inventory or purge; prints the JSON result, exit 2 on a refusal."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = parser.add_subparsers(dest="command", required=True)
     inv = commands.add_parser("inventory", help="List every copy of each source under the given runs")
