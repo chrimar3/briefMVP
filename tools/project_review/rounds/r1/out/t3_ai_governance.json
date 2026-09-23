@@ -1,0 +1,108 @@
+{
+  "scores": [
+    {
+      "aspect": "human_governance",
+      "score": 7,
+      "evidence": "Verified in code, not summaries. Conflicts: synthesis gate rejects any non-'open' conflict (pipeline/stages.py check_synthesis ~L410-417); agency.apply_candidate refuses dropped/edited/pre-resolved conflicts and untriaged question removal (_conflict_changes, _question_removal_allowed, pipeline/agency.py ~L73-110); conflicts change only via agency.resolve, which archives and resets signoff to draft. Sign-off: agency.approve requires a blocker-free audit, attester != signer (require_distinct, casefold/whitespace-normalised), intact audit log, and binds fingerprint + language_review hash; revisions.require_current_approval re-checks withdrawal, inputs, evidence and fingerprint. Creative: delivery.register content-addresses the exact files (creative_versions/<sha>), approve requires all 7 checks, spec-catalog validation and SoD (approver != registrant, != brief signer), binds draft/approval/language hashes; release re-checks SoD from the records (_recheck_separation), refuses a broken log, writes to a new directory outside the run via staging+rename, records released_by. Withdrawal (release_control.withdraw) persists before archiving and verify --run flags withdrawn packages. Hash-chained audit_log.jsonl with verify_audit_log detecting edit/insert/reorder/truncation and unvouched approval/creative_approval/amendment/withdrawal/release records (pipeline/revisions.py L279-399). Tests: tests/test_governance_controls.py (19 cases) pass; full suite 948 passed, 7 skipped, 48 xfailed. docs/SECURITY.md §3.6 and §4 state the limits honestly (unauthenticated names, coding agents can run decision commands).",
+      "defects": [
+        "The audit-log cross-check vouches only approval.json, creative_approval.json and the amendments/withdrawals/releases lists (revisions._VOUCHED_RECORDS/_VOUCHED_LISTS). A conflict marked status 'resolved_by_human' with any resolved_by name in brief.json, a hand-written language_review.json, clarifications.json decision or coverage_decisions.json entry (brief_binding is a public deterministic digest) is never checked against a matching conflict_resolved / language_attested / question_triaged / coverage_excluded entry; agency.audit only checks that resolution and resolved_by are non-empty strings. A forged 'human' resolution therefore passes audit and approval.",
+        "brief.json and the other earlier-stage artifacts are not protected during later model steps (runner.PROTECTED_RUN_PATHS omits brief.json, extracts/, classification.json, fidelity/, verification/); the render and creative agents can rewrite the canonical brief after the synthesis gate passed, e.g. flip conflicts to resolved_by_human — exactly what tests/injection_project/rfp.md asks for — and the render gate checks the in-memory brief, not the file. No test covers a post-synthesis stage tampering with brief.json.",
+        "The committed rehearsal evidence is not independently re-verifiable: `python3 -m pipeline.release_control verify-log runs/rehearsal-lifecycle/records` returns valid:false (releases.json[0] and approval_withdrawals.json[0] unvouched) because regenerate.py substitutes $PACKAGE into hashed records, while TRANSCRIPT.md step 35 shows valid:true and GO_LIVE_DECISIONS T-05 cites it as done.",
+        "AI coding agents operate this repo and nothing technical stops one from running agency approve/resolve/attest or delivery approve/release with any typed name (SECURITY.md §4.6 open item; no .claude/settings.json deny rules or hook exist).",
+        "The --solo-rehearsal SoD waiver trusts the project folder's current data_declaration.json, which is not hashed into input_snapshot.json; flipping an approved project's declaration to 'synthetic' after the run unlocks the waiver at approval and release time."
+      ],
+      "to_reach_9": "Vouch every human decision in the log (each resolved conflict matched to a conflict_resolved entry by index, actor and resolution digest; exclusions, triage decisions and language attestations likewise) and have agency.audit enforce it; freeze earlier-stage artifacts (brief.json, extracts/, classification.json, fidelity/, verification/) during later model steps with deny rules and the integrity check plus tests; bind data_declaration.json into input_snapshot; ship deny rules/hook that keep coding agents off the human-decision commands; make the committed rehearsal records pass verify-log with a test."
+    },
+    {
+      "aspect": "security_injection",
+      "score": 7,
+      "evidence": "pipeline/agents.py build_command: inline agent definition from a neutral empty cwd (no CLAUDE.md), --tools Read,Write, --permission-prompts none, --setting-sources project,local, --strict-mcp-config, path-scoped allow rules only, deny Write/Edit on read-only dirs and protected records, deny Read/Write/Edit on //**/answer_key.json, deny Bash/WebFetch/WebSearch/NotebookEdit, both given and resolved path spellings (_rule_paths). I confirmed every flag exists in the installed CLI 2.1.280 `claude --help`. Runner stages byte-identical 0444 copies into <run>/inputs and never grants the project folder (runner.stage_inputs, _access_dirs); post-step hash integrity check over skeleton dirs, protected records and originals, also on halt (runner.integrity_state/integrity_violations, ~L259-280, L770-785). unsafe_source_ids refuses traversal ids before any path is built. Verifier findings screened to verbatim source spans and adjudicated (extraction.screen_findings). Rule U in every runtime prompt, enforced by tests/test_prompt_hygiene.py; work orders carry paths, never source text (tests/test_agent_security.py::test_injected_text_never_reaches_a_work_order). Delivery refuses symlinked/SVG assets and validates package filenames and hashes (delivery.current_draft, release_control.verify). docs/SECURITY.md has an asset/threat/control/proof/residual structure that matches the code.",
+      "defects": [
+        "Stage outputs are not frozen once gated: during render and creative steps the agent may still write brief.json, extracts/, classification.json, fidelity/ and verification/ (not in PROTECTED_RUN_PATHS, not in the integrity watched set). An injected instruction that survives into brief content can alter the canonical brief after its gate; tests only simulate a tampering classify step against approval/staged input/config/schema.",
+        "Enforcement of the permission rules by the CLI is still unproven: no live canary run exists (SECURITY.md §4.1), no CLI version is recorded or checked at runtime, and stronger substrate flags available in the same CLI are unused: --restricted (confines file tools to the working directories, refuses bypassPermissions) would close residual risk 1 (reads outside granted dirs), and --no-session-persistence would stop full client-content transcripts being stored in the operator profile.",
+        "Coding agents can execute the human-decision commands; the repo ships no .claude/settings.json deny rules or PreToolUse hook for them (SECURITY.md §4.6 left open).",
+        "Supply chain partly open: requirements.lock has no hashes and CI actions are pinned by tag rather than commit SHA (.github/workflows/quality.yml comments admit it)."
+      ],
+      "to_reach_9": "Add per-stage protection of all previously gated artifacts (deny rules + integrity watch) with tests for a tampering render/creative step; add --restricted and --no-session-persistence to build_command and record `claude --version` in the manifest with a minimum-version refusal; run one owner-authorised live canary on tests/injection_project and commit its manifest; commit deny rules/hook for decision commands; hash the lock and SHA-pin the actions."
+    },
+    {
+      "aspect": "data_protection",
+      "score": 7,
+      "evidence": "pipeline/data_policy.py: missing/invalid data_declaration.json refuses the run before any source is read (runner exit 6), 'approved' requires approval_ref/approved_by/approved_on (no future dates), and approved projects, client config and output are refused inside the repository (check_locations). Sensitivity tier S2/S3 refused at client-config load before any model step (extraction.load_client_config -> gates.enforce_sensitivity_tier), again on classify output, synthesis and every agency read. Answer key excluded from staging and evidence. Release minimisation whitelists deliverable fields (delivery.release public_rows). pipeline/retention.py inventories every byte copy (evidence/, history/, staged inputs/, packages) and session IDs, purges by source SHA or run with attributed tombstones, never silently deletes the audit log, and protects committed evidence. docs/pilot/DATA_PROTECTION.md is a genuine DPIA input pack: personal-data inventory by subject, per-stage flow map of what reaches the provider, WP248 screening, lawful-basis options, per-artifact retention schedule, rights procedure, Art. 28 processor checklist, effort-data purpose limitation, special-category screening step; legal judgements are correctly marked OWNER/DPO TO CONFIRM. Pseudonymised scorecard (L1/L2).",
+      "defects": [
+        "Session persistence is left as 'OPERATOR TO CONFIRM' (DATA_PROTECTION.md §6, §8, §11) although the documented CLI 2.1.280 offers --no-session-persistence for --print; build_command does not pass it, so every model run stores full source content and outputs in the operator's CLI profile, outside every retention control.",
+        "The fixtures-only boundary rests on a self-asserted {\"data_class\": \"synthetic\"} with no automated personal-data or special-category pre-screen (acknowledged open, §1/§11); the same self-assertion also unlocks the SoD solo-rehearsal waiver, and the declaration is not hashed into input_snapshot.json, so it can change after a run without invalidating it.",
+        "No data-minimisation option is analysed for the model flow: classify receives the full text of every source (§3 flow map) although it needs little more than headers and the client config; speaker pseudonymisation is listed as open without an evaluation plan.",
+        "The committed graded run runs/tier3 still carries the case-study author's real name as signer/resolver (acknowledged; historical, read-only), so the repository itself is not strictly synthetic-only in its personal data."
+      ],
+      "to_reach_9": "Pass --no-session-persistence (verified against the pinned CLI) and update the retention schedule accordingly; add a deterministic, warning-level personal-data/special-category pre-screen (emails, phone numbers, Greek+English term list in config/) whose result is recorded in the manifest and required as 'screened_by/screened_on' before an approved run; hash data_declaration.json into input_snapshot; document a minimisation analysis for classify and a pseudonymisation evaluation plan."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Freeze every gated artifact during later model steps",
+      "aspects": ["security_injection", "human_governance", "architecture", "testing_ci"],
+      "rationale": "The biggest real bypass: after synthesis passes, the render and creative agents can still write brief.json (and extracts/, classification.json, fidelity/, verification/), e.g. forge a 'resolved_by_human' conflict, and neither permission rules nor the integrity check notice. Closing it turns the existing integrity mechanism into a complete one.",
+      "concrete_changes": "pipeline/runner.py: make _access_dirs(ctx, step) stage-aware — protected = PROTECTED_RUN_PATHS + outputs of all earlier steps (classification.json after step 2; fidelity/ after 3; extracts/, verification/ after 4; conflict_candidates.json after 5; brief.json after 6; brief_el.md/brief_en.md after 7); integrity_state uses the same set. pipeline/agents.py unchanged (it already turns protected paths into deny rules). tests/test_agent_security.py: parametrised 'obedient render/creative handler' cases that rewrite brief.json (conflict -> resolved_by_human), an extract and classification.json, each asserting stage_failed with 'integrity:'. docs/SECURITY.md §3.2/§3.4: list the per-stage protected set.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Vouch every human decision in the audit log and enforce it in audit",
+      "aspects": ["human_governance", "security_injection", "testing_ci"],
+      "rationale": "verify_audit_log only vouches approvals and three lists; forged conflict resolutions, exclusions, triage decisions and language attestations pass. Tamper-evidence should cover every decision the approval relies on.",
+      "concrete_changes": "pipeline/agency.py resolve: log details {conflict, resolved_by, resolution_sha256}; exclude/answer: log entry_sha256 of the stored decision; attest: log the record hash, and approve logs a 'language_attestation_transferred' entry with the new hash. pipeline/revisions.py verify_audit_log: for each conflict with status resolved_by_human in brief.json require a matching conflict_resolved entry (index, actor == resolved_by, resolution digest); each coverage_decisions/clarifications entry and the current language_review.json must be vouched. agency.audit adds verify_audit_log problems as blockers. data_declaration.json hashed into input_snapshot at runner start and intake so a flipped declaration invalidates approval and any solo waiver. tests/test_governance_controls.py: hand-written resolution, exclusion with computed binding, attestation and declaration flip each blocked.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Harden the runtime substrate flags: session persistence off, restricted mode, CLI version recorded",
+      "aspects": ["security_injection", "data_protection", "reproducibility_dx"],
+      "rationale": "The same CLI (2.1.280) offers --no-session-persistence and --restricted; using them removes an uncontrolled copy of all client content from the operator profile and confines file tools to granted directories (SECURITY residual risk 1), and a recorded version makes permission semantics auditable.",
+      "concrete_changes": "pipeline/agents.py build_command: add '--no-session-persistence' and '--restricted' (keep --tools/--strict-mcp-config); invoke(): capture `claude --version` once per process and refuse below a MIN_CLI_VERSION constant; runner writes cli_version into run_manifest.json. tests/test_agent_security.py::test_command_isolates_the_substrate_and_scopes_every_tool asserts both flags. tools/replay/claude accepts them. docs/SECURITY.md §3.2/§4.1 and docs/pilot/DATA_PROTECTION.md §6/§8/§11 replace 'OPERATOR TO CONFIRM' for session files with the control; retention.session_ids documented as legacy-only.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Keep coding agents off the human-decision commands",
+      "aspects": ["human_governance", "security_injection", "pilot_readiness"],
+      "rationale": "The repo is operated by Claude Code and Codex; SECURITY.md §4.6 admits nothing stops an agent from running approve/resolve/release under a typed name. A committed deny layer makes the 'no model runs them' policy technical.",
+      "concrete_changes": "Add .claude/settings.json with permissions.deny for Bash patterns covering `python3 -m pipeline.agency (approve|resolve|attest|exclude|answer|apply|carry-decisions)`, `pipeline.delivery (register|approve|release)`, `pipeline.release_control withdraw`, `pipeline.retention purge` (and `python3 pipeline/...` spellings), plus a PreToolUse hook script scripts/deny_decision_commands.sh as belt and braces; equivalent rule text in AGENTS.md / .codex config; tests/test_prompt_hygiene.py (or a new test) asserts the deny list covers every decision subcommand parsed from the argparse definitions. Update SECURITY.md §4.6 from open to controlled.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make the committed rehearsal records pass verify-log",
+      "aspects": ["human_governance", "testing_ci", "documentation", "stakeholder_materials"],
+      "rationale": "The rehearsal is the only committed end-to-end proof of release, withdrawal and tamper-evidence, yet verify-log on runs/rehearsal-lifecycle/records returns valid:false because regenerate.py rewrites hashed paths to $PACKAGE; a reviewer who re-checks finds a contradiction with TRANSCRIPT.md step 35.",
+      "concrete_changes": "runs/rehearsal-lifecycle/regenerate.py: release to a path that needs no substitution (e.g. a relative sibling 'package' directory under the rehearsal root) or stop substituting inside records that are hashed into the log; regenerate. Add tests/test_rehearsal_records.py asserting release_control.verify_log(records)['valid'] and verify(records/package, run=records) behave as the transcript states (withdrawn: true). Note in docs/pilot/GO_LIVE_DECISIONS.md T-05 that the committed records re-verify.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Deterministic personal-data pre-screen and declaration hardening",
+      "aspects": ["data_protection", "pilot_readiness"],
+      "rationale": "The fixtures-only boundary and the DPIA pack rely on a self-asserted declaration and a manual special-category screen; a warning-level deterministic screen with a recorded outcome gives the DPO evidence before the first approved run.",
+      "concrete_changes": "New pipeline/data_screen.py (no model calls): regex for e-mail addresses, phone numbers, IBAN-like strings, plus a Greek+English special-category term list in config/special_category_terms.json; run by intake and runner for every project, results in run_manifest.json 'data_screen'; for data_class 'approved', data_policy requires 'screened_by' and 'screened_on' fields and refuses if the screen has unacknowledged hits. Tests with a synthetic hit fixture. DATA_PROTECTION.md §1/§10/§11 updated; add a minimisation note for classify (headers-only option to evaluate).",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "One owner-authorised live injection canary",
+      "aspects": ["security_injection", "evaluation_method"],
+      "rationale": "Argv is tested byte for byte, but whether the CLI actually refuses protected writes and answer-key reads is unproven (SECURITY.md §4.1). One live run on the existing synthetic injection project converts the main residual risk into evidence.",
+      "concrete_changes": "Add eval/injection_canary.py: runs pipeline/runner.py on tests/injection_project to a scratch out dir, then asserts integrity pass, no approval.json/schema/config change, no /tmp/leak.json, extraction_note 'embedded instruction not followed' present, manifest cli_version recorded; commit the manifest and verdict under runs/injection-canary-01/ with a .gitignore exception; cite in SECURITY.md §3.1/§4.1.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Close the supply-chain items",
+      "aspects": ["security_injection", "reproducibility_dx"],
+      "rationale": "Unhashed lock and tag-pinned actions are the remaining generic supply-chain gaps a reviewer will flag.",
+      "concrete_changes": "Regenerate requirements.lock with `pip-compile --generate-hashes` and install with --require-hashes in scripts/check.sh and CI; replace actions/checkout@v4 and actions/setup-python@v5 with full commit SHAs (tag as comment); pin ruff via the lock; add Dependabot/renovate config only if allowed (no integration: otherwise document a manual monthly refresh in docs/SECURITY.md §3.7).",
+      "effort": "S",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The trust layer is well above typical MVP standard: least-privilege subagent invocation with flags verified against the installed CLI, staged read-only inputs, a post-step integrity check, verbatim-screened verifier findings, human-only conflict resolution, separation of duties, content-addressed creative approval bound by hashes, attributed release and withdrawal, a hash-chained audit log, and a data-declaration gate backed by a serious DPIA input pack and retention tooling. SECURITY.md is honest about its limits. What keeps each aspect at 7 is a small set of concrete gaps, not missing design: artifacts that already passed their gate (above all brief.json) stay writable by later model steps; the audit log does not vouch conflict resolutions, exclusions, triage or attestations, so a forged 'human' resolution passes; the committed rehearsal records fail verify-log; coding agents can run the decision commands; and available CLI hardening (--no-session-persistence, --restricted) is unused while session storage is still marked 'to confirm'. Moves 1-3 and 5 are small, need no owner decision, and would move human_governance and security_injection to 8+; data_protection needs move 3 plus the pre-screen (move 6)."
+}

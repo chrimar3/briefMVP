@@ -1,0 +1,120 @@
+{
+  "scores": [
+    {
+      "aspect": "brief_accuracy",
+      "score": 6,
+      "evidence": "What is right: all 33 extract citations resolve verbatim in the source (harness T1.2/T1.3, runs/tier3/harness_report.json, 17/17). All three seeded conflicts sit in brief.json conflicts[] with both sides cited (budget RFP section 6 vs transcript [00:14:32]; timeline RFP section 5 vs emails Message 2; audiences RFP section 3 vs [00:03:41]). The budget is never totalled. The TikTok dance carries qualifier=conditional (deliverables[5]). Metro OOH does not appear as a commitment. The four real gaps (KPI, media budget, approver, formats) and a useful extra one (the approved ingredient list, open_questions[9]) are captured. The transcript extract keeps both ASR garbles as-is, with extraction_notes (extracts/transcript_kickoff.json). What a creative team reading the signed brief actually meets is worse, and it is all verified in the committed artifact. (1) Under a SIGNED OFF banner, brief_en.md:15 and :36 print 'No confirmed entries' for Audiences and Budget. The resolved values (25-40; production budget excluding media; 15 September) exist only in conflicts[].resolution, and timeline[] never states the date. (2) open_questions[1], [2] and [8] still ask the client to settle what the account lead already resolved ('No single confirmed audience definition exists', 'The launch date itself is contested'). (3) Garbles are normalised where readers look: objectives[2] says 'Building brand awareness is central' and key_messages[3] says 'the key visual should evoke summer'. The ASR tokens survive only in anchors, and both are at confidence high, against SOURCES.md rule G. (4) key_messages[3] attributes 'not a generic beach-party feel' to transcript [00:06:02]; that clause comes from the brand guidelines' Category no-gos. (5) Hedge drift: the source says «κάπου στα ογδόντα» ('around eighty'). conflicts[1] and the resolution say 'somewhere in the eighties' / 'in the eighties', which reads as a range of 80-89. (6) deliverables[0] and [1] are agency process steps, not deliverables. (7) The repair loop deleted the metro proposal and its retraction together (transcript extract extraction_notes[3]), so the creative team gets no warning. (8) The client's 'we have no category research' (emails extraction_notes[0]) never reaches the brief. eval/supplementary.py runs/tier3 flags S2, S3, S4 and S9. Credit: runs/tier3/KNOWN_DEFECTS.md (B1-B10, E1-E2) documents every one of these honestly, with 48 strict xfails in the suite (948 passed, 48 xfailed). Documenting a defect does not remove it from the graded output.",
+      "defects": [
+        "Resolved audience, budget and launch date never reach their fields: brief_en.md:15 and :36 say 'No confirmed entries' under a SIGNED OFF banner (brief.json audiences=[], budget=[], timeline without 15 Sept).",
+        "Open questions 2, 3 and 9 re-ask the client to settle conflicts the account lead already resolved (open_questions[1], [2], [8]).",
+        "Garbled ASR terms appear normalised in reader-facing content (objectives[2] 'brand awareness', key_messages[3] 'key visual') at confidence high, with no visible flag in either render.",
+        "key_messages[3] cites transcript [00:06:02] for 'not a generic beach-party feel', a clause that comes from background_brand_guidelines.",
+        "Budget hedge drift: «κάπου στα ογδόντα» is rendered 'in the eighties' in conflicts[1], the resolution and signoff.edits_summary, while open_questions[2] says 'around eighty'.",
+        "Agency process steps are filed as deliverables (deliverables[0] approval step, deliverables[1] 'Northlight will send a revised plan').",
+        "The metro OOH retraction was erased by the repair loop rather than preserved as a retracted item (transcript extract extraction_notes[3]; internal_conflicts empty).",
+        "Missing strategic question: the brief never asks whether TikTok-first, written for Gen Z 18-24, survives the audience correction to 25-40.",
+        "The client's 'no category research' fact (emails extract) is dropped from the brief."
+      ],
+      "to_reach_9": "Produce a regenerated graded brief under the current hardened SYNTHESIS/SOURCES specs in which: resolved conflict values land in their fields with the resolution cited; open questions tied to resolved conflicts are closed; garble-derived entries are confidence low and carry a visible ASR marker; every clause is cited to the source that says it; the spoken budget stays 'around eighty (units unstated)'; process steps leave deliverables; the retraction survives as retracted. Supplementary S2/S3/S4/S9 must be clean and the tier3 xfails must XPASS, then flip."
+    },
+    {
+      "aspect": "bilingual_quality",
+      "score": 6,
+      "evidence": "The Greek render (runs/tier3/brief_el.md) is mostly in a credible Athenian agency register. English category terms stay in Latin script as TRANSLATION.md rule 3 requires ('brand awareness', 'key visual', 'TikTok-first', 'claims', 'clear space'). Meltemi Fizz stays in Latin script throughout. The mandatories are faithful (EL:39-48 vs EN:39-48), and structure and line count match (115/115). Supplementary S8 finds 8 of 9 keep_latin glossary terms used correctly. It is not yet something an account lead could send. Nine Greek grammar errors are verified, several inside suggested questions written to be asked verbatim: EL:54 «η θέση της προσώπου»; EL:66 «Ποιό»; EL:78 «που ακριβώς» for interrogative πού; EL:86 «τη τελική»; EL:95 «το κοινό-στόχος ως»; EL:103 «σύμφωνα με τον CFO», though the CFO is Anna; EL:115 «αντικρούσεις», which means rebuttals. Calques: «Κάλυψη εισερχομένων», «διαμερίζεται», «Το Northlight θα στείλει», a doubled «παραμένει». The EL title is English ('Client Brief [EL]'). The two languages disagree on the budget: EN:102-103 says 'in the eighties', EL:102-103 says «κάπου στα ογδόντα». EL:60 puts «γύρω στα ογδόντα» in quotation marks, which is not what the source says. EN adds '(sparkling tea)' (EN:20), softens «φωνάζει καλοκαίρι» to 'evoke summer' (EN:21), and both add 'production' to Eleni's «προγραμματισμό» (:33). Question 2 in both languages says 'today it was said' / «σήμερα ειπώθηκε» in a brief dated two weeks after the kickoff (EN:58, EL:58). The EN:92 / EL:92 heading 'Unresolved Conflicts (account lead must resolve before sign-off)' sits over three resolved conflicts under a SIGNED OFF banner, and internal metadata (tier S1, coverage 5/7, 'Verdict: Ready for review', 'Pipeline') sits in a client-facing header (EN:5-7). The signoff says 'no edits'; no Greek review stood between render and sign-off. The specs and templates have since been hardened: TRANSLATION.md rule 13 bans source deixis, templates/northlight_client_brief.labels.json has a conflicts_resolved heading, and tests/test_greek_lint.py exists. No regenerated render demonstrates those fixes. The only render evidence is the defective one, documented in runs/tier3/KNOWN_DEFECTS.md R1-R7.",
+      "defects": [
+        "Nine Greek grammar errors, several in verbatim client questions (EL:54, :66, :68, :78, :86, :95, :103 x2, :115).",
+        "EN and EL disagree on the budget hedge ('in the eighties' vs «κάπου στα ογδόντα»), and EL:60 misquotes the source.",
+        "Temporal deixis «σήμερα ειπώθηκε» / 'today it was said' in suggested question 2, two weeks after the meeting.",
+        "Conflict heading says 'Unresolved... must resolve before sign-off' over resolved conflicts in a signed-off brief (EN:92, EL:92).",
+        "Internal pipeline metadata (sensitivity tier, input coverage, verdict, pipeline id) sits in the client-facing header of both renders.",
+        "EN adds and softens content ('(sparkling tea)', 'evoke summer', 'production'), so the two documents are not strictly equivalent.",
+        "Calques and inconsistencies in the Greek («Κάλυψη εισερχομένων», «διαμερίζεται», «Το Northlight», English document title)."
+      ],
+      "to_reach_9": "Re-render the graded brief under the current TRANSLATION.md and templates. Run greek_lint as a blocking render gate with zero findings. Put the conflicts_resolved heading after sign-off, move metadata to the internal section, and remove deixis. Make the EN and EL budget wording identical to the source hedge. Commit a language_review attestation from a native Greek reviewer before sign-off."
+    },
+    {
+      "aspect": "creative_quality",
+      "score": 5,
+      "evidence": "What works: both drafts (runs/tier3/creative/creative_brief_sonnet.md, creative_brief_opus.md) use the structure a creative team expects: SMP, insight, Think/Feel/Do, tone, RTBs, mandatories, deliverables with specs, and a readiness checklist. They take the resolved 25-40 audience and treat the TikTok dance as not a commitment. They cite spec rows from config/channel_specs.json (tiktok_infeed_video, key_visual_digital_master) and refuse to invent a platform (sonnet:54; opus:71 'SPEC NOT IN TABLE'). They flag the missing ingredient list as blocking claims copy (opus:38, :83). Opus's insight about not being lectured about health (opus:17) is the best line on the page. Against the standard of what a team should build on: (1) Invented facts sit in the lines the team will build from. Opus's SMP says 'the Greek-made sparkling tea' (opus:11), but the sources say only «ελληνικό brand». Sonnet says the category is 'new to Greece' (sonnet:9); the source says new 'για εμάς'. (2) Sonnet invents a currency and scale, '(€80–85k)' (sonnet:64, :69), which the brief explicitly records as unit-unconfirmed. Opus writes '€90k' (opus:96). (3) Opus says the TikTok dance was 'retracted' (opus:73, :96); it was hedged, and the retraction was the metro idea. (4) Sonnet's duration '9–60s' uses an en dash, not the table's '9-60s' (sonnet:52). The committed gate at the time did not catch it. (5) Opus writes 'Reviewed by a creative lead for evaluation only' (opus:5), a model claiming human review at generation time. The SHADOW MODE banner is honest, but that sentence undermines it. (6) Neither draft interrogates the strategy: TikTok-first was written for the Gen Z audience the client withdrew, and a 'premium summer' key visual sits beside a 15 September end-of-season launch. (7) Both are English-only, although the tone mandatory is 'Confident, modern Greek'. There is not one Greek line in the brand's register. (8) SMP wording drifts toward risk: sonnet:5 uses 'sugary, beach-party fizz', a lowercase 'fizz' next to a name that must never be shortened. Opus's 'nothing to feel guilty about' flirts with the health-claim ban. Both SMPs are category-generic ('premium everyday ritual'). (9) Both carry the 'in the eighties' budget drift. The contract has since been hardened: .claude/agents/creative-shadow.md rules 4, 6 and 9 cover provenance claims, strategic tensions and a Greek example line, and pipeline/creative.py draft mode now byte-checks durations and file types. No regenerated draft proves the hardened contract produces better work. runs/rehearsal-lifecycle/records/package/creative.md is a placeholder skeleton ('Key message 1, as signed off'), not model output. runs/tier_4_report.md:65-66 ('trap-clean and spec-clean') is corrected only in creative/KNOWN_DEFECTS.md.",
+      "defects": [
+        "Unsourced provenance and market claims in the SMP and insight: 'Greek-made' (opus:11), 'new to Greece' (sonnet:9).",
+        "Invented currency and scale for an unit-unconfirmed spoken figure: '€80–85k' (sonnet:64, :69); '€90k' reformat (opus:96).",
+        "TikTok dance mislabelled 'retracted' (opus:73, :96).",
+        "Spec token not byte-identical to the table: '9–60s' with an en dash vs '9-60s' (sonnet:52).",
+        "Model-written claim of creative-lead review at generation time (opus:5) weakens the honest shadow labelling.",
+        "No strategic tensions surfaced: TikTok-first vs the resolved 25-40 audience, and premium summer vs a 15 Sept end-of-season launch.",
+        "No Greek-language copy example, despite a Greek tone mandatory.",
+        "SMP wording near brand risk ('fizz' lowercase next to a protected name; 'nothing to feel guilty about' near the health-claim ban), and SMPs are category-generic.",
+        "'Verbatim from the brief' heading over a trimmed mandatory list (opus:42-56 omits the RFP section 7 item and alters the v3.1 line)."
+      ],
+      "to_reach_9": "Regenerate the sonnet/opus A/B under the current CREATIVE DRAFT contract from a corrected signed brief, and commit it beside tier3 as the new creative evidence. It must pass draft-mode spec, currency and provenance gates. It needs a Strategic tensions section naming TikTok-first vs audience and season vs launch date, and a lint-clean Greek example line in the brand register. No model-written review claims. Then have a creative lead score both drafts against a short written rubric (SMP distinctiveness, insight truth, usability) and record the result."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Regenerate the graded Northlight evidence pack under the hardened specs (new run dir beside tier3)",
+      "aspects": ["brief_accuracy", "bilingual_quality", "creative_quality", "evaluation_method", "documentation", "stakeholder_materials"],
+      "rationale": "Almost every verified output defect (B1-B7, R1-R4, C1-C12) has already been answered in the specs, templates or gates: SYNTHESIS/TRANSLATION rules, the conflicts_resolved label, the creative-shadow rules 4/6/9, and draft-mode byte checks. But the only committed outputs are the pre-fix historical ones. Output quality is judged on artifacts, so one fresh run is the single largest score lever and turns 48 strict xfails into proof.",
+      "concrete_changes": "Run `python pipeline/runner.py --project fixtures/northlight_01` with the current routing into runs/tier3-r1/ (do not touch runs/tier3). Apply the same three human conflict resolutions and a human sign-off. Run the Stage-2 creative A/B into runs/tier3-r1/creative/. Then run `python3 eval/supplementary.py runs/tier3-r1` (require S2, S3, S4, S6, S7 and S9 OK) and score with the harness via its importable API into a new report file, never the CLI that rewrites the committed report. Point tests/test_regression_northlight.py at both runs: xfails stay on tier3 and positive assertions go on tier3-r1. Add a runs/tier3-r1/KNOWN_DEFECTS.md listing whatever remains. Record the resolved model IDs and token usage in a tier report.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Post-sign-off coherence gate: resolutions land in fields, their open questions close",
+      "aspects": ["brief_accuracy", "bilingual_quality", "human_governance", "testing_ci"],
+      "rationale": "A signed brief that says 'Audiences: No confirmed entries' and asks the client 'what is the target audience' is the defect a creative director notices first. It is deterministic and cheap to prevent.",
+      "concrete_changes": "In pipeline/stages.py (the render work order and gate) add a check: when signoff.status == signed_off, every conflict with status resolved_by_human must have its resolution rendered in that field's section, as a line tagged with the conflict's citations and labelled 'Resolved by <name>'. Any open_question whose field matches a resolved conflict and whose gap still asserts the conflict must be dropped or rewritten as the residual gap ('media budget total unknown'), or the render fails. Implement in the render and template layer (templates/northlight_client_brief*.md, labels.json) without schema changes. Add negative tests in tests/test_stage_gates_w4.py using the tier3 brief as the failing fixture. Promote supplementary S2 to this blocking check.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make ASR garbles visible in reader-facing content, not only in anchors",
+      "aspects": ["brief_accuracy", "bilingual_quality", "prompt_skill_design"],
+      "rationale": "Rule G's intent, flagged not fixed, is currently met only in the JSON anchors. Harness T3.3 passes by searching the whole JSON, while both renders show only the normalised term at confidence high. The voreas rolls show the same class dropping the primary objective.",
+      "concrete_changes": "Add one line to skills/SYNTHESIS.md: any entry built on a fidelity-flagged token keeps the token in content as «μπραντ αγουέρνες» [ASR, likely: brand awareness], at confidence low, and a garble-flagged claim must survive assembly (the coverage rule queued in runs/voreas_prep_report.md). Add one line to skills/TRANSLATION.md to carry the marker in both languages. Promote supplementary S3 to a blocking runner check in pipeline/stages.py. Add a test against tier3 (fails) and a synthetic passing case.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Blocking Greek lint plus a native-reviewer attestation before sign-off of the graded pack",
+      "aspects": ["bilingual_quality", "human_governance", "pilot_readiness"],
+      "rationale": "Nine grammar errors reached a signed brief, several in questions meant to be asked verbatim. The lint and a language_review.json record already exist in pipeline/agency.py but played no part in the graded evidence.",
+      "concrete_changes": "Wire the rules in tests/test_greek_lint.py (extend them with the R3 cases: article gender for πρόσωπο, «Ποιό», interrogative πού, final-ν before κ/τ, «αντίκρουση» misuse, «σύμφωνα με τον CFO» when the CFO is female per the participants line) into the render gate as blocking. For runs/tier3-r1, require runs/tier3-r1/language_review.json with a named reviewer before sign-off. State the reviewer's role in the tier report.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Hedge-fidelity gate across brief, renders and creative (spoken figures stay spoken)",
+      "aspects": ["brief_accuracy", "bilingual_quality", "creative_quality", "evaluation_method"],
+      "rationale": "'In the eighties' and '€80–85k' are the invented-total class that trap X3 exists for, but X3 needs currency marks and does not read creative drafts. voreas finding 4 shows unmarked numeral conversion is machine-invisible.",
+      "concrete_changes": "Promote supplementary S6 (creative currency) and S9 (decade-range rendering) to blocking checks. S9 goes in pipeline/stages.py for brief and renders; S6 goes in pipeline/creative.py draft mode. Add an unmarked-numeral check: a number in a conflict statement or creative draft whose source anchor spells it in words must stay a quoted hedge. Add fixtures to tests/test_supplementary.py and tests/test_creative.py. Do not touch eval/harness.py.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Creative lead scoring of the regenerated A/B against a written creative rubric",
+      "aspects": ["creative_quality", "evaluation_method", "stakeholder_materials"],
+      "rationale": "Deterministic gates prove the drafts are not wrong; they cannot show the drafts are good. Today there is no recorded human creative judgment of SMP distinctiveness or insight truth, and the tier-4 verdict ('differ in thoroughness, not correctness') was shown false.",
+      "concrete_changes": "Add docs/CREATIVE_RUBRIC.md with 5 criteria scored 1-5: SMP single-minded and ownable, insight a human truth not an objective restated, strategic tensions surfaced, brand-mandatory compliance including the Greek line, and usable next-day by a team. Record the creative lead's blind scores for sonnet and opus in runs/tier3-r1/creative/creative_review.json, with free-text notes. Summarise the result in the tier report without claiming more than one fixture shows.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Preserve retractions through the extraction repair loop",
+      "aspects": ["brief_accuracy", "prompt_skill_design", "code_quality"],
+      "rationale": "The repair loop deleted the metro proposal together with its retraction when a combined anchor failed. The creative team loses the warning 'client already rejected metro OOH on cost', which a key-visual question that lists OOH (open question 7) makes relevant.",
+      "concrete_changes": "In pipeline/extraction.py, when a repair would remove an item whose note or anchor spans a proposal and its retraction, re-request it as two verbatim-anchored items (proposal [00:08:15], retraction [00:08:34]) with qualifier conditional/retracted wording, or as an internal_conflicts entry, rather than deleting both. Add one sentence to skills/SOURCES.md for split anchors. Test with the tier3 transcript extract's REPAIR note as the regression case.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Field hygiene in synthesis: process steps out of deliverables, clauses cited to their true source",
+      "aspects": ["brief_accuracy", "creative_quality"],
+      "rationale": "Agency to-dos listed as deliverables, and a guidelines clause attributed to the CMO, mislead the team that scopes production and weaken trust in every citation.",
+      "concrete_changes": "Add to skills/SYNTHESIS.md: agency or client process steps (approvals, 'we will send a revised plan') are not deliverables. The approver gap is filed under an open question, not mandatories, and tone-of-voice guidance goes under mandatories. When an entry blends two sources it cites both. Promote supplementary S4 (citation-content probe) to a warning in the runner report, and add a test that a content compound absent from every cited line fails.",
+      "effort": "S",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "The deterministic spine is genuinely good. Citations are verbatim, the three conflicts are surfaced and never merged, the traps pass, the garbles are kept at extract level, and runs/tier3/KNOWN_DEFECTS.md plus creative/KNOWN_DEFECTS.md are an unusually honest defect record, backed by strict xfails. But output quality is judged on the output, and the only graded output is historical and visibly flawed. The signed brief's Audience and Budget sections are empty while its open questions re-ask resolved conflicts. Garbles are normalised where readers look. The Greek has nine grammar errors in client-facing questions, and the two languages disagree on the budget. The creative drafts invent provenance and currency and never interrogate the TikTok-first premise. Most fixes already exist in the specs, templates and gates; the missing step is a regenerated evidence pack that proves them, plus a human Greek and creative review of it."
+}

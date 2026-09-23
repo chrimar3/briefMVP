@@ -1,0 +1,129 @@
+{
+  "scores": [
+    {
+      "aspect": "architecture",
+      "score": 7,
+      "evidence": "Model work and deterministic checks are cleanly separated: every model stage goes through agents.run_gated(order, check_fn, repair_fn) (pipeline/stages.py:602-610, pipeline/creative.py:392-401), gates are pure functions in pipeline/gates.py, readiness is injected by the runner after synthesis rather than written by the model (stages.py:614-621), and the schema is enforced after every step (gates.validate_brief / validate_extract). The runner is a declarative STEP_SEQUENCE + STAGE_SELECTIONS + STEP_PREREQUISITES table (pipeline/runner.py:66-114) with typed exit codes, resumable run dirs, staged read-only input copies (stage_inputs) and a pre/post hash integrity check around every model step (runner.py integrity_state/integrity_violations, _execute). The clean-substrate seam (agents.py: inline --agents, neutral cwd, AccessScope -> permission rules) plus an offline replay binary (tools/replay/claude, pipeline/replay.py) make the model a swappable dependency. No fixture content is hardcoded in pipeline logic (grep for northlight/meltemi/voreas hits only comments, the replay default and one template default). Verified: a clean clone runs the full seven-step Stage-1 pipeline offline with zero model calls, exit 0.",
+      "defects": [
+        "Client-config resolution breaks extensibility to a second client: resolve_glossary (pipeline/extraction.py:39-57) falls back to 'the single file in glossary/' and never looks in the project folder, and no gate cross-checks the config against the project. Verified: `runner.py --project fixtures/voreas_02 --stage extraction` prints `client: meltemi_beverages · tier S1` although fixtures/voreas_02/client_voreas.json declares voreas_athletics, then dispatches extraction with the wrong client's glossary and tier. The function's own docstring says guessing the client config is the error it exists to prevent.",
+        "pipeline/stages.py is a 1,267-line module holding four stages (classify, fidelity, synthesis, render), render-template enforcement and the Greek language lint; check_synthesis alone is ~217 lines (stages.py:378-594). Stage boundaries exist in the runner but not in the module structure.",
+        "Layering inversion and hidden cycles: the low-level utility module pipeline/revisions.py imports high-level Tier 5-7 modules inside functions (release_control, question_exchange, quality at revisions.py:78-90; clarifications at :240), and there are 15 function-local `from pipeline import ...` statements across agency, delivery, creative, intake, publish, revisions and stages to dodge circular imports.",
+        "Private names are used across module boundaries: delivery.py:47 and creative.py:271 import stages._money_figures; runner.py:305 calls publish._publish_locked.",
+        "Two sign-off regimes coexist: creative_shadow checks only brief.signoff.status unless agency_inputs.json exists, in which case it also requires the fingerprint-bound approval.json (creative.py:375-383). Which gate applies depends on whether a file happens to exist, not on an explicit mode.",
+        "demo/run_demo.py is a second orchestration path that bypasses the Runner: no data_declaration gate, no staged inputs, no integrity check, a legacy plain-list access scope (run_demo.py:127), and it writes a hand-built run_manifest.json with hardcoded step statuses (run_demo.py:210-226).",
+        "Only one brief template set exists and the fallback is DEFAULT_BRIEF_TEMPLATE = 'northlight_client_brief' (stages.py:663-665), so a new client silently gets another agency's template unless its config names one."
+      ],
+      "to_reach_9": "Resolve the client config from the project folder (or data_declaration.json) and refuse on a client_id mismatch; split stages.py into per-stage modules; move require_current_approval out of revisions.py into its own approval module so utilities no longer import policy; make shared helpers (money figures, locked publish) public; route demo/run_demo.py through Runner; replace the file-existence branch between the two sign-off regimes with an explicit, recorded mode."
+    },
+    {
+      "aspect": "code_quality",
+      "score": 6,
+      "evidence": "The Stage-1 core (runner.py, gates.py, agents.py, extraction.py, stages.py) reads well: type hints on most functions, docstrings that give the why, named constants with provenance comments (agents.py MAX_ATTEMPTS, DEFAULT_TIMEOUT_S), specific exception hierarchies (gates.GateError -> InputContractError / SchemaValidationError / ScopeError; CorruptArtifactError; RunBusyError), no bare `except:`, and only 4 `except Exception` blocks, each a documented best-effort view (runner.py:395, 494, 507; run_demo.py:232). Atomic JSON writes (revisions.write_json via tmp + replace) and hashing helpers are centralised. ruff (E9, F) is enforced in CI.",
+      "defects": [
+        "Two idioms in one package. Stage-1 modules are typed and documented; the Tier 5-7 modules are almost untyped and terse. Annotated defs: delivery.py 0/11, effort.py 0/14, release_control.py 0/5, quality.py 0/6, agency_edit.py 0/7, handover.py 0/2, question_exchange.py 1/22, revisions.py 2/22, agency.py 2/16. The newer code also switches quote style, packs statements onto long lines (e.g. delivery.py:108-110, agency.py:455) and assigns a lambda (agency.py:30).",
+        "CLI mains turn programming errors into user errors: `except (ValueError, OSError, KeyError, TypeError, gates.GateError)` in agency.py:457 and delivery.py:308, plus AttributeError in operations.py:60 and similar in release_control.py:53/123. A KeyError from a bug prints one line and exits 2 with no traceback.",
+        "agency.main is a ~112-line if/elif dispatch with business logic inline: the `attest` branch builds and writes language_review.json and the audit entry inside main (agency.py:440-444), and the `handover` branch does the same (agency.py:449-455). None of it can be called or tested except through argv.",
+        "Lint debt is listed rather than fixed: 18 per-file-ignores in pyproject.toml (F401/F541/F841 across 11 test files, docview.py, repair_analysis.py, run_demo.py, walkthrough tools). The rule set is E9+F only, so there is no import sorting, no bugbear, no pyupgrade and no type checker, even though half the code carries annotations nobody verifies.",
+        "Oversized functions and embedded assets: check_synthesis ~217 lines, check_render_template ~138, check_render ~115, runner._run_locked ~135, demo main ~143; review.py carries ~250 lines of CSS/JS as Python string constants (review.py:395-638).",
+        "Leftover compatibility shims: AccessScope.coerce and __iter__ exist only so legacy list callers keep working (agents.py AccessScope), and demo/run_demo.py still uses the legacy list form. RunBusyError subclasses ValueError 'so existing callers keep working' (revisions.py:18-23)."
+      ],
+      "to_reach_9": "Bring the Tier 5-7 modules up to the Stage-1 standard (type hints and docstrings on public functions); replace the if/elif CLI dispatch with per-command handler functions; narrow the CLI catches to domain errors; widen ruff to E,W,F,B,I,UP,SIM and clear every per-file-ignore; add mypy in CI for pipeline/ with a checked baseline; break up the 100+-line check functions; move review.py's CSS/JS into package data files."
+    },
+    {
+      "aspect": "testing_ci",
+      "score": 7,
+      "evidence": "Ran the suite at HEAD and in a fresh `git clone`: 948 passed, 7 skipped, 48 xfailed in ~12.5 s both times, and `scripts/check.sh` in the clone also passed the frozen grade 17/17 and the agency benchmark 12/12 with 0 model calls. Every pipeline/ and eval/ module is referenced by at least one test. The tests carry real meaning: tests/test_end_to_end.py drives Runner through all seven steps against the replay fake, including a repair round, resume, refusing a different project, and corrupt-artifact and lock cases; path-traversal negatives cover source ids, template keys, delivery file names and extraction paths (test_agent_security.py:265, test_render_template.py:158, test_delivery.py:175/248, test_verifier_findings.py:182); test_replay.py ties the replay fake to the real work-order builders; test_entry_points.py asserts the frozen grader leaves runs/tier3 byte-identical. xfail discipline is good: every known defect is strict=True, raises=AssertionError, with a reason that points to a documented defect id (test_regression_northlight.py:72-79, test_regression_voreas.py:204-207), so a fixed defect turns red as an XPASS. CI (.github/workflows/quality.yml) runs a 3.9/3.12 matrix, least-privilege permissions, a timeout, the locked toolchain, and the same check.sh humans run.",
+      "defects": [
+        "No coverage measurement anywhere (pytest-cov is not in the lock and CI has no coverage step), so '948 tests' says nothing about which branches of the gates run.",
+        "scripts/check.sh skips lint when ruff is missing and still ends with 'All deterministic checks passed.' Locally ruff is not installed, and it is not in requirements.lock, so the one check humans run passes a tree that CI's lint could reject.",
+        "Actions are pinned by tag, not commit SHA (quality.yml:21-23 admits this). ruff==0.6.9 is pinned only inline in the workflow.",
+        "The 7 skips are parametrised not-applicable cases (test_agents.py:87 and :106 skip 'by design'), not real skips. The cases should be filtered at parametrisation so the skip count carries signal. test_agency_edit.py:191 and test_run_review.py:235 keep dead defensive skips.",
+        "Tests share helpers by importing from other test modules (test_dependencies.py:4 `from test_agency_operations import make_review_run`) rather than conftest fixtures. test_dependencies.py tests deliverable dependencies, not package dependencies. tests/review_cases.py builds synthetic copies under the names of real, untracked run folders ('runs/live', 'runs/evidence-20260729'), which misleads the reader.",
+        "No test pins client-config resolution against the project being run. The cross-client mismatch found under architecture passes the whole suite.",
+        "The declared floor, Python 3.9, has been end-of-life since October 2025, yet it is the primary CI leg."
+      ],
+      "to_reach_9": "Add pytest-cov with a published per-module report (a floor only with owner approval); put ruff (and pytest-cov) in a dev section of requirements.lock and make check.sh fail when lint cannot run unless --no-lint is passed explicitly; SHA-pin the actions; filter the not-applicable parametrisations; move shared builders into conftest.py; add a client-config mismatch test; move the CI floor to 3.10 or later."
+    },
+    {
+      "aspect": "reproducibility_dx",
+      "score": 7,
+      "evidence": "Clean-clone setup works: a fresh `git clone` needed nothing beyond jsonschema, pytest and PyYAML to pass the full check. There is a real lock file (requirements.lock, exact versions with environment markers) and a ranges file, both documented. There is one check command for humans and CI (scripts/check.sh), and a documented fully offline Stage-1 run (BRIEF_BUILDER_CLAUDE_BIN=tools/replay/claude ... runner.py), which completed in the clone with exit 0. Errors are legible and typed: exit codes 2/3/4/5/6 are defined in runner.py:38-45, a missing prerequisite names the missing file (runner.py:526-535), a corrupt resume artifact is named (runner.py:228-236), and data declaration refusals print before any source is read. Entry points work both as scripts and with -m (tested in test_entry_points.py). AGENTS.md and the README 'Run it' block give a short onboarding path.",
+      "defects": [
+        "The README installs from requirements.txt (ranges, README.md:190) while CI and check.sh install requirements.lock, so a new engineer tests against a different toolchain than CI. The lock has no hashes, and ruff is outside both files.",
+        "Runs with `--out` elsewhere still write into the repository. Verified: the documented offline replay with --out outside the repo published six files into the clone's reviews/ shelf (runner._write_manifest -> publish._publish_locked -> publish.DEFAULT_REVIEWS_DIR). The files are gitignored, but they are side effects the operator did not ask for.",
+        "Run manifests record absolute machine paths: runner.py stores the resolved project_dir, so manifests are not portable (runs/evidence-20260729 has /Users/chrism/..., while runs/tier3 has a relative path, so the two conventions are inconsistent).",
+        "The README recommends `python3 eval/harness.py runs/latest` (README.md:207), but the harness CLI writes harness_report.json into the graded run directory (harness.py:643). Locally runs/latest points at committed evidence (runs/routing-validate-01). The read-only eval/grade_frozen.py exists but is not the documented default.",
+        "Repository noise hurts onboarding: tools/walkthrough holds 292 of 661 tracked files (34 MB) of Codex prompts and outputs, backups/, logo PNGs and retired redesigns beside the two tools that matter (build.py, checks.py).",
+        "Portability gaps: run_full.sh uses macOS `open` and `nohup` with polling, demo.sh needs a live model, fcntl makes the package POSIX-only, and there are 19 `sys.path.insert` bootstraps instead of `[project.scripts]` entry points or a Makefile."
+      ],
+      "to_reach_9": "Make requirements.lock (plus a dev group with ruff and pytest-cov) the documented install; publish to reviews/ only when --out is the default runs/ or when --publish is passed; record project_dir relative to REPO_ROOT when it lies inside the repo; point the README at grade_frozen.py or an --out-report flag; move walkthrough history out of the working tree; add [project.scripts] entry points so `pip install -e .` gives bb-run, bb-check and the rest."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Resolve the client config from the project and refuse a client mismatch",
+      "aspects": ["architecture", "data_protection", "testing_ci", "reproducibility_dx", "human_governance"],
+      "rationale": "Verified defect: running fixtures/voreas_02 without --glossary uses meltemi_beverages' config (glossary, sensitivity tier, template) with no warning. This is the one place the pipeline guesses, and it directly contradicts 'extensible to new clients without code changes' and resolve_glossary's own docstring.",
+      "concrete_changes": "pipeline/extraction.py resolve_glossary(explicit, glossary_dir, project_dir): order of precedence is explicit --glossary, then a `client_config` path named in the project's data_declaration.json, then exactly one client_*.json or glossary.json in the project folder, then glossary/. Refuse with InputContractError when the project folder holds a client config and a different one would be used. pipeline/runner.py passes self.project_dir and records the resolution path in run_manifest.json. demo/run_demo.py uses the same function. Add tests/test_client_config_resolution.py: voreas_02 resolves client_voreas.json; an explicit meltemi config on voreas_02 is refused unless the declaration names it; ambiguous folders are refused. Update README 'Run it'.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Break stages.py apart and remove the layering inversion in revisions.py",
+      "aspects": ["architecture", "code_quality"],
+      "rationale": "stages.py (1,267 lines) and the 15 function-local imports that dodge cycles are the main structural debts. They make the stage boundaries and the Tier 5-7 approval policy hard to follow and hard to change safely.",
+      "concrete_changes": "Create the pipeline/stage_classify.py, stage_fidelity.py, stage_synthesis.py, stage_render.py and greek_lint.py modules, and keep pipeline/stages.py as a thin re-export facade so the tests and replay imports stay valid. The harness imports only pipeline.gates, so it is unaffected. Move _money_figures to a public gates.money_figures (or pipeline/money.py). Move require_current_approval from revisions.py to a new pipeline/approval.py that imports release_control, question_exchange and quality at module top, so revisions.py becomes a leaf utility. Rename publish._publish_locked to publish.publish_locked. Add a test that imports every pipeline module in isolation and asserts that revisions/gates import no Tier 5-7 module.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Bring the Tier 5-7 modules to the Stage-1 code standard and type-check them",
+      "aspects": ["code_quality", "testing_ci"],
+      "rationale": "The package reads as two codebases. Untyped modules with catch-all CLI handlers are where a staff reviewer finds silent bugs, and CI currently verifies none of the existing annotations.",
+      "concrete_changes": "Add type hints and one-line docstrings to the public functions in delivery.py, effort.py, question_exchange.py, release_control.py, agency.py, agency_edit.py, quality.py, handover.py and revisions.py. Replace the agency.main if/elif chain with subparsers.set_defaults(func=cmd_x) handlers; move the attest and handover logic into functions (attest_language(run, ...), write_handover(run)) with direct unit tests. Narrow every CLI catch to (ValueError, OSError, gates.GateError) and drop KeyError, TypeError and AttributeError so bugs surface as tracebacks. Add mypy (non-strict, pipeline/ only) to quality.yml and check.sh. Widen [tool.ruff.lint] select to E,W,F,B,I,UP,SIM and delete all 18 per-file-ignores except the frozen eval/harness.py entry.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Route the live demo through the Runner so it inherits every control",
+      "aspects": ["architecture", "data_protection", "security_injection", "code_quality"],
+      "rationale": "demo/run_demo.py bypasses the data declaration gate, input staging and the integrity check, and it fabricates manifest step statuses. A parallel path around the controls weakens the claim that every run is gated.",
+      "concrete_changes": "Add a 'demo' entry to runner.STAGE_SELECTIONS (readiness_gate, classification, extraction) and let run_demo.py build a temporary project folder (stamped source plus data_declaration.json {\"data_class\": \"synthetic\"}) and call runner.Runner(..., stage='demo', demo_profile=...). The real manifest then replaces the hand-built one. Keep the terminal pretty-printing as a view over the run directory. Pass an AccessScope, not the legacy list, and then delete AccessScope.coerce's list branch and __iter__. Extend tests/test_runner.py to cover the demo selection under replay.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make the one check really equal to CI, and add coverage visibility",
+      "aspects": ["testing_ci", "reproducibility_dx"],
+      "rationale": "check.sh can print 'All deterministic checks passed' locally without linting, and nobody can see which gate branches the 948 tests actually execute.",
+      "concrete_changes": "Add a dev group to requirements.lock (ruff==0.6.9, pytest-cov pinned) and install it in quality.yml instead of the inline pin. check.sh: when ruff is unavailable, exit non-zero unless --no-lint was passed. Add `--cov=pipeline --cov=eval --cov-report=term-missing` to the CI step and upload the report as an artifact, as a report only, not a gate. SHA-pin actions/checkout and actions/setup-python, keeping the tags as comments. Replace the 'by design' skips in tests/test_agents.py with filtered parametrisation; move make_review_run and similar builders into tests/conftest.py fixtures; rename tests/test_dependencies.py to test_deliverable_dependencies.py; rename the review_cases keys to 'synthetic-demo-case' and 'synthetic-draft-case'. Move the CI matrix floor to 3.10 and update requires-python if the owner agrees.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Remove run side effects and machine paths; document the locked install",
+      "aspects": ["reproducibility_dx", "documentation"],
+      "rationale": "A new engineer following the README gets a different toolchain from CI, and an offline run to /tmp still writes into the repo. Committed manifests also carry one developer's absolute paths.",
+      "concrete_changes": "runner._write_manifest: publish to the reviews/ shelf only when out_dir equals the default REPO_ROOT/runs or a new --publish flag is given, and add --no-publish to the documented replay command in README.md, tools/replay/README.md and pipeline/replay.py. Record manifest project_dir as os.path.relpath(project_dir, REPO_ROOT) when inside the repo, absolute otherwise, and teach run_review.collect_run to resolve both. README 'Run it': install requirements.lock (ranges as the fallback), and replace `eval/harness.py runs/latest` with `eval/grade_frozen.py`, or state that the harness writes harness_report.json into the graded run. Add [project.scripts] entry points (bb-run = pipeline.runner:main, bb-check and others) so `pip install -e .[test]` gives commands that need no sys.path bootstraps.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make one sign-off regime the explicit contract for Stage 2",
+      "aspects": ["architecture", "human_governance"],
+      "rationale": "Whether creative requires a fingerprint-bound, current approval or just brief.signoff.status depends on whether agency_inputs.json exists (creative.py:375-383). An explicit contract is easier to reason about and to audit.",
+      "concrete_changes": "In creative.creative_shadow and delivery.context, always call revisions/approval.require_current_approval. Keep the legacy brief.signoff-only path solely behind an explicit, manifest-recorded `--legacy-evidence` flag that is accepted only for committed evidence runs such as runs/tier3. Add tests: a brief with signoff.status='signed_off' but no approval.json is refused on a new run; the legacy flag is recorded in the manifest.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Move walkthrough production history out of the working tree",
+      "aspects": ["reproducibility_dx", "documentation"],
+      "rationale": "292 of 661 tracked files (34 MB) are Codex prompts and outputs, backups, logos and a retired redesign under tools/walkthrough. They bury the code a new engineer needs to read.",
+      "concrete_changes": "Keep tools/walkthrough/build.py, checks.py, mustkeep.json and the assets WALKTHROUGH.html embeds. Move codex_round/, backups/, archive/, redesign/, logo/, the codex_*.md and *_prompt.md files and the kv_*.png files to docs/history/walkthrough/ (or an archive tag), and add tools/walkthrough/README.md naming the two live tools. Update pyproject's ruff extend-exclude and any paths in tools/walkthrough/checks.py. Verify with `python3 tools/walkthrough/checks.py --file WALKTHROUGH.html` and check.sh.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "Engineering is solid and above typical MVP standard. The deterministic-gates-around-thin-model-edges design is real in the code: a declarative runner, a run_gated seam, schema enforcement, staged read-only inputs, a post-step integrity hash check, and an offline replay that drives all seven Stage-1 steps with zero model calls. A clean clone passes 948 tests, the frozen 17/17 grade and the 12/12 benchmark in seconds, and xfail discipline (strict, reason-linked) is exemplary. What keeps it below 8: (1) a verified extensibility defect: a second client's project silently runs with the first client's config because resolve_glossary ignores the project folder and nothing cross-checks client_id; (2) the Tier 5-7 layer is a visibly different codebase: untyped, catch-all CLI handlers, a 112-line if/elif dispatcher, and utilities that import policy modules through function-local imports; (3) god modules (stages.py at 1,267 lines) and a demo path that bypasses the Runner's controls; (4) DX gaps: the README installs ranges while CI installs the lock, runs to /tmp still write into the repo's reviews/ shelf, manifests carry absolute paths, local check.sh can pass without lint, and walkthrough history makes up 44% of the tracked files. Most fixes are S/M and none requires relaxing a gate."
+}

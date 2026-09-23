@@ -1,0 +1,111 @@
+{
+  "scores": [
+    {
+      "aspect": "prompt_skill_design",
+      "score": 7,
+      "evidence": "Strong core: skills/SOURCES.md, SYNTHESIS.md, TRANSLATION.md, TRANSCRIPTS.md are precise, numbered, carry worked examples, explicit self-checks and a uniform untrusted-content rule U; wrappers inject the skill verbatim with byte-equality enforced by tests/test_agents.py. The round-1 decontamination held: grep at HEAD finds no northlight/voreas seeded text left in skills/ or .claude/agents/ (the examples are now «γύρω στα εξήντα», «ενγκέιτζμεντ ρέιτ», 'only a thought for now'). Many rules have a gate behind them: citation verbatim + glossary silent-repair (pipeline/extraction.py:check_extract), byte-exact fidelity annotation diff and low-score→escalate (pipeline/stages.py:check_fidelity 209-262), classify low→ask and tier-copy (stages.py:85-126), readiness/sign-off/conflict-status and anchor-level conflict consistency (stages.py:check_synthesis 378-470), verifier findings screened for verbatim evidence before reaching the extractor (extraction.py:screen_findings) and adjudicated rather than obeyed. Tooling is Read/Write only, with --tools, deny rules for Bash/Web, answer_key.json deny, neutral cwd, no settings/MCP (pipeline/agents.py:207-263). Suite: 948 passed, 7 skipped, 48 xfailed (run locally).",
+      "defects": [
+        "TRANSCRIPTS.md §4 defines fidelity_score high|medium|low and verdict pass|pass_with_flags without any criteria. So escalation, the one consequential output of that stage, depends on the model's unanchored judgment. Self-check 3 ('Report counts match annotations') is also not enforced: check_fidelity (stages.py:209) never compares tokens_flagged or glossary_matches with the annotations in the file.",
+        "Least privilege is per directory, not per source. runner.py:_access_dirs grants every stage Read and Write on the whole run directory, so an extract agent can read the other sources' staged inputs, other extracts and earlier renders, and can overwrite another source's extract. The rule 'You never see more than one source at a time' (.claude/agents/extract.md) is enforced by prompt only.",
+        "Internal contradiction in SOURCES.md. Rule 3 says a self-contradicting source records both values AND raises an open_question. §5 (email_thread) says an open_question is 'only needed when the final state is genuinely unclear'.",
+        "Stale input contracts. classify.md §2 names the client config as `glossary/<client>.json`, and TRANSLATION.md rule 3 says `glossary/*.json`, but the runner stages fixture-local configs (e.g. fixtures/voreas_02/client_voreas.json). render.md is the only one of the six skill-wrapped or inline agents whose wrapper lacks the 'never write a schema/config/template… checked by hash' bullet that the others carry.",
+        "Policy text and code disagree on the verifier risk class. config/model_routing.json and extraction.py:risk_classes describe `garbling` as 'rule-G flags present', but the code fires on ANY extraction_note, including the 'embedded instruction not followed' notes that rule U tells extractors to write. The class is mislabelled and over-triggers (part of why 66/66 extracts route to sonnet)."
+      ],
+      "to_reach_9": "Give TRANSCRIPTS.md an explicit scoring rubric: which findings make a score low or medium, and when pass_with_flags applies. Gate the report counts against the annotations. Reconcile SOURCES rule 3 with §5. Fix the classify/translation contract paths and add the protected-path bullet to render.md. Make risk_classes count only rule-G notes. Narrow each invocation's read scope to its own work order's files: for extract and verify, the one staged source plus glossary and schema. Add a test asserting every wrapper carries the same U/protected-path contract."
+    },
+    {
+      "aspect": "routing_usage",
+      "score": 6,
+      "evidence": "The accounting method is good. eval/cost_report.py reports tokens by model per stage, counts every attempt and the verifier, separates clean from all-runs means, and prints --usd only as a footnote. docs/COST_MODEL.md puts an era banner on every figure, reconciles the capacity arithmetic to PRD A1/A2/A4, and records the C4 negative result. Resolved model IDs are recorded per call in manifests (runs/tier3/run_manifest.json: claude-haiku-4-5-20251001 ×7, claude-sonnet-5 ×4, claude-opus-4-8 ×2; runs/routing-validate-01: claude-sonnet-5). The routing rationale is stated (config/model_routing.json _what_this_is, _provenance), and the risk-routing replay is measured and handed to the owner rather than changed (docs/EVAL_RECORD.md §6). The substance is weak on currency and validity. The routing adopted 2026-07-30 has still been measured on one source only (598,743 tokens, COST_MODEL §3), and every full-brief number is Haiku-era.",
+      "defects": [
+        "The adopted render effort policy rests on a contaminated A/B. runs/cost_c2_report.md headlines 'BYTE-IDENTICAL to the default-effort renders' and concludes default effort 'bought nothing'. In the local store, runs/cost-c2/brief_el.md has mtime 23:09:48, the same second the resumed artifacts were hydrated, while the render ran until 23:13:15 (manifest finished_ts). The Greek render was never rewritten by the low-effort leg. It is cost-c1b's file (cmp confirms identical), and the gate passed on it. stages.render/agents.run_gated never clear an existing output before invoking, and the agent can read the prior renders in its writable run dir. cost_c3_report.md §3 then repeats the 'byte-identical' finding. No document caveats it.",
+        "Current routing is unmeasured end to end 7+ weeks after adoption. All planning figures (0.98 M/brief, ~15 M/month) are Haiku-era, while the one current-routing leg is 2.0× its Haiku counterpart.",
+        "Stakeholder currency. The WALKTHROUGH.html front tile (line ~533) presents '0.98M tokens… about 15 million, the figure to hold against a plan's usage window' with no era label. WALKTHROUGH.html:1293 calls routing-validate-01 'one local run not committed', contradicting README.md:48 and COST_MODEL §3, which say it is committed (git ls-files confirms). WALKTHROUGH.html:844 still describes the verifier as 'Sonnet for risky extracts, Haiku otherwise', although the replay shows the haiku branch is taken 0/66 times.",
+        "The planning basis is inconsistent inside COST_MODEL. §2 says 'the all-runs mean is the planning figure' (848,845), while §1 and the WALKTHROUGH plan on the graded run's 984,820.",
+        "Config handling is asymmetric. agents.stage_effort fails loudly on a malformed model_routing.json, but extraction._verify_policy silently falls back to defaults on OSError/JSONDecodeError, so a broken routing file changes verifier routing without notice."
+      ],
+      "to_reach_9": "Clear stage outputs before each invocation and re-run the C2 effort A/B from a clean directory, then record an addendum superseding the byte-identical claim. Run the authorised round-2 re-baseline and republish per-brief tokens by model under current routing, with era labels on every front-page figure. Fix the WALKTHROUGH contradictions. Make _verify_policy fail loudly. Get the owner's decision on the risk classes so the documented routing matches the path actually taken."
+    },
+    {
+      "aspect": "evaluation_method",
+      "score": 6,
+      "evidence": "The foundations and disclosure are good. eval/harness.py was frozen at Tier 1 before the artifacts it grades existed; its one post-freeze edit is disclosed (EVAL_RECORD §4). The answer key is excluded from discovery and denied by CLI permission (agents.py HARNESS_ONLY_NAMES). The traps cover retraction, speculation and invention (fixtures/northlight_01/answer_key.json X1–X3), and voreas_02 raises difficulty (5 conflicts incl. a mandatories conflict, 6 gaps, 4 garbles). eval/pass_rates.py counts distinct legs and gives Wilson intervals. eval/supplementary.py S1–S9 targets named blind spots (X2 vacuity, T3.3 anchor leakage, T2.5 wrong glossary, X3 literal patterns). EVAL_RECORD §2–3 honestly states what 17/17 does not show, including held-out contamination. 48 strict xfails encode known defects. The §7 re-baseline protocol pre-registers 3 independent rolls with no re-roll-to-pass. The evidence itself is thin. Every graded report is Haiku-era; the only fixture with more than one full graded report is northlight (n≈9–10 distinct legs, resumed and repaired); voreas has n=2 at 15/17 and 16/17; the three agency_* fixtures have no answer key and no model run.",
+      "defects": [
+        "No held-out keyed fixture remains. voreas_02 shaped prompts, gates and xfails (EVAL_RECORD §3), and northlight's trap failures drove new gates: stages.py:452-460 says the superseded-within-source gate is the 'deterministic form of trap X1's lesson (it slipped on 3 of 5 synthesis rolls before this gate)'. The §7 re-baseline re-uses both contaminated fixtures, so it cannot measure generalisation. No fresh, blind-authored fixture is planned.",
+        "No graded run exists under the current routing (sonnet extraction + verifier). Model-quality evidence is for a configuration that no longer ships.",
+        "Measurement validity of resumed legs. Stages do not clear stale outputs before invoking (stages.render; agents.run_gated), so a resumed leg can be graded on a previous leg's artifact. runs/cost-c2 passed 17/17 with a Greek render carried over from cost-c1b (mtime at hydration time), and pass_rates.py counts it as a distinct render leg.",
+        "Precision and ordinary-fact recall are unmeasured. Harness checks are recall-by-keyword (T3.1 signals, T3.2 keyword_any_of); there is no false-conflict rate and no check that non-trap budget/deadline/audience values survive (EVAL_RECORD §4 last rows). Greek quality and creative decisions rest on single-passage anecdote (cost_c3_report §2) with no blind human rubric or inter-rater protocol.",
+        "EVAL_RECORD §3 is stale at HEAD. It says 'W2 is removing the graded-fixture examples' and cites line numbers (SOURCES.md:136–151, TRANSCRIPTS.md:12,:20, verify-extract.md:19) for text that commit 52023c6 already removed, so a reader cannot tell which prompts produced which results.",
+        "eval/agency_benchmark.py is 12 hand-written unit assertions on toy dicts, reported as a '12/12 benchmark' (CLAUDE.md). The docstring is honest, but the name overstates it. The agency_* fixtures also telegraph their traps in-source ('Do not infer a total budget'), so they are of limited value even as future keyed fixtures."
+      ],
+      "to_reach_9": "Author at least one new keyed fixture blind to the pipeline developer: different campaign type, new trap classes (numeral conversion, cross-source misattribution, email supersession, embedded instruction). Seal its answer-key hash in a commit before any run, and grade it once under current routing with the §7 no-re-roll rule. Add unfrozen precision and non-trap-fact recall scorers to supplementary.py. Clear outputs before each stage, so every graded leg is provably generated by that leg. Update EVAL_RECORD §3 to the post-decontamination state, and add a contamination test that fails on long n-gram overlap between runtime prompts and fixture sources."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Clear stale stage outputs before every invocation; re-measure the C2 effort A/B",
+      "aspects": ["routing_usage", "evaluation_method", "testing_ci", "architecture"],
+      "rationale": "A gate can currently pass on an artifact the model never wrote. This already happened in runs/cost-c2: the 'byte-identical' render that justified render: low was cost-c1b's file. It invalidates one adopted routing policy and inflates distinct-leg pass counts.",
+      "concrete_changes": "In pipeline/agents.py:run_gated (or in each stage wrapper: stages.render, classify, fidelity_check, synthesize; extraction.extract_source; creative.creative_shadow), archive via revisions.archive and remove each declared output path before the first attempt of a fresh leg. Record the pre-invocation absence in the attempt record. Add tests: a pre-seeded brief_el.md with a fake agent that writes only brief_en.md must fail check_render. Add runs/cost_c2_addendum.md (committed evidence is not edited) documenting the mtime/cmp finding, and add a caveat line in docs/COST_MODEL.md and docs/EVAL_RECORD.md. Re-run the render effort A/B from clean directories (owner-authorised, ~2 render calls) and record the result.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Execute the authorised round-2 re-baseline and republish usage under current routing",
+      "aspects": ["routing_usage", "evaluation_method", "stakeholder_materials", "documentation"],
+      "rationale": "Every quality and usage figure describes a routing that no longer ships. The protocol already exists (EVAL_RECORD §7). Running it removes the largest remaining gap in both aspects.",
+      "concrete_changes": "After move 1 lands, run 3 independent rolls each on northlight_01 and voreas_02 per EVAL_RECORD §7. Write runs/rebaseline_r2_report.md with pass_rates (Wilson, distinct legs), supplementary flags, cost_report tokens by model (all-runs and clean), and the --risk-replay branch counts. Replace the Haiku-era planning figures in docs/COST_MODEL.md §1–2, README.md:47–48 and the WALKTHROUGH tiles with current-routing figures, keeping the Haiku-era numbers as a labelled comparison.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a sealed, blind-authored held-out keyed fixture",
+      "aspects": ["evaluation_method", "brief_accuracy", "prompt_skill_design"],
+      "rationale": "Both keyed fixtures now shaped the prompts and gates, so no measurement of generalisation remains. A sealed fixture is the only defence against teaching to the test that a specialist would accept.",
+      "concrete_changes": "Create fixtures/<new>_03/ (synthetic, a different campaign type such as a regulated or B2B launch) with sources and answer_key.json written by someone other than the prompt/gate author (a separate agent session given only the input contract and trap taxonomy, never the skills). New trap classes: spoken-figure numeral conversion, cross-source phrase misattribution, email supersession chain, an embedded instruction in a source, a within-source two-speaker dispute. Commit only sha256(answer_key.json) in a sealing commit before any pipeline run, then reveal it. Grade once under current routing with no subsequent prompt or gate tuning against it, and record the result in EVAL_RECORD as the held-out figure. Keep agency_* traps out of the source text.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Fix stale and contradictory usage statements in the stakeholder materials",
+      "aspects": ["routing_usage", "stakeholder_materials", "documentation"],
+      "rationale": "A decision maker reads the front tile as the capacity figure. It is Haiku-era and unlabelled, and two further WALKTHROUGH statements contradict committed evidence.",
+      "concrete_changes": "WALKTHROUGH.html ~533: add 'graded run, earlier (Haiku-era) routing; current routing being re-measured' to the 0.98M/15M tile. Line 1293: replace 'one local run not committed' with 'committed: runs/routing-validate-01'. Line 844: replace 'Haiku otherwise' with 'in practice every stored extract routes to Sonnet (66/66, docs/EVAL_RECORD.md §6)'. docs/COST_MODEL.md: pick one planning basis (the §2 all-runs mean or the graded run) and use it in §1, §2 and the WALKTHROUGH. Re-run tools/walkthrough/checks.py.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Bring EVAL_RECORD §3 to HEAD and add a prompt-contamination test",
+      "aspects": ["evaluation_method", "prompt_skill_design", "documentation"],
+      "rationale": "The disclosure is accurate history but stale at HEAD, and nothing stops a future edit from re-importing fixture text into a runtime prompt.",
+      "concrete_changes": "docs/EVAL_RECORD.md §3: past tense, naming commit 52023c6 as the decontamination and listing the replacement examples. Mark every result before it 'contaminated prompts'. Add tests/test_prompt_contamination.py: for every skills/*.md and .claude/agents/*.md, fail on any shared run of 5 or more whitespace-separated tokens with any fixture source document from gates.discover_sources (never an answer key). Allow-list glossary terms and template boilerplate.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Close prompt/gate gaps in the fidelity stage and the instruction contracts",
+      "aspects": ["prompt_skill_design", "security_injection", "brief_accuracy"],
+      "rationale": "Fidelity escalation is the transcript-stage safety valve, yet its scoring criteria are undefined and its counts unchecked. Several smaller contract inconsistencies weaken the 'skill is spec' claim.",
+      "concrete_changes": "skills/TRANSCRIPTS.md §4: define low (e.g. any garbled numeric with no resolvable reading, diarization_issues > 0 on a decision passage, or summary_suspicion), medium (any no-glossary-match flag) and high, and pass_with_flags ⇔ tokens_flagged > 0. Re-sync .claude/agents/fidelity-check.md. stages.check_fidelity: require tokens_flagged == number of [FIDELITY:] insertions, glossary_matches == number with glossary-match, and verdict 'pass' only when tokens_flagged == 0. SOURCES.md: make rule 3's open_question conditional on the final state being unclear, consistent with §5. classify.md §2 and TRANSLATION.md rule 3: 'the client config named in your work order'. render.md: add the protected-path bullet. Add a test that every wrapper carries the shared U + protected-path contract.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Scope each invocation's read/write access to its own work order",
+      "aspects": ["prompt_skill_design", "security_injection", "evaluation_method", "architecture"],
+      "rationale": "Per-source isolation and 'read only these files' are currently prompt-only. Granting the whole run dir also lets a stage read prior outputs, the mechanism behind the C2 artifact.",
+      "concrete_changes": "pipeline/runner.py:_access_dirs → per-stage AccessScope. Extract and verify get Read on inputs/<source> and the staged glossary, and Write on extracts/<source_id>.json or verification/<source_id>.*. Synthesis gets Read on extracts/ and conflict_candidates.json and Write on brief.json. Render gets Read on brief.json and Write on brief_el.md and brief_en.md. Add file-level allow rules in agents.permission_rules, and extend the post-step integrity hash to the other sources' extracts. Add tests in tests/test_agents.py asserting the argv for each stage.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Put the verifier risk-class redefinition to the owner, with the replay numbers",
+      "aspects": ["routing_usage", "prompt_skill_design"],
+      "rationale": "The documented 'else haiku' path is never taken, and the `garbling` class fires on any extraction note. Either the policy text or the classes should change, and that is the owner's routing call.",
+      "concrete_changes": "Prepare an option sheet in docs/EVAL_RECORD.md §6 from `eval/cost_report.py runs --risk-replay` with variants: (a) keep as is and document 'verifier is always sonnet'; (b) garbling = only notes matching the rule-G/glossary-match form; (c) figures = currency or amount only, excluding dates. Show the branch shares for each. On the owner's decision, update config/model_routing.json, extraction.risk_classes and the CLAUDE.md/verify-extract.md wording together. Independently of that decision, make extraction._verify_policy raise on a malformed config, as stage_effort does.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "Layer 2 is honestly documented and has a sound structure. The skills are precise and mostly gate-backed; the harness was frozen before the artifacts it grades, with blind spots named and partly covered by an unfrozen scorer; the usage ruler reports tokens by model with era labels. The evidence base under it has not caught up. No graded run and no full-brief usage exist for the routing that ships. Neither keyed fixture is held out any more, and gates were built from the graded fixture's trap failures. A verified measurement-validity defect also stands: stages can pass on stale outputs, and the adopted render: low policy rests on a 'byte-identical' A/B whose Greek render was never regenerated. Scores: prompt_skill_design 7, routing_usage 6, evaluation_method 6. The highest-leverage moves: clear outputs before each stage, run the authorised re-baseline, and add one sealed blind-authored fixture."
+}

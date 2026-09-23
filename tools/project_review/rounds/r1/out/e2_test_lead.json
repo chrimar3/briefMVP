@@ -1,0 +1,125 @@
+{
+  "scores": [
+    {
+      "aspect": "architecture",
+      "score": 7,
+      "evidence": "Model work and deterministic checks are cleanly separated. pipeline/gates.py is pure: its docstring commits to 'Nothing in this module calls a model', and eval/harness.py imports only `from pipeline import gates`. pipeline/stages.py pairs each stage's work order with a deterministic gate; for example check_synthesis (line 378) refuses a model-written `readiness` block and any signoff.status other than 'draft'. pipeline/agents.py is the single subprocess seam: timeout at line 366, neutral cwd, deny rules. runner.py registers handlers in one AGENT_HANDLERS table (line 416). Extending to a new client needs no code change: the input contract lives in data_declaration.json, config/*.json, templates/<name>.* and client configs, and grep finds no fixture names in pipeline logic (only in docstrings and the replay default). I verified the replay end to end in a clean `git archive` copy: exit 0 through all seven steps, and two runs are identical apart from run id, timestamps and absolute paths. The Tier 5–8 modules reuse revisions.py for locks, atomic writes, hashes and the audit chain, which is coherent with Stage 1.",
+      "defects": [
+        "pipeline/stages.py is 1,267 lines and 68 KB. It holds the classify, fidelity, synthesize and render work orders and gates, the Greek language lint and the render-template enforcement in one module. check_synthesis is 215 lines, check_render_template 117 and check_render 113.",
+        "Policy is split. Readiness thresholds live in config/readiness_policy.json, but the input-contract policy (REQUIRED_SOURCE_TYPES, SUBSTANTIVE_SOURCE_TYPES, MIN_SUBSTANTIVE_SOURCES, gates.py:46-54) is hard-coded, so an agency can tune one gate through config but not the other.",
+        "pipeline/agency.py:20 and :55 redefine DATA_DECLARATION and the literal 'synthetic', and re-parse the declaration with bare json.loads instead of using pipeline/data_policy.py (DECLARATION_FILE, SYNTHETIC, validate_payload). The --solo-rehearsal waiver check can therefore drift from the data-declaration gate it depends on.",
+        "Runner._write_manifest (runner.py:494-509) reaches into the private publish._publish_locked and publishes into the repository's reviews/ shelf as a side effect of writing the manifest. Distribution is coupled to orchestration.",
+        "28 flat modules sit in one package with no boundary between the Stage 1–2 pipeline and the Tier 5–8 agency operations; import direction is enforced by convention only."
+      ],
+      "to_reach_9": "Split stages.py into one module per stage, with the render lint and template checks in their own module and pipeline.stages re-exporting the names. Move the input-contract constants into config/readiness_policy.json, loaded and validated by load_readiness_policy. Make agency.py use data_policy's constants and validator. Expose a public publish API and call it from a post-run hook, not from _write_manifest. Add a test that asserts Stage-1 modules never import Tier 5–8 modules."
+    },
+    {
+      "aspect": "code_quality",
+      "score": 6,
+      "evidence": "The code is mostly readable and intent-revealing. Module docstrings state design decisions (gates.py, stages.py, runner.py), error messages are actionable (running with a missing data_declaration.json prints the exact JSON to add and exits 6), and broad `except Exception` appears only four times, each in a best-effort view path with a comment (runner.py:395, 494, 507; demo/run_demo.py:232). Against that, an AST pass over pipeline/, eval/, demo/ and tools/ finds 147 of 500 functions with no annotations at all, concentrated in the Tier 5–8 modules (revisions.py write_json/load/file_hash, agency.py). Lint is pyflakes-only (`select = [\"E9\", \"F\"]`) with 18 per-file-ignores of known findings (pyproject.toml, per-file-ignores table), and there is no type checker.",
+      "defects": [
+        "Record I/O is duplicated with inconsistent error semantics. revisions.load raises on corrupt JSON; retention._load (retention.py:88) returns the default on any ValueError; effort._load, run_review._load_json and supplementary._load_json are further variants. In retention.run_sources and release_packages (lines 128-186), a corrupt releases.json silently yields no packages, and a corrupt evidence_index.json silently falls back to the legacy identity path. A purge inventory can therefore under-report copies without saying so. This is a silent failure in a deletion tool.",
+        "Two idioms coexist. The original pipeline is typed with dataclasses and full docstrings; the Tier 5–8 modules (revisions.py, agency.py, parts of delivery.py) are untyped and terse. For example, agency.same_person assigns a lambda to a name.",
+        "Several functions are too long to review in one sitting: stages.check_synthesis 215 lines, demo/run_demo.main 139, runner._run_locked 134, extraction.extract_source 119, run_review._source_card 113, agency.main 108, agency.audit 102.",
+        "Lint debt is listed but not paid: unused imports in 11 test files, pipeline/docview.py F401, and F541 in eval/repair_analysis.py and demo/run_demo.py.",
+        "tools/walkthrough/ tracks 292 files (34 MB on disk), mostly Codex round prompts and outputs, backups/, logo PNGs and a retired redesign/. They sit beside the one live gate, checks.py, and bury it.",
+        "20 files bootstrap imports with sys.path.insert, and pyproject declares no console entry points."
+      ],
+      "to_reach_9": "Put one record-I/O helper in revisions.py (load_strict and load_optional, both raising a named CorruptRecordError) and use it in retention, effort and run_review. Make retention refuse and name a corrupt record. Annotate the Tier 5–8 public functions and add mypy (non-strict) on pipeline/ to check.sh. Clear all per-file-ignores except the frozen harness. Break the functions over 100 lines into named rule helpers. Move the walkthrough byproducts out of tools/."
+    },
+    {
+      "aspect": "testing_ci",
+      "score": 7,
+      "evidence": "I ran the suite at HEAD: 948 passed, 7 skipped, 48 xfailed in 12.5 s, matching CLAUDE.md. In a clean `git archive` copy, scripts/check.sh passed (tests, frozen grade 17/17, agency benchmark 12/12, 0 model calls) and left `git status` clean. The suite also passed with the test files run in reverse order. Line coverage under coverage.py is 86% overall; pipeline modules are mostly 88–100% (gates 98%, agents 98%, stages 95%, data_policy 100%). The negative cases are adversarial: tests/test_governance_controls.py (tamper, separation of duties, hand-written approvals), tests/test_delivery.py (manifest escape, payload substitution, withdrawal), tests/test_agent_security.py (writes outside outputs, unsafe source ids, injected text), tests/test_end_to_end.py (full replay run, repair round, corrupt artifacts on resume, lock contention). conftest.py points CLAUDE_BIN at a name that cannot exist and fails the session if any test leaves a lock file in committed evidence. The xfail discipline is exemplary: every xfail is strict=True with raises=AssertionError and a reason citing a documented defect ID (tests/test_regression_northlight.py:72-79, tests/test_regression_voreas.py:204-207). CI (.github/workflows/quality.yml) runs the same check.sh on Python 3.9 and 3.12 from requirements.lock, plus ruff.",
+      "defects": [
+        "demo/run_demo.py, the defense-session entry point behind demo.sh, has 0% coverage. No test runs it, not even --help, the 800-word cap, the type-inference refusal or demo/broken_input.txt, although the replay fake CLI could drive it offline.",
+        "The corrupt-record paths in retention.py are untested (no corrupt-input test in tests/test_retention.py), and that is exactly where the module silently degrades. pipeline/diagnostics.py, the durable repair log, is 46% covered.",
+        "No coverage measurement or floor in CI, so a regression in exercised surface is invisible. The 86% figure above is my own measurement, not a project artifact.",
+        "CI runs on ubuntu-latest only. The operator platform is macOS (README 'Run it'; run_full.sh uses the macOS-only `open`; locks use fcntl), and neither is exercised on macOS.",
+        "Actions are pinned by tag, not SHA (quality.yml says so). requirements.lock has no hashes. When ruff is missing, check.sh prints a note and continues, so local runs of 'the same command CI runs' can pass without linting.",
+        "Test hygiene: tests/test_agents.py produces all 7 skips by parametrizing over every agent and skipping the ones that do not apply. tests/test_agency_edit.py:191 has a skip guard that can never fire (dead code). The walkthrough gate tools/walkthrough/checks.py is not in check.sh or CI."
+      ],
+      "to_reach_9": "Add tests/test_demo.py covering run_demo --help, the refusal paths and a replay-driven happy path. Add corrupt-record tests for retention (after making it refuse). Put coverage in requirements.lock and check.sh with a pipeline/ floor (for example --fail-under=88) and subprocess coverage for grade_frozen and agency_benchmark. Add macos-latest to the CI matrix. Pin actions by SHA and regenerate the lock with hashes. Re-parametrize test_agents.py over the correct subsets and delete the dead guard."
+    },
+    {
+      "aspect": "reproducibility_dx",
+      "score": 7,
+      "evidence": "A clean clone works. In a fresh `git archive HEAD` copy with Python 3.9.6, `bash scripts/check.sh` passed end to end and left the tree clean. The documented offline run (`BRIEF_BUILDER_CLAUDE_BIN=\"$PWD/tools/replay/claude\" python3 pipeline/runner.py --project fixtures/northlight_01 --out ...`) completed all seven steps in under a second with zero model calls. Its reviews/ shelf output was byte-identical to the committed bundle. Two replay runs differ only in run id, timestamps and absolute paths. Dependencies have exact versions in requirements.lock (Python 3.9 and 3.12 in CI), with ranges in requirements.txt and pyproject.toml. Errors are clear: a missing data declaration exits 6 with the exact fix and the governing decision cited; a corrupt artifact on resume is named (runner._read_artifact). The onboarding path is README 'Run it', then CLAUDE.md, then AGENTS.md, and tools/replay/README.md explains the fake CLI.",
+      "defects": [
+        "Live model runs are the default, with no opt-in. `python3 pipeline/runner.py --project fixtures/northlight_01`, the command README 'Run it' shows directly under the offline one, starts real `claude -p` calls on the operator's account with no --live flag, confirmation or preflight. While testing I made one such call by accident: it ran classify and fidelity-check before I killed it and left a half-populated run directory. A new engineer will do the same.",
+        "README 'Run it' installs requirements.txt (ranges), while CI tests requirements.lock. ruff is pinned only inside quality.yml, so a local setup never matches CI exactly, and the lock carries no hashes.",
+        "run_full.sh (the demo closing shot) calls the macOS-only `open` with no check; on Linux the closing shot silently never happens.",
+        "Of the documented one-command runs, only scripts/check.sh and the replay are fully offline. demo.sh and run_full.sh have no offline or replay mode, so the defense demo cannot be rehearsed without spending tokens.",
+        "The repository is noisy for a newcomer: 292 tracked files and 34 MB in tools/walkthrough (Codex logs and prompts, backups, PNGs), next to the untracked .codex/, docs/DECK.md and tools/walkthrough/client_ready/."
+      ],
+      "to_reach_9": "Make live model calls opt-in (--live or BRIEF_BUILDER_LIVE=1), and without it refuse with a message pointing to the replay command. Give demo.sh and run_full.sh a --replay mode. Have README install requirements.lock plus a pinned ruff (or a requirements-dev.lock). Guard `open` behind a platform check. Archive the walkthrough byproducts outside tools/."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Put the defense demo under test, offline",
+      "aspects": ["testing_ci", "reproducibility_dx", "stakeholder_materials"],
+      "rationale": "demo/run_demo.py is the script shown live in the defense session (demo.sh), and it has 0% coverage. It is the most-watched code path with the least protection.",
+      "concrete_changes": "Add tests/test_demo.py. Use the existing fake_claude fixture (tests/conftest.py) to run `demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md` through replay and assert that the facts table carries verbatim anchors and open questions. Assert non-zero exit plus the printed rejection reason for demo/broken_input.txt, for input over 800 words, and for an uninferable type without --type. Add a --help smoke test through tests/test_entry_points.py's parametrization. If replay cannot serve the demo's single-source work order, add a small recording under tools/replay/recordings/ derived by tools/replay/derive_recording.py. Fix the two F541s in run_demo.py and delete its per-file-ignore.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make live model runs opt-in",
+      "aspects": ["reproducibility_dx", "security_injection", "routing_usage"],
+      "rationale": "Today the runner's default invocation spends tokens on the owner's account with no confirmation. I triggered this accidentally while reviewing. CLAUDE.md says live runs are for 'owner-authorised runs only', but the code does not enforce it.",
+      "concrete_changes": "In pipeline/runner.py and demo/run_demo.py, refuse to invoke a real `claude` binary unless `--live` is passed or BRIEF_BUILDER_LIVE=1 is set. Exit with a new code and print the replay command. BRIEF_BUILDER_CLAUDE_BIN pointing at tools/replay/claude counts as offline. Record `live: true/false` in run_manifest.json. Update demo.sh, run_full.sh, the README 'Run it' block, the CLAUDE.md build commands and docs/pilot/ runbooks. Add tests in tests/test_runner.py for the refusal and the recorded flag.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "One strict record-I/O helper; retention refuses corrupt records",
+      "aspects": ["code_quality", "testing_ci", "data_protection"],
+      "rationale": "Five JSON-load variants with different failure semantics. retention._load swallows corrupt records, so a purge inventory can silently miss release packages or staged copies, which is the worst place for a silent failure.",
+      "concrete_changes": "In pipeline/revisions.py add load_required(path) and load_optional(path, default), both raising CorruptRecordError(path, exc) on invalid JSON (a missing file is allowed only for load_optional). Replace retention._load, effort._load and run_review._load_json with them. In retention.run_sources, release_packages and session_ids, let CorruptRecordError abort inventory and purge with the file named. Add tests in tests/test_retention.py for corrupt evidence_index.json, input_snapshot.json and releases.json: inventory refuses, purge changes nothing. Keep the jsonl line-skip in session_ids, but count and report skipped lines.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Coverage floor and macOS in CI",
+      "aspects": ["testing_ci", "reproducibility_dx"],
+      "rationale": "Measured coverage is good (86% overall, about 90% or more on pipeline/) but unenforced, and the operators' platform (macOS, fcntl, `open`) is never exercised in CI.",
+      "concrete_changes": "Add coverage==7.9.2 to requirements.lock. In scripts/check.sh run `python -m coverage run -m pytest -q` and `coverage report --include='pipeline/*' --fail-under=88`, with a [tool.coverage] section in pyproject.toml and COVERAGE_PROCESS_START so the grade_frozen and agency_benchmark subprocesses are counted. In .github/workflows/quality.yml add `os: [ubuntu-latest, macos-latest]` to the matrix, pin actions/checkout and actions/setup-python to full SHAs, and regenerate requirements.lock with --generate-hashes and install with --require-hashes.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Split stages.py and remove cross-module shortcuts",
+      "aspects": ["architecture", "code_quality"],
+      "rationale": "The 1,267-line stages.py and the 215-line check_synthesis are the hardest code to review. agency.py duplicates the data-declaration logic, and runner calls a private publish function.",
+      "concrete_changes": "Create pipeline/stage_classify.py, stage_fidelity.py, stage_synthesis.py, stage_render.py and render_checks.py (language lint plus check_render_template). Keep pipeline/stages.py as a thin re-export so existing imports and tests are unchanged; eval/harness.py imports only gates and is untouched. Break check_synthesis into named per-rule functions that each return violations. Replace agency.DATA_DECLARATION and the 'synthetic' literal with data_policy.DECLARATION_FILE and SYNTHETIC, and use data_policy's loader and validator in project_data_class. Rename publish._publish_locked to a public publish.publish_run_unlocked (or equivalent) and call that from the runner.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Pay the lint debt and add a type check",
+      "aspects": ["code_quality", "testing_ci"],
+      "rationale": "18 listed ruff ignores and 147 fully unannotated functions leave two coding idioms in one codebase, with no tool to stop drift.",
+      "concrete_changes": "Fix every per-file-ignore in pyproject.toml except eval/harness.py (frozen). Extend ruff select with B, UP (py39) and I. Annotate the public functions of pipeline/revisions.py, agency.py, delivery.py, retention.py and effort.py. Add mypy (pinned in the lock) with `--ignore-missing-imports` on pipeline/ as a check.sh step and a CI step, and fail when ruff is absent unless --no-lint is passed.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Give the demo scripts an offline rehearsal mode",
+      "aspects": ["reproducibility_dx", "stakeholder_materials"],
+      "rationale": "demo.sh and run_full.sh can only be rehearsed by spending tokens, and run_full.sh's closing shot relies on the macOS `open`.",
+      "concrete_changes": "Add `--replay` to demo.sh and run_full.sh. It sets BRIEF_BUILDER_CLAUDE_BIN to tools/replay/claude and uses a demo_live recording derived with tools/replay/derive_recording.py. In run_full.sh, use `open` on Darwin and `xdg-open` elsewhere, and print the path when neither exists. Document both in demo_live/README.md and add a test that runs `bash run_full.sh --replay` into a tmp out dir, which needs an --out passthrough.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Declutter tools/walkthrough and gate the walkthrough in CI",
+      "aspects": ["reproducibility_dx", "code_quality", "documentation"],
+      "rationale": "292 tracked files (34 MB) of Codex round prompts and outputs, backups and PNGs bury the one live gate, checks.py, and that gate runs only if someone remembers it.",
+      "concrete_changes": "`git mv` tools/walkthrough/codex_*.md, codex_round/, backups/, logo/, redesign/, *.png and status_*.md into docs/history/walkthrough/ (or tag them and remove), leaving build.py, checks.py, embed_packaging.py and a README. Add `python tools/walkthrough/checks.py --file WALKTHROUGH.html` as a check.sh step. Fix the remaining tools/walkthrough F401s. Resolve the untracked .codex/, docs/DECK.md and tools/walkthrough/client_ready/: commit, ignore or delete.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "Engineering is well above typical for an MVP. It has a pure deterministic gate layer, one subprocess seam, a replay fake that makes the whole Stage-1 run reproducible offline, and a 948-test suite with strict, defect-cited xfails, adversarial governance and security tests, and guards against model calls and against writes into committed evidence. It is green from a clean clone, with 86% measured coverage. It falls short of 8 on concrete gaps. The defense demo script is untested (0% coverage). Retention silently tolerates corrupt records in a deletion tool. There is no coverage floor and no macOS CI. Live model calls are the default with no opt-in: while reviewing I accidentally started a real run that made two small model calls (classify and fidelity-check) before I killed it, in a scratch copy, with no repository change. stages.py is monolithic, idioms are mixed between the original and the Tier 5–8 modules, and tools/walkthrough is cluttered. Every move is executable without touching the PRD, the answer keys, the frozen harness or the schema."
+}

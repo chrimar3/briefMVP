@@ -1,0 +1,101 @@
+{
+  "scores": [
+    {
+      "aspect": "documentation",
+      "score": 7,
+      "evidence": "Strong base, verified against code and runs: docs/README.md gives every document a status (current/frozen/historical/superseded), a reading order for four audiences, and a 'Known discrepancies in historical records' section (agency size, harness commits, $4.29 vs $3.55, PRD 10 EUR 5-6k vs the 3 990-4 200 its own assumptions give, uncommitted runs, untracked DECK.md). README 'What is measured and what is assumed' table labels routing era, local vs committed and assumption vs measurement. Figures I checked hold: `pytest -q` gives exactly 948 passed, 7 skipped, 48 xfailed (README:194, CLAUDE.md:18, TIERS.md:140, START_HERE, SHARE_ME, WALKTHROUGH sheet 10); `tools/walkthrough/checks.py` gives 0 failures; every relative link in README, AGENTS, CLAUDE, reviews/README, docs/*.md, docs/pilot/*.md and the tier reports, and every href in the three HTML front doors, points to a tracked file. `runs/routing-validate-01` is tracked (4 files), .github/workflows/quality.yml runs scripts/check.sh as the README says, and OPERATING_DECISIONS.md, TIERS.md (Tier 8 section) and GO_LIVE_DECISIONS R-1..R-6 agree with one another. AGENTS.md is now a correct pointer, and HANDOFF_WALKTHROUGH.md sits in docs/history/ with a supersession banner. The aspect is defined as 'no stale or contradictory figures or claims', though, and I found several real ones (see defects). Each is small, but together they show that the round-1 truth pass was not closed mechanically.",
+      "defects": [
+        "WALKTHROUGH.html sheet 10 (line ~1293) says the 598 743-token leg is 'one local run not committed'. The same sheet (line ~1294), docs/README.md, COST_MODEL.md:26 and git (`git ls-files runs/routing-validate-01`) all show it is committed. runs/tier_8_report.md says its citations were 'relabelled committed', so that relabel was incomplete.",
+        "docs/EVIDENCE.md:3-6 lists 'the one current-routing extraction leg' among figures from local runs 'not in the repository', but EVIDENCE.md:84-85 calls the same run committed evidence. The page contradicts itself.",
+        "WALKTHROUGH.html sheet 02 'The thin layer' says 'about 2 500 non-blank lines' across the eight core pipeline modules and 'about 2 100 more' across the thirteen agency modules. Those are the Tier-7 figures: at bf6e5bb they were 2 592 and 2 066. At HEAD, counting the same files the same way gives 3 607 and 2 399. The core figure is about 44% stale after Tier 8.",
+        "README.md:168, README.md:209 and CLAUDE.md:21 say cost_report gives 'dollars only with --usd'. But `python3 eval/cost_report.py runs/tier3 --tokens` prints a 'USD footnote' table with $out/$computed/$reported columns even though --usd was not passed.",
+        "docs/pilot/SCORECARD.md lines 9, 25 and 66 place the '<30 minutes of review per draft' target and the week-4 stop rule on 'WALKTHROUGH.html sheet 07'. In the canonical ten-sheet walkthrough both are on sheet 10; sheet 07 is sign-off. These are cross-references left over from the old sheet numbering.",
+        "The pilot pack contradicts the decision paper on timing. WALKTHROUGH sheet 10 says the sponsor 'must confirm a release threshold' for Greek naturalness 'before week 1'. GO_LIVE_DECISIONS.md D-16 (Greek register floor) is 'Needed by: End of week 3' with the default 'Reported'. Sheet 10 also lists >70% draft survival as a week 2-3 target that blocks week 4, while SCORECARD.md section 2 reports survival only at week 3 and leaves gating open (D-14).",
+        "runs/tier_8_report.md header reads 'Branch: round1-integration · Status: green, awaiting human review (not committed by the integrator)', yet it is committed on main as 1aaa560. CLAUDE.md:57 still says 'main only (solo)' although Tier 8 used worktrees and an integration branch. The discrepancy is not listed in docs/README.md's known-discrepancies section.",
+        "WALKTHROUGH sheet 03's ledger says in the present tense that runtime agents 'retain Read access to its [the answer key's] containing directory'. Since Tier 8, agents read staged inputs/ copies under a deny rule (pipeline/agents.py:67, :228). Sheet 08 has the correct wording, so the paper disagrees with itself."
+      ],
+      "to_reach_9": "Fix the eight defects above in the current documents: WALKTHROUGH sheets 02, 03 and 10; EVIDENCE.md intro; SCORECARD sheet references; the D-16/D-14 timing alignment; the cost_report --tokens behaviour or its docs; and a docs/README.md discrepancy note for the Tier-8 header and branch workflow. Then add a deterministic doc-currency test so these classes of drift cannot come back: committed-vs-local labels checked against `git ls-files`, walkthrough LOC figures checked against computed counts, walkthrough sheet references in docs/pilot checked against the sheet that holds the cited phrase, and the test-count string checked for equality across all front doors."
+    },
+    {
+      "aspect": "stakeholder_materials",
+      "score": 7,
+      "evidence": "As the panel lead, I find the front doors unusually honest, and on-message for an AI-transformation role. WALKTHROUGH.html gives the answer first on sheet 01 ('Approve a four-week pilot, with live use in week 4 conditional...'), marks AI, code and people consistently (pencil, rule, red pen), shows real clipped quotes with glosses, and keeps what stays human explicit: sheet 05 leaves the decision line blank, sheet 07 records the resolutions and signer with a provenance note that the author signed as account lead, and sheet 09 labels the creative A/B 'MOCK-UP · NOT FOR DELIVERY' with three factual strikes, including Draft A's invented budget total. Sheet 10 separates 'Proven at Tier 8' (a software rehearsal) from 'Not proven' (generative quality under current routing, Greek register, review time, adoption). It corrects the frozen PRD's own EUR 5-6k arithmetic in public and names the risks: refusals at 3 of 10 (verified in docs/demo_timing.md rows 1, 2 and 5), voreas 15/17 then 16/17, and unresolved terms. START_HERE.html and SHARE_ME.html repeat the proved/not-proved split and the three decisions, and cite the known garble-flag defect (KNOWN_DEFECTS B3). The tier reports keep DoD tables and resolved model IDs (Tiers 0-4 and 8), and Tiers 5-7 state plainly that no runtime model was invoked. The walkthrough gate passes (10 sheets, 0 failures). The weaknesses are what a sponsor or panel would actually hit (see defects).",
+      "defects": [
+        "The headline tile on sheet 01 (WALKTHROUGH.html:533) and sheet 10's '~15 M tokens a month' tile (line ~1316) present 0.98 M tokens per brief as 'the figure to hold against a plan's usage window'. The tile carries no Haiku-era label. Under the current routing, the one measured leg already came in at about 2x (598 743 vs 295 774). docs/README.md tells sponsors to read sheets 01 and 10 first, so a sponsor would take the stale figure as the capacity basis. The caveat exists only lower down on sheet 10.",
+        "The decision paper contradicts itself on the one current-routing measurement: 'one local run not committed' vs 'runs/routing-validate-01 (committed)', both on sheet 10.",
+        "The three decisions on sheet 10 do not map visibly onto the 18 open items in docs/pilot/GO_LIVE_DECISIONS.md (D-01..D-18, most 'before week 1'), and they disagree on specifics: the Greek threshold is due before week 1 on sheet 10 but at end of week 3 in D-16, and survival gates week 4 on sheet 10 but is undecided in D-14 and SCORECARD section 2. A sponsor cannot tell what signing the three decisions actually commits to.",
+        "For a hiring panel, no material separates what was delivered inside the case-study timebox from what came later. runs/tier_4_report.md mentions a 'Saturday-noon cutoff' and TIERS.md:65 a 'hard cutoff', but README, START_HERE and WALKTHROUGH never say 'Tiers 0-4 were the submission at commit X; Tiers 5-8 are later work'. The AI-native build method (spec-first PRD, answer key and harness frozen before the pipeline ran, human stops per tier, development agents governed by CLAUDE.md, independent judge panels) is the strongest hiring signal, and it is scattered across CLAUDE.md, OPERATING_DECISIONS and the tier reports instead of being told once.",
+        "WALKTHROUGH sheet 02 states stale size figures (2 500 / 2 100 lines against 3 607 / 2 399 measured at HEAD), which undercuts the 'thin layer' claim for anyone who checks.",
+        "SHARE_ME.html, the forwardable file for people without the repo, describes the decision paper but does not contain it. A sponsor who receives only SHARE_ME gets a summary and a GitHub link, not the sheets 01 and 10 argument, the risks table or the decision owners."
+      ],
+      "to_reach_9": "Label every token and time headline on sheets 01 and 10 with its era, and state the current-routing unknown in the tile itself. Remove the committed/local contradiction and the stale line counts. Add a small 'what you are signing' box to sheet 10 that maps each of the three decisions to its GO_LIVE D-IDs, owners and deadlines, aligned with SCORECARD. Add a short hiring-panel section to the README: submission scope and cutoff commit vs later tiers, the build method, five judgment calls, what comes next. Have pipeline/share.py embed a condensed sheet 01 + sheet 10 in SHARE_ME."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Currency pass on the decision paper's headline numbers",
+      "aspects": ["stakeholder_materials", "documentation", "routing_usage"],
+      "rationale": "The highest-traffic sheets (01 and 10) carry a stale-routing capacity figure without its era label, an internal committed/local contradiction, and stale code-size figures. These are the exact defects a sponsor or panel would catch first, and they are cheap to fix.",
+      "concrete_changes": "WALKTHROUGH.html (through tools/walkthrough/build.py if it is the source): (1) sheet 01 tile at line ~533 and sheet 10 '~15 M tokens a month' tile at ~1316: append 'Haiku-era routing (July); current routing unmeasured, one leg measured about 2x — re-baseline before planning' and drop 'the figure to hold against a plan's usage window' or make it conditional on the re-baseline; (2) sheet 10 line ~1293: replace 'one local run not committed' with 'one committed leg (runs/routing-validate-01)'; (3) sheet 02 'The thin layer': recompute the non-blank line counts at HEAD (currently 3 607 across the eight core modules and 2 399 across the thirteen agency modules) and state the counting command in the ledger; (4) sheet 03 ledger: change 'runtime agents retain Read access to its containing directory' to past tense for the July run and add 'since round 1 agents read staged copies under a deny rule'. Add the corrected phrases to tools/walkthrough/mustkeep.json and re-run checks.py.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Align sheet 10's three decisions with GO_LIVE_DECISIONS and SCORECARD",
+      "aspects": ["stakeholder_materials", "pilot_readiness", "documentation"],
+      "rationale": "The decision paper, the go-live sheet and the scorecard disagree on when the Greek threshold is due and on whether draft survival gates week 4, and SCORECARD cites the wrong sheet. A sponsor signing three decisions must see which D-items each one closes.",
+      "concrete_changes": "docs/pilot/SCORECARD.md lines 9, 25, 66: 'sheet 07' -> 'sheet 10'. Pick one timing for the Greek-register floor and use it in both places: either set D-16 'Needed by: before week 1' in GO_LIVE_DECISIONS.md, or change sheet 10's 'before week 1' to 'by end of week 3'. Mark sheet 10's survival target as 'proposed, D-14' so it matches SCORECARD section 2. On WALKTHROUGH sheet 10, add one line under each decision listing the GO_LIVE IDs it covers (decision 1 -> D-13..D-18; decision 2 -> R-3/T-02; decision 3 -> D-01..D-12) with the rule 'all before-week-1 items closed = start'.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Deterministic doc-currency test",
+      "aspects": ["documentation", "testing_ci", "stakeholder_materials"],
+      "rationale": "Every documentation defect found this round is mechanically detectable. A test turns the truth pass from a one-off sweep into an invariant, which is what separates an 8 from a 7 on 'no stale figures'.",
+      "concrete_changes": "Add tests/test_doc_currency.py (runs in scripts/check.sh via pytest, no network): (a) for each run directory named in README/docs/*.md/WALKTHROUGH/START_HERE, fail if the surrounding sentence says 'local', 'not committed' or 'not in the repository' while `git ls-files <dir>` is non-empty, and the reverse; (b) parse the walkthrough's line-count claims and fail if they are more than 10% from counts computed over the named modules; (c) for every 'WALKTHROUGH.html sheet NN' reference in docs/pilot/*.md, fail unless the cited phrase appears in that sheet's section; (d) require the 'N passed, M skipped, K xfailed' string to be identical across README, CLAUDE.md, TIERS.md, START_HERE and pipeline/share.py output, and flag it for update in the tier report.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Hiring-panel section: timebox vs later work, and the build method",
+      "aspects": ["stakeholder_materials", "value_framing", "documentation"],
+      "rationale": "A hiring panel needs to know what was delivered under the case-study cutoff and how the candidate governed AI-assisted development. Both are the strongest signals in this repo, and both are only implicit today (the Saturday-noon cutoff is mentioned only in tier_4_report and TIERS).",
+      "concrete_changes": "Add a 'For the hiring panel' section of about 25 lines near the top of README.md, and link it from docs/README.md's hiring-panel row and START_HERE's 'Where things live'. It should cover: the case asked (one line, pointing to PRD); what existed at the cutoff (Tiers 0-4, commit hash of the Tier-4 commit, 2026-07-24); what came after (Tiers 5-8 with dates and why); the build method (PRD written first, answer key and harness frozen before the pipeline ran, one tier per human review, development agents bound by CLAUDE.md, independent judge panels); five judgment calls with their file evidence (conflicts never auto-resolved, garbles flagged not fixed, tokens not dollars, PRD arithmetic corrected, creative gated by separation of duties); and the next three steps.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make cost_report's --tokens view dollar-free, as documented",
+      "aspects": ["documentation", "routing_usage"],
+      "rationale": "README, CLAUDE.md and COST_MODEL promise 'dollars only with --usd', but the --tokens view prints a USD table. The client is expected to be on a subscription, so the tokens-first ruler should not leak dollars.",
+      "concrete_changes": "In eval/cost_report.py, print the 'USD footnote — list-rate attribution' block only when args.usd is set. Add a test in tests/ asserting that `--tokens` output contains no '$' or 'USD' and that `--tokens --usd` does. If the owner prefers the current output, change README.md:168, :209 and CLAUDE.md:21 to say so.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Close the remaining current-doc contradictions",
+      "aspects": ["documentation"],
+      "rationale": "Current documents must not disagree with themselves. Historical records stay unedited, but their drift must be listed in the index.",
+      "concrete_changes": "docs/EVIDENCE.md:3-6: remove 'the one current-routing extraction leg' from the list of local-only figures. docs/README.md 'Known discrepancies': add a bullet saying runs/tier_8_report.md's header ('Branch: round1-integration', 'not committed by the integrator') predates its commit to main as 1aaa560, and that Tier 8 used worktrees plus an integration branch although CLAUDE.md's workflow says 'main only (solo)'. Propose to the owner either a one-line CLAUDE.md workflow update permitting worktree/integration branches merged to main, or an explicit exception note.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "SHARE_ME carries the decision, not just a pointer to it",
+      "aspects": ["stakeholder_materials"],
+      "rationale": "SHARE_ME.html is the file forwarded to people without the repo, which will often be the sponsor. Today it summarises the decision and links to GitHub, so a sponsor never sees sheets 01 and 10: the proved/not-proved split, the risks and the owners in the paper's own form.",
+      "concrete_changes": "Extend pipeline/share.py to embed a condensed, self-contained sheet 01 (answer first + four tiles, era-labelled) and sheet 10 (three decisions with owners and deadlines, the limits and risks list) drawn from WALKTHROUGH.html, or to embed WALKTHROUGH.html itself as a second openable page like the brief and run views. Extend tests/test_share.py to assert the three decisions and the 'not proven' list are present. Regenerate SHARE_ME.html.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Plain-language pass on sheet lead lines and a jargon key",
+      "aspects": ["stakeholder_materials"],
+      "rationale": "The sheet bodies are readable, but terms a non-engineer sponsor cannot parse (T2.4, X3, strict xfail, from_earlier_run, cache writes) appear in visible prose, not only in the ledgers.",
+      "concrete_changes": "In WALKTHROUGH.html, keep check IDs and technical terms inside the collapsible ledgers only. Add a five-entry key to the contents overlay (check IDs, token, cached context, xfail, routing era). On sheet 08 and sheet 10's 'Proven at Tier 8' line, replace '48 xfailed' and 'strict xfail' with 'known defects pinned by tests'. Gate the change with the existing checks.py plus a mustkeep entry for the key.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "From a hiring-panel seat, this is unusually candid material. It separates measured from assumed, corrects the frozen PRD's own arithmetic in public, prints its own defects on the front doors (B3 garble flag, Draft A's invented total, voreas 15/17), and keeps 'what stays human' visible on every sheet. The docs index with statuses and a known-discrepancies list is close to a reference example. Neither aspect reaches 8, because I can name concrete defects a reader would hit. The decision paper's headline token figure lacks its routing-era label. Sheet 10 contradicts itself on whether the one current-routing leg is committed. The code-size figures are Tier-7 numbers. SCORECARD points to the wrong sheet, and the pilot pack disagrees with the paper on decision timing. cost_report --tokens prints dollars despite 'dollars only with --usd'. For the panel, no material separates the timeboxed submission from the later tiers or tells the AI-native build method in one place. All of these are small fixes; a doc-currency test would stop the drift from recurring."
+}

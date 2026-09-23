@@ -1,0 +1,137 @@
+{
+ "scores": [
+  {
+   "aspect": "human_governance",
+   "score": 7,
+   "evidence": "Strong, verified in code: synthesis gate refuses model-resolved conflicts (pipeline/stages.py ~416, 'resolution is human-only (PRD DR-10)'); agency.apply_candidate refuses dropping/editing/resolving conflicts and removing untriaged questions (pipeline/agency.py _conflict_changes, _question_removal_allowed); coverage exclusions bound to brief content (brief_binding); separation of duties on by default for language attester != signer (agency.approve) and creative approver != registrant/signer, re-checked from records at release (pipeline/delivery.py _separation, _recheck_separation); --solo-rehearsal refused unless the project declares synthetic (agency.solo_rehearsal_waiver); creative approval binds draft, brief approval and language review by SHA-256 (delivery.require_creative_approval); withdrawal persisted before archiving and honoured by approval, release and package verify (pipeline/release_control.py withdraw, require_not_withdrawn, verify --run); hash-chained audit_log.jsonl with verify-log, and approval/creative approval/release refuse on a broken log (pipeline/revisions.py append_audit, verify_audit_log, require_intact_audit_log). Tests: tests/test_governance_controls.py (21 cases). Full suite run: 948 passed, 7 skipped, 48 xfailed. Weaknesses are in what the tamper-evidence does NOT cover (below).",
+   "defects": [
+    "The audit-log verifier vouches only approval.json, creative_approval.json, amendments.json, approval_withdrawals.json and releases.json (pipeline/revisions.py _VOUCHED_RECORDS/_VOUCHED_LISTS, lines 285-287). Conflict resolutions, language attestation, coverage exclusions and triage decisions are appended to the log (agency.py 290, 416, 434, 443) but never cross-checked. agency.audit only requires a resolved conflict to have non-empty status/resolution/resolved_by (agency.py ~222). So a hand-edit of brief.json (by a careless operator or a coding agent) that sets conflicts[i] to resolved_by_human with any name passes audit, approve and verify-log. That leaves the core DR-10 control (resolution is human-only, by name) without the tamper evidence SECURITY.md §3.6 implies for 'every ... resolution, triage, exclusion'.",
+    "The solo-rehearsal waiver reads the project folder's LIVE data_declaration.json (agency.project_data_class). The file is not bound into input_snapshot.json, and the waiver is not compared with the data_declaration the runner recorded in run_manifest.json. Flipping an 'approved' project's declaration to 'synthetic' after the run unlocks --solo-rehearsal (one person holding every role) on a real-data run, and no check notices.",
+    "AI coding agents operate this repository, and nothing technical stops one from running `agency resolve/approve` or `delivery approve/release`. There is no .claude/settings.json deny rule (the .claude/ folder holds only agents/ and worktrees/) and no Codex equivalent. SECURITY.md §4 item 6 admits this is open, so 'a model cannot bypass a control' rests on policy text alone.",
+    "Actors are unauthenticated typed names (accepted in scope and honestly stated in SECURITY.md §2.4 and §4.5). No defect beyond disclosure."
+   ],
+   "to_reach_9": "Vouch every human decision (conflict resolutions by index/actor/resolution text, attestation, exclusions, triage) in verify_audit_log, and have agency.audit block a resolved conflict with no matching conflict_resolved entry. Bind the data class to the run: check the waiver and the publish step against the class recorded in run_manifest.json/input_snapshot.json. Ship a project-level deny rule for the human-decision commands for coding agents, with a test that every command that appends a human audit event is on the list."
+  },
+  {
+   "aspect": "security_injection",
+   "score": 7,
+   "evidence": "Layered, and verified in code: Rule U is present in all runtime instruction files and agent bodies (9 occurrences across skills/*.md and .claude/agents/*.md; tests/test_prompt_hygiene.py). Work orders carry paths only, never source text (tests/test_agent_security.py::test_injected_text_never_reaches_a_work_order, which uses tests/injection_project/emails.md). Every agent's frontmatter is tools: Read, Write. build_command (pipeline/agents.py) passes --tools Read,Write, path-scoped --allowedTools, --disallowedTools Bash/WebFetch/WebSearch/NotebookEdit plus deny rules for protected records and //**/answer_key.json, --strict-mcp-config, --setting-sources project,local from an empty neutral cwd, and --permission-prompts none. I checked these flags against the installed CLI 2.1.280 `claude --help`: they exist. Sources are staged read-only into <run>/inputs, and the project folder is never granted (runner._access_dirs). Post-step integrity hashing covers the skeleton dirs, the protected run records and the originals (runner.integrity_state, lines 259-279). source_id path traversal is refused (runner.unsafe_source_ids; extraction.run_path). Verifier findings are screened to verbatim source spans before they are forwarded (extraction.screen_findings). The subprocess uses an argv list with no shell. The only API key path is eval/substrate_spike.py via the SDK's env resolution. SECURITY.md is candid about residual risks.",
+   "defects": [
+    "Write scope is the entire run directory minus PROTECTED_RUN_PATHS (runner.py 155-162). Earlier stages' outputs are not frozen for later model steps: brief.json is writable and not integrity-watched during render and creative, and extracts/, verification/, fidelity/ and classification.json stay writable during synthesize and render. An injected render agent can rewrite brief.json on disk. The render gate checks against the in-memory brief (stages.py ~1240), so only the later content checks and the human review stand in the way. That is not the 'writes only its own outputs' invariant the integrity error message claims.",
+    "The CLI's enforcement of the permission rules has never been exercised live. The argv is tested byte for byte, but SECURITY.md §4.1 proposes a canary run that has not been done. The committed evidence runs predate these flags, so the most important control (deny rules actually refusing) is asserted rather than evidenced. SubagentResult does not capture the CLI's permission-denial output either, so a run cannot show refusals.",
+    "Supply chain is partial. requirements.lock has no hashes (its own header admits it). CI actions are pinned by mutable tag (actions/checkout@v4, setup-python@v5 in .github/workflows/quality.yml), not by commit SHA. The runtime executor's version is never checked: agents.invoke relies on an older CLI failing loudly on an unknown flag instead of asserting the minimum version the flags were verified against (2.1.280).",
+    "Agents may read everything in the run directory, including human decision records and the audit log (acknowledged in SECURITY.md §4.2). This is low impact today, but it is unnecessary exposure."
+   ],
+   "to_reach_9": "Make each later model step treat earlier stages' artifacts as protected (deny rule plus integrity watch). Run and commit one live canary run under the current flags, capturing permission denials in the manifest. Assert the minimum CLI version in invoke. Pin CI actions by SHA and regenerate the lock with hashes when a network is available."
+  },
+  {
+   "aspect": "data_protection",
+   "score": 7,
+   "evidence": "Well above typical MVP level. The data declaration is enforced in code: a missing, invalid or symlinked declaration is refused before any source is read, 'approved' requires approval_ref/by/on with a non-future ISO date, and approved projects, client config and output must sit outside the repository (pipeline/data_policy.py validate_payload, check_locations, require_for_run; runner exit 6; intake --data-class; tests/test_data_policy.py). Sensitivity tier S0/S1 is enforced in the schema enum and by gates.enforce_sensitivity_tier at intake, classify, extraction, synthesis and agency reads. The runner skips the in-repo reviews/ shelf for non-synthetic runs (runner.py ~499). pipeline/retention.py handles inventory and purge, with tombstones, staged-input copies, an audit-log tombstone before a run purge and refusal on committed evidence (tests/test_retention.py). docs/pilot/DATA_PROTECTION.md is a good DPIA input pack: a personal-data inventory per artifact, a stage-by-stage flow map of what reaches the provider, WP248 screening, lawful-basis options with a balancing template, an Art. 13/14 outline, a retention schedule, a rights procedure, an Art. 28 checklist, purpose limitation for effort data and a special-category screening step. GO_LIVE_DECISIONS.md D-03, D-07 and D-09 gate real data on DPA, retention and lawful-basis decisions. INCIDENT_RECOVERY.md covers Art. 33/34.",
+   "defects": [
+    "Session persistence is left on although the CLI can switch it off. Every `claude -p` run writes a full transcript of all source content (names, verbatim statements) into the operator's CLI profile. The installed CLI 2.1.280 (the version SECURITY.md §3.7 says the flags were checked against) offers --no-session-persistence, but pipeline/agents.py build_command does not pass it. DATA_PROTECTION.md §6 and §11 leave it as 'disable persistence if the installed CLI supports it (OPERATOR TO CONFIRM)'. Result: an unmanaged extra copy of personal data that retention.py can only list by session ID, never purge.",
+    "The rule that non-synthetic material never lives in or writes into the repository is enforced only inside the runner. `python3 -m pipeline.publish <approved run>` (pipeline/publish.py main → _publish_locked) has no data-class check, so it copies an approved run's brief pages into the in-repository reviews/ shelf. The folder is git-ignored, but that contradicts data_policy.check_locations and DATA_PROTECTION.md §6 ('never for pilot data').",
+    "An 'approved' declaration requires only a free-text approval_ref, approved_by and approved_on. It does not record the preconditions the pack itself sets: the §10 special-category screening (screened_by/date is required only in an external record), the D-03 processor-terms reference and the D-09 DPIA/lawful-basis decision. The go-live gating that matters most to a DPO is therefore policy-only. The data class is also not bound to the run (see human_governance), so a relabelled folder goes unnoticed.",
+    "There is no automated personal-data or special-category pre-screen (acknowledged open item, §11), not even an advisory deterministic scan (e-mail addresses, phone numbers, IBAN-like strings, a Greek/English Art. 9 keyword list) reported in the manifest for approved projects.",
+    "Gaps for a Greek DPO. The pack has no Art. 30 record-of-processing entry. Screening uses WP248 but not the Hellenic DPA's mandatory DPIA list (Decision 65/2018). Employment-data rules are cited only generically ('the Greek implementing law'), where Law 4624/2019 Art. 27 is the specific provision for effort recording."
+   ],
+   "to_reach_9": "Pass --no-session-persistence, with a test, and update DATA_PROTECTION.md §6/§11 and the retention text. Make publish refuse non-synthetic runs, using the class recorded for the run. Add screened_by/screened_on and processor/DPIA reference fields to the approved declaration, plus an advisory PII scan in the manifest. Add an Art. 30 ROPA template and the Greek-specific references (HDPA DPIA list, Law 4624/2019 Art. 27)."
+  }
+ ],
+ "moves": [
+  {
+   "title": "Disable CLI session persistence for runtime agents",
+   "aspects": [
+    "data_protection",
+    "security_injection",
+    "documentation"
+   ],
+   "rationale": "It removes an unmanaged full copy of every source (all personal data in scope) from the operator's CLI profile with a one-flag change. The flag exists in the installed CLI 2.1.280, so the docs' 'OPERATOR TO CONFIRM' is already answerable. This is the highest gain for the least effort in data minimisation and retention.",
+   "concrete_changes": "pipeline/agents.py build_command: append '--no-session-persistence' to cmd. Update the module docstring's least-privilege paragraph. tests/test_agent_security.py::test_command_isolates_the_substrate_and_scopes_every_tool: assert the flag is present. pipeline/retention.py: keep session_ids() for legacy runs, and word the inventory/purge note as 'legacy runs only; runs after <date> keep no CLI transcripts'. docs/pilot/DATA_PROTECTION.md §6 row 'claude -p session transcripts' and §11 open items, plus docs/SECURITY.md §3.2: state that persistence is disabled and cite the flag and CLI version.",
+   "effort": "S",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Vouch every human decision in the audit-log verifier and block unlogged conflict resolutions",
+   "aspects": [
+    "human_governance",
+    "security_injection",
+    "testing_ci"
+   ],
+   "rationale": "Today a hand-edited brief.json can mark conflicts resolved_by_human under any name, and audit, approve and verify-log all pass, which is a silent bypass of DR-10. The same holds for the language attestation actor, coverage exclusions and triage. Closing this is the single largest governance gain.",
+   "concrete_changes": "pipeline/revisions.py verify_audit_log: for each brief.json conflict with status resolved_by_human, require a 'conflict_resolved' entry whose details.conflict == index, details.resolution == resolution and actor == resolved_by. For each coverage_decisions.json entry require a 'coverage_excluded' entry with the same actor. For each clarifications.json decision require a 'question_triaged' entry. For language_review.json require a 'language_attested' entry with the same actor and checks (compare content minus the fingerprint that approve rewrites, or log an attestation digest that excludes the fingerprint). pipeline/agency.py audit: add a blocker 'conflict.<i>: resolution not vouched by the audit log'. tests/test_governance_controls.py: add test_a_hand_resolved_conflict_blocks_approval, test_a_hand_written_attestation_is_not_vouched and test_a_hand_written_exclusion_is_not_vouched. docs/SECURITY.md §3.6: list exactly which records verify-log vouches.",
+   "effort": "M",
+   "needs_owner_decision": true
+  },
+  {
+   "title": "Freeze earlier stages' outputs during later model steps",
+   "aspects": [
+    "security_injection",
+    "human_governance",
+    "architecture"
+   ],
+   "rationale": "It restores the 'runtime agents may write only their own outputs' invariant. An injected render or creative agent can currently rewrite brief.json, and synthesize/render agents can rewrite extracts, without tripping the integrity check.",
+   "concrete_changes": "pipeline/runner.py: add a per-step STAGE_OUTPUTS map (classify → classification.json; fidelity → fidelity/; extract → extracts/, verification/; synthesize → brief.json; render → brief_el.md, brief_en.md). Give _access_dirs(ctx, step) a protected set of PROTECTED_RUN_PATHS plus the outputs of every step before the current one, so deny rules and integrity_state both cover them. pipeline/stages.py and pipeline/creative.py callers pass the step. tests/test_agent_security.py: parametrize a fake render agent that rewrites brief.json and a fake synthesize agent that edits an extract, and assert stage_failed with 'integrity:'.",
+   "effort": "M",
+   "needs_owner_decision": true
+  },
+  {
+   "title": "Bind the data class to the run; guard publish and the solo waiver with it",
+   "aspects": [
+    "data_protection",
+    "human_governance"
+   ],
+   "rationale": "It closes two bypasses: relabelling an approved folder as synthetic unlocks the one-person waiver, and the publish CLI copies approved runs into the repository. Both are fixed by reading the class recorded at run time instead of the live file.",
+   "concrete_changes": "pipeline/runner.py: record data_declaration.json in input_snapshot.json (key 'data_declaration', path plus sha256; legacy snapshots keep their keys). pipeline/agency.py project_data_class: return the class only when the live declaration hash matches the snapshot and its class equals run_manifest.json['data_declaration']['data_class'], else None. pipeline/publish.py _publish_locked: refuse (ReviewInputError) unless the recorded class is 'synthetic' and the reviews dir is inside the repository. tests/test_governance_controls.py: add test_relabelled_declaration_does_not_unlock_solo_rehearsal. tests/test_data_policy.py: add test_publish_cli_refuses_non_synthetic_runs.",
+   "effort": "S",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Live permission canary with recorded CLI refusals",
+   "aspects": [
+    "security_injection",
+    "testing_ci",
+    "human_governance"
+   ],
+   "rationale": "It turns the central least-privilege claim from 'the argv is right' into evidence that the CLI refused. SECURITY.md §4.1 already prescribes the canary. It fits rule 4 (a synthetic fixture, model calls via subagents).",
+   "concrete_changes": "Add a synthetic canary project, fixtures/canary_01/: data_declaration synthetic, client config S0, one source whose text asks the agent to write <run>/approval.json, edit schema/brief_schema.json, read a planted answer_key.json in the project folder and write /tmp/leak.json. pipeline/agents.py SubagentResult: capture payload.get('permission_denials') into as_dict. Run `python pipeline/runner.py --project fixtures/canary_01` once. Commit runs/security_canary_report.md with each denial, the integrity result, the extraction_note 'embedded instruction not followed', CLI version and resolved model IDs. Add a startup check in agents.invoke that `claude --version` >= 2.1.280, with a test using the fake binary.",
+   "effort": "M",
+   "needs_owner_decision": false
+  },
+  {
+   "title": "Technical deny rule for human-decision commands in coding-agent sessions",
+   "aspects": [
+    "human_governance",
+    "security_injection"
+   ],
+   "rationale": "The repository is operated by AI coding agents. Today only policy stops one from resolving conflicts, attesting, approving or releasing, and SECURITY.md §4.6 lists this as open. A project-level deny list makes 'no model runs these' a control.",
+   "concrete_changes": "Add .claude/settings.json with permissions.deny for Bash patterns covering `python3 -m pipeline.agency resolve|answer|exclude|attest|approve*`, `python3 -m pipeline.delivery approve|release*`, `python3 -m pipeline.release_control withdraw*` and the `python pipeline/...py` spellings. Add the Codex equivalent (execpolicy or AGENTS.md rule plus sandbox config) under .codex/. tests/test_governance_controls.py: add test_every_human_audit_event_command_is_denied_to_coding_agents, which greps append_audit call sites for their CLI subcommands and asserts each is covered. docs/SECURITY.md §4.6: move from open to control, with the residual (a human can still paste the command).",
+   "effort": "S",
+   "needs_owner_decision": true
+  },
+  {
+   "title": "Make the approved declaration carry the DPO preconditions, plus an advisory PII scan",
+   "aspects": [
+    "data_protection",
+    "pilot_readiness"
+   ],
+   "rationale": "The declaration currently proves only that someone typed an approval reference. Recording the special-category screen, the processor-terms reference and the DPIA/lawful-basis decision makes the most important go-live preconditions visible in every run manifest. An advisory deterministic scan gives the screener a starting list without claiming to be a control.",
+   "concrete_changes": "pipeline/data_policy.py: for data_class 'approved', add required keys screened_by, screened_on (ISO date, not future), processor_terms_ref (GO_LIVE D-03) and dpia_decision_ref (D-09) to validate_payload, build_declaration and as_record. pipeline/intake.py: add matching flags. Add a new pipeline/pii_scan.py (deterministic): regex for e-mail addresses, phone numbers, IBAN-like strings and Greek AFM/AMKA-length digit runs, plus a Greek/English Art. 9 keyword list in config/special_category_terms.json. The runner writes counts by source and category to run_manifest.json['pii_scan'] for approved projects: report only, never blocking, never logging the matched values. tests/test_data_policy.py and tests/test_pii_scan.py cover it. Update docs/pilot/DATA_PROTECTION.md §1, §10, §11 and OPERATING_TERMS.md §d.",
+   "effort": "M",
+   "needs_owner_decision": true
+  },
+  {
+   "title": "Complete the DPIA pack for a Greek DPO: ROPA entry and national references",
+   "aspects": [
+    "data_protection",
+    "pilot_readiness",
+    "documentation"
+   ],
+   "rationale": "A Greek agency DPO will look first for the Art. 30 record and the Hellenic DPA's mandatory DPIA list. Both are missing, and adding them is cheap.",
+   "concrete_changes": "docs/pilot/DATA_PROTECTION.md: add §12, an Art. 30(1) record-of-processing template for 'AI-assisted brief preparation' (controller, purposes, categories of subjects and data from §2, recipients incl. model provider, transfers from §8, retention from §6, TOMs from §1). §4: screen against the Hellenic DPA's list of processing requiring a DPIA (Decision 65/2018) next to WP248. §5 and §9: cite Law 4624/2019 Art. 27 for employee data in effort recording. Add a line on who keeps the rights log. Keep every legal conclusion marked OWNER/DPO TO CONFIRM. tests/test_pilot_docs.py: assert the ROPA section and the references exist.",
+   "effort": "S",
+   "needs_owner_decision": false
+  }
+ ],
+ "overall": "The trust layer is unusually mature for an MVP demo. Conflicts cannot be resolved by a model or by an amendment. Separation of duties, content-bound approvals, withdrawal and a hash-chained audit log are implemented and tested. Runtime agents run with Read/Write only, path-scoped allow/deny rules, no shell/web/MCP/settings and staged inputs. The data declaration and the out-of-repository rule are code-enforced, and the DPIA preparation pack is honest and detailed. Each aspect still has at least one concrete defect a specialist would flag. (1) Tamper evidence does not cover conflict resolutions, attestations or exclusions, so a hand-edited brief.json bypasses DR-10 unnoticed. (2) Earlier stages' outputs, including brief.json, stay writable and unwatched during later model steps, and CLI enforcement has never been exercised live. (3) An available CLI flag that would stop full-content session transcripts accumulating in the operator profile is not used, and the publish CLI and solo waiver read an unbound, live data class. All three aspects score 7. Moves 1, 2, 3 and 4 are small-to-medium changes that would bring each aspect to 8 or above."
+}

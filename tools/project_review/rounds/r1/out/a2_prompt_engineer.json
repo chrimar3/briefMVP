@@ -1,0 +1,105 @@
+{
+  "scores": [
+    {
+      "aspect": "prompt_skill_design",
+      "score": 6,
+      "evidence": "Strengths verified: the four skills are precise and failure-mode driven (SOURCES.md rules 1-7 + U, §8 self-check with verbatim-location rule; SYNTHESIS.md rule 4 resolution-by-omission, rule 5 currency-in-words; TRANSLATION.md rules 9-13 map one-to-one onto runner gates check_render/check_render_template). Skills are injected byte-exact into agent bodies (SKILL_SOURCE markers, tests/test_agents.py), every runtime prompt carries an untrusted-content rule and passes the decontamination test (tests/test_prompt_hygiene.py: 5-gram overlap with fixtures + seeded strings), tools are Read,Write only with CLI deny rules and answer_key deny (pipeline/agents.py permission_rules/build_command). Many rules are backed by deterministic gates: verbatim citations (gates.verify_citations), unsourced glossary terms, fidelity byte-exact strip (stages.check_fidelity), low-score must escalate, conflict consistency and superseded-within-source (stages.check_synthesis), verifier findings screened for verbatim evidence (extraction.screen_findings) and adjudicated rather than obeyed. Suite: 948 passed, 7 skipped, 48 xfailed. But the repair prompts, which every stage runs through agents.run_gated, are broken by construction: each invoke() is a fresh `claude -p` session (no --resume), yet repair orders carry no inputs. extraction.build_repair_order names only the output file (no source_file, glossary, output_contract); build_verified_repair_order tells the model to check 'the source_file of your first order', an order the new session never saw; render's repair coda is just 'Fix exactly these.' with no file paths (stages.py ~1244); fidelity's says 'rewrite both files' without naming them. Evidence in runs: extraction repairs succeed 14/24 across runs/*/diagnostics/repair_log.jsonl, and at least 6 second attempts end 'no file written' after an order that said 'Do not re-extract from scratch'. The tier3 repair took 16 turns against 5 for a first attempt; the routing-validate-01 verified repair took 20 turns and 462,130 tokens (docs/COST_MODEL.md §3). Several skill rules are neither followed nor gated: 'every medium/low item auto-generates an open_question' (SOURCES §4, self-check 3); only 64 of 379 stored extract questions carry linked_items, and none do in runs/tier3 or runs/routing-validate-01 transcript extracts. 'Background → qualifier implied' (SOURCES §5); runs/tier3 background extract is 8/8 'stated', voreas-prep-02 14/14.",
+      "defects": [
+        "Repair orders are context-free in a fresh session: no source/glossary/contract paths in extraction.build_repair_order, a dangling 'your first order' reference in build_verified_repair_order, no file names in the render/fidelity/classify/synthesis codas passed to agents.repair_order; 'Do not re-extract from scratch' is issued even when the violation is 'no file written'.",
+        "SOURCES.md §4/§8.3 rule (medium/low item → linked open_question) is unenforced and unfollowed: 64/379 questions carry linked_items; check_extract has no linkage check.",
+        "SOURCES.md §5 background posture (qualifier 'implied') is systematically ignored (tier3 8/8, voreas-prep-02 14/14 'stated') with no gate. Paired with the fixed confidence definition 'low: implied only', it would also force an open question for every background item, so the rule set is internally at odds.",
+        "SOURCES.md §6 timeline rule asks for the relative expression verbatim AND a computed candidate date. The 7-key item schema (additionalProperties false) has no field for the date, `value` must be verbatim, and verify-extract.md treats conversions as paraphrase drift. There is no specified place for the date.",
+        "SYNTHESIS.md has no rule for rule-G garbled tokens (keep the source token in content, or quote it beside the proposed match). The supplementary S3 flag is systematic (10/11 northlight briefs, 2/2 voreas), and the coverage rule queued in runs/voreas_prep_report.md (finding 1) was never added. Frozen harness T3.3 expects the token to survive.",
+        "Minor inconsistencies: render.md is the only skill-injected wrapper without the protected-paths/hash-check sentence. SYNTHESIS.md §3 says to work 'deliberately, one item at a time', while the OUTPUT_DISCIPLINE appended to the same order says to run the self-check 'silently'. The SOURCES §9 worked example is decontaminated in wording but keeps the graded trap's shape (a hedged spoken budget range with units unstated).",
+        "Rule U has only deterministic tests (tests/test_agent_security.py over tests/injection_project); no model run measures whether any agent obeys it."
+      ],
+      "to_reach_9": "Make every repair order self-contained: restate the INPUT block, or resume the same session. Gate or delete every skill rule the evidence shows is not followed (question linkage, background qualifier). Specify where the candidate date goes. Add a synthesis garble-carry rule with a matching check_synthesis gate. Align the wrappers and the self-check narration instructions. Show rule U holding in at least one recorded model run on the injection project."
+    },
+    {
+      "aspect": "routing_usage",
+      "score": 7,
+      "evidence": "Tokens-first accounting is real and reproducible. `python3 eval/cost_report.py runs/tier3` reproduces 984,820 tokens per Stage-1 brief (haiku 533,641 · sonnet 451,179) and 1,134,734 with the creative A/B. runs/routing-validate-01 reproduces 598,743 with the verifier counted. Per-attempt usage and resolved model IDs are recorded in every manifest (agents.SubagentResult, _summarise_usage); no stored call mixes models (0/137 multi-model entries). Era banners separate Haiku-era from current routing in docs/COST_MODEL.md, docs/EVIDENCE.md, README.md:47-48 and docs/TIERS.md:16. Dollars are a labelled footnote only (COST_MODEL footnote, cost_report --usd). The effort policy is measured (config/model_routing.json: render at low, commit 6b0bed9 'byte-identical output at -49% cost'), and synthesis is deliberately uncapped with its rationale stated. A risk-routing replay (`--risk-replay`) honestly shows 66/66 extracts go to sonnet (EVAL_RECORD §6). The model routing itself is enforced in frontmatter, with overrides explicit in agents.build_inline_agent.",
+      "defects": [
+        "The current routing (sonnet extraction + verifier) is unmeasured end to end. Every complete-brief figure is from an earlier era, and the only current measurement is one transcript leg (n=1). Current usage per brief, which is the planning number, is unknown.",
+        "The verifier's risk policy does not route. The `figures` class (extraction.risk_classes) fires on any digit in any value, dates included, so the haiku branch is dead: 0 of 66 extracts take it. CLAUDE.md and config/model_routing.json still describe 'else haiku' as the policy. This is documented as an open decision but not fixed.",
+        "The rationale for the 2026-07-30 routing change (a 10x cost increase per leg for one anecdotal verifier catch) exists only in the commit message of 6d77ae7, not in any design or decision document. That commit is dated 2026-07-29 but cites a decision of 2026-07-30, and COST_MODEL §3 repeats the date oddity.",
+        "Part of the measured cost of the current routing is a prompt defect, not a model cost. 462,130 of the 598,743 leg tokens are a 20-turn repair session working from a context-free repair order (see prompt_skill_design). The per-brief projection will be inflated until that is fixed."
+      ],
+      "to_reach_9": "Fix the repair-order context loss first, then run the authorised 3x2 re-baseline and publish current-routing tokens by model per brief, clean and all-runs. Either redefine the risk classes so a haiku path exists and is measured, or declare the verifier sonnet-only in the config, CLAUDE.md and COST_MODEL. Move the routing rationale and its measured trade-off into OPERATING_DECISIONS.md."
+    },
+    {
+      "aspect": "evaluation_method",
+      "score": 6,
+      "evidence": "Solid scaffolding. eval/harness.py was frozen at 9e371f6, and its one post-freeze commit is disclosed (EVAL_RECORD §4). Answer keys are read only by the harness, and agents are denied answer_key.json. Traps X1-X3 plus seeded conflicts, gaps and garbles run across 2 keyed fixtures (northlight 3/4/2/3, voreas 4/6/4/3). eval/pass_rates.py gives per-check pass/n over distinct legs with Wilson intervals. The harness blind spots are listed check by check, and the unfrozen, answer-key-free eval/supplementary.py covers them (S1-S9, systematic S3/S5 flags quantified). There is a pre-registered re-baseline protocol with no re-roll-to-pass and an explicit statement of what n=3 cannot show (EVAL_RECORD §7). The contamination disclosure (§3) and the prompt-hygiene test exist. eval/agency_benchmark.py is honestly labelled as deterministic fault injection with a not_measured list.",
+      "defects": [
+        "No graded run exists under the routing in use. Every one of the 13 northlight and 2 voreas harness reports is Haiku-era, several are resumed legs of each other, and earlier re-rolls were overwritten. There is no rate for the current system.",
+        "No held-out fixture remains. Both keyed fixtures come from one author. voreas_02 shaped the prompts and gates, and its 'hazard lines were re-calibrated to hard-but-fair' after model failures (runs/voreas_prep_report.md finding 5), so the fixture was edited in response to model behaviour. The three agency_* fixtures have no key and no run.",
+        "EVAL_RECORD §3 is stale at HEAD. It says in the present tense that the runtime prompts quote «κάπου στα ογδόντα», «μπραντ αγουέρνες» and 'don't hold me to it', and that 'W2 is removing' them, citing line numbers. The prompts at 1aaa560 no longer contain them (grep plus tests/test_prompt_hygiene.py), so the record and the code contradict each other.",
+        "The harness is keyword recall only. T3.1/T3.2 check signal substrings, X3 is a literal pattern list, and nothing measures precision or non-trap fact recall. The supplementary scorer mitigates this, but it is heuristic and has no validation set.",
+        "The verifier's effectiveness is unmeasured. There is no aggregate of findings forwarded, dropped, applied or rejected, and no check of whether applied findings changed graded outcomes, although that stage accounts for the routing cost increase.",
+        "No model-in-the-loop adversarial evaluation: tests/injection_project is used only by deterministic tests.",
+        "agency_benchmark's 12 cases are hand-built dicts exercising deterministic functions. Calling it a 'benchmark' beside the graded harness invites overreading, despite the honest docstring."
+      ],
+      "to_reach_9": "Run the authorised re-baseline, with the verifier outcomes aggregated. Add a sealed, blind-authored third keyed fixture whose key hash is committed before any prompt author sees it, and record one model run on the injection project. Correct EVAL_RECORD §3 to the decontaminated state and add the voreas recalibration to the contamination list. Validate the supplementary checks against a small labelled set."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Make every repair order self-contained (or resume the session)",
+      "aspects": ["prompt_skill_design", "routing_usage", "brief_accuracy", "architecture"],
+      "rationale": "Every invoke() is a fresh `claude -p` session, but repair orders omit the inputs. The extractor is told to fix citations without the source path and to consult 'your first order', which it never saw. Render is told 'Fix exactly these.' without file names. Measured symptoms: only 14/24 extraction repairs succeed; several second attempts write nothing; the costliest current-routing leg is a 20-turn, 462k-token repair.",
+      "concrete_changes": "pipeline/extraction.py: pass source path, read_path, glossary_path and schema path into build_repair_order and build_verified_repair_order. Emit an INPUT block identical to the work order's, replace 'the source_file of your first order' with the literal path, and when the only violation is 'no file written', re-issue the original work order instead of 'Do not re-extract from scratch'. pipeline/agents.py: give repair_order an `inputs` parameter, or alternatively add `--resume <session_id>` from the previous SubagentResult to the repair invocation. pipeline/stages.py (classify, fidelity, synthesize, render) and pipeline/creative.py: pass their input and output paths to it. tests/test_orders.py: parametrised assertion that every repair order names every input path and output path of its stage. Verify offline with tools/replay.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Close the instruction–gate gaps in extraction",
+      "aspects": ["prompt_skill_design", "brief_accuracy", "evaluation_method"],
+      "rationale": "Two SOURCES.md rules are not followed on the evidence and nothing catches them: medium/low → linked open question (64/379 linked), and background → 'implied' (8/8 and 14/14 'stated'). Unenforced rules teach the model that the spec is optional. The timeline candidate-date rule has no place to go in the schema.",
+      "concrete_changes": "pipeline/gates.py plus extraction.check_extract: add find_unlinked_uncertain_items. Every item with confidence medium or low must be referenced as '<field>[<i>]' in some open_questions[].linked_items, which is a tightening only. skills/SOURCES.md §4: state the linked_items format explicitly. §5: either keep 'background → implied' and gate it, or reword it to 'qualifier reflects the statement; background items never create deliverables, budget or deadlines' and reconcile it with the 'low = implied only' definition. §6: specify that the candidate date is a separate timeline item with value 'candidate date <ISO> computed from source_date <date>', the same location/anchor, qualifier conditional and confidence low. Mirror that exception in .claude/agents/verify-extract.md 'Paraphrase drift'. Re-sync the injected copies, which tests/test_agents.py enforces.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add the synthesis garble-carry rule and its gate",
+      "aspects": ["prompt_skill_design", "brief_accuracy", "bilingual_quality", "evaluation_method"],
+      "rationale": "Garble normalisation at synthesis is systematic (S3: 10/11 northlight, 2/2 voreas) and hidden by T3.3's anchor-inclusive search. A garble-flagged primary objective was dropped in 2/2 voreas rolls. The fix was queued in July and never made.",
+      "concrete_changes": "skills/SYNTHESIS.md §2: new rule. An extract item that carries a rule-G extraction_note keeps the source's token verbatim in `content`, in «» quotes, followed by '(proposed glossary match: <term>, unconfirmed)', and is never dropped for being garbled. Add §3 self-check item 8. pipeline/stages.py check_synthesis: for every extraction_note proposing a glossary match, require that the corrupted token appears in some entry's content, not only in evidence anchors. skills/TRANSLATION.md: that quoted token renders verbatim in both languages. Re-sync synthesize.md and render.md.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Correct the evaluation record to the decontaminated HEAD",
+      "aspects": ["evaluation_method", "documentation", "stakeholder_materials"],
+      "rationale": "EVAL_RECORD §3 describes quotes that are no longer in the prompts, with stale line numbers and 'W2 is removing' in the present tense. A panel reading it will conclude the current prompts are contaminated, and the record also omits the voreas fixture recalibration.",
+      "concrete_changes": "docs/EVAL_RECORD.md §3: turn the table into a 'before r1-W2 (52023c6)' record and add a line saying HEAD is clean, enforced by tests/test_prompt_hygiene.py. Note that the SOURCES §9 example keeps the graded trap's structure (a hedged spoken budget range), so X3 and T3.1 remain partly primed. Add the voreas_02 hazard-line recalibration (runs/voreas_prep_report.md finding 5) as a contamination item.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make the verifier routing policy real or remove the fiction",
+      "aspects": ["routing_usage", "documentation"],
+      "rationale": "risk_classes sends 66/66 extracts to sonnet because `figures` matches any digit, dates included. The documented 'else haiku' branch is dead, and the config claims a routing policy it does not have.",
+      "concrete_changes": "Option A: in pipeline/extraction.py risk_classes, restrict `figures` to amount signals (currency marks, number words or numerals in budget/deliverable quantities, excluding ISO dates, timestamps and timeline values). Add a test with a date-only extract, then re-run `cost_report.py --risk-replay`. Option B: set base_model to 'sonnet' in config/model_routing.json, change the verify-extract.md frontmatter to sonnet, and update CLAUDE.md model routing, COST_MODEL §3 and EVAL_RECORD §6 to 'verifier always sonnet'.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Run the authorised re-baseline with verifier effectiveness recorded",
+      "aspects": ["evaluation_method", "routing_usage", "brief_accuracy", "stakeholder_materials"],
+      "rationale": "No graded or complete-brief number exists for the routing in use, and the verifier (the cost driver of the routing change) has no measured benefit. Running this after the repair-order fix avoids baking a prompt defect into the new usage figures.",
+      "concrete_changes": "Add eval/verifier_report.py, which reads verification/*.findings.json, *.adjudication.json and manifest verification blocks and reports per roll: issues, forwarded, dropped by reason, applied, rejected, and which harness/supplementary checks changed between the pre- and post-repair extracts. Execute the EVAL_RECORD §7 protocol (3 rolls × northlight_01, voreas_02) and write runs/rebaseline_r2_report.md with pass_rates, supplementary, cost_report (clean and all-runs) and verifier_report. Update the COST_MODEL and README usage rows with current-era figures.",
+      "effort": "L",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Sealed third keyed fixture plus a recorded injection run",
+      "aspects": ["evaluation_method", "security_injection", "prompt_skill_design"],
+      "rationale": "No held-out fixture remains, and rule U has never been exercised against a model. One blind fixture and one adversarial run turn the prompts' untrusted-content and trap rules into measured claims.",
+      "concrete_changes": "Have a separate agent, with no view of skills/ or .claude/agents/, author fixtures/<client>_03 with a new answer_key.json: a different industry, a garble with no clean escape clause, and an unmarked spoken-number trap. Commit the SHA-256 of the key in docs/EVAL_RECORD.md before any run, and exclude the fixture from tests/test_prompt_hygiene.py seeds only by n-gram, never by editing prompts to it. Run the pipeline once on tests/injection_project and record extraction_notes 'embedded instruction not followed', the integrity-check result and brief contents in runs/injection-01/ with a short report.",
+      "effort": "L",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "The prompt layer is unusually disciplined for an MVP. Rules are written against observed failure modes, skills are injected byte-exact, every agent carries rule U, tools are Read/Write only with CLI deny rules, and most rules are enforced by deterministic runner gates. Routing and usage accounting are honest: tokens first, era-labelled, reproducible. The evaluation record openly states what 17/17 does not show. Three things keep it from strong. (1) A structural prompt bug: repair orders are sent to fresh sessions without the inputs they need, which the repair logs and the 462k-token repair leg reflect. (2) Several skill rules (question linkage, background qualifier, timeline candidate date, garble carry through synthesis) are unfollowed or unspecifiable and ungated. (3) There is no graded or complete-brief measurement under the routing in use, no held-out fixture, and the evaluation record's contamination section contradicts the decontaminated HEAD. Fixing the repair orders is the cheapest, highest-leverage move and should come before the re-baseline."
+}

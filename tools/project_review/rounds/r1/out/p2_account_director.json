@@ -1,0 +1,90 @@
+{
+  "scores": [
+    {
+      "aspect": "value_framing",
+      "score": 7,
+      "evidence": "Strong: README.md 'What is measured and what is assumed' table (lines ~40-53) labels each claim Measured / Assumption / Target / Arithmetic on assumptions / Not yet measured, reconciles PRD §10's '~€5-6k/yr' down to €3 990-4 200 (same figure in docs/COST_MODEL.md l.119-127, WALKTHROUGH.html l.1317/1330, docs/pilot/SCORECARD.md §3 'Capacity returned'), and says plainly that whole-brief usage under the current routing is unmeasured. PRD §1-3 give a clear problem (hours plus author-dependent quality), users (account leads at a ~40-person Athens agency) and non-goals. docs/OPERATING_DECISIONS.md records the owner's creative-delivery and data-declaration decisions that supersede PRD §3, and README 'Where the project stands' repeats them. SCORECARD.md §3 'Value hypothesis for the Tier 5-7 agency layer' honestly marks every agency-layer benefit 'Assumed'. Weaknesses I verified: the headline promise ('client-ready brief', README l.3; START_HERE.html masthead; START_HERE card 'send-ready client questions with a copy button') conflicts with runs/tier3/KNOWN_DEFECTS.md for the same signed-off example. Under a SIGNED OFF banner the budget and audiences fields print 'No confirmed entries' (B2), resolved questions are still asked (B1), a clause is cited to the wrong source (B5), internal pipeline metadata sits in the client document (R2), and nine Greek grammar errors appear, several inside the questions meant to be sent verbatim (R3). The tests confirm 32 strict-xfail northlight defects plus 16 voreas ones (I ran pytest: 948 passed, 7 skipped, 48 xfailed). The README mentions them only in the last row of the table, as 'expected failures'. docs/TIERS.md contradicts itself: the status box says 'No Tier 8 is authorised; ... the review loop is not a tier', while the same file has a 'Tier 8 — ... Authorized' section, and HEAD is commit 'tier-8: ...'. The user base drifts too: runs/tier_7_report.md says 'a 50-person agency', the PRD says ~40.",
+      "defects": [
+        "Headline overclaim: 'client-ready brief' (README.md l.3, START_HERE.html masthead) and 'send-ready client questions' (START_HERE.html brief-review card) are contradicted by runs/tier3/KNOWN_DEFECTS.md B1, B2, B5, R2 and R3 for the very example they link to. The value claim does not separate 'recall of seeded traps (measured 17/17)' from 'readiness of the output to send (measured: not ready without human edits)'.",
+        "The PRD's primary value ('raise the floor', PRD §1-2, §10 'the prize is the variance floor') has only negative measured evidence: voreas_02 CE1-CE4 and the northlight content defects. No front-door row in the README states this as a measured quality result. It appears only as 'strict-xfail regression tests'.",
+        "docs/TIERS.md status box ('No Tier 8 is authorised') contradicts its own Tier 8 section and the tier-8 commit.",
+        "The target user is inconsistent: runs/tier_7_report.md 'for a 50-person agency' against PRD's '~40-person'.",
+        "The value hypothesis claims a 70-minute saving while Tiers 5-7 add review steps (triage, exclusions, checklist, deliverable matrix, attestation). The added minutes cannot be isolated in the scorecard (they sit inside review_min, SCORECARD.md §1), so the pilot cannot tell whether the agency layer costs more than it saves."
+      ],
+      "to_reach_9": "Re-word the front doors to 'review-ready draft' and add a measured 'output readiness' row that cites KNOWN_DEFECTS (empty signed-off fields, Greek errors in questions, voreas CE1-CE4). Fix the TIERS.md Tier-8 contradiction and the 40/50-person drift. Add a reported-only agency-steps minutes column so the Tier 5-7 value hypothesis can be tested separately from the core 70-minute claim."
+    },
+    {
+      "aspect": "pilot_readiness",
+      "score": 7,
+      "evidence": "Unusually complete for an MVP. docs/pilot/PILOT_RUNBOOK.md is a one-page card that maps every runner exit code to an action (0/2/4/5/6), with a 'Never' list. docs/pilot/ROLES.md has a RACI with exactly one A per row, separation of duties and scorecard columns by role. docs/pilot/GO_LIVE_DECISIONS.md closes six owner decisions (R-1..R-6) and lists 26 open ones (D-01..D-26), each with an owner, a default, a deadline and a status, plus technical preconditions T-01..T-06. docs/pilot/INCIDENT_RECOVERY.md covers six incident classes with concrete commands (withdraw, verify, verify-log, retention purge), a 72-hour Art. 33 note and a resume procedure. docs/pilot/SCORECARD.md gives CSV-column definitions, pass rules per phase, a stop rule and an immediate-stop rule, and eval/pilot_scorecard.py evaluates them. docs/pilot/OPERATING_TERMS.md frames the account decision (options A/B/C) with a before-week-1 checklist. The deterministic lifecycle rehearsal (runs/rehearsal-lifecycle/TRANSCRIPT.md, 37 steps, exit codes shown) proves the path runs. T-01, the timestamp blocker, is fixed. Weaknesses I verified, as the person who would use it daily: (1) The headline quality metric cannot be collected under the prescribed workflow. SCORECARD.md §2 has the lead edit markdown copies under final/ and forbids measuring a regenerated render, yet the actual workflow (BRIEF_CHAMPION_RUNBOOK.md §4, resolve/apply then 'runner --stage render') regenerates the renders, and `agency approve` checks and binds the run-directory renders (pipeline/agency.py l.191, l.336). The final/ copies the survival figure is computed from are therefore not the approved document, and the lead would edit twice. SCORECARD's review_min definition still says 'writing signoff.status = signed_off' and 'resolving conflicts in brief.json', which is pre-Tier-5 wording. (2) Nothing says who physically runs the human-decision commands. ROLES.md makes account leads, the bilingual reviewer and the creative lead 'R' for CLI commands (agency answer/resolve/apply/approve, attest, delivery approve), `agency apply` needs a hand-edited schema-valid JSON, and OPERATING_TERMS.md §c/§f seats only the operator and two champions. PILOT_RUNBOOK step 1 assigns the intake command to the 'Account lead', while ROLES gives R to operator/champion. (3) The <30-minute review gate has never been timed on the path it now includes. The rehearsal needs about 25 commands with 20-character hex IDs to approve one brief, and its 10 triage entries carry identical boilerplate. T-06 times champions, not the lead's review. (4) The rehearsal's approval gate accepts a brief whose resolved budget/audiences never reach their fields (KNOWN_DEFECTS B1/B2). The runbook asks the lead to check this by eye, but no audit item flags it.",
+      "defects": [
+        "The draft-survival measurement (SCORECARD.md §2; BRIEF_CHAMPION_RUNBOOK.md §7) does not fit the Tier 5-7 workflow. Renders are regenerated after resolve/apply, and approval binds the run's renders, not the lead's final/ copies, so the survival number would describe a document that was never approved or sent.",
+        "No decision-capture procedure: nothing says who types `agency approve/attest/resolve` and `delivery approve` for non-technical decision owners, on which machine or seat. This contradicts OPERATING_TERMS seat planning (operator plus two champions only). `agency apply` requires editing JSON by hand.",
+        "PILOT_RUNBOOK.md step 1 (Account lead runs intake) contradicts ROLES.md (operator/champion R for intake).",
+        "The lead's review path (~25 CLI steps per brief in runs/rehearsal-lifecycle) has never been timed against the review_min < 30 pass rule. No go-live precondition requires a timed lead dry run (T-06 covers champions only).",
+        "SCORECARD.md review_min and survival wording still describe the pre-Tier-5 process ('writing signoff.status', 'resolving conflicts in brief.json').",
+        "No audit blocker or warning when a resolved conflict leaves its field empty or its duplicate open question undispositioned (KNOWN_DEFECTS B1/B2 pass through the rehearsal's approval)."
+      ],
+      "to_reach_9": "Redefine survival so it is measured on what `agency approve` binds (for example, the archived first canonical/render against the approved canonical/render, with all lead edits routed through apply), and update SCORECARD/runbook wording to the agency commands. Add a decision-capture section: who types each human command, with the decision owner present, on which seat, and how the lead's words become --text/--summary. Resolve the intake-role contradiction. Add a go-live precondition for a timed synthetic lead review of the minimum path. Surface resolved-but-empty fields in `agency audit`."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Make draft survival measurable on the approved document",
+      "aspects": ["pilot_readiness", "evaluation_method", "documentation"],
+      "rationale": "Survival is the PRD's headline quality metric (>70%). As written, the lead edits orphan markdown copies in final/, while approval binds regenerated run renders, so the metric either doubles the lead's editing or measures a document nobody approved.",
+      "concrete_changes": "docs/pilot/SCORECARD.md §2 and §1: define survival as edit distance between the first-draft renders and brief.json archived at `agency init` (copied to <pilot>/<brief_id>/draft/) and the renders/brief.json bound by `agency approve`. Also report field-level canonical survival (brief.json entry values, draft against approved) so model re-render noise is separable. Replace 'writing signoff.status = signed_off' and 'resolving conflicts in brief.json' with `agency approve` / `agency resolve`. BRIEF_CHAMPION_RUNBOOK.md §7: same wording. eval/pilot_scorecard.py: accept `--draft-run-archive` and the approved run path, plus a test on runs/rehearsal-lifecycle records.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Write the decision-capture procedure for non-technical decision owners",
+      "aspects": ["pilot_readiness", "human_governance", "documentation"],
+      "rationale": "Account leads, the bilingual reviewer and the creative lead own CLI-recorded decisions, but only the operator and champions get seats, and nothing says who types the command for them. On day 1 this is the first thing an account director would ask.",
+      "concrete_changes": "docs/pilot/ROLES.md: new section 'Recording a human decision'. The champion types at the decision owner's side on the champion's seat, the owner reads back actor, --text or --summary before Enter, and the owner never delegates the judgment; or every decision role gets a seat (feed into D-05). Add a per-role command card with copy-paste templates and how to get IDs from `agency queue`. Say that `agency apply` JSON edits are made by the champion from the lead's marked-up render. Fix PILOT_RUNBOOK.md step 1 'Who' to 'Operator or champion, with the account lead' to match ROLES.md. Align the seat rows in OPERATING_TERMS.md §c/§f.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Stop calling the output 'client-ready'; add a measured output-readiness row",
+      "aspects": ["value_framing", "stakeholder_materials", "documentation"],
+      "rationale": "The front doors promise a client-ready brief and send-ready questions, while the committed signed-off example has empty budget/audiences fields, internal metadata and Greek grammar errors in the questions to be sent. An account director would find this in the first read and discount everything else.",
+      "concrete_changes": "README.md l.3 and the START_HERE.html masthead: 'to a review-ready draft brief'. START_HERE.html brief-review card: 'client questions drafted for review, with a copy button'. README measured table: new row 'Output readiness of the graded signed-off brief: not sendable without edits. 32 pinned content defects incl. empty budget/audiences under SIGNED OFF, 9 Greek grammar errors (runs/tier3/KNOWN_DEFECTS.md); voreas_02 CE1-CE4 (runs/voreas_prep_report.md)'. Mirror this on WALKTHROUGH sheet 10 if the owner approves.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a timed synthetic lead-review dry run as a go-live precondition",
+      "aspects": ["pilot_readiness", "value_framing"],
+      "rationale": "The whole value claim rests on review_min < 30, and the Tier 5-7 path has about 25 commands per brief. Nobody has timed it. Finding out in week 3 wastes the retro set.",
+      "concrete_changes": "docs/pilot/GO_LIVE_DECISIONS.md: add T-07 'Each account lead completes the minimum pilot path on a synthetic copy (runs/rehearsal-lifecycle/regenerate.py base, plus one voreas run) with a stopwatch; record review_min as EXAMPLE rows'. The sponsor reviews before week 1 whether the target or the path must change. Add a matching line to OPERATING_TERMS.md §f and a SCORECARD.md §5 week-1 bullet.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Flag resolved conflicts whose field stays empty in agency audit",
+      "aspects": ["pilot_readiness", "brief_accuracy", "human_governance"],
+      "rationale": "KNOWN_DEFECTS B1/B2, a resolved budget that never reaches the budget field and a question left asking the client, passed the rehearsal's approval. A tired lead at 7pm will miss it, which is exactly the failure the product claims to prevent.",
+      "concrete_changes": "pipeline/quality.py or pipeline/agency.py audit: add an item that lists every conflict with status resolved_by_human whose field has no entry, and every open question on the same field without a triage disposition naming the conflict. Report it as a warning first, blocking only if the owner approves. Tests: tests/test_agency*.py positive and negative cases on a runs/tier3 copy. Document it in BRIEF_CHAMPION_RUNBOOK.md §4.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Make the Tier 5-7 value hypothesis testable with its own minutes",
+      "aspects": ["value_framing", "pilot_readiness", "evaluation_method"],
+      "rationale": "The agency layer's minutes sit inside review_min, so the pilot cannot say whether the layer earns its place (SCORECARD.md §3 value-hypothesis table).",
+      "concrete_changes": "docs/pilot/scorecard_template.csv, SCORECARD.md §1/§6 and eval/pilot_scorecard.py: add a reported-only column `agency_steps_min` (the lead's minutes on audit, triage, exclusions, checklist and deliverable rows, a subset of review_min, never added twice). Make the value-hypothesis table cite it. Add a test that a subset greater than review_min is rejected.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Fix the TIERS.md Tier-8 contradiction and the agency-size drift",
+      "aspects": ["value_framing", "documentation"],
+      "rationale": "The governance plan says both 'no Tier 8 is authorised' and 'Tier 8 authorized'. A sponsor reading scope documents loses trust in the rest.",
+      "concrete_changes": "docs/TIERS.md status box: replace 'No Tier 8 is authorised; ... is not a tier' with 'Tier 8 = round 1 of the owner's review loop (authorised 2026-09-22, see below); no Tier 9 is authorised'. Record in docs/README.md, beside the historical tier reports (not editing them), that runs/tier_7_report.md's '50-person agency' should read '~40-person' per PRD.",
+      "effort": "S",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "As an account director, I find the pilot pack thorough in breadth: an exit-code runbook, a RACI with separation of duties, 26 open go-live decisions each with an owner and a default, incident procedures with real commands, and a scorecard whose pass rules are enforced by code. The value framing also separates measured from assumed better than most business cases I see. Neither aspect reaches 8, for concrete reasons a daily user would hit at once. The front doors promise a 'client-ready' brief and 'send-ready' questions, but the committed signed-off example has empty budget and audience fields and Greek errors in the questions to be sent. The headline survival metric cannot be collected on the document that is actually approved. Nobody has said who types the decision commands for non-technical leads, reviewers and creative leads. And the <30-minute review has never been timed on the roughly 25-step path it now includes. Most fixes are small wording and procedure changes. The survival redefinition and the audit warning need the owner."
+}

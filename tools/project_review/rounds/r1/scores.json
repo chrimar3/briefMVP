@@ -1,0 +1,202 @@
+{
+ "round": 1,
+ "head": "1aaa560029944a35502d81837444d966e3bcef0b",
+ "dirty": "?? .codex/\n?? docs/DECK.md\n?? tools/walkthrough/client_ready/\n",
+ "rubric_sha256": "2c18f85c6c8555ddf4a33545c5a238d78801dd0eb3f4c67590373638a36ff31b",
+ "engine": "claude",
+ "model": "claude-opus-5-5",
+ "judges": [
+  "a1_eval_scientist",
+  "a2_prompt_engineer",
+  "a3_llmops_engineer",
+  "c1_tech_writer",
+  "c2_exec_comms",
+  "c3_hiring_lead",
+  "e1_staff_python",
+  "e2_test_lead",
+  "e3_dx_engineer",
+  "o1_bilingual_strategist",
+  "o2_greek_editor",
+  "o3_creative_director",
+  "p1_agency_md",
+  "p2_account_director",
+  "p3_transformation_consultant",
+  "t1_appsec",
+  "t2_dpo",
+  "t3_ai_governance"
+ ],
+ "problems": [],
+ "table": {
+  "value_framing": {
+   "panel": "product",
+   "by_judge": {
+    "p1_agency_md": 7,
+    "p2_account_director": 7,
+    "p3_transformation_consultant": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "pilot_readiness": {
+   "panel": "product",
+   "by_judge": {
+    "p1_agency_md": 7,
+    "p2_account_director": 7,
+    "p3_transformation_consultant": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "prompt_skill_design": {
+   "panel": "ai_system",
+   "by_judge": {
+    "a1_eval_scientist": 7,
+    "a2_prompt_engineer": 6,
+    "a3_llmops_engineer": 7
+   },
+   "mean": 6.67,
+   "min": 6
+  },
+  "routing_usage": {
+   "panel": "ai_system",
+   "by_judge": {
+    "a1_eval_scientist": 6,
+    "a2_prompt_engineer": 7,
+    "a3_llmops_engineer": 6
+   },
+   "mean": 6.33,
+   "min": 6
+  },
+  "evaluation_method": {
+   "panel": "ai_system",
+   "by_judge": {
+    "a1_eval_scientist": 6,
+    "a2_prompt_engineer": 6,
+    "a3_llmops_engineer": 6
+   },
+   "mean": 6,
+   "min": 6
+  },
+  "brief_accuracy": {
+   "panel": "output",
+   "by_judge": {
+    "o1_bilingual_strategist": 6,
+    "o2_greek_editor": 6,
+    "o3_creative_director": 6
+   },
+   "mean": 6,
+   "min": 6
+  },
+  "bilingual_quality": {
+   "panel": "output",
+   "by_judge": {
+    "o1_bilingual_strategist": 5,
+    "o2_greek_editor": 5,
+    "o3_creative_director": 6
+   },
+   "mean": 5.33,
+   "min": 5
+  },
+  "creative_quality": {
+   "panel": "output",
+   "by_judge": {
+    "o1_bilingual_strategist": 6,
+    "o2_greek_editor": 5,
+    "o3_creative_director": 5
+   },
+   "mean": 5.33,
+   "min": 5
+  },
+  "architecture": {
+   "panel": "engineering",
+   "by_judge": {
+    "e1_staff_python": 7,
+    "e2_test_lead": 7,
+    "e3_dx_engineer": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "code_quality": {
+   "panel": "engineering",
+   "by_judge": {
+    "e1_staff_python": 6,
+    "e2_test_lead": 6,
+    "e3_dx_engineer": 7
+   },
+   "mean": 6.33,
+   "min": 6
+  },
+  "testing_ci": {
+   "panel": "engineering",
+   "by_judge": {
+    "e1_staff_python": 7,
+    "e2_test_lead": 7,
+    "e3_dx_engineer": 8
+   },
+   "mean": 7.33,
+   "min": 7
+  },
+  "reproducibility_dx": {
+   "panel": "engineering",
+   "by_judge": {
+    "e1_staff_python": 7,
+    "e2_test_lead": 7,
+    "e3_dx_engineer": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "human_governance": {
+   "panel": "trust",
+   "by_judge": {
+    "t1_appsec": 7,
+    "t2_dpo": 7,
+    "t3_ai_governance": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "security_injection": {
+   "panel": "trust",
+   "by_judge": {
+    "t1_appsec": 7,
+    "t2_dpo": 7,
+    "t3_ai_governance": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "data_protection": {
+   "panel": "trust",
+   "by_judge": {
+    "t1_appsec": 7,
+    "t2_dpo": 7,
+    "t3_ai_governance": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "documentation": {
+   "panel": "communication",
+   "by_judge": {
+    "c1_tech_writer": 7,
+    "c2_exec_comms": 7,
+    "c3_hiring_lead": 7
+   },
+   "mean": 7,
+   "min": 7
+  },
+  "stakeholder_materials": {
+   "panel": "communication",
+   "by_judge": {
+    "c1_tech_writer": 7,
+    "c2_exec_comms": 7,
+    "c3_hiring_lead": 7
+   },
+   "mean": 7,
+   "min": 7
+  }
+ },
+ "target_met": false
+}

@@ -1,0 +1,101 @@
+{
+  "scores": [
+    {
+      "aspect": "value_framing",
+      "score": 7,
+      "evidence": "Strong core. README.md 41-52 has a measured-vs-assumed table: every figure carries a status (Measured / Not yet measured / Assumption / Target / Arithmetic on assumptions) and a source. Where the PRD's arithmetic breaks, it says so: PRD §10's ~EUR 5-6k/yr is reconciled to EUR 3,990-4,200 from A1 x A2 x A4, in docs/COST_MODEL.md §4 and again in docs/pilot/SCORECARD.md §3 and WALKTHROUGH sheet 10. The problem, users (account leads; then creative, traffic and bilingual reviewers), the two-stage split and the non-goals are clear in PRD §1-3. The one non-goal that moved (shadow-only creative) has an explicit supersession trail across docs/OPERATING_DECISIONS.md 2026-09-20/22, README 75-80, docs/TIERS.md 5-10 and SCORECARD §3. COST_MODEL has an era banner and marks every figure committed or local store. The subscription-vs-API tension with PRD §8/§9 R1 is surfaced as an open decision (OPERATING_TERMS §b, GO_LIVE D-23), not glossed over. SCORECARD §3 has a value-hypothesis table that labels every Tier 5-7 benefit as Assumed, with its cost in minutes. I checked the claims against code: the pytest run gives exactly 948 passed, 7 skipped, 48 xfailed, matching README 52; eval/pilot_scorecard.py implements the pass rules as described. The weaknesses are in consistency and in what the value case leaves out; they are listed under defects.",
+      "defects": [
+        "The value case has no cost side. It is a gross benefit (210 h, EUR 4.0-4.2k/yr) with 'running and support costs, which are not yet estimated' (WALKTHROUGH sheet 10). Nothing gives even a structured estimate of operator time, champion training, bilingual-reviewer minutes or subscription seats. The added Tier 5-7 review steps (attest, triage, checklist) plausibly eat part of the 70-minute saving, and nobody has sized that.",
+        "The declared 'prize' has no pilot measure that could falsify it. PRD §10 and COST_MODEL §4 call the variance floor and reduced downstream rework the prize. In SCORECARD §2 the only 'brief consistency' proxy is schema_valid, which is 100% by construction for pipeline output. Downstream rework is Q1 and 'not pilot-scored' (D-19). The retro side-by-side against the human-written brief is only 'summarised in notes' (SCORECARD §5, line 74), so DR-10's 'exhaustive cross-checking + honest gaps beats the tired human' claim is never counted.",
+        "docs/TIERS.md contradicts itself. Line 7: 'No Tier 8 is authorised; the ... review loop ... is not a tier'. Line 117 then opens '## Tier 8 — Round 1 ...'. README 81 and START_HERE.html 225 ('Tiers 5–8') treat Tier 8 as real.",
+        "The target organisation changes size: 'a 50-person agency' in runs/tier_7_report.md line 10 against the PRD case of ~40 people (PRD header, README 32).",
+        "WALKTHROUGH.html line 1317 cites 'docs/COST_MODEL.md §3' for the 210 h / EUR 4.0-4.2k derivation. That derivation is in COST_MODEL §4 (§3 is the current-routing measurement), so the canonical decision paper sends readers to the wrong section.",
+        "'Quality varies by author' (PRD §1) carries the whole variance argument, yet it is not in the named-assumptions table (PRD §4, A1-A5). The README table never flags it as an assumption either."
+      ],
+      "to_reach_9": "Add a cost side as a structured, owner-fillable estimate with ranges: people time from the pilot pack roles, plus tokens once T-02 is measured. Give the prize a countable retro side-by-side measure: conflicts, gaps and facts found by the draft and missing from the human brief, and the reverse. Add 'quality varies by author' as a named assumption with a week-1 validation method. Fix the Tier 8 contradiction in TIERS.md, the 40 vs 50-person drift, and the stale §3 citation in WALKTHROUGH."
+    },
+    {
+      "aspect": "pilot_readiness",
+      "score": 7,
+      "evidence": "The pilot pack is far above what most controlled pilots start with. docs/pilot/PILOT_RUNBOOK.md: a one-page card with commands, time budgets mapped to scorecard columns, and an exit-code routing table. ROLES.md: RACI with exactly one A per activity, backups, separation of duties and the columns each role records. GO_LIVE_DECISIONS.md: 6 closed owner decisions (R-1..R-6) and 26 open ones (D-01..D-26), each with an owner, a default-until-decided and a deadline, plus technical preconditions T-01..T-06. INCIDENT_RECOVERY.md: triggers, owners, commands and time bounds for client-facing errors, unapproved data (with the GDPR Art. 33/34 step), usage-window or outage resume, deadline fallback, and package tampering. SCORECARD.md: operational definitions, a data-recording protocol for survival (read-only draft copies), stop and immediate-stop rules, and a week-by-week protocol. eval/pilot_scorecard.py executes those rules per phase with 'insufficient_data is never a pass', manual-fallback exclusion and a >=6 retro-set check (lines 187-245); I ran it on the template and it reports 0 briefs rather than inventing a result. DATA_PROTECTION.md has DPIA inputs and retention defaults. The whole lifecycle is rehearsed with zero model calls (runs/rehearsal-lifecycle/TRANSCRIPT.md, T-05), and the rehearsal found and fixed a real go-live blocker (T-01). I verified the suite green: 948/7/48. What stops an agency starting on approval day is listed under defects.",
+      "defects": [
+        "The go-live sheet omits the decision paper's no-start condition. WALKTHROUGH sheet 10 decision 3 requires a cost estimate (setup, training, subscription, maintenance, support) and a sponsor-recorded spending ceiling before week 1: 'an unset ceiling means no start'. GO_LIVE_DECISIONS.md claims to hold 'every OWNER TO CONFIRM item ... in one place' but has no cost-estimate or ceiling item. D-05 covers the billing arrangement only.",
+        "Capacity cannot be sized on approval day. Whole-brief usage under the current routing is unmeasured (T-02 open; COST_MODEL §3 measures one leg at 2.0x the graded tokens), so D-05 (usage window, seats) and D-17 (refusal target) have nothing to size from. The pilot has no evidenced answer to 'how many briefs a month fit the window'.",
+        "A technical precondition is known to be unmet. T-03 / SCORECARD preconditions require the voreas regression tests to pass without xfail on regenerated artifacts; today 16 strict-xfail content-integrity defects (CE1-CE4 classes) stand, and no plan or owner date for closing them before week 1 exists beyond 'Open'.",
+        "Nothing covers enabling the primary users. Account leads are asked to run long Python CLI commands: PILOT_RUNBOOK step 1 intake with approval flags inside a <=20-min assembly budget, and in review agency answer/resolve/approve (ROLES.md). There is no account-lead onboarding card or training step (T-06 covers champions only), and no rule on who keys a human-decision command when a non-technical lead owns it (champion at the keyboard with the lead present, --actor = lead?). A specialist would flag this as the main adoption risk and a threat to the <30-min review_min target.",
+        "No threats-to-validity treatment. baseline_min is the lead's recalled time (SCORECARD §6), and A1 is validated by 'ask account leads' (PRD §4), which invites recall bias. Retro leads review drafts of projects they already know and wrote, which biases review_min downward. The week-3 gate rests on medians of 6 briefs from 2 people. None of this is acknowledged, and the report has no rule for weighting retro against live timings.",
+        "There is no pilot report template and no end-of-pilot decision rubric (scale to the month-2 'default start' embed of PRD §8 / extend / stop). The sponsor 'signs the pilot report' (ROLES.md, SCORECARD §5), but its structure, its sections mapped to pass_rules output and the incident log, and the decision options are undefined.",
+        "The creative timing is oversold. README 77, START_HERE and R-5 say creative delivery is in the pilot 'from week 1', but the SCORECARD §5 protocol makes week 1 baseline work and weeks 2-3 retro with 'nothing is released'. The first possible release is week 4, which no document states plainly.",
+        "Minor: the scorecard template's EXAMPLE row carries 'n/a' in creative_rework_requests_q1 and client_revision_rounds_q1, although SCORECARD §6 says 'no cell carries any other text' than the listed values and not_recorded. eval/pilot_scorecard.py line 18 silently treats 'n/a' as missing."
+      ],
+      "to_reach_9": "Add D-27, a cost estimate and spending ceiling with a no-start default, plus a fillable pilot budget worksheet. Run the authorised T-02 re-baseline and put briefs-per-window sizing into OPERATING_TERMS §c and D-05. Give T-03 an owner, a date and a fallback. Add an account-lead onboarding card and a who-keys-the-command rule, with a lead rehearsal precondition (T-07). Add a threats-to-validity section with mitigations (cross-lead retro review or separate reporting, one timed fresh manual brief per lead in week 1 as a non-recall baseline check). Add a pilot report template with a scale/extend/stop rubric. State plainly that creative release is first possible in week 4."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Put the decision paper's cost estimate and spending ceiling into the go-live sheet, with a budget worksheet",
+      "aspects": ["pilot_readiness", "value_framing", "stakeholder_materials", "documentation"],
+      "rationale": "WALKTHROUGH sheet 10 makes an unset spending ceiling a no-start condition, but GO_LIVE_DECISIONS.md, which claims to be the single list, omits it. The value case is gross-only, and a consultant would ask for the cost side first.",
+      "concrete_changes": "docs/pilot/GO_LIVE_DECISIONS.md: add D-27 'Pilot cost estimate (setup, training, subscription/seats, maintenance, support) and sponsor-recorded spending ceiling', owner Agency management with operator, default 'No start', needed Before week 1, status Open. Cross-reference WALKTHROUGH sheet 10 decision 3. docs/pilot/OPERATING_TERMS.md §f: add the matching line. docs/COST_MODEL.md §4: add a 'Cost side (to fill)' table. Rows: operator hours/week, champion training hours (T-06), account-lead and bilingual-reviewer pilot minutes (from SCORECARD columns), seats or window share (from T-02), maintenance (glossary/spec catalog upkeep, PRD §10). Every cell reads OWNER TO CONFIRM or unmeasured, with the formula for net value = 210 h x A4 - running cost. README 49-51: add a row 'Running cost: not yet estimated (D-27)'.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Make the declared prize countable: a structured retro side-by-side against the human-written brief",
+      "aspects": ["value_framing", "pilot_readiness", "evaluation_method"],
+      "rationale": "PRD §10 and COST_MODEL §4 say the case rests on the variance floor and downstream rework, not hours. The pilot's only consistency proxy (schema_valid) is tautological, and the side-by-side is free text in notes, so the core claim cannot be tested in weeks 2-3.",
+      "concrete_changes": "docs/pilot/SCORECARD.md §2: add 'Retro side-by-side (reported, not gated)', recorded by the lead after sign-off. New columns: `human_conflicts_missed` (conflict objects the lead accepts as real that the original brief did not handle), `human_gaps_unasked` (real open questions the original brief did not raise), `draft_facts_missing` (facts in the original brief absent from the signed-off draft), `human_facts_unsourced` (original-brief facts no source supports). Relabel schema_valid as 'structural conformance (by construction)', not a variance measure. docs/pilot/scorecard_template.csv: append the columns (EXAMPLE row not_recorded). eval/pilot_scorecard.py: report their sums and per-brief means under 'reported', with a test in tests/. In the same pass, either reject 'n/a' per §6 or replace it with not_recorded in the EXAMPLE row. No gate added or relaxed.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Add a threats-to-validity section and baseline hardening to the scorecard",
+      "aspects": ["pilot_readiness", "value_framing", "evaluation_method"],
+      "rationale": "A recall-based baseline, retro familiarity bias and medians over 6 briefs from 2 leads are the first things a sponsor's sceptic will attack. Naming the threats and mitigations up front keeps the pilot result defensible.",
+      "concrete_changes": "docs/pilot/SCORECARD.md: new §5a 'Threats to validity'. Cover: (1) recall bias in baseline_min/A1, with the mitigation that each lead times one fresh manual brief in week 1 (`baseline_timed_min`, reported beside recalled baseline_min); (2) familiarity bias on retro review, where leads review drafts of projects they wrote, with the mitigation of cross-assigning retro projects between L1 and L2 where possible and reporting retro and live review_min separately; (3) small n, stating the week-3 medians as indicative and reporting the per-brief spread; (4) novelty effect, noting that week-4 adoption is read against month-2 requests. Add `baseline_timed_min` to scorecard_template.csv and ROLES.md's account-lead columns; pilot_scorecard.py reports it only.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Account-lead enablement card and a 'who keys the command' rule",
+      "aspects": ["pilot_readiness", "human_governance"],
+      "rationale": "The primary users are asked to run Python CLIs for intake, triage, resolve and approve inside tight time budgets, but only champions have a training step. Without a rule on who types a human-decision command, attribution (--actor) and adoption are both at risk.",
+      "concrete_changes": "New docs/pilot/ACCOUNT_LEAD_CARD.md (one page): what to check in brief_review.html and agency_audit.md, the four question classes, how to resolve a conflict, what approving binds, how to record minutes. docs/pilot/ROLES.md: add a rule that a champion may key a human-decision command only with the owning person present and confirming; --actor is always the decision owner's name; the AI never keys it. Champion keying time counts in the owner's review_min. docs/pilot/GO_LIVE_DECISIONS.md: add T-07 'Each account lead completes one timed synthetic review rehearsal using the card (before week 2)', owner Operator. PILOT_RUNBOOK.md step 1: note that the champion may run intake for the lead.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Pilot report template with a scale / extend / stop rubric",
+      "aspects": ["pilot_readiness", "stakeholder_materials"],
+      "rationale": "The sponsor signs a pilot report whose structure is undefined. Defining it now fixes what evidence is gathered and makes the go/no-go decision criteria explicit before the data arrives.",
+      "concrete_changes": "New docs/pilot/PILOT_REPORT_TEMPLATE.md with sections: pass_rules output per phase (pasted from eval/pilot_scorecard.py JSON); incident log summary (INCIDENT_RECOVERY.md schema); manual fallbacks; retro side-by-side; token usage vs window (T-02); cost vs D-27 ceiling; value re-computed with validated A1/A2/A4; decision options with criteria (Scale: all end-wk-4 rules pass and 2/2 adoption, leading to the PRD §8 month-2 'default start'; Extend: insufficient_data or one near-miss; Stop: any fail on critical errors or an immediate-stop incident); sponsor signature and date. Link it from PILOT_RUNBOOK.md, ROLES.md (sponsor row) and SCORECARD §4.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Consistency pass on value and scope statements",
+      "aspects": ["value_framing", "documentation", "stakeholder_materials"],
+      "rationale": "Small contradictions across the front doors undermine a value story whose main strength is honesty about evidence.",
+      "concrete_changes": "docs/TIERS.md line 7: replace 'No Tier 8 is authorised ... is not a tier' with a status line consistent with the Tier 8 section at line 117 and with README 81 and START_HERE 225. WALKTHROUGH.html line 1317 (and any other occurrence): change the cite 'docs/COST_MODEL.md §3' to '§4'. runs/tier_7_report.md is a historical record, so leave its '50-person' line and add a one-line correction in docs/README.md's status notes ('the PRD case is ~40 people'). PRD §4 is frozen, so README's measured-vs-assumed table gets a row: 'Brief quality varies by author (the variance premise): assumption, validated by the retro side-by-side'.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Run the authorised T-02 re-baseline and size the pilot window from it",
+      "aspects": ["pilot_readiness", "value_framing", "routing_usage", "evaluation_method", "documentation"],
+      "rationale": "Without whole-brief usage under the current routing, the account options (D-02/D-05), the refusal target (D-17) and briefs-per-window capacity cannot be decided. The owner already authorised this (R-3).",
+      "concrete_changes": "Execute 3 graded rolls each on fixtures/northlight_01 and fixtures/voreas_02 under the unchanged config/model_routing.json, following docs/EVAL_RECORD.md §7. Record tokens by model (eval/cost_report.py, all-runs and clean means), wall time, repairs and refusals. Update README 47-48, COST_MODEL §3 and the era banner, and docs/pilot/OPERATING_TERMS.md §c with 'briefs per usage window at current routing'. Set T-02 to Done in GO_LIVE_DECISIONS.md and give D-05/D-17 evidence-based defaults. Record the voreas xfail status against T-03, with an owner and date for the remaining defects. Leave the harness and gates unchanged.",
+      "effort": "L",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "State the creative release calendar plainly",
+      "aspects": ["value_framing", "pilot_readiness", "stakeholder_materials"],
+      "rationale": "'Creative delivery in the pilot from week 1' reads as live releases from day one, but under the protocol week 1 is baseline, weeks 2-3 release nothing, and the first possible release is week 4.",
+      "concrete_changes": "docs/pilot/SCORECARD.md §3 and §5, docs/pilot/CREATIVE_DELIVERY.md intro, and README 77-78: add 'weeks 1-3: creative drafts reviewed and struck on retro briefs, plus one synthetic end-to-end release rehearsal by the creative lead in week 1; first client release possible in week 4 on live briefs'. If the owner wants a WALKTHROUGH/START_HERE wording change, make it through the walkthrough gate. Optionally add T-08 'creative lead completes a synthetic release rehearsal (week 1)' to GO_LIVE_DECISIONS.md.",
+      "effort": "S",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "An unusually honest and well-prepared pilot case for an MVP on synthetic data. The measured/assumed separation is explicit, the PRD's inflated benefit figure is corrected in its own terms, the operating pack is executable (runbook, RACI, 26 owner decisions with defaults, incident procedures, and a scorecard whose pass rules are code), and there is a zero-model lifecycle rehearsal. It falls short of 8 because of real gaps a transformation consultant would flag. The value case is gross-only, with no cost side. The claimed prize (variance floor, less rework) has no countable pilot measure. The go-live sheet omits the decision paper's own spending-ceiling no-start condition. Capacity cannot be sized until T-02 runs. Account leads have no enablement step despite a CLI-heavy workflow. The pilot design does not address recall or familiarity bias. On top of that, several small cross-document contradictions remain (the Tier 8 status, agency size, a stale citation, creative 'from week 1')."
+}

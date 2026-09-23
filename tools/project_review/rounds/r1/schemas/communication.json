@@ -1,0 +1,119 @@
+{
+ "type": "object",
+ "properties": {
+  "scores": {
+   "type": "array",
+   "minItems": 2,
+   "maxItems": 2,
+   "items": {
+    "type": "object",
+    "properties": {
+     "aspect": {
+      "type": "string",
+      "enum": [
+       "documentation",
+       "stakeholder_materials"
+      ]
+     },
+     "score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+     },
+     "evidence": {
+      "type": "string"
+     },
+     "defects": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "to_reach_9": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "aspect",
+     "score",
+     "evidence",
+     "defects",
+     "to_reach_9"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "moves": {
+   "type": "array",
+   "maxItems": 8,
+   "items": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string"
+     },
+     "aspects": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "value_framing",
+        "pilot_readiness",
+        "prompt_skill_design",
+        "routing_usage",
+        "evaluation_method",
+        "brief_accuracy",
+        "bilingual_quality",
+        "creative_quality",
+        "architecture",
+        "code_quality",
+        "testing_ci",
+        "reproducibility_dx",
+        "human_governance",
+        "security_injection",
+        "data_protection",
+        "documentation",
+        "stakeholder_materials"
+       ]
+      }
+     },
+     "rationale": {
+      "type": "string"
+     },
+     "concrete_changes": {
+      "type": "string"
+     },
+     "effort": {
+      "type": "string",
+      "enum": [
+       "S",
+       "M",
+       "L"
+      ]
+     },
+     "needs_owner_decision": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "title",
+     "aspects",
+     "rationale",
+     "concrete_changes",
+     "effort",
+     "needs_owner_decision"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "overall": {
+   "type": "string"
+  }
+ },
+ "required": [
+  "scores",
+  "moves",
+  "overall"
+ ],
+ "additionalProperties": false
+}

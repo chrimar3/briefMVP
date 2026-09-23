@@ -1,0 +1,121 @@
+{
+  "scores": [
+    {
+      "aspect": "architecture",
+      "score": 7,
+      "evidence": "The split between model work and deterministic checks is explicit and consistent. pipeline/runner.py STEP_SEQUENCE (lines ~66-79) tags each step deterministic or model, and model steps go only through AGENT_HANDLERS. There is one invocation seam, pipeline/agents.py (invoke/build_command, least-privilege allow and deny rules, a neutral cwd). Every model stage uses the shared generate-gate-repair loop agents.run_gated (e.g. stages.classify, lines 129-159). A post-step integrity hash check in runner._execute catches writes the permission rules missed. Stage selections are data (STAGE_SELECTIONS), resume has STEP_PREREQUISITES, and the exit codes are distinct and documented (0/2/3/4/5/6). Schemas are the contract (schema/*.json; gates validate and verify citations). Client extensibility is config-driven: templates/<name>.{md,el.md,labels.json} is chosen by the client-config key brief_template (stages.resolve_brief_template, with a clear config error before any model call), and config/*.json holds readiness, channel specs, routing and campaign profiles. The import graph is acyclic and layered: the Tier 5-7 modules (agency, delivery, spec_catalog, question_exchange, operations) sit on revisions/quality/gates, and core modules never import them, so the new layer attaches without touching the Stage-1 core. Replaying the full Stage-1 run offline (tools/replay/claude) in a clean clone gave byte-identical artifacts across two runs, apart from run_id, timestamps and absolute paths.",
+      "defects": [
+        "The runner's --out is not hermetic. runner._write_manifest (pipeline/runner.py ~496-508) always calls publish._publish_locked(run_dir), which writes to the module constant publish.DEFAULT_REVIEWS_DIR (repo/reviews/). The README's offline command '--out /tmp/bb-replay' therefore still writes 6 files into the repository's reviews/ (verified in a clean clone), and tests/test_end_to_end.py:30-33 has to monkeypatch the constant to avoid this.",
+        "pipeline/stages.py is a 1,267-line / 68 KB module holding four stages' work orders, gates, template resolution and the Greek lint. check_synthesis alone is 215 lines (stages.py:378-594), and check_render_template and check_render are 117 and 113 lines.",
+        "Modules reach into each other's private helpers: delivery.py:47 and creative.py:271 import stages._money_figures, publish.py:18 imports review._load_brief_meta, runner calls publish._publish_locked, and gates._normalise is used from other modules. Shared utilities have no public home, so the boundaries are leaky.",
+        "The Tier 5-7 layer exposes 14 separate `python3 -m pipeline.X` CLIs (27 argparse parsers across pipeline/eval/demo) with no single entry point or [project.scripts] in pyproject.toml, so operators and engineers discover commands by reading the README list."
+      ],
+      "to_reach_9": "Make output locations explicit: publish only when asked (--publish, or the default out dir) and to a reviews dir derived from the run config, never a module constant. Split stages.py into per-stage modules behind a re-export shim, with check_synthesis decomposed into named rule functions. Move the shared helpers (_money_figures, _load_brief_meta, _normalise) into public utility modules. Add one `brief-builder` console entry point that dispatches to the existing subcommands."
+    },
+    {
+      "aspect": "code_quality",
+      "score": 7,
+      "evidence": "The code reads well. Docstrings explain why, not only what (agents.py module docstring, runner.CorruptArtifactError, the stages.FIDELITY_ANNOTATION_RE rationale), constants are named with #: doc comments, and the naming is consistent. Across pipeline/eval/demo there are only 4 broad `except Exception` clauses (runner.py:395, 494, 507 and one more), and each is a deliberate best-effort view that must not fail a run, with the reason printed. Error messages tell the operator what to do: the missing-CLI message names BRIEF_BUILDER_CLAUDE_BIN, the missing prerequisite names the file and the stage to run first, and the data-declaration refusal gives the exact JSON to add. 347 of 488 functions (71%) carry annotations, and only 12 functions exceed 80 lines. The repair loop is shared rather than copied (agents.run_gated), and so is the HTML theme (THEME_CSS reused by review/run_review/docview/share). Ruff F+E9 passes in CI.",
+      "defects": [
+        "Several functions are oversized: stages.check_synthesis at 215 lines, demo/run_demo.py main at 139, runner._run_locked at 134, extraction.extract_source at 119, stages.check_render_template at 117, and run_review._source_card, agency.main and agency.audit at 102-113.",
+        "Timestamps mix two idioms. runner.py:451/477/587, stages.py:356 and extraction.py:142 use naive local datetime.now(), while revisions.py:31, retention.py:96 and effort.py:176 use timezone-aware UTC. The run manifest's started_ts/finished_ts and the audit log are therefore in different time bases.",
+        "The lint floor is minimal (pyproject.toml [tool.ruff.lint] select = [\"E9\",\"F\"]), and 18 per-file-ignores entries record known debt, including shipped code (pipeline/docview.py unused import, demo/run_demo.py and eval/repair_analysis.py placeholder-less f-strings). There is no import sorting, no bugbear rules and no type checker, although type hints are used widely.",
+        "Private helpers are imported across modules (stages._money_figures from delivery/creative, review._load_brief_meta from publish).",
+        "Dead code in the tests: tests/test_agency_edit.py:190-191 guards on `revisions.run_lock.__module__ != revisions.__name__`, which can never be true, so the 'Shared lock integration is not available yet' skip is stale scaffolding."
+      ],
+      "to_reach_9": "Break the 100+ line functions into named rule and step helpers. Add one clock helper (UTC, injectable) and use it everywhere. Clear the per-file-ignores debt in non-frozen files and widen ruff to B, UP (py39), I and a SIM subset. Add mypy on the core modules (gates, agents, revisions, runner) in CI. Promote cross-module private helpers to public utilities."
+    },
+    {
+      "aspect": "testing_ci",
+      "score": 8,
+      "evidence": "The suite is meaningful and broad: 948 passed, 7 skipped, 48 xfailed in about 13 s, verified both in the repo and in a fresh clone, where scripts/check.sh also gave 17/17 on the frozen grade and 12/12 on the agency benchmark. It matches the figures stated in README/CLAUDE.md. Isolation is deliberate. An autouse fixture poisons agents.CLAUDE_BIN so that no test can call a model (tests/conftest.py:17-28), and a session guard fails the run if any test leaves a lock file in committed evidence (conftest.py:31-51). The end-to-end tests replay a full Stage-1 run through the fake CLI against a private reviews shelf (tests/test_end_to_end.py), including a repair round then a stop. Entry points are tested both as scripts and as modules (tests/test_entry_points.py), and the read-only grader is checked to leave evidence byte-identical. Xfail discipline is exemplary: every known output defect is xfail(strict=True, raises=AssertionError) with a defect ID (B1-B7, R1-R4, E1-E2, C1-C7) tied to docs (tests/test_regression_northlight.py:11-79, test_regression_voreas.py), so a fixed defect turns the suite red. Every pipeline module except diagnostics is imported by at least one test. CI (.github/workflows/quality.yml) runs on Python 3.9 and 3.12, installs requirements.lock plus a pinned ruff==0.6.9, has read-only permissions and a timeout, and runs exactly the command humans run (scripts/check.sh). A spot check of clock-dependent code found injectable `today` parameters and far-past or far-future dates in the tests, with no near-term time bombs.",
+      "defects": [
+        "There is no coverage measurement anywhere (not in check.sh, CI or the lock), so claims about gate coverage cannot be checked. pipeline/diagnostics.py has no direct test.",
+        "Two pieces of skip hygiene: all 7 skips come from parametrize-then-skip in tests/test_agents.py:87 and :106 (the parameter list should be filtered instead), and the stale skip guard at tests/test_agency_edit.py:190 can never fire.",
+        "CI supply chain: actions are pinned by tag, not SHA, and requirements.lock has no hashes. Both are acknowledged in comments but not done.",
+        "CI runs only on ubuntu, although the documented development platform and the fcntl-based locks are POSIX/macOS-focused. No test asserts that the README's offline replay command leaves the repository untouched, which is how the reviews/ side effect went unnoticed."
+      ],
+      "to_reach_9": "Add pytest-cov to the lock, report coverage in check.sh and set a floor at the measured value. Filter the test_agents params instead of skipping and delete the dead guard. Add a hermeticity test: run the runner with --out tmp and assert that the git tree and reviews/ are unchanged. Add a determinism test: two replays with fixed run ids give identical artifacts apart from ts/run_id. Pin the actions by SHA and regenerate the lock with hashes. Add a macos-latest leg."
+    },
+    {
+      "aspect": "reproducibility_dx",
+      "score": 7,
+      "evidence": "A clean clone of HEAD 1aaa560 runs `bash scripts/check.sh` green in about 13 s with no network. The full Stage-1 pipeline replays offline in under 1 s (`BRIEF_BUILDER_CLAUDE_BIN=$PWD/tools/replay/claude python3 pipeline/runner.py --project fixtures/northlight_01 --out ...`, exit 0). Two replays are deterministic apart from run_id, timestamps and absolute paths. Dependencies are small and pinned (requirements.lock with exact versions and environment markers, ranges in requirements.txt and pyproject). Exit codes are distinct, and the errors I triggered were actionable: a missing CLI gives \"'...' not found on PATH ... set BRIEF_BUILDER_CLAUDE_BIN\" (exit 4), and a missing data declaration gives the exact JSON to add (exit 6). AGENTS.md and README 'Run it' give a short onboarding path, and runs/tier3 lets a reader inspect the evidence without a CLI.",
+      "defects": [
+        "The documented offline command is not side-effect free. Despite --out, it writes 6 files into the repository's reviews/ (gitignored, so git status stays clean, but the repository still changes). A newcomer following README 'Run it' changes the repository.",
+        "The install path is split. README tells newcomers to `pip install -r requirements.txt` (ranges), while CI tests requirements.lock. ruff is in neither file, so the lint step of 'the one check' is silently skipped in a fresh environment ('ruff not installed: lint skipped here'), and local and CI results can differ.",
+        "Runner output is not flushed. There is no flush, line buffering or -u in pipeline/runner.py or run_full.sh. Under run_full.sh (nohup ... >> runs/live/run.log) stdout is block-buffered, so the 'streams progress' log stays empty for the length of a multi-minute run, and stderr FAILED lines appear out of order (reproduced: the FAILED line landed at line 1 of a redirected log, before the banner).",
+        "A nonexistent --project path (e.g. fixtures/nope) is reported as 'no data_declaration.json' (exit 6), still creates a run directory under --out, and never says that the folder does not exist.",
+        "Repository noise buries the onboarding path: 292 of 661 tracked files are under tools/walkthrough (188 codex_* prompt/log/md files, backups/, round args, PNGs). The README says the tests take 'a few seconds' (measured about 13 s), and run manifests embed absolute machine paths."
+      ],
+      "to_reach_9": "Make --out hermetic (publish opt-in). Point README at requirements.lock and add a pinned dev lock that includes ruff, so check.sh lints identically everywhere. Call sys.stdout.reconfigure(line_buffering=True) in runner/demo main and use python3 -u in run_full.sh. Refuse a missing project folder up front with a 'not found' error and no run directory. Archive the walkthrough churn out of the tracked tree. Store run-relative paths in manifests."
+    }
+  ],
+  "moves": [
+    {
+      "title": "Make runner output hermetic: publish to reviews/ only on request",
+      "aspects": ["reproducibility_dx", "architecture", "testing_ci"],
+      "rationale": "The README's offline replay command with --out still writes into the repository's reviews/ shelf through the module constant publish.DEFAULT_REVIEWS_DIR, and tests must monkeypatch it. This is the single most surprising behaviour a newcomer hits, and it also couples the runner to a repository path.",
+      "concrete_changes": "pipeline/runner.py: add `--publish/--no-publish` (default: publish only when --out is the default runs/ dir) and a `--reviews-dir` argument, and thread it into `publish.publish_run(run_dir, reviews_dir)` in _write_manifest (lines ~496-508) instead of calling `_publish_locked` directly. pipeline/publish.py: make `publish_locked` public. tests/test_end_to_end.py: add a test that runs the replay with --out tmp_path, then asserts that repo reviews/ is unchanged and `git status --porcelain --ignored reviews` is empty. README 'Run it': state what the offline command writes.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Unify the dev toolchain: lock ruff, install from the lock, flush output, and fail fast on a missing project",
+      "aspects": ["reproducibility_dx", "testing_ci"],
+      "rationale": "In a fresh environment the documented install skips lint silently and differs from CI. The background demo log stays empty or reorders lines because of buffering. A mistyped --project gives a misleading data-declaration error.",
+      "concrete_changes": "Add requirements-dev.lock (requirements.lock + ruff==0.6.9) and have README 'Run it' and AGENTS.md install it. CI installs the same file instead of an ad-hoc `ruff==0.6.9`. scripts/check.sh: treat missing ruff as a failure unless --no-lint is passed. pipeline/runner.py main() and demo/run_demo.py main(): `sys.stdout.reconfigure(line_buffering=True)`. run_full.sh: use `python3 -u`. In runner, before data_policy: if not project_dir.is_dir(), print '[input] project folder not found: <path>' to stderr and exit EXIT_INSUFFICIENT_INPUT without creating a run directory, with a test in tests/test_runner.py. README: correct 'a few seconds' to the measured ~15 s.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Split pipeline/stages.py and publish the shared helpers",
+      "aspects": ["architecture", "code_quality"],
+      "rationale": "One 1,267-line module holds four stages. check_synthesis is 215 lines, and other modules import its private helpers. Splitting it lowers the cost of change and makes stage boundaries visible, without touching any harness-imported gates.py function.",
+      "concrete_changes": "Create pipeline/stage_classify.py, stage_fidelity.py, stage_synthesis.py and stage_render.py (with template resolution and the Greek lint), and keep pipeline/stages.py as a re-export shim so existing imports and tests stay unchanged. Break check_synthesis into named rule functions (_check_citations_resolve, _check_conflicts_not_resolved, _check_money_figures, ...) that return violation lists, with the concatenated output byte-identical to today (proved by the existing tests plus a golden test over runs/tier3 and runs/voreas-prep-0{2,3}). Move `_money_figures` to pipeline/figures.py as `money_figures` and `review._load_brief_meta` to a public `load_brief_meta`, and update delivery.py:47, creative.py:271 and publish.py:18. Do not change gates.py behaviour.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Add coverage, determinism and hermeticity tests; clean up skip hygiene",
+      "aspects": ["testing_ci", "reproducibility_dx"],
+      "rationale": "The suite is strong but unmeasured. The determinism and no-side-effect properties I verified by hand are not locked in by tests.",
+      "concrete_changes": "Add pytest-cov to requirements.lock and have scripts/check.sh run `pytest --cov=pipeline --cov=eval --cov-report=term-missing:skip-covered --cov-fail-under=<measured value, rounded down>`. Add tests/test_replay_determinism.py: two replays with --run-id a/b into tmp_path give identical bytes for every artifact except run_manifest.json and run_review.html, and for those two the only differences are run_id, *_ts and path fields. tests/test_agents.py:87/106: build the parametrize lists filtered by skill-backed vs inline instead of skipping. Delete the dead guard at tests/test_agency_edit.py:190-191. Add a direct test for pipeline/diagnostics.py.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Archive walkthrough churn out of the tracked tree",
+      "aspects": ["reproducibility_dx", "documentation"],
+      "rationale": "Nearly half the tracked files (292 of 661) are decision-paper iteration artefacts under tools/walkthrough (188 codex_* prompts/logs/notes, backups/, round args, images). A new engineer cannot tell source from history.",
+      "concrete_changes": "git mv tools/walkthrough/codex_*.{md,log}, *_prompt.md, round*_args.json, backups/, status_2026-09-17.md and the retired redesign/ into tools/walkthrough/archive/ (already excluded from ruff), with a README index. Keep build.py, checks.py, mustkeep.json and the assets that WALKTHROUGH.html embeds at top level. Update docs/README.md and the tools/walkthrough README paths. Do not edit WALKTHROUGH.html content.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Raise the static-analysis floor: widen ruff, clear the debt, add mypy on core modules",
+      "aspects": ["code_quality", "testing_ci"],
+      "rationale": "Hints cover 71% of functions, but nothing checks them. Lint is limited to pyflakes and carries 18 known-debt ignores, some in shipped code.",
+      "concrete_changes": "pyproject.toml: select = [\"E9\",\"F\",\"B\",\"UP\",\"I\",\"SIM1\"] with target py39. Fix the findings and delete every per-file-ignores entry except eval/harness.py (frozen). Add a [tool.mypy] block and a CI step `mypy pipeline/gates.py pipeline/agents.py pipeline/revisions.py pipeline/runner.py` (check_untyped_defs, warn_unused_ignores), with mypy pinned in the dev lock. Mypy is a new CI check, so it needs owner approval.",
+      "effort": "M",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "One clock and run-relative paths in stored records",
+      "aspects": ["code_quality", "reproducibility_dx", "human_governance"],
+      "rationale": "Naive local timestamps in the manifest and work orders (runner.py:451/477/587, stages.py:356, extraction.py:142) sit beside UTC in the audit log and history (revisions.py:31, retention.py:96, effort.py:176), which makes cross-record ordering ambiguous. Absolute machine paths make manifests non-portable across clones.",
+      "concrete_changes": "Add `pipeline/clock.py` with `now_utc()` (timezone-aware ISO) and an injectable override for tests, and use it at every datetime.now site. Write manifest output_file/report_file paths relative to run_dir, with readers (run_review.py, eval/cost_report.py, eval/supplementary.py) accepting both forms so committed evidence stays readable unchanged. Add tests for both manifest shapes.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Harden CI supply chain and platform coverage",
+      "aspects": ["testing_ci", "security_injection", "reproducibility_dx"],
+      "rationale": "The workflow's own comments admit that tag pinning and an unhashed lock were stopgaps made offline. The development platform (macOS, fcntl locks) is not exercised in CI.",
+      "concrete_changes": ".github/workflows/quality.yml: replace actions/checkout@v4 and actions/setup-python@v5 with their full commit SHAs (keep the tag as a comment). Regenerate requirements.lock with `pip-compile --generate-hashes` and install with `--require-hashes`. Add an `os: [ubuntu-latest, macos-latest]` matrix axis on 3.12.",
+      "effort": "S",
+      "needs_owner_decision": false
+    }
+  ],
+  "overall": "A well-engineered MVP. The model/deterministic split, the single least-privilege agent seam, the schemas as contracts, config-driven client extension, strict-xfail defect tracking and a sub-second offline replay are all a cut above typical demo code. A clean clone runs the one check green in about 13 s with 948/7/48 and 17/17, exactly as documented. What holds each aspect below 8 is concrete, not stylistic. The runner writes into the repo's reviews/ shelf even with --out. stages.py is a 1,267-line module with a 215-line gate function, and other modules use its private helpers. Timestamp idioms are mixed and the lint floor is minimal. The documented install path differs from CI and silently skips lint, and runner output is unbuffered-unsafe for the background demo. Half the tracked files are walkthrough churn. There is no coverage measurement, and the SHA/hash pinning is still a documented TODO. None of these fixes needs a gate relaxed, and most are S-effort."
+}

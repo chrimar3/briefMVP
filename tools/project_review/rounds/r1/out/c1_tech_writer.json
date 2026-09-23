@@ -1,0 +1,90 @@
+{
+  "scores": [
+    {
+      "aspect": "documentation",
+      "score": 7,
+      "evidence": "Verified at HEAD 1aaa560. Strong structure: docs/README.md gives every document a status (current/frozen/historical/superseded), reading order per audience (lines 17-22) and a 'Known discrepancies in historical records' section (lines 91-115) that explains the $4.29/$3.55, 40- vs 50-person, harness-commit and shadow-only drift instead of editing history. README.md lines 41-52 is a measured-vs-assumed ledger with sources and routing-era labels; the 984 820 = 533 641 + 451 179 token split checks. CLAUDE.md (lines 13-39) is current after Tiers 5-8: it lists the Tier 5-7 and Tier 8 modules, templates, config files, fixtures and runs. AGENTS.md is a clean pointer. The test figure '948 passed, 7 skipped, 48 xfailed' in README.md:194, CLAUDE.md:18, TIERS.md:140 and runs/tier_8_report.md:83 matches my own run (`pytest -q`: 948 passed, 7 skipped, 48 xfailed in 11.5 s). CLI flags in docs/pilot/PILOT_RUNBOOK.md match pipeline/intake.py (--data-class, --approval-ref, --approved-by, --approved-on), pipeline/agency.py and pipeline/delivery.py (--solo-rehearsal, --actor) and pipeline/release_control.py (verify-log). runs/routing-validate-01 is tracked and README/COST_MODEL/EVAL_RECORD/docs index all label it committed. HANDOFF_WALKTHROUGH.md was moved to docs/history/ and has a clear superseded banner. The weaknesses are internal contradictions left behind by the round-1 sweep (see defects), which is exactly what this aspect judges.",
+      "defects": [
+        "docs/TIERS.md:6-8 status banner says 'Tiers 0-7 are complete' and 'No Tier 8 is authorised; the owner's whole-project review loop ... is not a tier', while the same file's line 117 opens '## Tier 8 — Round 1 ...' with a green DoD, and README.md:81, docs/README.md:43, runs/tier_8_report.md and the commit subject 'tier-8: ...' all treat Tier 8 as a tier. The tier plan contradicts itself on its first screen.",
+        "runs/tier_8_report.md:3-4 still reads 'Branch: round1-integration · ... (not committed by the integrator; the orchestrator commits)' although the report is committed on main as 1aaa560; the current tier record is stale about its own status.",
+        "WALKTHROUGH.html cites docs/COST_MODEL.md by section numbers that the round-1 rewrite moved: line 1306 and 1334 cite '§2, §6' for the subscription-usage-window point (§2 is now the Haiku-era spread, §6 the token decomposition; the point is in the preamble and §5), and the €38-40 / 210 h tile cites '§3' (now 'The current routing — measured on one source'; the capacity arithmetic is §4).",
+        "docs/pilot/PILOT_RUNBOOK.md exit-code table (lines 21-29) omits exit 3 (`pending_stage`, pipeline/runner.py:40, 766) and the `corrupt_artifact` outcome that returns exit 4 (runner.py:560); an operator who sees exit 3 has no row to route by.",
+        "CLAUDE.md:8 (critical rule 2) names the read-only file as `fixtures/answer_key.json`, a path that does not exist; the keys are `fixtures/<project>/answer_key.json` (AGENTS.md:16 gets it right as `fixtures/*/answer_key.json`)."
+      ],
+      "to_reach_9": "Fix the TIERS.md banner and the tier-8 report header, repair the COST_MODEL section references in WALKTHROUGH.html, complete the runbook exit table and the CLAUDE.md answer-key path, then add a deterministic docs-consistency test (shared figures from one source, `§N` cross-references resolve to real headings, cited repo paths exist, no 'not committed' wording next to a tracked run) so the next sweep cannot reintroduce drift."
+    },
+    {
+      "aspect": "stakeholder_materials",
+      "score": 7,
+      "evidence": "WALKTHROUGH.html (gate `tools/walkthrough/checks.py --file WALKTHROUGH.html`: 0 failures) is a genuinely good decision paper: sheet 01 leads with the ask ('Approve a four-week pilot, with live use in week 4 conditional on the retrospective results'), sheets 03-09 walk the graded run with verbatim quotes and per-step model IDs and tokens, sheet 07 shows exactly what the human decided and who signed, sheet 08 states that answer-key isolation is 'policy, not enforced file isolation' for the July run and staged copies plus a deny rule since round 1, sheet 09 labels the creative mock-up and strikes three factual errors in the drafts, and sheet 10 separates measured from assumed (598 743 vs 295 774 transcript tokens, 210 h = (120-50)x180/60, PRD §10's €5-6k corrected to €3 990-4 200), names decision owners and deadlines, and lists limits (3/10 refusals, verified against docs/demo_timing.md:20-24; voreas 15/17 then 16/17). START_HERE.html and SHARE_ME.html carry the same story consistently, including 'What it proves / What it does not prove' and the KNOWN_DEFECTS B3 disclosure; the answer-key commit time (af1527d, 2026-07-24 00:27:26) versus run start (16:38) checks. The defects are stale or under-labelled statements inside the canonical page itself, which a hiring panel that verifies claims would find.",
+      "defects": [
+        "WALKTHROUGH.html:1293 (sheet 10 'Why' tile) describes the 598 743-token current-routing leg as 'one local run not committed', while the same page's ledger (line 1327: 'runs/routing-validate-01 (committed)'), README.md:48 and docs/README.md:81 say it is committed, and it is tracked in git. The decision paper contradicts itself on the provenance of the one number behind decision 2.",
+        "WALKTHROUGH.html:733 (sheet 03 ledger) says in the present tense 'runtime agents retain Read access to its [the answer key's] containing directory', contradicting sheet 08 ('Since round 1 agents read staged copies that exclude it, under a deny rule'), README.md:34-37, docs/SECURITY.md and pipeline/agents.py:67 (HARNESS_ONLY_NAMES deny rule). The same sheet calls the source header 'the input contract the runner reads' without the data declaration that owner decision 4 made part of the contract.",
+        "WALKTHROUGH.html:533 (sheet 01 headline tile) presents '0.98 M tokens ... about 15 million [a month], the figure to hold against a plan's usage window' with no routing-era label, and line 1316 repeats 'The figure to hold against a plan's usage window'. Sheet 10 itself says capacity planning 'must use the new measurement' and the one current-routing leg ran at about 2x the graded tokens, so the headline number a sponsor is most likely to carry away is the one the paper says not to plan on.",
+        "WALKTHROUGH.html sheet 02 says the core is 'about 2 500 non-blank lines, counted across the eight pipeline modules' and the agency commands 'about 2 100 more across thirteen modules'. At HEAD those eight modules have 3 607 non-blank lines (2 544 before round 1) and the thirteen agency modules 2 399: pre-round-1 figures presented as current.",
+        "The front doors count the flow differently: WALKTHROUGH sheet 02 'Nine steps, three roles: six are AI, two are plain code, one is a person's sign-off', while START_HERE.html and SHARE_ME.html say 'Ten steps, two of them people'. A reader comparing the pages sees two different system descriptions.",
+        "The tier reports a hiring panel is pointed to for Tiers 5-7 (runs/tier_5_report.md, tier_6, tier_7) are dense engineering tables with no plain-language summary of what was proved and what stays human. tier_7 still says '50-person agency' (flagged only in docs/README.md), and nothing gives a non-engineer a one-line reading of each tier."
+      ],
+      "to_reach_9": "Correct the four stale or unlabelled statements in WALKTHROUGH.html (committed leg, staged-input answer-key isolation plus data declaration, era label on the 0.98 M / 15 M headline, current line counts or no counts), align the step count across WALKTHROUGH, START_HERE and SHARE_ME (via pipeline/share.py), and add a one-screen 'what each tier delivered, proved and left to people' table for non-engineers in docs/README.md. Guard all of it with a test that ties the page's figures to their source artifacts."
+    }
+  ],
+  "moves": [
+    {
+      "title": "WALKTHROUGH truth patch: four stale statements and broken section references",
+      "aspects": ["stakeholder_materials", "documentation", "routing_usage", "security_injection"],
+      "rationale": "The canonical decision paper contradicts itself on the provenance of the current-routing measurement and on answer-key isolation, headlines a Haiku-era token figure as the planning number, and cites COST_MODEL sections that no longer hold the claims. These are the defects a verifying hiring panel finds first. Each fix is a one-line text change to a page that already passes its gate.",
+      "concrete_changes": "WALKTHROUGH.html: line 1293 'one local run not committed' -> 'committed as runs/routing-validate-01'. Line 733: replace 'runtime agents retain Read access to its containing directory' with 'in this July run agents could read its folder; since round 1 they read staged copies that exclude it, under a deny rule (docs/SECURITY.md)', and add 'plus a data_declaration.json (exit 6 without one)' to the input-contract sentence. Line 533 and line 1316: prefix 'Haiku-era routing:' and add 'the current routing measured about 2x on the one leg re-measured; plan on the re-baseline'. Sheet 02: recompute the line counts (about 3 600 core, about 2 400 agency) or drop the figures. Lines 1306/1334: COST_MODEL '§2, §6' -> 'preamble, §5'. €38-40 tile: '§3' -> '§4'. Add the corrected phrases to tools/walkthrough/mustkeep.json and a forbidden-phrase check ('not committed' next to routing-validate-01, 'retain Read access') to tools/walkthrough/checks.py. Rerun the gate.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Fix the tier plan's self-contradiction and the tier-8 record header",
+      "aspects": ["documentation", "stakeholder_materials"],
+      "rationale": "docs/TIERS.md's first screen says no Tier 8 exists while its last section and every front door describe a green Tier 8; the tier-8 report still says it is uncommitted on an integration branch. The engineer reading order starts here, so this undermines trust in everything after it.",
+      "concrete_changes": "docs/TIERS.md lines 6-10: 'Tiers 0-8 are complete and green (runs/tier_0_report.md ... runs/tier_8_report.md). Tier 8 is round 1 of the owner's whole-project review loop (tools/project_review/, decisions in OPERATING_DECISIONS.md § 2026-09-22); the next round (live re-baseline) is not yet authorised as a tier.' runs/tier_8_report.md line 3: add a dated post-commit note, 'Committed on main as 1aaa560 (2026-09-23)', leaving the original text visible as history.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Deterministic docs-consistency test",
+      "aspects": ["documentation", "stakeholder_materials", "testing_ci"],
+      "rationale": "Every defect found this round is drift a machine can catch: repeated figures, section references, committed/local labels, cited paths. The project already gates the walkthrough and SHARE_ME. Extending that to the documentation set turns 'truth pass' from a one-off sweep into a regression guard, which is what a specialist expects before scoring 9.",
+      "concrete_changes": "Add tests/test_docs_consistency.py. (a) Parse '`N passed, M skipped, K xfailed`' from README.md, CLAUDE.md, docs/TIERS.md (Tier 8 line), START_HERE.html, SHARE_ME.html and WALKTHROUGH.html and assert they all equal the figures in runs/tier_8_report.md §3 (or a small docs/facts.json that the report also cites). (b) For every 'docs/X.md §N' or 'X.md &sect;N' reference in current docs and the three HTML pages, assert a heading '## N.' exists in X. (c) For every backticked repo path in documents marked Current in docs/README.md, assert it is git-tracked or listed under 'Uncommitted runs'. (d) Assert no current document pairs a git-tracked run ID with 'not committed' or 'local'. Wire it into scripts/check.sh via pytest. It asserts only on documentation and relaxes no gate.",
+      "effort": "M",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "One step model across the three front doors",
+      "aspects": ["stakeholder_materials", "value_framing"],
+      "rationale": "WALKTHROUGH sheet 02 says nine steps (six AI, two code, one person) while START_HERE and SHARE_ME say ten steps, two of them people. After the 2026-09-20 decision creative approval is a real human step, so the ten-step, two-person version is the accurate one and should be the only one.",
+      "concrete_changes": "WALKTHROUGH.html sheet 02 headline: 'Ten steps, three roles: six AI, two plain code, two people (the account lead's sign-off and the creative lead's approval).' Keep the diagram as it is (it already shows the Approval row). Check that pipeline/share.py's template wording matches, regenerate SHARE_ME.html and keep tests/test_share.py green. Add the sentence to tools/walkthrough/mustkeep.json.",
+      "effort": "S",
+      "needs_owner_decision": true
+    },
+    {
+      "title": "Plain-language tier ledger for decision makers",
+      "aspects": ["stakeholder_materials", "value_framing"],
+      "rationale": "The hiring-panel reading order sends readers to tier reports that are engineering tables. Historical reports must not be edited, so the fix is a one-screen index that says, per tier, what was built, what was proved (deterministic or model), what stays human and where the evidence is.",
+      "concrete_changes": "Add a section '## What each tier delivered, in plain words' to docs/README.md, above 'Evidence and records': one row per tier 0-8 with columns Delivered · Proved by (model run / deterministic tests / none) · Stays human · Evidence. Tier 5-8 rows state explicitly 'software rehearsal, no model calls'. Link it from README.md 'Where the project stands' and from WALKTHROUGH sheet 10's 'Since the graded run' block.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Complete the operator exit table and fix the CLAUDE.md read-only path",
+      "aspects": ["documentation", "pilot_readiness", "reproducibility_dx"],
+      "rationale": "The one-page pilot runbook is the operator's only routing table, and it omits exit 3 and the corrupt-artifact outcome the runner can return. The governing rulebook names a read-only file path that does not exist.",
+      "concrete_changes": "docs/pilot/PILOT_RUNBOOK.md exit table: add '| 3 | `pending_stage` | A later stage was requested before its prerequisite completed: run the named stage, or resume with --stage on the same --run-id |', and add `corrupt_artifact` to the exit-4 row with 'a named run file is unreadable: INCIDENT_RECOVERY.md; do not delete history/'. Mirror both in INCIDENT_RECOVERY.md if it lists exit codes. CLAUDE.md rule 2 (line 8) and its repeat at the end: `fixtures/answer_key.json` -> `fixtures/*/answer_key.json`. Add a test that the runbook table covers every EXIT_* constant in pipeline/runner.py.",
+      "effort": "S",
+      "needs_owner_decision": false
+    },
+    {
+      "title": "Post-re-baseline propagation sweep with era labels",
+      "aspects": ["routing_usage", "stakeholder_materials", "documentation", "evaluation_method"],
+      "rationale": "The authorised live re-baseline (3 graded rolls per fixture) will change the headline usage and pass-rate figures that currently appear in at least eight places. If propagation is not planned, the next round reintroduces exactly the Haiku-era/current-routing drift that round 1 cleaned up.",
+      "concrete_changes": "When the re-baseline lands, update in one commit: README.md ledger rows 47-48, WALKTHROUGH.html sheets 01 and 10 tiles and ledger, START_HERE.html 'Usage is not yet measured', pipeline/share.py (regenerate SHARE_ME.html), docs/COST_MODEL.md §3, docs/EVAL_RECORD.md §1, docs/pilot/OPERATING_TERMS.md:19 and docs/pilot/SCORECARD.md. Keep the Haiku-era figures visible, labelled historical, next to the new ones. The docs-consistency test (move 3) should read the new figures from the committed run manifests.",
+      "effort": "M",
+      "needs_owner_decision": true
+    }
+  ],
+  "overall": "The documentation set is well above typical for an MVP. It has a status-labelled index with audience reading orders, an explicit historical-discrepancies register, a measured-vs-assumed ledger with routing-era labels, a current CLAUDE.md, and pilot runbooks whose commands match the code. The published test figures match a fresh run (948/7/48). The decision paper is honest about what was and was not proved, what stays human, and what is asked of whom. Both aspects stop at 7 for the same reason: the round-1 truth pass left concrete contradictions inside the most-read documents. TIERS.md denies the Tier 8 that its own last section records. The canonical WALKTHROUGH calls a committed run 'not committed', describes pre-round-1 answer-key access in the present tense on one sheet while another sheet contradicts it, headlines the Haiku-era 0.98 M / 15 M figure as the planning number, quotes pre-round-1 line counts and cites moved COST_MODEL sections. Each fix is small. A docs-consistency test would keep them from recurring, which is what separates 7 from 9 here."
+}
