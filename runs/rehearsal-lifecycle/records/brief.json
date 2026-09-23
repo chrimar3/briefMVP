@@ -606,8 +606,8 @@
         }
       ],
       "status": "resolved_by_human",
-      "resolution": "25–40 urban professionals — the CMO's explicit correction at kickoff (00:03:41) supersedes the RFP's Gen Z 18–24, which the previous agency had carried over in positioning.",
-      "resolved_by": "Synthetic Account Lead A (account lead)"
+      "resolved_by": "Synthetic Account Lead A",
+      "resolution": "25–40 urban professionals — the CMO's explicit correction at kickoff (00:03:41) supersedes the RFP's Gen Z 18–24, which the previous agency had carried over in positioning."
     },
     {
       "field": "budget",
@@ -632,8 +632,8 @@
         }
       ],
       "status": "resolved_by_human",
-      "resolution": "Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client's media shop and is not yet known — total including media remains unconfirmed and stays an open question.",
-      "resolved_by": "Synthetic Account Lead A (account lead)"
+      "resolved_by": "Synthetic Account Lead A",
+      "resolution": "Production budget in the eighties, excluding media spend, per the CFO at kickoff (00:14:32). The media budget is handled separately with the client's media shop and is not yet known — total including media remains unconfirmed and stays an open question."
     },
     {
       "field": "timeline",
@@ -683,7 +683,7 @@
   "signoff": {
     "status": "signed_off",
     "signed_by": "Synthetic Account Lead A",
-    "signed_ts": "2026-09-22T21:56:32.201913+00:00",
+    "signed_ts": "2026-09-23T20:23:14.820645+00:00",
     "edits_summary": "Rehearsal: timeline conflict resolved; questions triaged non-blocking; checklist and matrix reviewed."
   },
   "readiness": {

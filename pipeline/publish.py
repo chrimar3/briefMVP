@@ -17,7 +17,7 @@ if __package__ in (None, ""):  # allow `python3 pipeline/publish.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline.review import ReviewInputError, load_brief_meta  # noqa: E402
-from pipeline import approval, docview, review, revisions  # noqa: E402
+from pipeline import approval, data_policy, docview, gates, review, revisions  # noqa: E402
 
 #: The shelf lives beside `runs/` at the repo root unless a caller says otherwise.
 DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
@@ -52,8 +52,26 @@ def shelf_prefix(run_dir: Union[str, Path]) -> str:
     return f"{client}-{project}-{date}-{revision}"
 
 
+def require_shelf_allowed(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, Path]] = None) -> None:
+    """Refuse (ReviewInputError) to put a run on a shelf inside the repository unless the run's
+    RECORDED data class is synthetic (`approval.recorded_data_class`): non-synthetic material
+    never writes into the repository (data_policy.check_locations; DATA_PROTECTION.md §6)."""
+    shelf = Path(reviews_dir) if reviews_dir else DEFAULT_REVIEWS_DIR
+    root = gates.REPO_ROOT.resolve()
+    if shelf.resolve() != root and root not in shelf.resolve().parents:
+        return
+    data_class = approval.recorded_data_class(run_dir)
+    if data_class != data_policy.SYNTHETIC:
+        raise ReviewInputError(
+            f"refused: the reviews shelf lives inside the repository and only runs whose recorded data class is "
+            f"synthetic go on it; this run's recorded class is {data_class!r} (no declaration bound to the run, "
+            f"or one changed since, counts as non-synthetic)")
+
+
 def publish_run(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, Path]] = None) -> list[Path]:
-    """Take the run lock, then publish the run's pages onto the shelf (`publish_locked`)."""
+    """Refuse non-synthetic runs for an in-repository shelf, take the run lock, then publish the
+    run's pages onto the shelf (`publish_locked`)."""
+    require_shelf_allowed(run_dir, reviews_dir)
     with revisions.run_lock(run_dir):
         return publish_locked(run_dir, reviews_dir)
 

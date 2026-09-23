@@ -76,13 +76,27 @@ def withdraw(run, actor, reason):
         return event
 
 
-def verify_log(run):
-    """Integrity of the run's hash-chained decision log (revisions.verify_audit_log)."""
+def verify_log(run: Path) -> dict:
+    """Integrity of the run's hash-chained decision log (revisions.verify_audit_log), plus the
+    release receipts whose package is not at its recorded path (reconciliation, not an error)."""
     run = Path(run)
     problems = revisions.verify_audit_log(run)
     path = run / revisions.AUDIT_LOG
     lines = path.read_text(encoding='utf-8').splitlines() if path.is_file() else []
+    try:
+        aborted = {(e.get('details') or {}).get('manifest_sha256') for e in revisions.read_audit_log(run)
+                   if e.get('event') == 'creative_release_aborted'}
+    except ValueError:
+        aborted = set()
+    receipts = revisions.load(run / 'releases.json', [])
+    # Reconciliation view, not an integrity error: a receipt whose package is not where it was
+    # released (moved on purpose, or a release that crashed before the package appeared).
+    unplaced = [{'path': r.get('path'), 'manifest_sha256': r.get('manifest_sha256'),
+                 'aborted': r.get('manifest_sha256') in aborted}
+                for r in (receipts if isinstance(receipts, list) else [])
+                if isinstance(r, dict) and not (Path(str(r.get('path'))) / 'release.json').is_file()]
     return {'valid': not problems, 'errors': problems, 'entries': len(lines),
+            'receipts_without_package': unplaced,
             'boundary': 'Detects edited, removed, reordered or unlogged decision records. Names are '
                         'typed by people and are not authenticated; this is tamper evidence, not a signature.'}
 

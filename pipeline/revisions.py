@@ -115,9 +115,10 @@ def prepare_run(run_dir: PathLike, paths: Mapping[str, PathLike], stage: str,
     """Refuse changed-input reuse. Archive invalidated products before a leg rerun.
 
     Legacy runs without a snapshot remain usable for the original demo; they cannot
-    receive agency approval until initialized and explicitly reviewed. The creative stage of
-    an agency-managed run needs `require_approval` (the policy check this utility does not
-    own); without it the call refuses — use `pipeline.approval.prepare_run`, which binds it.
+    receive agency approval until initialized and explicitly reviewed. The creative stage
+    always needs `require_approval` (the run's recorded sign-off regime check, which this
+    utility does not own); without it the call refuses — use `pipeline.approval.prepare_run`,
+    which binds it. The regime is never inferred from which files happen to exist.
     """
     run_dir = Path(run_dir)
     state = input_state(paths)
@@ -132,11 +133,10 @@ def prepare_run(run_dir: PathLike, paths: Mapping[str, PathLike], stage: str,
         write_json(run_dir / "input_snapshot.json", state)
     capture_evidence(run_dir, paths)
     if stage == "creative":
-        if (run_dir / "agency_inputs.json").exists():
-            if require_approval is None:
-                raise ValueError("The creative stage of an agency-managed run needs the approval "
-                                 "check; call pipeline.approval.prepare_run")
-            require_approval(run_dir)
+        if require_approval is None:
+            raise ValueError("The creative stage needs the sign-off regime check; call "
+                             "pipeline.approval.prepare_run")
+        require_approval(run_dir)
         return
     downstream = ["approval.json", "language_review.json", "agency_audit.json", "creative_approval.json", "creative_draft.json", "creative", "brief_review.html", "run_review.html",
                   "brief_el.html", "brief_en.html", "brief_el.md", "brief_en.md"]
@@ -245,12 +245,40 @@ def verify_evidence(run_dir: PathLike) -> None:
 AUDIT_LOG = "audit_log.jsonl"
 GENESIS_SHA256 = "0" * 64
 
-#: Records a human decision leaves behind, and the log event that must vouch for each one.
+#: Records a human decision leaves behind, and the log events that may vouch for each one.
 #: `verify_audit_log` cross-checks them, so deleting the tail of the log (which a chain alone
-#: cannot see) is caught while the record it explained still exists.
-_VOUCHED_RECORDS = {"approval.json": "brief_approved", "creative_approval.json": "creative_approved"}
+#: cannot see) is caught while the record it explained still exists, and a record written
+#: around the commands (by hand, by a script or by a coding agent) is caught because no entry
+#: carries its hash. `agency approve` rewrites language_review.json to move its fingerprint and
+#: logs that rewrite as `language_attestation_rebound`.
+_VOUCHED_RECORDS = {
+    "approval.json": ("brief_approved",),
+    "creative_approval.json": ("creative_approved",),
+    "language_review.json": ("language_attested", "language_attestation_rebound"),
+    "creative_draft.json": ("creative_registered",),
+    "signoff_regime.json": ("signoff_regime_recorded",),
+}
 _VOUCHED_LISTS = {"amendments.json": "brief_amended", "approval_withdrawals.json": "approval_withdrawn",
                   "releases.json": "creative_released"}
+#: Keyed decision records ({id: decision}). The whole file is vouched when its current bytes were
+#: logged; otherwise every entry must match an `entry_digests` value of one of the events.
+_VOUCHED_KEYED = {"clarifications.json": ("question_triaged", "decisions_carried"),
+                  "coverage_decisions.json": ("coverage_excluded",)}
+
+
+def keyed_entry_digest(key: str, value: Any) -> str:
+    """Digest binding one keyed decision to its id, so a logged entry cannot vouch for another id."""
+    return digest({"id": key, "entry": value})
+
+
+def conflict_digest(conflict: Mapping) -> str:
+    """Digest of what a conflict IS (field and positions), independent of its resolution."""
+    return digest({"field": conflict.get("field"), "positions": conflict.get("positions")})
+
+
+def text_digest(text: str) -> str:
+    """SHA-256 of a UTF-8 text, as logged for a conflict resolution."""
+    return hashlib.sha256(str(text).encode("utf-8")).hexdigest()
 
 
 def _line_hash(line: str) -> str:
@@ -297,11 +325,13 @@ def read_audit_log(run_dir: PathLike) -> list:
 def verify_audit_log(run_dir: PathLike) -> list:
     """Every reason the audit trail cannot be trusted as written; [] when it is intact.
 
-    Detects an edited, inserted, reordered or deleted line (chain or sequence break), and a
-    decision record no log entry vouches for: a current approval.json or creative_approval.json
-    whose exact bytes were never logged, or an amendment, withdrawal or release receipt with no
-    matching entry (a truncated log, or a record written around the commands). It does not
-    authenticate who typed a name.
+    Detects an edited, inserted, reordered or deleted line (chain or sequence break), and every
+    human-decision record no log entry vouches for: a current approval, creative approval,
+    language attestation, creative registration or sign-off regime whose exact bytes were never
+    logged; an amendment, withdrawal or release receipt with no matching entry; a triage decision
+    or coverage exclusion written outside `agency answer|exclude|carry-decisions`; and a conflict
+    marked resolved_by_human that does not match the last `conflict_resolved` entry for its index
+    (actor, resolution text, conflict). It does not authenticate who typed a name.
     """
     run_dir = Path(run_dir)
     path = run_dir / AUDIT_LOG
@@ -327,18 +357,77 @@ def verify_audit_log(run_dir: PathLike) -> list:
                             f"earlier line was edited or removed")
         previous = _line_hash(line)
         entries.append(entry)
-    for name, event in _VOUCHED_RECORDS.items():
+    for name, events in _VOUCHED_RECORDS.items():
         if (run_dir / name).is_file():
             sha = file_hash(run_dir / name)
-            if not any(e.get("event") == event and e.get("record_sha256") == sha for e in entries):
-                problems.append(f"{name} is not vouched for by any '{event}' audit entry — written "
-                                f"outside the commands, or the log was truncated")
+            if not any(e.get("event") in events and e.get("record_sha256") == sha for e in entries):
+                problems.append(f"{name} is not vouched for by any '{'/'.join(events)}' audit entry — "
+                                f"written outside the commands, or the log was truncated")
     for name, event in _VOUCHED_LISTS.items():
         logged = {e.get("entry_sha256") for e in entries if e.get("event") == event}
-        items = load(run_dir / name, [])
+        items = _load_quietly(run_dir / name, [], problems)
         for index, item in enumerate(items if isinstance(items, list) else []):
             if digest(item) not in logged:
                 problems.append(f"{name}[{index}] has no matching '{event}' audit entry")
+    for name, events in _VOUCHED_KEYED.items():
+        problems.extend(_keyed_problems(run_dir, name, events, entries))
+    problems.extend(_conflict_problems(run_dir, entries))
+    return problems
+
+
+def _load_quietly(path: Path, default: Any, problems: list) -> Any:
+    """`load`, reporting an unreadable record as a problem instead of raising."""
+    try:
+        return load(path, default)
+    except CorruptRecordError as exc:
+        problems.append(str(exc))
+        return default
+
+
+def _keyed_problems(run_dir: Path, name: str, events: tuple, entries: list) -> list:
+    """Unvouched entries of a keyed decision record (clarifications, coverage exclusions)."""
+    path = run_dir / name
+    if not path.is_file():
+        return []
+    logged = [e for e in entries if e.get("event") in events]
+    if any(e.get("record_sha256") == file_hash(path) for e in logged):
+        return []
+    problems: list = []
+    data = _load_quietly(path, {}, problems)
+    if not isinstance(data, dict):
+        return problems + [f"{name} is not a decision object"]
+    digests = {d for e in logged for d in ((e.get("details") or {}).get("entry_digests") or [])}
+    return problems + [f"{name}[{key!r}] is not vouched for by any '{'/'.join(events)}' audit entry — "
+                       f"a decision written outside the commands" for key, value in data.items()
+                       if keyed_entry_digest(key, value) not in digests]
+
+
+def _conflict_problems(run_dir: Path, entries: list) -> list:
+    """Every conflict marked resolved_by_human must match the LAST `conflict_resolved` entry for
+    its index: same actor, same resolution text (or its digest) and, when logged, the same conflict."""
+    problems: list = []
+    brief = _load_quietly(run_dir / "brief.json", {}, problems)
+    conflicts = brief.get("conflicts") if isinstance(brief, dict) else None
+    last: dict = {}
+    for entry in entries:
+        details = entry.get("details") or {}
+        if entry.get("event") == "conflict_resolved" and isinstance(details.get("conflict"), int):
+            last[details["conflict"]] = entry
+    for index, conflict in enumerate(conflicts if isinstance(conflicts, list) else []):
+        if not isinstance(conflict, dict) or conflict.get("status") != "resolved_by_human":
+            continue
+        entry = last.get(index)
+        details = (entry or {}).get("details") or {}
+        resolution = conflict.get("resolution")
+        matches = (entry is not None and entry.get("actor") == conflict.get("resolved_by")
+                   and isinstance(resolution, str)
+                   and (details.get("resolution") == resolution
+                        or details.get("resolution_sha256") == text_digest(resolution))
+                   and details.get("conflict_sha256", conflict_digest(conflict)) == conflict_digest(conflict))
+        if not matches:
+            problems.append(f"brief.json conflict {index} is marked resolved_by_human, but no 'conflict_resolved' "
+                            f"audit entry records this resolution (index, actor and text) — resolved outside "
+                            f"`agency resolve`")
     return problems
 
 

@@ -4,6 +4,11 @@ Evidence links and structure checked automatically. Semantic judgments are human
 
 Status: reviewed
 
+- conflict.0: resolved, but the brief's audiences field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty
+- conflict.0: resolved, but question 2862e1ceed80bea16d6f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it
+- conflict.1: resolved, but the brief's budget field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty
+- conflict.1: resolved, but question 9866a11081952c55e20f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it
+- conflict.2: resolved, but question 9bb7ea4af126a45bd816 on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it
 
 ## Fact coverage
 

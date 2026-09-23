@@ -7,6 +7,10 @@
     "path": "$WORK/synthetic-traffic-catalog-v1.json",
     "sha256": "a73cea264c25aac47f2b0014768ec07557a2a31db36822a053102e71f389c900"
   },
+  "data_declaration": {
+    "path": "$REPO/fixtures/northlight_01/data_declaration.json",
+    "sha256": "0bceafa62484534a8c9ff4ff19974397b356464e496f30e4be12a8a61088acd8"
+  },
   "glossary": {
     "path": "$REPO/glossary/meltemi.json",
     "sha256": "118ed98313438452e3972806b3888e445a6097d73e6db3d0cc62ffc6c609a792"

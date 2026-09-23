@@ -1,7 +1,7 @@
 {
   "mode": "APPROVED BRIEF HANDOVER",
   "creative_release": "requires separate creative approval",
-  "fingerprint": "8a83e8ba33794bafa94eae0f00d36081ba5663946867fb03b313b6915a759437",
+  "fingerprint": "277f05e52ade4d794ae276a2218ede40ba48b20accaf1ddcc5349516a3913e31",
   "deliverables": [
     {
       "channel": "Cross-channel",
@@ -30,7 +30,7 @@
         }
       ],
       "actor": "Synthetic Traffic Reviewer T",
-      "updated_at": "2026-09-22T21:56:31.748645+00:00",
+      "updated_at": "2026-09-23T20:23:14.308664+00:00",
       "refs": [
         "deliverables:0"
       ]
@@ -63,12 +63,18 @@
         }
       ],
       "actor": "Synthetic Traffic Reviewer T",
-      "updated_at": "2026-09-22T21:56:31.832998+00:00",
+      "updated_at": "2026-09-23T20:23:14.398642+00:00",
       "refs": [
         "deliverables:0"
       ],
       "duration_seconds": 15.0
     }
   ],
-  "notices": []
+  "notices": [
+    "conflict.0: resolved, but the brief's audiences field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+    "conflict.0: resolved, but question 2862e1ceed80bea16d6f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+    "conflict.1: resolved, but the brief's budget field is still empty — carry the decided value into the brief (`agency apply`) or record why it stays empty",
+    "conflict.1: resolved, but question 9866a11081952c55e20f on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it",
+    "conflict.2: resolved, but question 9bb7ea4af126a45bd816 on the same field is open — close it as duplicate or answered (`agency answer`) if the resolution settles it"
+  ]
 }
