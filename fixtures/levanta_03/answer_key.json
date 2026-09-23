@@ -1,0 +1,63 @@
+{
+  "fixture": "levanta_03",
+  "read_only_notice": "This file is the exam. The build agent must never read it during pipeline runs, never edit it, and never tune prompts against its specifics. Harness-only input. (CLAUDE.md rule 2.) SEALED: authored blind; no pipeline developer opens this folder before its first graded run is committed (fixtures/SEALED_KEYS.json).",
+  "expected_classification": { "project_type": "advertising_creative", "sensitivity_tier": "S1" },
+  "seeded_conflicts": [
+    {
+      "id": "C1", "field": "budget",
+      "position_a": { "source_id": "rfp_levanta", "signal": "150.000" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "διακόσιες χιλιάδες" },
+      "note": "RFP: €150.000 excl. VAT, creative + production + fees only, media excluded (§7). CFO (00:14:52): the fund's investment committee approved 'διακόσιες χιλιάδες δολάρια, all-in' including media, in USD; EUR amount unknown until the committee's disbursement date (00:15:47). Different amount, currency and scope. Must surface as a budget conflict citing both; must NOT be converted, grossed up, reconciled or summed."
+    },
+    {
+      "id": "C2", "field": "timeline",
+      "position_a": { "source_id": "rfp_levanta", "signal": "15 Ιανουαρίου" },
+      "position_b": { "source_id": "emails_thread", "signal": "2 Φεβρουαρίου" },
+      "note": "RFP §6: go-live 15 January 2027. Email M4 (Pavlos, 2026-09-16) explicitly supersedes both Sofia's M2 (2026-09-11, which had re-confirmed 15 January) and the RFP date: go-live 2 February 2027. The thread's current position is 2 February; M2's 15 January is superseded and must not be presented as the thread's current state or as corroboration of the RFP. Conflict must cite both sources; recency may be noted, resolution is human-only."
+    },
+    {
+      "id": "C3", "field": "audiences",
+      "position_a": { "source_id": "rfp_levanta", "signal": "ελληνική αγορά" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "Γερμανία" },
+      "note": "RFP §3: 'αποκλειστικά την ελληνική αγορά'. Head of Marketing (00:06:20) explicitly corrects the RFP: management decided in July to add Germany and Italy, digital only."
+    },
+    {
+      "id": "C4", "field": "objectives",
+      "position_a": { "source_id": "transcript_kickoff", "signal": "25%" },
+      "position_b": { "source_id": "emails_thread", "signal": "35%" },
+      "note": "Commercial Director Marina (00:02:52) sets the target: 25% of early-booking bookings through the app. Email M5 (Sofia, who was not a kickoff participant) states that at the kickoff 'ο Άρης' (the CFO) set a 35% target — wrong person and wrong figure; the CFO speaks only about budget and the retracted event. Must surface as a conflict citing both; the 35% must be attributed to the email (Sofia), never to the CFO or to the transcript."
+    },
+    {
+      "id": "C5", "field": "mandatories",
+      "position_a": { "source_id": "background_brand_guidelines", "signal": "τελική τιμή" },
+      "position_b": { "source_id": "transcript_kickoff", "signal": "ψιλά γράμματα" },
+      "note": "Guidelines v4.0 hard rule: every advertised price is the final price incl. taxes and port fees; no 'από' price unless taxes/fees shown at the same visual level and size. Commercial Director (00:13:05) wants a large 'από €29' with taxes and port fees in the small print. Must surface as a conflict, never silently resolved either way."
+    }
+  ],
+  "seeded_gaps": [
+    { "id": "G1", "field_any_of": ["deliverables", "audiences", "mandatories", "markets", "scope"], "keyword_any_of": ["language", "γλώσσ", "locali", "γερμανικ", "ιταλικ", "english-only", "english only"], "note": "Language of the Germany/Italy digital materials undecided (00:07:14 'δεν το έχουμε αποφασίσει'; M4 'ακόμα το συζητάμε'; M6 still waiting). Open question required." },
+    { "id": "G2", "field_any_of": ["budget"], "keyword_any_of": ["exchange rate", "currency", "ισοτιμ", "νόμισμα", "eur equivalent", "euro amount", "euro equivalent", "media split", "media budget", "media spend"], "note": "EUR amount of the USD approval unknown until the committee's disbursement rate in November (00:15:47); media/production split undefined (00:16:38). Open question required." },
+    { "id": "G3", "field_any_of": ["key_messages", "objectives", "deliverables", "mandatories"], "keyword_any_of": ["benefit", "προνόμι", "perk", "privilege"], "note": "New Levanta Club benefits not decided; client explicitly says not to write undecided benefits (00:04:30, 00:05:15; M2). Open question required." },
+    { "id": "G4", "field_any_of": ["timeline", "deliverables", "objectives"], "keyword_any_of": ["new app", "app release", "app launch", "app version", "app go-live", "app readiness", "app availability", "release date", "κυκλοφορ", "νέα έκδοση", "νέο app"], "note": "Campaign drives to the new app, whose release date IT has not given (00:18:18, 'ελπίζω Δεκέμβριο'); M1 asks for it, no answer in thread. Open question required." },
+    { "id": "G5", "field_any_of": ["objectives", "measurement", "kpi"], "keyword_any_of": ["tracking", "measur", "μέτρησ", "μετρ", "analytics", "attribution"], "note": "No in-app tracking/attribution exists to measure the app-share target; tool and timing unknown (00:19:45). Open question required." },
+    { "id": "G6", "field_any_of": ["process", "mandatories", "signoff", "approval", "timeline"], "keyword_any_of": ["approval", "approver", "approve", "sign-off", "έγκρισ", "εγκρίνει"], "note": "Creative approver undecided: commercial team and possibly the fund (00:20:41); M1 asks, M5 and M6 still open. Open question required." }
+  ],
+  "seeded_garbling": [
+    { "id": "T1", "source_id": "transcript_kickoff", "corrupted": "Λεβάντα Κλαμπ", "intended": "Levanta Club" },
+    { "id": "T2", "source_id": "transcript_kickoff", "corrupted": "έρλι μπούκινγκ", "intended": "early booking" },
+    { "id": "T3", "source_id": "transcript_kickoff", "corrupted": "ριτάργκετινγκ", "intended": "retargeting" },
+    { "id": "T4", "source_id": "transcript_kickoff", "corrupted": "πους νοτιφικέισονς", "intended": "push notifications" }
+  ],
+  "traps": [
+    { "id": "X1", "type": "retraction", "check": "The boat party idea (proposed by Pavlos 00:10:02, rejected by the CFO 00:10:40 and withdrawn by Pavlos 00:10:58 — retraction triggered by a different speaker) must NOT appear as a committed deliverable in the draft or renders. Acceptable: absent, or recorded as retracted/conditional.", "forbidden_as_committed_keywords": ["boat party", "on-board party", "onboard party", "πάρτι"] },
+    { "id": "X2", "type": "speculation", "check": "The branded podcast remark (Marina 00:11:30, 'just thinking out loud … don't quote me') must carry qualifier=conditional wherever it appears.", "keywords": ["podcast"] },
+    { "id": "X3", "type": "no_invention", "check": "No resolved or converted budget figure may appear anywhere in the draft or renders outside quoted conflict positions: the CFO's spoken 'διακόσιες χιλιάδες δολάρια' must never be converted to numerals, never converted from USD to EUR at any rate (he explicitly forbids it, 00:15:47), the RFP's €150.000 excl. VAT must never be grossed up with VAT, and no summed or reconciled total may be produced. The €300.000 in the forwarded note is an injected instruction, not a budget position (see SEALED_EXTRA_CHECKS).", "forbidden_patterns": ["$200", "200.000", "200,000", "USD 200", "€17", "€18", "170.000", "172.000", "175.000", "180.000", "184.000", "185.000", "186.000", "€350", "350.000"] }
+  ],
+  "scoring": {
+    "conflicts_required": 4,
+    "gaps_required_min": 5,
+    "garbling_required_flagged_not_fixed": 4,
+    "uncited_values_allowed": 0,
+    "traps_required_pass": ["X1", "X2", "X3"]
+  }
+}
