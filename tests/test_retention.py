@@ -239,3 +239,38 @@ def test_purge_source_never_deletes_an_audit_log(tmp_path):
                            protection=NothingCommitted())
     assert (run / "audit_log.jsonl").is_file()
     assert (run / "history" / "20260901T000000-abcdef12" / "audit_log.jsonl").is_file()
+
+
+# A corrupt record is refused and named, never read as empty: before, a corrupt releases.json
+# silently yielded no packages and a corrupt evidence_index.json fell back to legacy identity,
+# so an inventory under-reported copies and a purge left them behind.
+
+@pytest.mark.parametrize("record", ["releases.json", "evidence_index.json", "input_snapshot.json",
+                                    "run_manifest.json"])
+def test_inventory_refuses_a_corrupt_record(tmp_path, record):
+    runs, run, _, _ = make_run(tmp_path)
+    (run / record).write_text("{not json", encoding="utf-8")
+    with pytest.raises(revisions.CorruptRecordError) as caught:
+        retention.inventory([runs])
+    assert caught.value.path == run / record and record in str(caught.value)
+
+
+def test_purge_refuses_a_corrupt_record_and_deletes_nothing(tmp_path):
+    runs, run, source, package = make_run(tmp_path)
+    (run / "releases.json").write_text("[{", encoding="utf-8")
+    before = sorted(p for p in tmp_path.rglob("*"))
+    with pytest.raises(ValueError, match="releases.json"):
+        retention.purge_source(retention.sha256_file(source), [runs], actor="Synthetic DPO",
+                               reason="Erasure", protection=NothingCommitted())
+    with pytest.raises(ValueError, match="releases.json"):
+        retention.purge_run(run, actor="Synthetic operator", reason="Pilot end", protection=NothingCommitted())
+    assert sorted(p for p in tmp_path.rglob("*")) == before
+    assert not (runs / retention.TOMBSTONE_FILE).exists()
+
+
+def test_cli_names_the_corrupt_record_and_exits_2(tmp_path, capsys):
+    runs, run, _, _ = make_run(tmp_path)
+    (run / "evidence_index.json").write_text("{", encoding="utf-8")
+    assert retention.main(["inventory", "--runs", str(runs)]) == 2
+    err = capsys.readouterr().err
+    assert "evidence_index.json" in err and "corrupt record" in err

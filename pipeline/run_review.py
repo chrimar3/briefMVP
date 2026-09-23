@@ -16,14 +16,14 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
 if __package__ in (None, ""):  # allow `python3 pipeline/run_review.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline.review import (
+from pipeline import records  # noqa: E402
+from pipeline.review import (  # noqa: E402
     BRIEF_FIELDS,
     CONFIDENCE_LABELS,
     FIELD_LABELS,
@@ -72,9 +72,14 @@ _SAFE_STEP_KEYS = ("number", "name", "description", "status")
 
 
 def _load_json(path: Path):
+    """Best-effort read for the review page: None when the record is absent, unreadable or corrupt.
+
+    The page shows what it can; the runner's own gates (and the corrupt-artifact outcome) own
+    the refusal of a corrupt record.
+    """
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+        return records.load_strict(path)
+    except (OSError, records.CorruptRecordError):
         return None
 
 

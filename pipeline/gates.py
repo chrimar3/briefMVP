@@ -379,7 +379,7 @@ def validate_brief(instance: dict) -> None:
 _MARKDOWN_MARKERS = re.compile(r"(\*+|_+|`+|^#+\s*)", re.MULTILINE)
 
 
-def _normalise(text: str) -> str:
+def normalise_for_match(text: str) -> str:
     """Normalise for citation matching: drop markdown markers, then collapse whitespace.
 
     Two independent sources of spurious mismatch are handled here: a line wrap inside the
@@ -396,15 +396,15 @@ def verify_citations(extract: dict, source_text: str) -> list[str]:
     of that rule: a citation that cannot be found in the source is worse than a missing one,
     because it survives review by *looking* verified. PRD R2 names this exact failure — "a
     confident citation to garbage" — as the dangerous one, so it is checked in code rather
-    than left to the agent's self-check. Matching is markdown-insensitive (see `_normalise`):
+    than left to the agent's self-check. Matching is markdown-insensitive (see `normalise_for_match`):
     quoting the bolded content of a source span is a real citation, not a fabricated one.
     """
-    haystack = _normalise(source_text)
+    haystack = normalise_for_match(source_text)
     violations: list[str] = []
     for fieldname in BRIEF_FIELDS:
         for idx, item in enumerate(extract.get(fieldname, []) or []):
             for key in ("location", "anchor"):
-                needle = _normalise(item.get(key) or "")
+                needle = normalise_for_match(item.get(key) or "")
                 if needle and needle not in haystack:
                     violations.append(
                         f"{fieldname}[{idx}]: {key} {needle!r} does not occur in the source — "
@@ -413,7 +413,7 @@ def verify_citations(extract: dict, source_text: str) -> list[str]:
     return violations
 
 
-def _extract_items(extract: dict):
+def extract_items(extract: dict):
     """(path, item) for every evidence-bearing item in an extract — the 7 brief fields plus
     both sides of each internal conflict. Internal-conflict items matter because synthesis is
     allowed to surface them (their anchors are in its known-anchor set), so every item-level
@@ -438,13 +438,13 @@ def verify_internal_conflict_citations(extract: dict, source_text: str) -> list[
     what extraction verifies would let a fabricated anchor ride a conflict record straight into
     the brief. The runner may be stricter than the grader; never the reverse.
     """
-    haystack = _normalise(source_text)
+    haystack = normalise_for_match(source_text)
     violations: list[str] = []
     for idx, conflict in enumerate(extract.get("internal_conflicts") or []):
         for side in ("value_a", "value_b"):
             item = conflict.get(side) or {}
             for key in ("location", "anchor"):
-                needle = _normalise(item.get(key) or "")
+                needle = normalise_for_match(item.get(key) or "")
                 if needle and needle not in haystack:
                     violations.append(
                         f"internal_conflicts[{idx}].{side}: {key} {needle!r} does not occur in the "
@@ -476,7 +476,7 @@ def find_unsourced_glossary_terms(extract: dict, source_text: str, glossary: dic
         if t.get("rule") == "keep_latin" and t.get("term")
     ]
     violations: list[str] = []
-    for path, item in _extract_items(extract):
+    for path, item in extract_items(extract):
         value = (item.get("value") or "").lower()
         for term in terms:
             lowered = term.lower()

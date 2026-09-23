@@ -670,7 +670,7 @@ def render_review(brief: dict) -> str:
     )
 
 
-def _load_brief_meta(run_dir) -> dict:
+def load_brief_meta(run_dir: str | Path) -> dict:
     """Best-effort read of ``run_dir/brief.json``'s meta block — {} when absent/invalid."""
     try:
         brief = json.loads((Path(run_dir) / "brief.json").read_text(encoding="utf-8"))

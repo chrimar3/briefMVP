@@ -14,15 +14,20 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from typing import Union
 
-from pipeline import agency, creative, gates, revisions
+from pipeline import agency, creative, gates, revisions, spec_catalog
+from pipeline.approval import require_current_approval
+from pipeline.money import money_figures
+from pipeline.release_control import require_not_withdrawn
 
 REF = re.compile(r'\[brief:([a-z_]+):(\d+)\]')
 CHECKS = ('all_facts_cited', 'qualifiers', 'mandatories', 'brand_voice', 'deliverables', 'rights_and_permissions', 'client_safe')
 ASSET_TYPES = {'.png', '.jpg', '.jpeg', '.webp', '.pdf', '.mp4', '.mov', '.svg'}
 
 
-def inspect_creative(text, brief):
+def inspect_creative(text: str, brief: dict) -> tuple:
+    """(errors, claims) for a creative text: brief refs resolve, mandatories verbatim, no new money."""
     errors, claims = [], []
     tags = re.findall(r'\[brief:[^\]]*\]', text)
     if not tags:
@@ -44,14 +49,14 @@ def inspect_creative(text, brief):
             errors.append(f'Missing verbatim mandatory {index}')
     # Numeric budget invention remains a failure even if other numbers are present.
     brief_content = '\n'.join(e.get('content', '') for f in gates.BRIEF_FIELDS for e in brief.get(f) or [])
-    from pipeline.stages import _money_figures
-    if _money_figures(text) - _money_figures(brief_content):
+    if money_figures(text) - money_figures(brief_content):
         errors.append('Creative contains a currency amount absent from canonical brief content')
     return errors, claims
 
 
-def context(run):
-    revisions.require_current_approval(run)
+def context(run: Path) -> dict:
+    """The signed-off brief of a run whose brief approval is current and whose audit has no blockers."""
+    require_current_approval(run)
     brief = agency.read_run(run)
     if brief['signoff']['status'] != 'signed_off':
         raise ValueError('Canonical brief is not signed off')
@@ -167,12 +172,13 @@ def current_draft(run):
     return record
 
 
-def approve(run, actor, notes, checks, solo_rehearsal=False):
+def approve(run: Path, actor: str, notes: str, checks: Union[list, tuple, set],
+            solo_rehearsal: bool = False) -> dict:
+    """Record a named creative lead's approval of the current draft (every review check required)."""
     if not actor.strip() or not notes.strip() or set(checks) != set(CHECKS):
         raise ValueError('Named creative lead, notes and every creative review check are required')
     brief = context(run)
     record = current_draft(run)
-    from pipeline import spec_catalog
     rows = revisions.load(run / 'agency_inputs.json')['deliverables']
     problems = spec_catalog.validate(spec_table(run), selected_ids=[row['spec_id'] for row in rows])
     text = (run / record['files'][0]['file']).read_text(encoding='utf-8')
@@ -197,9 +203,8 @@ def approve(run, actor, notes, checks, solo_rehearsal=False):
     return approval
 
 
-def require_creative_approval(run):
+def require_creative_approval(run: Path) -> tuple:
     """Validate current creative selection, approval bindings and catalog freshness."""
-    from pipeline.release_control import require_not_withdrawn
     require_not_withdrawn(run, include_creative=True)
     record = current_draft(run)
     approval = revisions.load(run / 'creative_approval.json', {})
@@ -218,7 +223,6 @@ def require_creative_approval(run):
             or approval.get('brief_approval_sha256') != revisions.file_hash(run / 'approval.json')
             or approval.get('language_review_sha256') != revisions.file_hash(run / 'language_review.json')):
         raise ValueError('Missing or stale creative approval')
-    from pipeline import spec_catalog
     rows = revisions.load(run / 'agency_inputs.json')['deliverables']
     problems = spec_catalog.validate(spec_table(run), selected_ids=[row['spec_id'] for row in rows])
     if problems:

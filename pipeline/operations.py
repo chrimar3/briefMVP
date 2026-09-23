@@ -14,10 +14,11 @@ from pathlib import Path
 if __package__ in (None, ''):  # allow `python3 pipeline/operations.py` as well as `-m pipeline.operations`
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pipeline import agency, delivery, gates, revisions  # noqa: E402
+from pipeline import agency, approval, delivery, gates, revisions  # noqa: E402
 
 
-def status(run):
+def status(run: Path) -> dict:
+    """One run's stage, next actions, blockers and notices — read-only, never cached."""
     run = Path(run).resolve()
     result = {'run': str(run), 'stage': 'error', 'next_actions': [], 'blockers': [], 'notices': []}
     try:
@@ -36,7 +37,7 @@ def status(run):
                 result['next_actions'] = audit['blockers']
                 return result
             try:
-                revisions.require_current_approval(run)
+                approval.require_current_approval(run)
                 if brief['signoff']['status'] != 'signed_off':
                     raise ValueError('Brief must be signed off by the account lead')
             except ValueError as exc:

@@ -40,7 +40,7 @@ from typing import Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
-from pipeline import gates  # noqa: E402
+from pipeline import gates, records  # noqa: E402
 
 SPEC_TABLE = REPO_ROOT / "config" / "channel_specs.json"
 CREATIVE_BANNERS = ("SHADOW MODE", "CREATIVE DRAFT", "APPROVED FOR DELIVERY")
@@ -84,7 +84,8 @@ def resolve_project(manifest: dict, override: Optional[Path] = None) -> Optional
 
 
 def _load_json(path: Path):
-    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+    """A run record, or None when absent; a corrupt record raises CorruptRecordError (never skipped)."""
+    return records.load_strict(path) if path.is_file() else None
 
 
 def load_run(run_dir: Path, project: Optional[Path] = None) -> dict:

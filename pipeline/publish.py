@@ -11,12 +11,13 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+from typing import Optional, Union
 
 if __package__ in (None, ""):  # allow `python3 pipeline/publish.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline.review import ReviewInputError, _load_brief_meta  # noqa: E402
-from pipeline import revisions
+from pipeline.review import ReviewInputError, load_brief_meta  # noqa: E402
+from pipeline import approval, docview, review, revisions  # noqa: E402
 
 #: The shelf lives beside `runs/` at the repo root unless a caller says otherwise.
 DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
@@ -38,9 +39,10 @@ def _slug(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", str(value).lower()).strip("-")
 
 
-def shelf_prefix(run_dir):
+def shelf_prefix(run_dir: Union[str, Path]) -> str:
+    """`<client>-<project>-<date>-<content revision>`: the run's immutable name on the shelf."""
     run_dir = Path(run_dir)
-    meta = _load_brief_meta(run_dir)
+    meta = load_brief_meta(run_dir)
     client = _slug(meta.get("client_id", "")) or _slug(run_dir.name) or "client"
     project = _slug(meta.get("project_id", "")) or _slug(run_dir.name) or "project"
     date = _slug(str(meta.get("created_ts", ""))[:10]) or "undated"
@@ -50,16 +52,18 @@ def shelf_prefix(run_dir):
     return f"{client}-{project}-{date}-{revision}"
 
 
-def publish_run(run_dir, reviews_dir=None) -> list[Path]:
+def publish_run(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, Path]] = None) -> list[Path]:
+    """Take the run lock, then publish the run's pages onto the shelf (`publish_locked`)."""
     with revisions.run_lock(run_dir):
-        return _publish_locked(run_dir, reviews_dir)
+        return publish_locked(run_dir, reviews_dir)
 
 
-def _publish_locked(run_dir, reviews_dir=None) -> list[Path]:
+def publish_locked(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, Path]] = None) -> list[Path]:
     """Copy a completed run's pages onto the shelf; return the published paths.
 
-    A run without a brief page publishes nothing (empty list) — that is the normal
-    case for refusals and partial stages, not an error.
+    For a caller that already holds the run lock (the runner, while writing its manifest);
+    everyone else calls `publish_run`. A run without a brief page publishes nothing (empty
+    list) — that is the normal case for refusals and partial stages, not an error.
     """
     run_dir = Path(run_dir)
     if not (run_dir / "brief_review.html").is_file():
@@ -71,7 +75,6 @@ def _publish_locked(run_dir, reviews_dir=None) -> list[Path]:
     if (run_dir / "agency_inputs.json").exists():
         try:
             brief = revisions.load(run_dir / "brief.json", {})
-            from pipeline import review, docview
             if (run_dir / "brief_review.html").read_text(encoding="utf-8") != review.render_review(brief):
                 raise ValueError("Review page differs from canonical brief; regenerate the views")
             for lang in ("el", "en"):
@@ -80,7 +83,7 @@ def _publish_locked(run_dir, reviews_dir=None) -> list[Path]:
                 if html.exists() and (not md.exists() or html.read_text(encoding="utf-8") != docview.render_document(md.read_text(encoding="utf-8"), lang)):
                     raise ValueError("Document view differs from its render; regenerate the views")
             if brief.get("signoff", {}).get("status") == "signed_off":
-                revisions.require_current_approval(run_dir)
+                approval.require_current_approval(run_dir)
         except ValueError as exc:
             raise ReviewInputError(str(exc)) from exc
     prefix = shelf_prefix(run_dir)
@@ -113,6 +116,10 @@ def _publish_locked(run_dir, reviews_dir=None) -> list[Path]:
                 raise ReviewInputError(f"Immutable publication collision: {target}")
         published.append(target)
     return published
+
+
+#: Deprecated private name of `publish_locked`, kept for callers written before it was public.
+_publish_locked = publish_locked
 
 
 def main(argv=None) -> int:

@@ -225,7 +225,7 @@ def test_only_synthetic_runs_publish_to_the_in_repo_review_shelf(tmp_path, monke
     """reviews/ lives inside the repository: approved material must never be copied there."""
     from pipeline import publish, run_review
     published = []
-    monkeypatch.setattr(publish, "_publish_locked", lambda run_dir: published.append(run_dir) or [])
+    monkeypatch.setattr(publish, "publish_locked", lambda run_dir: published.append(run_dir) or [])
     monkeypatch.setattr(run_review, "write_run_review", lambda run_dir: None)
     for data_class, expected in (("approved", 0), ("synthetic", 1)):
         r = runner.Runner(fixture_project, tmp_path / data_class, run_id="shelf")

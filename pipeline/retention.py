@@ -31,6 +31,11 @@ content) to `retention_tombstones.jsonl` beside the purged runs. Committed evide
 tracked by git in this repository) is never deleted unless `--include-committed` is passed
 AND the committed directory is itself one of the directories named on the command line.
 `--dry-run` reports without deleting or writing anything.
+
+A run record that exists but does not parse (a corrupt `evidence_index.json`, `releases.json`,
+`input_snapshot.json`, run manifest or diagnostics record) is refused and named, never read as
+empty: an inventory that silently skipped it would under-report copies, and a purge would then
+leave them behind while its tombstone claimed otherwise.
 """
 
 from __future__ import annotations
@@ -43,14 +48,13 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Optional
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import gates, revisions
+from pipeline import clock, gates, records, revisions
 
 TOMBSTONE_FILE = "retention_tombstones.jsonl"
 #: The run's staged, read-only input copies (pipeline/runner.py STAGED_INPUTS_DIR).
@@ -78,6 +82,7 @@ class RetentionError(ValueError):
 
 
 def sha256_file(path: Path) -> str:
+    """SHA-256 of a file, streamed."""
     digest = hashlib.sha256()
     with Path(path).open("rb") as handle:
         for block in iter(lambda: handle.read(1 << 16), b""):
@@ -86,17 +91,16 @@ def sha256_file(path: Path) -> str:
 
 
 def _load(path: Path, default=None):
-    try:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return default
+    """A run record, or `default` when absent. A corrupt record raises CorruptRecordError (refusal)."""
+    return records.load_optional(path, default)
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return clock.timestamp("seconds")
 
 
 def is_run_dir(path: Path) -> bool:
+    """A real (non-symlink) directory carrying one of the run marker files."""
     return path.is_dir() and not path.is_symlink() and any((path / m).is_file() for m in RUN_MARKERS)
 
 
@@ -498,7 +502,7 @@ def main(argv: Optional[list] = None) -> int:
                                include_committed=args.include_committed, tombstone_dir=args.tombstone_dir)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
-    except (RetentionError, OSError) as exc:
+    except (RetentionError, records.CorruptRecordError, OSError) as exc:
         print(f"retention: {exc}", file=sys.stderr)
         return 2
 

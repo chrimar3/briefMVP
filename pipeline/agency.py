@@ -11,8 +11,9 @@ import copy
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
-from pipeline import clarifications, client_pack, gates, handover, quality, revisions, stages, review, docview
+from pipeline import approval, clarifications, client_pack, gates, handover, quality, revisions, stages, review, docview
 
 PROFILES = gates.CONFIG_DIR / "campaign_profiles.json"
 
@@ -349,7 +350,8 @@ def approve(run, actor, summary, solo_rehearsal=False):
                            details={"summary": summary, "separation_of_duties": separation})
 
 
-def main(argv=None):
+def main(argv: Optional[list] = None) -> int:
+    """The `python -m pipeline.agency` command line: one explicit human command per call."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("init", "audit", "queue", "answer", "resolve", "exclude", "attest", "approve", "diff", "handover", "apply", "carry-decisions"):
@@ -417,7 +419,7 @@ def main(argv=None):
                                            details={"question": args.id, "status": args.status})
             elif args.command == "carry-decisions":
                 with revisions.run_lock(args.parent):
-                    print(json.dumps(revisions.carry_decisions(args.parent, run, args.actor), indent=2))
+                    print(json.dumps(clarifications.carry_decisions(args.parent, run, args.actor), indent=2))
             elif args.command == "apply":
                 apply_candidate(run, args.candidate, args.actor, args.reason)
             elif args.command == "resolve":
@@ -447,7 +449,7 @@ def main(argv=None):
             elif args.command == "diff":
                 print(json.dumps(revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2))
             elif args.command == "handover":
-                revisions.require_current_approval(run)
+                approval.require_current_approval(run)
                 result = audit(run)
                 if result["blockers"]:
                     raise ValueError("Handover blocked; inspect agency_audit.md")

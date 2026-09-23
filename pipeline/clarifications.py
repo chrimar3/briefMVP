@@ -4,7 +4,9 @@ from __future__ import annotations
 import re
 from difflib import SequenceMatcher
 from pathlib import Path
-from pipeline.revisions import digest, load, timestamp, write_json
+from typing import Union
+
+from pipeline.revisions import digest, file_hash, load, timestamp, write_json
 from pipeline.quality import ref_key
 
 
@@ -56,3 +58,43 @@ def record(run_dir, items, question_id, status, actor, text, evidence, owner, pr
                               "recorded_at": timestamp(), "history": ((previous or {}).get("history", []) +
                               [{k: v for k, v in previous.items() if k != "history"}] if previous else [])}
     write_json(path, decisions)
+
+
+def carry_decisions(parent: Union[str, Path], child: Union[str, Path], actor: str) -> dict:
+    """Explicitly carry matching triage only. Never transfer approval or resolve conflicts.
+
+    Moved here from `pipeline/revisions.py` (it is triage policy, not a revision utility);
+    `revisions.carry_decisions` still resolves to this function.
+    """
+    parent, child = Path(parent).resolve(), Path(child).resolve()
+    if parent == child or not actor.strip():
+        raise ValueError('Distinct parent/child revisions and a named operator required')
+    old, new = load(parent / 'brief.json'), load(child / 'brief.json')
+    identity = lambda b: tuple(b.get('meta', {}).get(k) for k in ('client_id', 'project_id'))
+    if not all(identity(old)) or identity(old) != identity(new):
+        raise ValueError('Revision identity must match client and project')
+    source_hashes = lambda path: {k: v.get('sha256') for k, v in load(path/'input_snapshot.json', {}).items() if k.startswith('source:')}
+    old_sources, new_sources = source_hashes(parent), source_hashes(child)
+    unchanged_sources = bool(old_sources) and old_sources == new_sources
+    prior = {q['id']: q for q in queue(old, load(parent / 'clarifications.json', {}))}
+    current = queue(new)
+    decisions = load(child / 'clarifications.json', {})
+    carried, pending = [], []
+    for q in current:
+        previous = prior.get(q['id'])
+        old_context = [old['open_questions'][i] for i in previous['member_indexes']] if previous else []
+        new_context = [new['open_questions'][i] for i in q['member_indexes']]
+        if (q['id'] not in decisions and previous and previous['decision'] and unchanged_sources
+                and old_context == new_context and previous['evidence_hash'] == q['evidence_hash']):
+            decisions[q['id']] = {**previous['decision'], 'carried_from': str(parent), 'carried_by': actor,
+                                  'carried_at': timestamp()}
+            carried.append(q['id'])
+        elif q['id'] not in decisions:
+            pending.append(q['id'])
+    write_json(child / 'clarifications.json', decisions)
+    result = {'parent': str(parent), 'parent_brief_sha256': file_hash(parent/'brief.json'), 'actor': actor,
+              'carried': carried, 'needs_review': pending, 'at': timestamp()}
+    history = load(child / 'revision_lineage.json', [])
+    history.append(result)
+    write_json(child / 'revision_lineage.json', history)
+    return result

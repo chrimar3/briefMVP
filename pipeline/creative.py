@@ -37,7 +37,8 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, gates
+from pipeline import agents, approval, gates
+from pipeline.money import money_figures
 
 #: The models the Tier-4 A/B compares, in order. Same input, same skeleton — only the model moves.
 AB_MODELS = ("sonnet", "opus")
@@ -268,19 +269,17 @@ def _magnitude_figures(text: str) -> set:
 
 def _check_draft_facts(text: str, brief: dict) -> list:
     """Draft mode with the signed brief: facts trace to the brief (creative-shadow rule 3)."""
-    from pipeline.stages import _money_figures  # one currency normaliser for the whole pipeline
-
     content = _brief_content(brief)
     anchors = "\n".join((ref or {}).get("anchor") or "" for f in gates.BRIEF_FIELDS
                         for e in (brief.get(f) or []) for ref in (e.get("evidence") or []))
     body = _SPEC_TAG.sub(" ", re.sub(r"\[brief:[^\]]*\]", " ", text))
     violations = []
-    known = _money_figures(content) | _magnitude_figures(content)
-    for figure in sorted(_money_figures(body) - known):
+    known = money_figures(content) | _magnitude_figures(content)
+    for figure in sorted(money_figures(body) - known):
         violations.append(
             f"currency amount (≈{figure}) appears in no brief content string — a draft carries "
             f"the brief's own wording, and 'units unstated' stays unstated")
-    for figure in sorted(_magnitude_figures(body) - known - _money_figures(body)):
+    for figure in sorted(_magnitude_figures(body) - known - money_figures(body)):
         violations.append(
             f"thousands figure (≈{figure}) appears in no brief content string — never convert a "
             f"spoken or hedged figure into an amount")
@@ -376,9 +375,8 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
     """Run the creative-shadow subagent once, on the given model, gated on its artifact."""
     require_signed_off(brief)
     if (Path(run_dir) / "agency_inputs.json").exists():
-        from pipeline.revisions import require_current_approval
         try:
-            require_current_approval(run_dir)
+            approval.require_current_approval(run_dir)
         except ValueError as exc:
             raise NotSignedOff(str(exc)) from exc
     spec_table = load_spec_table(spec_table_path)

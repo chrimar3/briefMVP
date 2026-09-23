@@ -25,7 +25,6 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -33,7 +32,8 @@ if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from pipeline import PIPELINE_VERSION
-from pipeline import agents, conflicts, creative, data_policy, docview, extraction, gates, publish, review, run_review, stages, revisions
+from pipeline import (agents, approval, clock, conflicts, creative, data_policy, docview, extraction, gates, publish,
+                      review, run_review, stages, revisions)
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -448,7 +448,7 @@ class Runner:
     ):
         self.project_dir = Path(project_dir).resolve()
         self.out_dir = Path(out_dir).resolve()
-        self.run_id = run_id or datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        self.run_id = run_id or clock.compact("%Y%m%d-%H%M%S-%f")
         self.run_dir = self.out_dir / self.run_id
         self.stage = stage
         self.glossary = glossary
@@ -474,7 +474,7 @@ class Runner:
             "pipeline_version": PIPELINE_VERSION,
             "project_dir": str(self.project_dir),
             "started_ts": self.started_ts,
-            "finished_ts": datetime.now().isoformat(timespec="seconds"),
+            "finished_ts": clock.timestamp("seconds"),
             "outcome": outcome,
             "exit_code": exit_code,
             "stage": self.stage,
@@ -501,7 +501,7 @@ class Runner:
                 print("        reviews/ shelf skipped: only synthetic runs publish into the repository")
             return path
         try:
-            published = publish._publish_locked(self.run_dir)
+            published = publish.publish_locked(self.run_dir)
             if published:
                 print(f"        reviews/ shelf: {', '.join(p.name for p in published)}")
         except Exception as exc:
@@ -584,7 +584,7 @@ class Runner:
             return EXIT_GATE_ERROR
 
     def _run_locked(self) -> int:
-        self.started_ts = datetime.now().isoformat(timespec="seconds")
+        self.started_ts = clock.timestamp("seconds")
         self.run_dir.mkdir(parents=True, exist_ok=True)
         print(f"Brief Builder {PIPELINE_VERSION} · run {self.run_id}")
         print(f"  input : {self.project_dir}")
@@ -687,7 +687,7 @@ class Runner:
         if recorded is None or any(key in recorded for key in style):
             paths.update(style)
         try:
-            revisions.prepare_run(self.run_dir, paths, self.stage)
+            approval.prepare_run(self.run_dir, paths, self.stage)
         except (ValueError, OSError) as exc:
             print(f"[revision safety] {exc}", file=sys.stderr)
             return EXIT_GATE_ERROR

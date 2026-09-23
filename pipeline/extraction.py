@@ -13,11 +13,10 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pipeline import agents, gates
+from pipeline import agents, clock, gates
 
 
 class ExtractionError(gates.GateError):
@@ -139,7 +138,7 @@ OUTPUT
     source_id      = {source.source_id}
     source_type    = {source.source_type}
     source_date    = {source.source_date}
-    extraction_ts  = {datetime.now().isoformat(timespec="seconds")}
+    extraction_ts  = {clock.timestamp("seconds")}
     agent_version  = 1.0
 
   The object is validated against output_contract by the runner, which fails the run rather
@@ -313,17 +312,17 @@ def screen_findings(issues: list, source_text: str) -> tuple:
     can reach the extractor as a repair instruction.
 
     A finding is forwarded only when its `evidence` is a verbatim span of the ORIGINAL source
-    (matched like citations: markdown-insensitive, whitespace-collapsed — `gates._normalise`).
+    (matched like citations: markdown-insensitive, whitespace-collapsed — `gates.normalise_for_match`).
     A finding with no evidence, or with evidence the source does not contain — a hallucinated
     quote, a `[FIDELITY: ...]` annotation, text lifted from the extract, or an instruction
     smuggled in through the source — is dropped with the reason recorded. The verifier is a
     second opinion, not an authority.
     """
-    haystack = gates._normalise(source_text)
+    haystack = gates.normalise_for_match(source_text)
     forwarded, dropped = [], []
     for idx, issue in enumerate(issues):
         evidence = issue.get("evidence") if isinstance(issue.get("evidence"), str) else ""
-        needle = gates._normalise(evidence)
+        needle = gates.normalise_for_match(evidence)
         record = {"index": idx, "where": issue.get("where", ""), "problem": issue.get("problem", ""),
                   "evidence": evidence}
         if not needle:

@@ -1,18 +1,44 @@
-"""Content-bound review and safe reuse; no model calls or implicit human decisions."""
+"""Content-bound review and safe reuse; no model calls or implicit human decisions.
+
+A leaf utility of the Tier 5–8 layer: hashing, input snapshots, evidence copies, run locks,
+archives and the hash-chained audit log. It imports no policy module. The approval policy
+(`require_current_approval`) lives in `pipeline.approval`, and decision carry-forward
+(`carry_decisions`) in `pipeline.clarifications`; both names still resolve here, lazily, for
+existing callers. Record I/O is `pipeline.records`, timestamps are `pipeline.clock`.
+"""
 from __future__ import annotations
 
 import fcntl
 import hashlib
+import importlib
 import json
 import shutil
 from contextlib import contextmanager
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterator, Union
+from typing import Any, Callable, Iterator, Mapping, Optional, Union
 from uuid import uuid4
+
+from pipeline import clock, records
 
 #: The per-run advisory lock file. Its absence means no locked operation ever mutated the run.
 RUN_LOCK_FILE = ".run.lock"
+
+PathLike = Union[str, Path]
+
+#: Record I/O, re-exported under the names every Tier 5–8 module already uses.
+write_json = records.write_json
+load = records.load_optional
+CorruptRecordError = records.CorruptRecordError
+
+#: Names that moved out of this module; resolved lazily so this module imports no policy.
+_MOVED = {"require_current_approval": "pipeline.approval", "carry_decisions": "pipeline.clarifications"}
+
+
+def __getattr__(name: str) -> Any:
+    """Compatibility: `revisions.require_current_approval` / `revisions.carry_decisions` still resolve."""
+    if name in _MOVED:
+        return getattr(importlib.import_module(_MOVED[name]), name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class RunBusyError(ValueError):
@@ -23,37 +49,29 @@ class RunBusyError(ValueError):
     """
 
 
-def digest(value):
+def digest(value: Any) -> str:
+    """SHA-256 of the canonical (sorted-key) JSON encoding of `value`."""
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
-def timestamp():
-    return datetime.now(timezone.utc).isoformat()
+def timestamp() -> str:
+    """UTC ISO-8601 timestamp for decision records (`pipeline.clock`)."""
+    return clock.timestamp()
 
 
-def write_json(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_name(path.name + "." + uuid4().hex + ".tmp")
-    temp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temp.replace(path)
-
-
-def load(path, default=None):
-    path = Path(path)
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
-
-
-def file_hash(path):
+def file_hash(path: PathLike) -> str:
+    """SHA-256 of a file's bytes."""
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def input_state(paths):
+def input_state(paths: Mapping[str, PathLike]) -> dict:
+    """{key: {path, sha256}} for every input file, sorted by key — the run's input snapshot."""
     return {key: {"path": str(Path(path).resolve()), "sha256": file_hash(path)}
             for key, path in sorted(paths.items())}
 
 
-def verify_inputs(run_dir):
+def verify_inputs(run_dir: PathLike) -> None:
+    """Raise ValueError when any input recorded in the run's snapshot changed or the source set did."""
     state = load(Path(run_dir) / "input_snapshot.json", {})
     recorded_sources = {Path(item["path"]).resolve() for key, item in state.items() if key.startswith("source:")}
     for directory in {p.parent for p in recorded_sources}:
@@ -65,7 +83,8 @@ def verify_inputs(run_dir):
             raise ValueError(f"Input {key} changed; use a new run with current sources.")
 
 
-def fingerprint(run_dir):
+def fingerprint(run_dir: PathLike) -> str:
+    """Digest of the files a human approval is bound to (brief, renders, inputs, decisions, extracts)."""
     run_dir = Path(run_dir)
     names = ["brief.json", "brief_el.md", "brief_en.md", "input_snapshot.json",
              "agency_inputs.json", "clarifications.json", "coverage_decisions.json", "evidence_index.json"]
@@ -73,36 +92,13 @@ def fingerprint(run_dir):
     return digest({str(p.relative_to(run_dir)): file_hash(p) for p in files if p.is_file()})
 
 
-def require_current_approval(run_dir):
-    run_dir = Path(run_dir)
-    from pipeline.release_control import require_not_withdrawn
-    require_not_withdrawn(run_dir)
-    if (run_dir / 'question_exchange' / 'proposals').exists():
-        from pipeline.question_exchange import pending_proposals
-        if pending_proposals(run_dir):
-            raise ValueError('Unreviewed clarification replies; review the proposals before approval or release')
-    verify_inputs(run_dir)
-    verify_evidence(run_dir)
-    approval = load(run_dir / "approval.json", {})
-    if not approval.get("actor") or approval.get("fingerprint") != fingerprint(run_dir):
-        raise ValueError("Missing or stale human approval; review and approve the current revision.")
-    if (run_dir / "agency_inputs.json").exists():
-        from pipeline.quality import field_review_checklist
-        path = run_dir / "language_review.json"
-        attestation = load(path, {})
-        if (not path.is_file() or approval.get("language_review_sha256") != file_hash(path)
-                or attestation.get("fingerprint") != fingerprint(run_dir)
-                or not attestation.get("actor")
-                or not all(attestation.get("checks", {}).get(k) is True for k in field_review_checklist())):
-            raise ValueError("Missing, withdrawn or stale human language/source review; approve again after review")
-
-
-def archive(run_dir, names, copy_only=False):
+def archive(run_dir: PathLike, names: list, copy_only: bool = False) -> None:
+    """Move (or copy) the named run artifacts into a fresh `history/<UTC stamp>-<id>/` folder."""
     run_dir = Path(run_dir)
     files = [run_dir / n for n in names if (run_dir / n).exists()]
     if not files:
         return
-    target = run_dir / "history" / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid4().hex[:8])
+    target = run_dir / "history" / (clock.compact("%Y%m%dT%H%M%S") + "-" + uuid4().hex[:8])
     target.mkdir(parents=True)
     for path in files:
         if copy_only:
@@ -114,11 +110,14 @@ def archive(run_dir, names, copy_only=False):
             shutil.move(str(path), str(target / path.name))
 
 
-def prepare_run(run_dir, paths, stage):
+def prepare_run(run_dir: PathLike, paths: Mapping[str, PathLike], stage: str,
+                require_approval: Optional[Callable[[Path], None]] = None) -> None:
     """Refuse changed-input reuse. Archive invalidated products before a leg rerun.
 
     Legacy runs without a snapshot remain usable for the original demo; they cannot
-    receive agency approval until initialized and explicitly reviewed.
+    receive agency approval until initialized and explicitly reviewed. The creative stage of
+    an agency-managed run needs `require_approval` (the policy check this utility does not
+    own); without it the call refuses — use `pipeline.approval.prepare_run`, which binds it.
     """
     run_dir = Path(run_dir)
     state = input_state(paths)
@@ -134,7 +133,10 @@ def prepare_run(run_dir, paths, stage):
     capture_evidence(run_dir, paths)
     if stage == "creative":
         if (run_dir / "agency_inputs.json").exists():
-            require_current_approval(run_dir)
+            if require_approval is None:
+                raise ValueError("The creative stage of an agency-managed run needs the approval "
+                                 "check; call pipeline.approval.prepare_run")
+            require_approval(run_dir)
         return
     downstream = ["approval.json", "language_review.json", "agency_audit.json", "creative_approval.json", "creative_draft.json", "creative", "brief_review.html", "run_review.html",
                   "brief_el.html", "brief_en.html", "brief_el.md", "brief_en.md"]
@@ -149,7 +151,7 @@ def prepare_run(run_dir, paths, stage):
     archive(run_dir, downstream)
 
 
-def changes(before, after):
+def changes(before: dict, after: dict) -> dict:
     """Field-level content comparison, useful before approving a changed brief."""
     return {key: {"before": before.get(key), "after": after.get(key)}
             for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)}
@@ -204,7 +206,7 @@ def read_lock(run_dir: Union[str, Path]) -> Iterator[None]:
             fcntl.flock(handle, fcntl.LOCK_UN)
 
 
-def capture_evidence(run_dir, paths):
+def capture_evidence(run_dir: PathLike, paths: Mapping[str, PathLike]) -> None:
     """Keep hash-named copies. Capturing is not an assertion of model provenance."""
     run_dir = Path(run_dir)
     state = load(run_dir / 'evidence_index.json', {})
@@ -227,49 +229,13 @@ def capture_evidence(run_dir, paths):
     write_json(run_dir / 'evidence_index.json', state)
 
 
-def verify_evidence(run_dir):
+def verify_evidence(run_dir: PathLike) -> None:
+    """Raise ValueError when a preserved evidence copy is missing, outside the run or modified."""
     run_dir = Path(run_dir).resolve()
     for key, item in load(run_dir / 'evidence_index.json', {}).items():
         path = (run_dir / item['file']).resolve()
         if run_dir not in path.parents or not path.is_file() or file_hash(path) != item['sha256']:
             raise ValueError(f'Preserved evidence {key} is missing, outside run or modified')
-
-
-def carry_decisions(parent, child, actor):
-    """Explicitly carry matching triage only. Never transfer approval or resolve conflicts."""
-    from pipeline import clarifications
-    parent, child = Path(parent).resolve(), Path(child).resolve()
-    if parent == child or not actor.strip():
-        raise ValueError('Distinct parent/child revisions and a named operator required')
-    old, new = load(parent / 'brief.json'), load(child / 'brief.json')
-    identity = lambda b: tuple(b.get('meta', {}).get(k) for k in ('client_id', 'project_id'))
-    if not all(identity(old)) or identity(old) != identity(new):
-        raise ValueError('Revision identity must match client and project')
-    source_hashes = lambda path: {k: v.get('sha256') for k, v in load(path/'input_snapshot.json', {}).items() if k.startswith('source:')}
-    old_sources, new_sources = source_hashes(parent), source_hashes(child)
-    unchanged_sources = bool(old_sources) and old_sources == new_sources
-    prior = {q['id']: q for q in clarifications.queue(old, load(parent / 'clarifications.json', {}))}
-    current = clarifications.queue(new)
-    decisions = load(child / 'clarifications.json', {})
-    carried, pending = [], []
-    for q in current:
-        previous = prior.get(q['id'])
-        old_context = [old['open_questions'][i] for i in previous['member_indexes']] if previous else []
-        new_context = [new['open_questions'][i] for i in q['member_indexes']]
-        if (q['id'] not in decisions and previous and previous['decision'] and unchanged_sources
-                and old_context == new_context and previous['evidence_hash'] == q['evidence_hash']):
-            decisions[q['id']] = {**previous['decision'], 'carried_from': str(parent), 'carried_by': actor,
-                                  'carried_at': timestamp()}
-            carried.append(q['id'])
-        elif q['id'] not in decisions:
-            pending.append(q['id'])
-    write_json(child / 'clarifications.json', decisions)
-    result = {'parent': str(parent), 'parent_brief_sha256': file_hash(parent/'brief.json'), 'actor': actor,
-              'carried': carried, 'needs_review': pending, 'at': timestamp()}
-    history = load(child / 'revision_lineage.json', [])
-    history.append(result)
-    write_json(child / 'revision_lineage.json', history)
-    return result
 
 
 # --------------------------------------------------------------------------------------
@@ -287,11 +253,12 @@ _VOUCHED_LISTS = {"amendments.json": "brief_amended", "approval_withdrawals.json
                   "releases.json": "creative_released"}
 
 
-def _line_hash(line):
+def _line_hash(line: str) -> str:
     return hashlib.sha256(line.encode("utf-8")).hexdigest()
 
 
-def append_audit(run_dir, event, actor, record=None, details=None):
+def append_audit(run_dir: PathLike, event: str, actor: str, record: Any = None,
+                 details: Optional[dict] = None) -> dict:
     """Append one decision to <run>/audit_log.jsonl, chained to the previous line's SHA-256.
 
     `record` names the file the decision wrote (hashed as written), or a list entry appended
@@ -319,14 +286,15 @@ def append_audit(run_dir, event, actor, record=None, details=None):
     return entry
 
 
-def read_audit_log(run_dir):
+def read_audit_log(run_dir: PathLike) -> list:
+    """Every entry of the run's audit log, in order ([] when there is none)."""
     path = Path(run_dir) / AUDIT_LOG
     if not path.exists():
         return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def verify_audit_log(run_dir):
+def verify_audit_log(run_dir: PathLike) -> list:
     """Every reason the audit trail cannot be trusted as written; [] when it is intact.
 
     Detects an edited, inserted, reordered or deleted line (chain or sequence break), and a
@@ -374,7 +342,7 @@ def verify_audit_log(run_dir):
     return problems
 
 
-def require_intact_audit_log(run_dir):
+def require_intact_audit_log(run_dir: PathLike) -> None:
     """Raise ValueError (the Tier 5–7 refusal type) when `verify_audit_log` finds anything."""
     problems = verify_audit_log(run_dir)
     if problems:

@@ -4,14 +4,18 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import csv
-from datetime import datetime, timezone
 import fcntl
 import io
 import json
 import math
-import os
+import os  # noqa: F401  (records.atomic_write_text replaces via os; tests patch effort.os)
 from pathlib import Path
-import tempfile
+import sys
+
+if __package__ in (None, ""):  # allow `python3 pipeline/effort.py`
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from pipeline import clock, records  # noqa: E402
 
 ROLES = {
     'account_assembly': 'assembly_min', 'account_review': 'review_min',
@@ -125,10 +129,9 @@ def _lock(run, *, shared=False):
 
 
 def _load(run):
-    path = run / 'effort.json'
-    if not path.exists():
+    data = records.load_optional(run / 'effort.json')
+    if data is None:
         return {'version': 1, 'events': []}
-    data = json.loads(path.read_text(encoding='utf-8'))
     if not isinstance(data, dict) or data.get('version') != 1 or not isinstance(data.get('events'), list):
         raise ValueError('invalid effort ledger')
     for event in data['events']:
@@ -147,20 +150,7 @@ def read_events(run):
         return effective_events(_load(directory)['events'])
 
 
-def _atomic_write(path, text):
-    path = Path(path)
-    temporary = None
-    try:
-        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', newline='',
-                                         dir=path.parent, suffix='.tmp', delete=False) as handle:
-            temporary = Path(handle.name)
-            handle.write(text)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(temporary, path)
-    finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+_atomic_write = records.atomic_write_text
 
 
 def _append(run, event):
@@ -173,7 +163,7 @@ def _append(run, event):
                 if payload != event:
                     raise ValueError('event-id already exists with conflicting content')
                 return existing
-        saved = {**event, 'recorded_at': datetime.now(timezone.utc).isoformat()}
+        saved = {**event, 'recorded_at': clock.timestamp()}
         data['events'].append(saved)
         effective_events(data['events'])
         _atomic_write(directory / 'effort.json', json.dumps(data, ensure_ascii=False, allow_nan=False, indent=2) + '\n')
