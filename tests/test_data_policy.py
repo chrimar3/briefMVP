@@ -10,8 +10,15 @@ import pytest
 
 from pipeline import data_policy, gates, intake, runner
 
-APPROVED = {"data_class": "approved", "approval_ref": "DP-SYNTH-001",
+#: The approval record alone (the round-1 shape of an approved declaration).
+APPROVAL = {"data_class": "approved", "approval_ref": "DP-SYNTH-001",
             "approved_by": "Synthetic data-protection lead", "approved_on": "2026-09-01"}
+#: The data-protection preconditions an approved declaration must also record (round 2, phase B:
+#: data_policy.REQUIRE_PRECONDITIONS is on).
+PRECONDITIONS = {"screened_by": "Synthetic account lead", "screened_on": "2026-08-30",
+                 "processor_ref": "SYNTH-DPA-01", "dpia_ref": "SYNTH-DPIA-SCREEN-01"}
+#: A complete, valid approved declaration.
+APPROVED = {**APPROVAL, **PRECONDITIONS}
 
 
 def _copy_fixture(fixture_project, dest, declaration=None):
@@ -190,6 +197,11 @@ def test_intake_writes_the_declaration_the_runner_requires(tmp_path):
     assert json.loads((out / "data_declaration.json").read_text(encoding="utf-8")) == {"data_class": "synthetic"}
 
 
+PRECONDITION_FLAGS = ["--screened-by", "Synthetic account lead", "--screened-on", "2026-08-30",
+                      "--processor-ref", "SYNTH-DPA-01", "--dpia-ref", "SYNTH-DPIA-SCREEN-01"]
+APPROVAL_FLAGS = ["--approval-ref", "DP-SYNTH-001", "--approved-by", "Synthetic lead", "--approved-on", "2026-09-01"]
+
+
 def test_intake_approved_needs_the_approval_record_and_an_outside_location(tmp_path, repo_root):
     raw = _raw(tmp_path)
     assert intake.main([str(raw), "--out", str(tmp_path / "a"), "--client", "helios", "--tier", "S1",
@@ -197,15 +209,33 @@ def test_intake_approved_needs_the_approval_record_and_an_outside_location(tmp_p
     assert not (tmp_path / "a").exists()
     inside = repo_root / "fixtures" / "must_not_be_created"
     assert intake.main([str(raw), "--out", str(inside), "--client", "helios", "--tier", "S1",
-                        "--data-class", "approved", "--approval-ref", "DP-SYNTH-001",
-                        "--approved-by", "Synthetic lead", "--approved-on", "2026-09-01"]) == 2
+                        "--data-class", "approved", *APPROVAL_FLAGS, *PRECONDITION_FLAGS]) == 2
     assert not inside.exists()
     out = tmp_path / "b"
     code = intake.main([str(raw), "--out", str(out), "--client", "helios", "--tier", "S1",
-                        "--data-class", "approved", "--approval-ref", "DP-SYNTH-001",
-                        "--approved-by", "Synthetic lead", "--approved-on", "2026-09-01"])
+                        "--data-class", "approved", *APPROVAL_FLAGS, *PRECONDITION_FLAGS])
     assert code in (0, 1)
-    assert data_policy.load_declaration(out).approval_ref == "DP-SYNTH-001"
+    declaration = data_policy.load_declaration(out)
+    assert declaration.approval_ref == "DP-SYNTH-001" and declaration.missing_preconditions == []
+    assert (declaration.screened_by, declaration.screened_on, declaration.processor_ref, declaration.dpia_ref) == (
+        "Synthetic account lead", "2026-08-30", "SYNTH-DPA-01", "SYNTH-DPIA-SCREEN-01")
+
+
+def test_intake_approved_without_the_preconditions_writes_nothing(tmp_path, capsys):
+    """The four precondition flags are required for approved material (REQUIRE_PRECONDITIONS)."""
+    raw = _raw(tmp_path)
+    out = tmp_path / "c"
+    assert intake.main([str(raw), "--out", str(out), "--client", "helios", "--tier", "S1",
+                        "--data-class", "approved", *APPROVAL_FLAGS, *PRECONDITION_FLAGS[:4]]) == 2
+    assert "requires a non-empty processor_ref" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_intake_refuses_precondition_flags_on_synthetic_material(tmp_path):
+    raw = _raw(tmp_path)
+    assert intake.main([str(raw), "--out", str(tmp_path / "d"), "--client", "helios", "--tier", "S1",
+                        "--data-class", "synthetic", "--dpia-ref", "X"]) == 2
+    assert not (tmp_path / "d").exists()
 
 
 def test_intake_never_silently_changes_a_declared_class(tmp_path):
@@ -225,10 +255,11 @@ def test_only_synthetic_runs_publish_to_the_in_repo_review_shelf(tmp_path, monke
     """reviews/ lives inside the repository: approved material must never be copied there."""
     from pipeline import publish, run_review
     published = []
-    monkeypatch.setattr(publish, "publish_locked", lambda run_dir: published.append(run_dir) or [])
+    monkeypatch.setattr(publish, "publish_locked", lambda run_dir, reviews_dir=None: published.append(run_dir) or [])
     monkeypatch.setattr(run_review, "write_run_review", lambda run_dir: None)
     for data_class, expected in (("approved", 0), ("synthetic", 1)):
-        r = runner.Runner(fixture_project, tmp_path / data_class, run_id="shelf")
+        # --publish asked for explicitly: even then an approved run never reaches the shelf.
+        r = runner.Runner(fixture_project, tmp_path / data_class, run_id="shelf", publish=True)
         r.run_dir.mkdir(parents=True)
         r.started_ts = "2026-09-23T00:00:00"
         r.data_declaration = {"data_class": data_class}
@@ -237,10 +268,6 @@ def test_only_synthetic_runs_publish_to_the_in_repo_review_shelf(tmp_path, monke
 
 
 # -- data-protection preconditions on an approved declaration (round 2) -------------------
-
-PRECONDITIONS = {"screened_by": "Synthetic account lead", "screened_on": "2026-08-30",
-                 "processor_ref": "SYNTH-DPA-01", "dpia_ref": "SYNTH-DPIA-SCREEN-01"}
-
 
 def test_approved_declaration_records_its_preconditions_in_the_manifest_record(tmp_path):
     (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, **PRECONDITIONS}), encoding="utf-8")
@@ -251,8 +278,20 @@ def test_approved_declaration_records_its_preconditions_in_the_manifest_record(t
     assert record["preconditions_missing"] == []
 
 
-def test_missing_preconditions_are_listed_not_hidden(tmp_path):
-    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, "screened_by": "Synthetic lead"}),
+def test_missing_preconditions_are_refused(tmp_path):
+    """The shipped policy (REQUIRE_PRECONDITIONS on): an approval record alone is not enough."""
+    assert data_policy.REQUIRE_PRECONDITIONS is True
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVAL, "screened_by": "Synthetic lead"}),
+                                                    encoding="utf-8")
+    with pytest.raises(data_policy.DataDeclarationError, match="requires a non-empty screened_on") as exc:
+        data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
+    assert "processor_ref" in str(exc.value) and "dpia_ref" in str(exc.value)
+
+
+def test_missing_preconditions_are_listed_not_hidden(tmp_path, monkeypatch):
+    """With the switch off, absent preconditions are listed in the manifest record, never hidden."""
+    monkeypatch.setattr(data_policy, "REQUIRE_PRECONDITIONS", False)
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVAL, "screened_by": "Synthetic lead"}),
                                                     encoding="utf-8")
     declaration = data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
     assert declaration.missing_preconditions == ["screened_on", "processor_ref", "dpia_ref"]
@@ -264,8 +303,8 @@ def test_missing_preconditions_are_listed_not_hidden(tmp_path):
 @pytest.mark.parametrize("override, needle", [
     ({"screened_on": "30/08/2026"}, "screened_on must be an ISO date"),
     ({"screened_on": "2099-01-01"}, "screened_on 2099-01-01 is in the future"),
-    ({"processor_ref": "  "}, "processor_ref, when present, must be non-empty"),
-    ({"dpia_ref": 7}, "dpia_ref, when present, must be non-empty"),
+    ({"processor_ref": "  "}, "requires a non-empty processor_ref"),
+    ({"dpia_ref": 7}, "requires a non-empty dpia_ref"),
 ])
 def test_invalid_precondition_values_are_refused(tmp_path, override, needle):
     (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, **PRECONDITIONS, **override}),
@@ -287,15 +326,15 @@ def test_build_declaration_writes_preconditions_when_given():
     payload = data_policy.build_declaration("approved", "DP-SYNTH-001", "Synthetic lead", "2026-09-01",
                                             today=date(2026, 9, 23), **PRECONDITIONS)
     assert {k: payload[k] for k in PRECONDITIONS} == PRECONDITIONS
-    # The existing intake call (four positional arguments) is unchanged.
-    assert data_policy.build_declaration("approved", "DP-SYNTH-001", "Synthetic lead", "2026-09-01") == {
-        "data_class": "approved", "approval_ref": "DP-SYNTH-001", "approved_by": "Synthetic lead",
-        "approved_on": "2026-09-01"}
+    # The round-1 call (four positional arguments, no preconditions) is now refused.
+    with pytest.raises(data_policy.DataDeclarationError, match="requires a non-empty screened_by"):
+        data_policy.build_declaration("approved", "DP-SYNTH-001", "Synthetic lead", "2026-09-01")
 
 
-def test_preconditions_become_mandatory_with_one_switch(tmp_path, monkeypatch):
-    (tmp_path / "data_declaration.json").write_text(json.dumps(APPROVED), encoding="utf-8")
-    assert data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))  # optional today
+def test_preconditions_are_mandatory_behind_one_switch(tmp_path, monkeypatch):
+    (tmp_path / "data_declaration.json").write_text(json.dumps(APPROVAL), encoding="utf-8")
+    monkeypatch.setattr(data_policy, "REQUIRE_PRECONDITIONS", False)
+    assert data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))  # optional when off
     monkeypatch.setattr(data_policy, "REQUIRE_PRECONDITIONS", True)
     with pytest.raises(data_policy.DataDeclarationError, match="requires a non-empty screened_by"):
         data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))

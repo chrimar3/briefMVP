@@ -1,6 +1,6 @@
 # Security model — runtime agents, injection, human governance
 
-Status: current (round r1, 2026-09-23). Scope: the Stage-1/Stage-2 pipeline as it runs today on
+Status: current (round r2 phase B, 2026-09-23). Scope: the Stage-1/Stage-2 pipeline as it runs today on
 synthetic fixtures, driven by Claude Code subagents through `claude -p`. This document says what
 each control is, where it lives, what proves it, and what it does not cover.
 
@@ -87,8 +87,25 @@ directory) or writes files it has no business writing (schema, config, sources, 
   rule or plug-in from the operator's profile.
 - **No interactive approval.** `--permission-prompts none`: anything not pre-approved is refused
   instead of waiting for a human who is not there.
+- **Per-stage write scope (round 2).** While a model step runs, the outputs of every EARLIER step
+  are protected like the human records (`runner.STEP_OUTPUTS`, `earlier_step_outputs`,
+  `protected_run_paths`): synthesis may not write `classification.json`, `fidelity/**`,
+  `extracts/**`, `verification/**` or `conflict_candidates.json`; render additionally may not
+  write `brief.json` or `coverage_ledger.json`; the creative step additionally may not write the
+  renders (`brief_el.md`, `brief_en.md`) or their views. Within the extraction step, one source's
+  leg may not write another source's `extracts/<id>.json` or `verification/<id>.*`. Each set is a
+  deny rule AND part of the integrity watch (3.4).
+- **No session transcript, restricted mode (round 2).** `--no-session-persistence` keeps no
+  transcript of what an agent read in the operator's CLI profile (`docs/pilot/DATA_PROTECTION.md`
+  §1, §6). `--restricted` — evaluated against `claude --help` 2.1.280 and adopted — removes every
+  code-running tool, ignores all settings files and confines the file tools to the working
+  directories (`--add-dir` included); it refuses `bypassPermissions`, which the runner never uses.
+  It is kept alongside `--tools`, `--setting-sources` and `--strict-mcp-config`, each of which states
+  one restriction on its own; the combination is confirmed by the phase-C live canary.
 
 *Proof:* `tests/test_agent_security.py::test_command_isolates_the_substrate_and_scopes_every_tool`,
+`tests/test_model_seam.py` (per-step deny rules, per-source extraction scope, both flags on every
+agent's argv and through the subprocess seam),
 `::test_no_granted_directory_can_reach_an_answer_key` (both keyed fixtures, including voreas whose
 client config sits beside its key), `::test_agents_read_staged_copies_never_the_project_folder`,
 `::test_invoke_hands_the_built_command_to_the_cli` (the real subprocess seam with a fake binary).
@@ -120,9 +137,24 @@ resumed run whose staged copies differ from the originals. `input_snapshot.json`
 `schema/*.json` and `templates/*` (new runs; a legacy snapshot keeps its recorded keys so old runs
 are not stranded), so a changed schema or template blocks approval (`revisions.verify_inputs`).
 
+Since round 2 the watched set includes every earlier step's outputs (3.2), so a steered render or
+creative agent that rewrites `brief.json` (for example, flipping a conflict to
+`resolved_by_human`), an extract or a render fails the step; the extraction step also hashes the
+other sources' files around each source's leg. Staged file names are validated like source_ids
+(no separator, space, comma, leading dot/dash or `..`) before anything is copied.
+
+*Stale artifacts.* Before a model step is invoked, the runner archives into
+`history/<stamp>-stale-<id>/` every artifact that step's gate will judge and an earlier leg left
+behind (`runner.model_output_paths`, `clear_stale_outputs`; per source for fidelity and extraction,
+so `--source X` touches only X's files). A resumed or retried leg whose agent writes nothing now
+fails its gate ("no file written") instead of passing on the earlier leg's file. The step's manifest
+entry lists what was archived (`stale_outputs_archived`). The demo does the same before each leg.
+
 *Proof:* `tests/test_agent_security.py::test_a_model_step_that_writes_outside_its_outputs_fails_the_run`
 (approval record, staged input, config, schema), `::test_a_halt_does_not_hide_a_tampered_record`,
-`::test_a_modified_staged_input_is_refused_on_resume`.
+`::test_a_modified_staged_input_is_refused_on_resume`; `tests/test_model_seam.py` (render and
+creative steps rewriting `brief.json`, an extract or a render; one extraction leg planting another
+source's extract; a resumed `--stage extraction --source` leg with a silent agent).
 
 ### 3.5 Verifier findings as an injection path
 
@@ -179,9 +211,51 @@ is rewritten.
 *Threat:* a dependency or CI action changes under the pipeline.
 
 *Status:* owned by W5 this round (pinned `requirements.lock`, CI action pinning). The Claude Code CLI
-is the runtime executor; the flags above were checked against `claude --help` for CLI 2.1.280.
-`--permission-prompts` and `--tools` are recent flags: an older CLI rejects the command loudly (the
-stage fails with a non-JSON-output error) rather than running without the restriction.
+is the runtime executor; the flags in 3.8 were checked against `claude --help` for CLI 2.1.280.
+Since round 2 the version is not left to chance: `agents.invoke` probes `claude --version` once per
+binary and refuses anything below `agents.MIN_CLI_VERSION` (2.1.280) or without a readable version
+before any stage runs, and every run manifest records the probe (`cli.version`).
+
+### 3.8 Run hygiene: live opt-in, hermetic output, recorded transport (round 2)
+
+*Threat:* a developer or coding agent starts a paid live run by accident (a test, a typo, a copied
+command); a run into a scratch `--out` writes into the repository (`reviews/`); nobody can tell
+afterwards which CLI or which transport produced a run.
+
+*Controls:*
+- **Live model calls are opt-in.** `pipeline/runner.py` and `demo/run_demo.py` refuse a real
+  `claude` binary unless `--live` or `BRIEF_BUILDER_LIVE=1` is given: exit 7, before any run
+  directory exists, with the offline replay command in the message (`agents.live_refusal`). The
+  replay binary (`tools/replay/claude`) needs no opt-in. `demo.sh` and `run_full.sh` take
+  `--live` or `--replay` explicitly; without either they start nothing (exit 7).
+- **Hermetic `--out`.** Only a run written to the default `runs/`, or one given `--publish`, is
+  copied onto the `reviews/` shelf (`--reviews-dir` names another shelf, `--no-publish` opts out);
+  a non-synthetic run never publishes into the repository. A missing `--project` folder is
+  refused before any run directory is created (exit 2).
+- **Recorded transport.** Every manifest carries `live`, `cli` (`binary`, `found`, `replay`,
+  `live`, `version`, `min_version`), `project_dir` relative to the repository when inside it, and
+  the advisory `prescreen` of the declared sources (never another file in the folder).
+- **The demo takes the runner's path.** `demo/run_demo.py` requires the input folder's
+  `data_declaration.json` (`--declaration-folder` for stdin; exit 6 otherwise), stages the stamped
+  input and client config read-only under `<run>/inputs/`, grants the runner's scope, and runs the
+  runner's integrity check around each model step (exit 4 on a tampered file).
+
+**Runtime argv** (`agents.build_command`, CLI 2.1.280), in order: `-p <work order>`,
+`--agents <inline definition JSON>`, `--agent <name>`, `--permission-mode acceptEdits`,
+`--permission-prompts none`, `--no-session-persistence`, `--restricted`,
+`--setting-sources project,local`, `--strict-mcp-config`, `--output-format json`,
+`--tools <frontmatter tools, Read,Write>`, `--allowedTools <Read(//dir/**) per granted dir;
+Write/Edit(//run/**)>`, `--disallowedTools <Write/Edit on read-only dirs, protected records and
+earlier steps' outputs; Read/Write/Edit(//**/answer_key.json); Bash, WebFetch, WebSearch,
+NotebookEdit>`, `--effort <level>` (only for stages with a configured level; render: low), then
+`--add-dir <dir>` per granted directory (the run directory, `schema/`, `templates/`, `config/`).
+`--model` is never passed; the model comes from the inline definition (`model_override` for the
+creative A/B and the verifier's risk routing). Probe: `claude --version`, from the neutral cwd.
+
+*Proof:* `tests/test_model_seam.py` (refusal without opt-in and nothing created, flag and env
+opt-in recorded, replay without opt-in, version floor, hermetic replay run compared against the
+real `git status` and `reviews/`, publish rules, relative `project_dir`, prescreen scope, demo
+declaration/staging/integrity, `run_full.sh`/`demo.sh` modes).
 
 ## 4. Residual risks (what this does not solve)
 
@@ -215,6 +289,6 @@ stage fails with a non-JSON-output error) rather than running without the restri
 
 ```bash
 python3 -m pytest -o addopts='' -q tests/test_agent_security.py tests/test_verifier_findings.py \
-    tests/test_governance_controls.py tests/test_prompt_hygiene.py
+    tests/test_governance_controls.py tests/test_prompt_hygiene.py tests/test_model_seam.py
 python3 -m pipeline.release_control verify-log <run_dir>
 ```

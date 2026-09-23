@@ -4,12 +4,23 @@ Runs the pipeline's evidence layer only — classify → extract → determinist
 gates — on a single text file (or stdin). No synthesis, no renders: what this shows is the
 part that makes everything downstream trustworthy, in a couple of minutes:
 
-    python demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md
-    cat some_meeting_notes.txt | python demo/run_demo.py -
+    python demo/run_demo.py demo_live/sources/live_transcript.md --glossary demo_live/client_demo.json --live
+    BRIEF_BUILDER_CLAUDE_BIN="$PWD/tools/replay/claude" \\
+        python demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md --glossary glossary/meltemi.json
+    cat some_meeting_notes.txt | python demo/run_demo.py - --declaration-folder demo_live/sources --live
 
 Every printed fact carries its exact source quote; anything the document does not state
-becomes an open question, never a plausible value. Uses the same subagent transport as the
-graded tier-3 run — needs only that transport configured (no keys are read or printed here).
+becomes an open question, never a plausible value. Uses the same subagent transport and the
+same safeguards as the runner (pipeline/runner.py):
+
+  * live model calls are opt-in (`--live` or BRIEF_BUILDER_LIVE=1; the replay binary needs none);
+  * the input's folder must carry a valid `data_declaration.json` (for stdin, name the folder
+    with --declaration-folder), and the data class's path rules apply (exit 6 otherwise);
+  * the stamped input and the client config are staged read-only under `<run>/inputs/`, the
+    agents are granted the run directory and the read-only skeleton only, and every model step
+    is followed by the runner's integrity check (exit 4 on a tampered file);
+  * the demo's own outputs are archived before each leg, so a retry is never judged on the
+    previous leg's artifact.
 
 Input is capped at ~800 words (the demo is a conversation, not a batch job). A file whose
 type cannot be inferred from strong signals is refused with instructions, not guessed —
@@ -19,17 +30,28 @@ same ethos as the pipeline (`--type transcript|rfp|email_thread|background` over
 from __future__ import annotations
 
 import argparse
+import json
+import os
+import subprocess
 import sys
+import tempfile
 import time
-from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import agents, extraction, gates, intake, stages  # noqa: E402
+from pipeline import agents, clock, data_policy, extraction, gates, intake, prescreen, runner, stages  # noqa: E402
 
 MAX_WORDS = 800
+
+EXIT_OK = 0
+EXIT_REFUSED = 2          # input not usable, or the extraction gate refused every leg
+EXIT_HALTED = 3           # the classifier asked instead of guessing
+EXIT_INTEGRITY = runner.EXIT_GATE_ERROR
+EXIT_DATA_DECLARATION = runner.EXIT_DATA_DECLARATION
+EXIT_LIVE_NOT_ENABLED = runner.EXIT_LIVE_NOT_ENABLED
 
 
 def _read_input(arg: str) -> tuple[str, str]:
@@ -63,7 +85,7 @@ def _cap_words(text: str, limit: int) -> tuple[str, int, bool]:
     return "\n".join(head + kept), count, True
 
 
-def _stamp(text: str, name: str, type_override: str | None) -> tuple[str, dict]:
+def _stamp(text: str, name: str, type_override: Optional[str]) -> tuple[str, dict]:
     """Return (stamped_text, header_meta) — existing compliant headers pass through."""
     try:
         meta = gates.parse_source_header(text, Path(name))
@@ -84,7 +106,7 @@ def _stamp(text: str, name: str, type_override: str | None) -> tuple[str, dict]:
     meta = {
         "source_id": "demo_input",
         "source_type": stype,
-        "source_date": sdate.group(1) if sdate else datetime.now().strftime("%Y-%m-%d"),
+        "source_date": sdate.group(1) if sdate else clock.now().strftime("%Y-%m-%d"),
     }
     header = (f"# Demo input\nsource_id: {meta['source_id']} · source_type: "
               f"{meta['source_type']} · source_date: {meta['source_date']}\n\n")
@@ -96,12 +118,69 @@ def _cell(text: str, width: int) -> str:
     return (text[: width - 1] + "…") if len(text) > width else text.ljust(width)
 
 
+def _declaration_folder(args: argparse.Namespace) -> Path:
+    """The folder whose data_declaration.json covers the input: explicit, or the file's own."""
+    if args.declaration_folder:
+        return Path(args.declaration_folder)
+    if args.input == "-":
+        sys.exit("[demo] stdin has no folder, so no data declaration covers it — pass "
+                 "--declaration-folder DIR (a folder holding data_declaration.json)")
+    return Path(args.input).resolve().parent
+
+
+def _stage(run_dir: Path, meta: dict, stamped: str, glossary_path: Path) -> tuple:
+    """Stage the stamped input and the client config read-only under <run>/inputs/ exactly as
+    the runner does; return (staged SourceDoc, staged glossary path)."""
+    with tempfile.TemporaryDirectory(prefix="bb-demo-") as scratch:
+        original = Path(scratch) / f"{meta['source_id']}.md"
+        original.write_text(stamped, encoding="utf-8")
+        doc = gates.SourceDoc(meta["source_id"], meta["source_type"], meta["source_date"], original, stamped)
+        staged, staged_glossary = runner.stage_inputs(run_dir, [doc], glossary_path)
+    return staged[0], staged_glossary
+
+
+def _guarded(ctx: runner.RunContext, step: str, originals: list, call):
+    """Run one model step the way the runner does: this step's scope, then the integrity check.
+
+    Returns the call's result; raises gates.GateError('integrity: …') when the step changed a
+    protected file (a staged input, the skeleton, an earlier step's output, the original input).
+    """
+    ctx.current_step = step
+    before = runner.integrity_state(ctx, originals)
+    try:
+        result = call(runner._access_dirs(ctx))
+    except stages.HaltForHuman:
+        _check(ctx, before, originals)
+        raise
+    _check(ctx, before, originals)
+    return result
+
+
+def _check(ctx: runner.RunContext, before: dict, originals: list) -> None:
+    tampered = runner.integrity_violations(before, runner.integrity_state(ctx, originals))
+    if tampered:
+        raise gates.GateError("integrity: " + "; ".join(tampered)
+                              + " — runtime agents may write only their own outputs")
+
+
 def main(argv=None) -> int:
+    """CLI entry point: one document in, verified facts out; returns the exit code."""
+    runner._line_buffered_stdout()
     parser = argparse.ArgumentParser(description="One document in, verified facts out.")
     parser.add_argument("input", help="a text/markdown file, or '-' for stdin")
     parser.add_argument("--type", default=None, help="source type when it cannot be inferred")
     parser.add_argument("--glossary", default=None,
                         help="client config path (default: the single file in glossary/)")
+    parser.add_argument("--declaration-folder", default=None,
+                        help="folder whose data_declaration.json covers the input (default: the "
+                             "input file's folder; required for stdin)")
+    parser.add_argument("--project-id", default=None,
+                        help="project_id in the work orders (default: the declaration folder's name)")
+    parser.add_argument("--out", default=str(runner.DEFAULT_OUT_DIR),
+                        help="where the demo run directory is written (default runs/)")
+    parser.add_argument("--live", action="store_true", default=None,
+                        help="allow live model calls through a real Claude Code CLI (or set "
+                             "BRIEF_BUILDER_LIVE=1); the offline replay binary needs no opt-in")
     parser.add_argument("--max-words", type=int, default=MAX_WORDS)
     parser.add_argument("--retries", type=int, default=2,
                         help="extra extraction legs after a gate refusal (each leg already "
@@ -110,38 +189,72 @@ def main(argv=None) -> int:
                              "fabricated quote, i.e. the product working")
     args = parser.parse_args(argv)
 
+    # Refusals that write nothing come first: a real CLI nobody opted in to, a missing or
+    # invalid data declaration.
+    refusal = agents.live_refusal(args.live)
+    if refusal:
+        print(f"[live calls] {refusal}", file=sys.stderr)
+        return EXIT_LIVE_NOT_ENABLED
+    folder = _declaration_folder(args)
+    out_dir = Path(args.out)
+    glossary_arg = Path(args.glossary) if args.glossary else None
+    try:
+        declaration = data_policy.require_for_run(folder, out_dir=out_dir, glossary=glossary_arg)
+    except data_policy.DataDeclarationError as exc:
+        print(f"[data declaration] {exc}", file=sys.stderr)
+        return EXIT_DATA_DECLARATION
+
     started = time.monotonic()
+    started_ts = clock.timestamp("seconds")
     raw, name = _read_input(args.input)
     stamped, meta = _stamp(raw, name, args.type)
     stamped, word_count, capped = _cap_words(stamped, args.max_words)
+    doc = gates.SourceDoc(meta["source_id"], meta["source_type"], meta["source_date"], Path(name), stamped)
+    unsafe = runner.unsafe_source_ids([doc])
+    if unsafe:
+        print("[demo] " + "; ".join(unsafe), file=sys.stderr)
+        return EXIT_REFUSED
 
-    run_dir = gates.REPO_ROOT / "runs" / f"demo-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    source_path = run_dir / f"{meta['source_id']}.md"
-    source_path.write_text(stamped, encoding="utf-8")
+    try:
+        glossary_path = extraction.resolve_glossary(glossary_arg)
+        client_config = extraction.load_client_config(glossary_path)
+    except gates.GateError as exc:
+        print(f"[client config] {exc}", file=sys.stderr)
+        return EXIT_REFUSED
 
-    glossary_path = extraction.resolve_glossary(Path(args.glossary) if args.glossary else None)
-    client_config = extraction.load_client_config(glossary_path)
-    source = gates.SourceDoc(meta["source_id"], meta["source_type"], meta["source_date"],
-                             source_path, stamped)
-    access_dirs = [str(run_dir), str(gates.SCHEMA_DIR), str(Path(glossary_path).parent),
-                   str(gates.REPO_ROOT / "templates"), str(gates.CONFIG_DIR)]
+    run_dir = out_dir.resolve() / f"demo-{clock.compact('%Y%m%d-%H%M%S-%f')}"
+    run_dir.mkdir(parents=True, exist_ok=False)
+    try:
+        source, staged_glossary = _stage(run_dir, meta, stamped, glossary_path)
+    except (gates.GateError, OSError) as exc:
+        print(f"[input staging] {exc}", file=sys.stderr)
+        return EXIT_REFUSED
+    originals = [glossary_path] + ([Path(args.input)] if args.input != "-" else [])
+    project_id = args.project_id or folder.resolve().name
+    ctx = runner.RunContext(project_dir=folder.resolve(), run_dir=run_dir, run_id=run_dir.name,
+                            sources=[source], started_ts=started_ts, project_id=project_id,
+                            client_config=client_config, glossary_path=staged_glossary)
+    cli = agents.cli_record(args.live)
+    screen = prescreen.scan(run_dir / runner.STAGED_INPUTS_DIR, files=[source.path])
 
     print(f"Brief Builder — live demo · {name} ({meta['source_type']}, {word_count} words"
-          + (f", capped at {args.max_words}" if capped else "") + f")\n  output: {run_dir}\n")
+          + (f", capped at {args.max_words}" if capped else "") + f")\n  output: {run_dir}")
+    print(f"  data  : {declaration.data_class} · model: "
+          + ("offline replay (no model calls)" if cli["replay"] else "LIVE" if cli["live"] else "no CLI")
+          + "\n")
 
-    cost = 0.0
+    usage_tokens = 0
     print("[1/2] classify — what is this project, which onboarding tier applies…")
     try:
-        classification = stages.classify([source], run_dir, "demo", client_config,
-                                         glossary_path, access_dirs)
+        classification = _guarded(ctx, "classification", originals, lambda scope: stages.classify(
+            [source], run_dir, project_id, client_config, staged_glossary, scope))
     except stages.HaltForHuman as exc:
         print(f"      HALTED FOR HUMAN (by design — it asks instead of guessing): {exc}")
-        return 3
+        return EXIT_HALTED
     except (gates.GateError, agents.SubagentError) as exc:
         print(f"      classification failed: {exc}")
-        return 2
-    cost += sum(a["subagent"].get("cost_usd") or 0 for a in classification["attempts"])
+        return EXIT_INTEGRITY if str(exc).startswith("integrity:") else EXIT_REFUSED
+    usage_tokens += sum(sum((a["subagent"].get("usage") or {}).values()) for a in classification["attempts"])
     print(f"      {classification['project_type']} · tier {classification['sensitivity_tier']} "
           f"(copied from client config, never inferred) · "
           f"confidence {classification['classification_confidence']}\n")
@@ -149,22 +262,25 @@ def main(argv=None) -> int:
     print("[2/2] extract — every value must carry a verbatim quote or it does not exist…")
     outcome = None
     for leg in range(1, args.retries + 2):
+        # A retried leg is judged on what THIS leg writes, never on the last leg's files.
+        runner.clear_stale_outputs(run_dir, runner.model_output_paths("extraction", [source]))
         try:
-            outcome = extraction.extract_source(source=source, run_dir=run_dir,
-                                                project_id="demo", client_config=client_config,
-                                                glossary_path=glossary_path,
-                                                access_dirs=access_dirs)
+            outcome = _guarded(ctx, "extraction", originals, lambda scope: extraction.extract_source(
+                source=source, run_dir=run_dir, project_id=project_id, client_config=client_config,
+                glossary_path=staged_glossary, access_dirs=scope))
             break
         except (gates.GateError, agents.SubagentError) as exc:
+            if str(exc).startswith("integrity:"):
+                print(f"      REFUSED — a model step changed a protected file: {exc}")
+                return EXIT_INTEGRITY
             print(f"      REFUSED by the verification gate, leg {leg}/{args.retries + 1} — a "
                   f"near-miss quote was rejected; this is the product working:\n      {exc}")
             if leg <= args.retries:
                 print("      re-running the leg with a fresh model call…")
     if outcome is None:
-        return 2
-    cost += sum(a["subagent"].get("cost_usd") or 0 for a in outcome["attempts"])
+        return EXIT_REFUSED
+    usage_tokens += sum(sum((a["subagent"].get("usage") or {}).values()) for a in outcome["attempts"])
 
-    import json
     extract = json.loads(Path(outcome["output_file"]).read_text(encoding="utf-8"))
 
     # -- deterministic verification, recomputed here in front of the viewer ----------------
@@ -184,10 +300,11 @@ def main(argv=None) -> int:
               f"{_cell(item.get('anchor'), 34)} {_cell(item.get('location'), 14)} "
               f"{_cell(item.get('confidence'), 6)} {item.get('qualifier')}")
 
-    print(f"\nVERIFICATION GATES (deterministic, no model):")
-    print(f"  ✅ schema: extract validates against schema/extract_schema.json")
+    print("\nVERIFICATION GATES (deterministic, no model):")
+    print("  ✅ schema: extract validates against schema/extract_schema.json")
     print(f"  {'✅' if resolved == len(items) else '❌'} citations: {resolved}/{len(items)} "
           f"anchor+location strings occur verbatim in the source")
+    print("  ✅ integrity: no staged input, skeleton file or original changed during a model step")
     if notes:
         print(f"  ⚠  {len(notes)} extraction note(s) — garbled/ambiguous tokens carried AS-IS, "
               f"never silently 'fixed':")
@@ -203,20 +320,23 @@ def main(argv=None) -> int:
     # The demo bypasses the runner, so write the minimal manifest the page renders from.
     # Best-effort by design: the view must never turn a successful demo into a failure.
     try:
-        import os
-        import subprocess
         from pipeline import run_review
 
         (run_dir / "run_manifest.json").write_text(json.dumps({
             "run_id": run_dir.name,
             "pipeline_version": "demo",
-            "project_dir": str(run_dir),  # the stamped source lives here → page embeds it
-            "started_ts": datetime.now().isoformat(timespec="seconds"),
-            "finished_ts": datetime.now().isoformat(timespec="seconds"),
+            # The staged, stamped source lives here, so the page embeds exactly what was read.
+            "project_dir": runner.repo_relative(run_dir / runner.STAGED_INPUTS_DIR),
+            "started_ts": started_ts,
+            "finished_ts": clock.timestamp("seconds"),
             "outcome": "complete",
             "exit_code": 0,
             "stage": "extraction",
             "demo_profile": None,
+            "data_declaration": declaration.as_record(),
+            "live": bool(cli["live"]),
+            "cli": cli,
+            "prescreen": screen,
             "sources": [dict(meta)],
             "steps": [
                 {"number": 2, "name": "classification", "kind": "model", "agent": "classify",
@@ -233,8 +353,8 @@ def main(argv=None) -> int:
         print(f"\n(walkthrough page skipped: {exc})")
 
     elapsed = time.monotonic() - started
-    print(f"\ndone in {elapsed:.1f}s · model cost ${cost:.3f} · artifacts in {run_dir}")
-    return 0
+    print(f"\ndone in {elapsed:.1f}s · {usage_tokens:,} tokens reported by the CLI · artifacts in {run_dir}")
+    return EXIT_OK
 
 
 if __name__ == "__main__":

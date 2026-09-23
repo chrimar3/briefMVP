@@ -118,12 +118,17 @@ def test_a_plain_list_of_dirs_splits_into_read_only_skeleton_and_writable_output
     assert set(scope.read_only) == {str(gates.SCHEMA_DIR), str(gates.CONFIG_DIR), str(gates.REPO_ROOT / "glossary")}
 
 
+#: Every hand-written fake CLI answers the version probe `agents.invoke` runs first.
+_ANSWERS_VERSION = "if sys.argv[1:] == ['--version']:\n    print('2.1.280 (Claude Code)'); sys.exit(0)\n"
+
+
 def test_invoke_hands_the_built_command_to_the_cli(tmp_path, monkeypatch):
     """Through the real subprocess seam, with a fake `claude` that records its argv."""
     fake = tmp_path / "fake_claude"
     fake.write_text(
         f"#!{sys.executable}\n"
         "import json, os, sys\n"
+        + _ANSWERS_VERSION +
         "open(os.environ['FAKE_ARGV_OUT'], 'w').write(json.dumps(sys.argv[1:]))\n"
         "print(json.dumps({'result': 'ok', 'session_id': 's', 'modelUsage': {'claude-test': {}}}))\n",
         encoding="utf-8")
@@ -146,6 +151,7 @@ def test_a_relative_cli_override_is_executed_from_the_neutral_cwd(tmp_path, monk
     fake.write_text(
         f"#!{sys.executable}\n"
         "import json, sys\n"
+        + _ANSWERS_VERSION +
         "print(json.dumps({'result': sys.argv[0], 'session_id': 's', 'modelUsage': {'claude-test': {}}}))\n",
         encoding="utf-8")
     fake.chmod(fake.stat().st_mode | stat.S_IXUSR)

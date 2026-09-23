@@ -46,6 +46,10 @@ RECORDED_RUN_ENV = "BRIEF_BUILDER_REPLAY_RUN"
 #: mistaken for a model run.
 REPLAY_MODEL_ID = "offline-replay"
 
+#: What `--version` prints: the CLI release whose command line the replay accepts (it ignores
+#: every flag it does not need), labelled so a manifest never mistakes it for the real CLI.
+REPLAY_CLI_VERSION = "2.1.280 (Brief Builder offline replay, no model)"
+
 #: `  report    : /abs/path` style lines and the indented path under "exactly this path:".
 #: A path runs to the end of its line, so directories with spaces survive; the render order's
 #: trailing `(follows template_greek)` annotation is not part of the path.
@@ -175,6 +179,9 @@ def main(argv: Optional[list] = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if argv in (["-h"], ["--help"]):
         print(__doc__)
+        return 0
+    if argv in (["-v"], ["--version"]):
+        print(REPLAY_CLI_VERSION)
         return 0
     agent = "unknown"
     try:

@@ -124,14 +124,38 @@ def scan_text(text: str, terms: Optional[dict] = None) -> dict:
     return found
 
 
-def _sources(project_dir: Path) -> list:
+def _text_files(project_dir: Path) -> list:
     return sorted(p for p in project_dir.iterdir()
                   if p.is_file() and not p.is_symlink() and p.suffix.lower() in TEXT_SUFFIXES
                   and p.name not in gates.HARNESS_ONLY_FILES)
 
 
-def scan(project_dir: Path, terms_path: Path = TERMS_PATH) -> dict:
-    """Advisory pre-screen of every text source in `project_dir`. Never raises on content.
+def _declares_a_source(path: Path) -> bool:
+    """True when the file opens with a valid source header (the input contract's declaration)."""
+    try:
+        gates.parse_source_header(path.read_text(encoding="utf-8"), path)
+    except (gates.InputContractError, OSError, UnicodeDecodeError):
+        return False
+    return True
+
+
+def _sources(project_dir: Path) -> tuple:
+    """(files to screen, mode). A folder that declares sources is screened on those only —
+    never a README, a note or any other non-source file beside them. A raw intake folder
+    (no file declares a source yet) is screened on every text file, since each is a candidate."""
+    candidates = _text_files(project_dir)
+    declared = [p for p in candidates if p.suffix.lower() == ".md" and _declares_a_source(p)]
+    if declared:
+        return declared, "declared_sources"
+    return candidates, "raw_folder"
+
+
+def scan(project_dir: Path, terms_path: Path = TERMS_PATH, files: Optional[list] = None) -> dict:
+    """Advisory pre-screen of the sources in `project_dir`. Never raises on content.
+
+    `files` names exactly the files to screen (the runner passes its declared sources);
+    without it the folder's declared sources are screened, or every text file of a raw intake
+    folder (`_sources`). Harness-only files are never read.
 
     Returns a JSON-serialisable report: per source, per category, a count and the first line
     numbers; totals per category; and the fixed advisory boundary. A missing folder is an
@@ -141,8 +165,12 @@ def scan(project_dir: Path, terms_path: Path = TERMS_PATH) -> dict:
     if not project_dir.is_dir():
         raise FileNotFoundError(f"{project_dir}: not a folder")
     terms = load_terms(terms_path)
+    if files is not None:
+        paths, mode = [Path(p) for p in files if Path(p).name not in gates.HARNESS_ONLY_FILES], "given_files"
+    else:
+        paths, mode = _sources(project_dir)
     sources, unreadable, totals = [], [], {}
-    for path in _sources(project_dir):
+    for path in paths:
         try:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError) as exc:
@@ -159,6 +187,7 @@ def scan(project_dir: Path, terms_path: Path = TERMS_PATH) -> dict:
     return {
         "advisory": True,
         "blocking": False,
+        "mode": mode,
         "scanned_files": len(sources),
         "sources_with_findings": sum(1 for s in sources if s["findings"]),
         "totals": dict(sorted(totals.items())),

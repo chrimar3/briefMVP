@@ -206,17 +206,51 @@ def check_extract(path: Path, source_text: str = "", glossary: Optional[dict] = 
 #: every extract gets a fresh-session second check; the checker itself runs the strong model
 #: whenever the extract carries risk classes). Policy knobs live in config/model_routing.json
 #: under "verify_extract" so the routing is config-visible; these are the fallbacks.
-_VERIFY_DEFAULTS = {"strong_model": "sonnet", "base_model": None,
-                    "risk_classes": ["mandatories", "figures", "garbling", "low_confidence"]}
+RISK_CLASSES = ("mandatories", "figures", "garbling", "low_confidence")
+_VERIFY_DEFAULTS = {"strong_model": "sonnet", "base_model": None, "risk_classes": list(RISK_CLASSES)}
 
 
-def _verify_policy() -> dict:
-    path = gates.CONFIG_DIR / "model_routing.json"
+def _verify_policy(path: Optional[Path] = None) -> dict:
+    """The verifier routing policy from config/model_routing.json `verify_extract`, validated.
+
+    A missing file or a missing `verify_extract` block means the defaults above (a valid state,
+    as in `agents.stage_effort`). A file that is not JSON, a block that is not an object, an
+    unknown key (notes go in keys starting with '_'), a model that is not a non-empty string, or
+    a risk class the code does not compute fails loudly with ExtractionError: a silent fallback
+    would let the routing that ran and the routing the config claims disagree unnoticed.
+    """
+    path = Path(path) if path else gates.CONFIG_DIR / "model_routing.json"
+    if not path.is_file():
+        return dict(_VERIFY_DEFAULTS)
     try:
-        loaded = json.loads(path.read_text(encoding="utf-8")).get("verify_extract") or {}
-    except (OSError, json.JSONDecodeError):
-        loaded = {}
-    return {**_VERIFY_DEFAULTS, **loaded}
+        config = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ExtractionError(f"{path}: not readable JSON — {exc}") from exc
+    if not isinstance(config, dict):
+        raise ExtractionError(f"{path}: must be a JSON object")
+    loaded = config.get("verify_extract")
+    if loaded is None:
+        return dict(_VERIFY_DEFAULTS)
+    where = f"{path}: verify_extract"
+    if not isinstance(loaded, dict):
+        raise ExtractionError(f"{where} must be an object, got {type(loaded).__name__}")
+    unknown = sorted(k for k in loaded if k not in _VERIFY_DEFAULTS and not str(k).startswith("_"))
+    if unknown:
+        raise ExtractionError(f"{where}: unknown key(s) {unknown}; allowed {sorted(_VERIFY_DEFAULTS)}")
+    policy = {**_VERIFY_DEFAULTS, **{k: v for k, v in loaded.items() if k in _VERIFY_DEFAULTS}}
+    if not isinstance(policy["strong_model"], str) or not policy["strong_model"].strip():
+        raise ExtractionError(f"{where}.strong_model must be a non-empty model alias")
+    if policy["base_model"] is not None and (not isinstance(policy["base_model"], str)
+                                             or not policy["base_model"].strip()):
+        raise ExtractionError(f"{where}.base_model must be null (the agent's own model) or a model alias")
+    classes = policy["risk_classes"]
+    if not isinstance(classes, list) or not all(isinstance(c, str) for c in classes):
+        raise ExtractionError(f"{where}.risk_classes must be a list of names")
+    strange = sorted(set(classes) - set(RISK_CLASSES))
+    if strange:
+        raise ExtractionError(f"{where}.risk_classes: {strange} are not computed by risk_classes(); "
+                              f"known: {list(RISK_CLASSES)}")
+    return policy
 
 
 def risk_classes(extract: dict) -> list:
@@ -448,7 +482,8 @@ def extract_source(
     # findings drive ONE standard repair round of the extractor; the deterministic gates then
     # re-verify the repaired artifact. One verification round by design — no verify loop.
     policy = _verify_policy()
-    risks = risk_classes(extract)
+    # Only the classes the config routes on count (today: all four, so this is the full read).
+    risks = [r for r in risk_classes(extract) if r in policy["risk_classes"]]
     verify_model = policy["strong_model"] if risks else policy["base_model"]
     report_file = run_path(run_dir, "verification", f"{source.source_id}.verify.json")
     report_file.parent.mkdir(parents=True, exist_ok=True)

@@ -12,6 +12,7 @@ environment so the command line stays exactly what agents.invoke built:
 
     BRIEF_BUILDER_FAKE_CLAUDE_MODE   empty | non_json | is_error | sleep:<seconds> | exit:<code>
     BRIEF_BUILDER_FAKE_CLAUDE_ARGV   file to write the received argv (JSON list) and cwd into
+    BRIEF_BUILDER_FAKE_CLAUDE_VERSION   the line `--version` prints (default: the replay's own)
 
 No network, no model, no cost.
 """
@@ -28,6 +29,10 @@ from pipeline import replay  # noqa: E402
 
 
 def main() -> int:
+    if sys.argv[1:] in (["--version"], ["-v"]):
+        # Answered before any test switch, so a failure mode never breaks the version probe.
+        print(os.environ.get("BRIEF_BUILDER_FAKE_CLAUDE_VERSION") or replay.REPLAY_CLI_VERSION)
+        return 0
     argv_log = os.environ.get("BRIEF_BUILDER_FAKE_CLAUDE_ARGV")
     if argv_log:
         record = {"argv": sys.argv[1:], "cwd": os.getcwd()}

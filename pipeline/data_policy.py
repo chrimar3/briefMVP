@@ -15,11 +15,10 @@ An `approved` declaration may also record the data-protection preconditions the 
 sets before real material is run (`docs/pilot/DATA_PROTECTION.md` §10, `GO_LIVE_DECISIONS.md`
 D-03 and D-09): `screened_by` and `screened_on` (the special-category screening step),
 `processor_ref` (the filed processor terms for the account in use) and `dpia_ref` (the DPIA or
-screening decision). Each is validated when present. Absent ones are listed in the run
-manifest as `preconditions_missing`, so a run on an approved folder shows which preconditions
-were never recorded. They are not yet required: `pipeline/intake.py` has no flags for them, so
-requiring them would refuse every approved intake. Making them mandatory is a one-line change
-(`REQUIRE_PRECONDITIONS`) once intake can write them. The
+screening decision). They are required (`REQUIRE_PRECONDITIONS`, owner decision 4, round 2
+phase B): an approved declaration without all four is refused (exit 6), and `pipeline/intake.py`
+writes them from `--screened-by`, `--screened-on`, `--processor-ref` and `--dpia-ref`. With the
+switch off, absent ones would only be listed in the run manifest as `preconditions_missing`. The
 declaration is a control, not a grant: writing an `approved` declaration does not approve
 anything; it records WHO approved it and WHERE that decision lives, so the run manifest can
 show it. Whether real client data may be processed at all remains the agency's data-policy
@@ -49,17 +48,18 @@ APPROVAL_FIELDS = ("approval_ref", "approved_by", "approved_on")
 PRECONDITION_FIELDS = ("screened_by", "screened_on", "processor_ref", "dpia_ref")
 #: Date-valued fields: ISO YYYY-MM-DD, never in the future.
 DATE_FIELDS = ("approved_on", "screened_on")
-#: False until `pipeline/intake.py` can write the precondition fields; then True makes an
-#: approved declaration without them a refusal (exit 6), which is a tightening.
-REQUIRE_PRECONDITIONS = False
+#: True since intake writes the precondition fields (round 2, phase B): an approved declaration
+#: without them is a refusal (exit 6). A tightening; synthetic declarations are unaffected.
+REQUIRE_PRECONDITIONS = True
 
 _ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
 _HOW_TO_DECLARE = (
     'Synthetic fixtures declare {"data_class": "synthetic"}; any other material needs '
-    '{"data_class": "approved", "approval_ref": "...", "approved_by": "...", "approved_on": "YYYY-MM-DD"} '
+    '{"data_class": "approved", "approval_ref": "...", "approved_by": "...", "approved_on": "YYYY-MM-DD", '
+    '"screened_by": "...", "screened_on": "YYYY-MM-DD", "processor_ref": "...", "dpia_ref": "..."} '
     "recorded from the agency's data-policy approval (docs/OPERATING_DECISIONS.md, 2026-09-22 decision 4; "
-    "docs/pilot/DATA_PROTECTION.md), plus, when recorded, screened_by, screened_on, processor_ref and dpia_ref."
+    "docs/pilot/DATA_PROTECTION.md §10)."
 )
 
 
