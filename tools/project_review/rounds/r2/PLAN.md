@@ -202,3 +202,23 @@ signing" box mapping the three decisions to GO_LIVE items, plain-language glossa
 tier_8 report header note, CLAUDE.md answer-key path + workflow note, a timebox note separating the case-study
 deliverable from later tiers, plain-language tier summaries, SHARE_ME carrying the decision paper, and a
 deterministic docs-consistency test (shared figures from one facts file; `§N` references and file paths resolve).
+
+## Phase B addenda (from the phase A reports)
+
+- **Quarantine paths (rule 8):** `fixtures/levanta_03/`, `fixtures/SEALED_EXTRA_CHECKS_levanta_03.md`. Do not open
+  them, grep inside them, or run anything over them (tests that glob `fixtures/*` must not read their content).
+  `fixtures/SEALED_KEYS.json` holds only hashes and may be read.
+- Phase A moved code: `pipeline.stages` is now a re-export shim over `stage_*.py`, `render_checks.py`,
+  `render_template.py`, `greek_lint.py` and `money.py`; approval policy lives in `pipeline/approval.py`; record I/O
+  in `pipeline/records.py` (CorruptRecordError); timestamps via `pipeline/clock.py` (UTC). Edit the new modules, not
+  the shim.
+- **W-S also:** add `--screened-by`, `--screened-on`, `--processor-ref`, `--dpia-ref` to `pipeline/intake.py` for
+  approved declarations, then set `data_policy.REQUIRE_PRECONDITIONS = True` (owner decision 4) with tests;
+  `--no-session-persistence` makes DATA_PROTECTION §1/§6 true — verify the text matches; `prescreen.scan()` result
+  recorded in the manifest; prescreen and discovery must skip any non-source file that is not a declared source.
+- **W-Q also:** `effort.json` lost its owner-only (0600) permission in the phase-A records refactor — restore
+  owner-only permissions for records that hold named staff data (effort, and any record W-P marked personal), with a
+  test; type `clarifications.py` fully; add a layering test (Stage-1 modules may not import Tier 5–8 modules except
+  the documented `stage_synthesis → quality` coverage ledger and `runner → approval`).
+- **W-G also:** `creative.py` chooses between two sign-off regimes by whether `agency_inputs.json` exists — make the
+  regime explicit (recorded in the run, never inferred from a file's presence) with tests.
