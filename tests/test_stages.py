@@ -70,10 +70,18 @@ REPORT = {
 }
 
 
+def _counted(annotated):
+    """REPORT with the token counts the annotated text actually carries (the r2 count gate)."""
+    glossary = annotated.count("[FIDELITY: glossary-match")
+    no_match = annotated.count("[FIDELITY: no-glossary-match")
+    return {**REPORT, "tokens_flagged": glossary + no_match, "glossary_matches": glossary,
+            "no_match_flags": no_match}
+
+
 def _fidelity_files(tmp_path, annotated, report=None):
     report_file = tmp_path / "r.json"
     annotated_file = tmp_path / "a.md"
-    report_file.write_text(json.dumps(report or REPORT), encoding="utf-8")
+    report_file.write_text(json.dumps(report or _counted(annotated)), encoding="utf-8")
     annotated_file.write_text(annotated, encoding="utf-8")
     return report_file, annotated_file
 

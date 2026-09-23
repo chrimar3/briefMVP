@@ -22,14 +22,24 @@ act, so this script reverses exactly the human layer and nothing else:
 * verification/ — the graded run predates the independent verifier (step 4b), so one
                   `confirms` report per source is written, marked as synthesised by replay.
 
-Classification, fidelity and extract files are copied byte for byte. The result is a
-replay fixture, not evidence: it is never graded and never cited as a model result.
+* extracts/ + brief.json — brought to the round-2 prompt contract (r2-W-R), which postdates the
+                  graded run, so replay exercises today's gates: `round2_extract` turns each
+                  free-form rule-G note into the structured `garble:` note, sets confidence by
+                  the SOURCES.md §4 definitions and links every medium/low item from an open
+                  question (adding a question marked as a replay edit where none fits);
+                  `round2_brief` keeps each garbled token visible beside its proposed match at
+                  the garbled item's confidence (SYNTHESIS.md rule 10). An extract these edits
+                  leave unchanged is copied byte for byte.
+
+Classification and fidelity files are copied byte for byte. The result is a replay fixture,
+not evidence: it is never graded and never cited as a model result.
 
 Usage: python3 tools/replay/derive_recording.py [OUT_DIR]   (idempotent; default rewrites the recording)
 """
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -39,7 +49,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from pipeline import gates, quality  # noqa: E402
+from pipeline import extract_rules, gates, quality  # noqa: E402
 SOURCE_RUN = REPO_ROOT / "runs" / "tier3"
 TARGET = Path(__file__).resolve().parent / "recordings" / "northlight_01"
 
@@ -141,6 +151,102 @@ def pre_human_brief(brief: dict) -> dict:
     return brief
 
 
+_OLD_GARBLE_NOTE = re.compile(r"^\[(?P<loc>\d{1,2}:\d{2}(?::\d{2})?)\][^']*Token '(?P<token>[^']+)'")
+_REPLAY_MARK = "Replay wiring edit (round-2 extract contract), not model output"
+
+
+def _proposed_match(annotated: str, token: str) -> str:
+    """The fidelity gate's proposal for `token`: the glossary-match annotation right after it."""
+    found = re.search(re.escape(token) + r'\s*\[FIDELITY:\s*glossary-match\s+"([^"]+)"', annotated)
+    return found.group(1) if found else extract_rules.NO_GLOSSARY_MATCH
+
+
+def round2_extract(extract: dict, annotated: str = "") -> dict:
+    """The graded extract brought to the round-2 contract (SOURCES.md §4, §7 rule G).
+
+    Mechanical, documented edits only — the graded run predates the contract, and replay must
+    exercise today's gates (pipeline/extract_rules.py): (1) each free-form rule-G note becomes
+    the structured `garble:` note, token and location from the note, proposed match from the
+    fidelity annotation; (2) confidence follows the §4 definitions: an item carrying a garbled
+    token or qualified `implied` is `low`, a `conditional` one is never `high`, a `stated` `low`
+    outside the overrides is `medium`; (3) every medium/low item is linked from the first open
+    question of its field, or from a question added for it and marked as a replay edit.
+    """
+    extract = json.loads(json.dumps(extract))
+    notes = []
+    for note in extract.get("extraction_notes") or []:
+        old = _OLD_GARBLE_NOTE.match(note)
+        if old and "garble:" not in note:
+            token = old.group("token")
+            notes.append(f"garble: «{token}» at [{old.group('loc')}] — proposed match "
+                         f"\"{_proposed_match(annotated, token)}\" ({_REPLAY_MARK})")
+        else:
+            notes.append(note)
+    extract["extraction_notes"] = notes
+    garbled = {path: note for note in extract_rules.garble_notes(extract)
+               for path, _ in extract_rules.items_carrying(extract, note["token"])}
+    for fieldname in gates.BRIEF_FIELDS:
+        for idx, item in enumerate(extract.get(fieldname) or []):
+            path = f"{fieldname}[{idx}]"
+            if path in garbled or item.get("qualifier") == "implied":
+                item["confidence"] = "low"
+            elif item.get("qualifier") == "conditional" and item.get("confidence") == "high":
+                item["confidence"] = "medium"
+            elif (item.get("qualifier") == "stated" and item.get("confidence") == "low"
+                  and fieldname != "mandatories"):
+                item["confidence"] = "medium"
+    questions = extract.setdefault("open_questions", [])
+    linked = {ref for q in questions for ref in q.get("linked_items") or []}
+    for fieldname in gates.BRIEF_FIELDS:
+        for idx, item in enumerate(extract.get(fieldname) or []):
+            path = f"{fieldname}[{idx}]"
+            if item.get("confidence") not in ("medium", "low") or path in linked:
+                continue
+            note = garbled.get(path)
+            host = None if note else next((q for q in questions if q.get("field") == fieldname), None)
+            if host is None:
+                ask = (f"By «{note['token']}», do you mean \"{note['match']}\"?" if note
+                       else f"Can you confirm this {fieldname} point as stated?")
+                host = {"field": fieldname, "gap": f"{_REPLAY_MARK}: confidence {item['confidence']}.",
+                        "why_it_matters": "A medium or low item is confirmed before it is relied on.",
+                        "suggested_question_for_client": ask, "linked_items": []}
+                questions.append(host)
+            host.setdefault("linked_items", []).append(path)
+            linked.add(path)
+    return extract
+
+
+def round2_brief(brief: dict, extracts: dict) -> dict:
+    """The recording's brief brought to SYNTHESIS.md rule 10 (garble carry-through): every entry
+    or conflict position citing a garbled item shows the as-heard token beside its proposed
+    match, and an entry takes the garbled item's confidence. Mechanical, documented edits."""
+    brief = json.loads(json.dumps(brief))
+    flagged = {}
+    for source_id, extract in extracts.items():
+        for note in extract_rules.garble_notes(extract):
+            for _path, item in extract_rules.items_carrying(extract, note["token"]):
+                flagged.setdefault((source_id, item["anchor"].strip()), []).append((note, item))
+
+    def _carry(text: str, refs: list) -> tuple:
+        lowest = None
+        for ref in refs:
+            for note, item in flagged.get((ref.get("source_id"), (ref.get("anchor") or "").strip()), []):
+                if f"«{note['token']}»" not in text:
+                    text += f" (heard as «{note['token']}»; proposed match \"{note['match']}\", unconfirmed)"
+                lowest = item["confidence"]
+        return text, lowest
+
+    for fieldname in gates.BRIEF_FIELDS:
+        for entry in brief.get(fieldname) or []:
+            entry["content"], lowest = _carry(entry["content"], entry.get("evidence") or [])
+            if lowest:
+                entry["confidence"] = lowest
+    for conflict in brief.get("conflicts") or []:
+        for position in conflict.get("positions") or []:
+            position["statement"], _ = _carry(position["statement"], [position.get("evidence") or {}])
+    return brief
+
+
 def main(argv: Optional[list] = None) -> int:
     """Rebuild the recording (default TARGET; an alternative output folder may be given)."""
     argv = sys.argv[1:] if argv is None else argv
@@ -157,12 +263,23 @@ def derive(target: Path) -> None:
         shutil.rmtree(out)
     out.mkdir(parents=True)
     shutil.copy2(SOURCE_RUN / "classification.json", out / "classification.json")
-    for folder in ("fidelity", "extracts"):
-        shutil.copytree(SOURCE_RUN / folder, out / folder)
+    shutil.copytree(SOURCE_RUN / "fidelity", out / "fidelity")
+    (out / "extracts").mkdir()
+    extracts = {}
+    for path in sorted((SOURCE_RUN / "extracts").glob("*.json")):
+        original = json.loads(path.read_text(encoding="utf-8"))
+        annotated_file = SOURCE_RUN / "fidelity" / f"{path.stem}.annotated.md"
+        annotated = annotated_file.read_text(encoding="utf-8") if annotated_file.is_file() else ""
+        extracts[path.stem] = round2_extract(original, annotated)
+        if extracts[path.stem] == original:
+            shutil.copy2(path, out / "extracts" / path.name)  # untouched: byte for byte
+        else:
+            (out / "extracts" / path.name).write_text(
+                json.dumps(extracts[path.stem], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     brief = json.loads((SOURCE_RUN / "brief.json").read_text(encoding="utf-8"))
+    draft = round2_brief(pre_human_brief(brief), extracts)
     (out / "brief.json").write_text(
-        json.dumps(pre_human_brief(brief), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    draft = pre_human_brief(brief)
+        json.dumps(draft, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     labels = json.loads((TEMPLATES_DIR / f"{TEMPLATE}.labels.json").read_text(encoding="utf-8"))
     glossary = json.loads(GLOSSARY.read_text(encoding="utf-8"))
     for lang in ("en", "el"):

@@ -35,7 +35,12 @@ def _extract():
         "meta": {"project_id": "p", "source_id": "kick", "source_type": "transcript",
                  "source_date": "2026-03-01", "extraction_ts": "2026-03-02T00:00:00", "agent_version": "1.0"},
         "objectives": [], "audiences": [], "key_messages": [], "deliverables": [], "timeline": [],
-        "budget": [_item()], "mandatories": [], "open_questions": [], "internal_conflicts": [],
+        "budget": [_item()], "mandatories": [],
+        # SOURCES.md §4: the medium budget item is linked from an open question.
+        "open_questions": [{"field": "budget", "gap": "Units unstated.", "why_it_matters": "Scope.",
+                            "suggested_question_for_client": "In which units?",
+                            "linked_items": ["budget[0]"]}],
+        "internal_conflicts": [],
         "extraction_notes": [],
     }
 

@@ -22,7 +22,12 @@ REPORT = {"source_id": "t", "tokens_flagged": 1, "glossary_matches": 1, "no_matc
 
 
 def _fidelity(tmp_path, annotated, **report):
-    (tmp_path / "r.json").write_text(json.dumps({**REPORT, **report}), encoding="utf-8")
+    # Token counts follow the annotations in the file (r2 count gate) unless a test sets them.
+    glossary = annotated.count("[FIDELITY: glossary-match")
+    no_match = annotated.count("[FIDELITY: no-glossary-match")
+    counted = {"tokens_flagged": glossary + no_match, "glossary_matches": glossary,
+               "no_match_flags": no_match}
+    (tmp_path / "r.json").write_text(json.dumps({**REPORT, **counted, **report}), encoding="utf-8")
     (tmp_path / "a.md").write_text(annotated, encoding="utf-8")
     return stages.check_fidelity(tmp_path / "r.json", tmp_path / "a.md", TRANSCRIPT)
 

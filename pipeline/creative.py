@@ -39,6 +39,7 @@ from typing import Optional
 
 from pipeline import agents, approval, gates
 from pipeline.money import money_figures
+from pipeline.stage_common import restating_repair_order
 
 #: The models the Tier-4 A/B compares, in order. Same input, same skeleton — only the model moves.
 AB_MODELS = ("sonnet", "opus")
@@ -370,6 +371,14 @@ Reply with one line naming the file written and the single-minded proposition.
 """
 
 
+def build_creative_repair_order(output_file: Path, violations: list, work_order: str) -> str:
+    """Second creative attempt: the gate's violations plus the restated work order."""
+    return restating_repair_order(
+        "creative draft", violations,
+        f"Fix exactly these and rewrite {output_file}. Spec values must be copied from the spec "
+        f"table byte-for-byte; do not invent them.", work_order)
+
+
 def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
                     model_alias: str, spec_table_path: Path = None) -> dict:
     """Run the creative-shadow subagent once, on the given model, gated on its artifact."""
@@ -393,10 +402,7 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
     attempts, failed = agents.run_gated(
         "creative-shadow", order,
         lambda: check_creative_brief(output_file, spec_table, mode="draft", brief=brief),
-        lambda v: agents.repair_order(
-            "creative draft", v,
-            f"Fix exactly these and rewrite {output_file}. Spec values must be copied from "
-            f"the spec table byte-for-byte; do not invent them."),
+        lambda v: build_creative_repair_order(output_file, v, order),
         access_dirs, stage="creative-shadow", site=model_alias, run_dir=Path(run_dir),
         model_override=model_alias,
     )

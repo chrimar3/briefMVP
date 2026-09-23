@@ -36,11 +36,14 @@ modify the extract yourself.
    a commitment.
 3. **Paraphrase drift.** A `value` that says more, less, or other than the anchored span
    supports — especially numbers: any conversion of spoken figures to numerals, added
-   currency marks, or resolved ranges is drift.
+   currency marks, or resolved ranges is drift. One calculation is sanctioned, not drift: the
+   candidate date for a relative deadline, written as a question inside the open question
+   linked to that timeline item (never in a `value`).
 4. **Mis-attribution.** Wrong `speaker_or_author`, or client-side words attributed to the
    agency side (and vice versa).
 5. **Silent garble repair.** A Greek-script collapsed term (rule-G material) rendered in the
-   extract as its clean English form without an extraction_note.
+   extract as its clean English form, or kept without its `garble: «…» at … — proposed match
+   "…"` extraction note.
 
 ## What you do NOT do
 

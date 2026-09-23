@@ -10,6 +10,7 @@ Scope: every runtime instruction file — the four skills, and the agent bodies 
 runtime subagents (render and creative-shadow joined at the round-1 integration).
 """
 
+import json
 import re
 
 import pytest
@@ -49,10 +50,24 @@ def _ngrams(text, n=NGRAM):
     return {tuple(words[i:i + n]) for i in range(len(words) - n + 1)}
 
 
+def quarantined_paths(repo_root):
+    """Sealed blind-fixture paths (fixtures/SEALED_KEYS.json): no test reads their content before
+    the fixture's first graded run is committed (round-2 rule 8) — not even to guard a prompt."""
+    sealed = json.loads((repo_root / "fixtures" / "SEALED_KEYS.json").read_text(encoding="utf-8"))
+    return tuple(repo_root / q for q in sealed.get("quarantined_paths") or [])
+
+
+def fixture_sources(repo_root):
+    """Every fixture source document a prompt must not quote, sealed fixtures excluded."""
+    quarantined = quarantined_paths(repo_root)
+    return [p for p in sorted((repo_root / "fixtures").glob("*/*.md"))
+            if not any(p == q or q in p.parents for q in quarantined)]
+
+
 @pytest.fixture(scope="module")
 def fixture_ngrams(repo_root):
     grams = set()
-    for path in sorted((repo_root / "fixtures").glob("*/*.md")):
+    for path in fixture_sources(repo_root):
         grams |= _ngrams(path.read_text(encoding="utf-8"))
     assert grams, "no fixture sources found"
     return grams

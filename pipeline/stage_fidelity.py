@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 from pipeline import agents
-from pipeline.stage_common import HaltForHuman, stage_failure
+from pipeline.stage_common import HaltForHuman, restating_repair_order, stage_failure
 
 #: An annotation is inserted *with* its separating whitespace, so the whitespace is part of the
 #: insertion and comes out with it. Without the leading `\s*`, an annotation placed before
@@ -57,6 +57,14 @@ Reply with one line: tokens flagged and the verdict.
 FIDELITY_SCORES = ("high", "medium", "low")
 
 
+def build_fidelity_repair_order(report_file: Path, annotated_file: Path, violations: list,
+                                work_order: str) -> str:
+    """Second fidelity attempt: the gate's violations plus the restated work order."""
+    return restating_repair_order(
+        "fidelity output", violations,
+        f"Fix exactly these and rewrite both files: {report_file} and {annotated_file}.", work_order)
+
+
 def check_fidelity(report_file: Path, annotated_file: Path, original: str) -> list:
     """Gate one fidelity-check output.
 
@@ -68,9 +76,11 @@ def check_fidelity(report_file: Path, annotated_file: Path, original: str) -> li
     gate was tightened rather than the instruction loosened.
     """
     violations = []
+    annotations = None
     if not annotated_file.is_file():
         violations.append(f"no annotated transcript at {annotated_file}")
     else:
+        annotations = FIDELITY_ANNOTATION_RE.findall(annotated_file.read_text(encoding="utf-8"))
         stripped = FIDELITY_ANNOTATION_RE.sub("", annotated_file.read_text(encoding="utf-8"))
         if stripped != original:
             if " ".join(stripped.split()) == " ".join(original.split()):
@@ -110,6 +120,48 @@ def check_fidelity(report_file: Path, annotated_file: Path, original: str) -> li
             f"{' and '.join(reasons)} but verdict is {report.get('verdict')!r} — a low score or a "
             f"summary suspicion must escalate: set verdict to 'escalate_to_human' (TRANSCRIPTS.md §4)"
         )
+    if annotations is not None:
+        violations.extend(_count_violations(report, annotations))
+    violations.extend(_rubric_violations(report))
+    return violations
+
+
+#: The two token-flag annotation kinds of TRANSCRIPTS.md §3.
+_GLOSSARY_MATCH_RE = re.compile(r"^\s*\[FIDELITY:\s*glossary-match\b")
+_NO_MATCH_RE = re.compile(r"^\s*\[FIDELITY:\s*no-glossary-match\b")
+
+
+def _count_violations(report: dict, annotations: list) -> list:
+    """TRANSCRIPTS.md §5 self-check 3, machine-checked: the report's counts match the file."""
+    glossary = sum(1 for a in annotations if _GLOSSARY_MATCH_RE.match(a))
+    no_match = sum(1 for a in annotations if _NO_MATCH_RE.match(a))
+    expected = {"tokens_flagged": glossary + no_match, "glossary_matches": glossary,
+                "no_match_flags": no_match}
+    violations = []
+    for key, count in expected.items():
+        reported = report.get(key, 0 if key == "no_match_flags" else None)
+        if reported != count:
+            violations.append(
+                f"report {key} is {reported!r} but the annotated transcript carries {count} such "
+                f"annotation(s) — the report counts the annotations in the file: tokens_flagged = "
+                f"glossary-match + no-glossary-match annotations (TRANSCRIPTS.md §4, self-check 3)")
+    return violations
+
+
+def _rubric_violations(report: dict) -> list:
+    """The necessary conditions of the TRANSCRIPTS.md §4 scoring rubric that the report shows."""
+    violations = []
+    flags = report.get("tokens_flagged") or 0
+    no_match = report.get("no_match_flags") or 0
+    diarization = report.get("diarization_issues") or 0
+    if report.get("fidelity_score") == "high" and (no_match or diarization):
+        violations.append(
+            f"fidelity_score 'high' with {no_match} no-glossary-match flag(s) and {diarization} "
+            f"diarization issue(s) — `high` requires neither (TRANSCRIPTS.md §4 rubric)")
+    if report.get("verdict") == "pass" and (flags or diarization):
+        violations.append(
+            f"verdict 'pass' with {flags} flagged token(s) and {diarization} diarization issue(s) — "
+            f"a transcript carrying flags or issues passes 'pass_with_flags' (TRANSCRIPTS.md §4 rubric)")
     return violations
 
 
@@ -124,7 +176,7 @@ def fidelity_check(source, run_dir: Path, glossary_path: Path, access_dirs) -> d
     attempts, failed = agents.run_gated(
         "fidelity-check", order,
         lambda: check_fidelity(report_file, annotated_file, source.text),
-        lambda v: agents.repair_order("fidelity output", v, "Fix exactly these and rewrite both files."),
+        lambda v: build_fidelity_repair_order(report_file, annotated_file, v, order),
         access_dirs, stage="fidelity-check", site=source.source_id, run_dir=Path(run_dir),
     )
     if failed:

@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 from pipeline import agents, gates
-from pipeline.stage_common import HaltForHuman, stage_failure
+from pipeline.stage_common import HaltForHuman, restating_repair_order, stage_failure
 
 CLASSIFICATION_KEYS = ("project_type", "classification_confidence", "sensitivity_tier")
 PROJECT_TYPES = ("advertising_creative", "other", "unclassified_ask_human")
@@ -45,6 +45,12 @@ OUTPUT
 
 Reply with one line: the project_type and confidence you wrote.
 """
+
+
+def build_classification_repair_order(output_file: Path, violations: list, work_order: str) -> str:
+    """Second classify attempt: the gate's violations plus the restated work order."""
+    return restating_repair_order("classification", violations,
+                                  f"Fix exactly these and rewrite {output_file}.", work_order)
 
 
 def check_classification(path: Path, client_config: dict) -> list:
@@ -101,7 +107,7 @@ def classify(sources, run_dir: Path, project_id: str, client_config: dict, gloss
     attempts, failed = agents.run_gated(
         "classify", order,
         lambda: check_classification(output_file, client_config),
-        lambda v: agents.repair_order("classification", v, f"Fix exactly these and rewrite {output_file}."),
+        lambda v: build_classification_repair_order(output_file, v, order),
         access_dirs, stage="classify", site="classify", run_dir=Path(run_dir),
     )
     if failed:

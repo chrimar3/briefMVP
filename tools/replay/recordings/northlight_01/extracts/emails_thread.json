@@ -28,7 +28,7 @@
       "anchor": "τελικό approval του brief",
       "speaker_or_author": "Eleni (Northlight)",
       "qualifier": "implied",
-      "confidence": "medium"
+      "confidence": "low"
     },
     {
       "value": "αναθεωρημένο πλάνο",
@@ -111,6 +111,15 @@
       "gap": "No strategic positioning or key messages documented.",
       "why_it_matters": "Key messages are foundational for creative development and all communication.",
       "suggested_question_for_client": "Ποια είναι η μοναδική προτάση αξίας του Meltemi Fizz και ποια κύρια μηνύματα θέλετε να περάσουμε;"
+    },
+    {
+      "field": "deliverables",
+      "gap": "Replay wiring edit (round-2 extract contract), not model output: confidence low.",
+      "why_it_matters": "A medium or low item is confirmed before it is relied on.",
+      "suggested_question_for_client": "Can you confirm this deliverables point as stated?",
+      "linked_items": [
+        "deliverables[0]"
+      ]
     }
   ],
   "internal_conflicts": [],

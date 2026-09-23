@@ -57,7 +57,10 @@ def test_every_real_work_order_names_the_paths_replay_writes(tmp_path, fixture_p
         "render": (stages.build_render_order(run / "brief.json", run / "brief_el.md", run / "brief_en.md",
                                              tmp_path / "t.md", tmp_path / "g.json"),
                    [run / "brief_el.md", run / "brief_en.md"]),
-        "extract repair": (extraction.build_repair_order(run / "extracts/t.json", ["v"]), [run / "extracts/t.json"]),
+        "extract repair": (extraction.build_repair_order(
+            run / "extracts/t.json", ["v"],
+            extraction.build_work_order(transcript, run / "extracts/t.json", "p", config, tmp_path / "g.json")),
+            [run / "extracts/t.json"]),
     }
     for name, (order, expected) in orders.items():
         assert replay.output_paths(order) == expected, name
@@ -105,8 +108,9 @@ def test_recording_is_pre_human_and_marks_what_replay_synthesised():
 
 
 def test_committed_recording_matches_its_documented_derivation(tmp_path):
-    """The recording is runs/tier3 minus the human layer and nothing else: re-deriving it from
-    the committed evidence must reproduce the committed copy byte for byte."""
+    """The recording is runs/tier3 minus the human layer, plus only the documented round-2
+    contract edits: re-deriving it from the committed evidence must reproduce the committed copy
+    byte for byte."""
     derived = tmp_path / "derived"
     _load_derive_module().derive(derived)
     committed = sorted(p.relative_to(RECORDING) for p in RECORDING.rglob("*") if p.is_file())

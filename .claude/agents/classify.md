@@ -25,7 +25,7 @@ The runner passes you:
 
 - The readiness-gate output listing every discovered source (`source_id`, `source_type`, `source_date`, path)
 - The source documents themselves
-- `client_config` — the client glossary file (`glossary/<client>.json`), which carries `client_id` and `sensitivity_tier`
+- `client_config` — the client config file your work order names as `client_glossary`: the run's staged, read-only copy under `<run_dir>/inputs/client/`, which carries `client_id` and `sensitivity_tier`
 
 ## 3. Non-negotiable rules
 

@@ -187,10 +187,16 @@ def test_detector_is_driven_by_the_client_glossary_only():
 # --------------------------------------------------------------------------------------
 
 
+#: The medium budget item's linked question (SOURCES.md §4: every medium/low item is linked).
+LINKED_BUDGET_QUESTION = {"field": "budget", "gap": "Units unstated.", "why_it_matters": "Scope.",
+                          "suggested_question_for_client": "In which units?", "linked_items": ["budget[0]"]}
+
+
 def test_check_extract_reports_every_layer_at_once(tmp_path):
     """One repair round should see the whole picture, not one violation at a time."""
     path = tmp_path / "e.json"
-    broken = _extract(budget=[_item(location="[99:99]", anchor="never said this")])
+    broken = _extract(budget=[_item(location="[99:99]", anchor="never said this")],
+                      open_questions=[LINKED_BUDGET_QUESTION])
     path.write_text(json.dumps(broken), encoding="utf-8")
     violations = extraction.check_extract(path, SOURCE_TEXT, GLOSSARY)
     assert len(violations) == 2
@@ -198,7 +204,7 @@ def test_check_extract_reports_every_layer_at_once(tmp_path):
 
 def test_check_extract_accepts_a_clean_artifact(tmp_path):
     path = tmp_path / "e.json"
-    path.write_text(json.dumps(_extract()), encoding="utf-8")
+    path.write_text(json.dumps(_extract(open_questions=[LINKED_BUDGET_QUESTION])), encoding="utf-8")
     assert extraction.check_extract(path, SOURCE_TEXT, GLOSSARY) == []
 
 

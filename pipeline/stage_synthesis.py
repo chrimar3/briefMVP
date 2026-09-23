@@ -14,9 +14,9 @@ import re
 from pathlib import Path
 from typing import Callable, Optional
 
-from pipeline import PIPELINE_VERSION, agents, clock, gates, quality, records
+from pipeline import PIPELINE_VERSION, agents, clock, extract_rules, gates, quality, records
 from pipeline.money import money_figures
-from pipeline.stage_common import stage_failure
+from pipeline.stage_common import restating_repair_order, stage_failure
 
 
 def build_synthesis_order(run_dir: Path, output_file: Path, project_id: str, client_config: dict,
@@ -69,6 +69,14 @@ OUTPUT
 
 Reply with one line: entry count, conflict count, open-question count.
 """
+
+
+def build_synthesis_repair_order(output_file: Path, violations: list, work_order: str) -> str:
+    """Second synthesis attempt: the gate's violations plus the restated work order."""
+    return restating_repair_order(
+        "brief", violations,
+        f"Read {output_file}, fix exactly these and rewrite it. Do not drop entries to make errors "
+        f"go away, and do not invent evidence to satisfy a check.", work_order)
 
 
 _TIMESTAMP_LOC_RE = re.compile(r"^\[(\d{1,2}):(\d{2})(?::(\d{2}))?\]$")
@@ -324,6 +332,71 @@ def rule_currency_discipline(brief: dict, extracts: dict) -> list:
     return violations
 
 
+_CONFIDENCE_RANK = {"low": 0, "medium": 1, "high": 2}
+
+
+def _garbled_refs(extracts: dict) -> dict:
+    """(source_id, anchor) of every extract item carrying a rule-G token → [(note, item)]."""
+    flagged: dict = {}
+    for source_id, extract in (extracts or {}).items():
+        for note in extract_rules.garble_notes(extract):
+            for _path, item in extract_rules.items_carrying(extract, note["token"]):
+                anchor = (item.get("anchor") or "").strip()
+                if anchor:
+                    flagged.setdefault((source_id, anchor), []).append((note, item))
+    return flagged
+
+
+def _shows(text: str, needle: str) -> bool:
+    return gates.normalise_for_match(needle).casefold() in gates.normalise_for_match(text or "").casefold()
+
+
+def rule_garble_carry_through(brief: dict, extracts: dict) -> list:
+    """A garbled (rule-G) token stays visible in reader-facing content (SYNTHESIS.md rule 10).
+
+    Owner decision 2026-09-23 no. 1. An entry or conflict position whose evidence cites an
+    extract item that carries a `garble:`-noted token must show that token verbatim in its
+    content (and, when the note proposes a glossary term, the term beside it), and an entry's
+    confidence is never above the garbled item's. Before this rule the as-heard token survived
+    only inside evidence anchors while content carried the clean glossary term at `high` (the
+    supplementary S3 flag on 10 of 11 stored northlight briefs and 2 of 2 voreas briefs).
+    """
+    flagged = _garbled_refs(extracts)
+    if not flagged:
+        return []
+    violations = []
+
+    def _check(text: str, refs: list, path: str, confidence: Optional[str]) -> None:
+        for ref in refs:
+            key = (((ref or {}).get("source_id") or "").strip(), ((ref or {}).get("anchor") or "").strip())
+            for note, item in flagged.get(key, []):
+                token, match = note["token"], note["match"]
+                proposal = match if match and match != extract_rules.NO_GLOSSARY_MATCH else ""
+                if not _shows(text, token) or (proposal and not _shows(text, proposal)):
+                    beside = f" beside its proposed match {proposal!r}" if proposal else ""
+                    violations.append(
+                        f"{path}: cites {key[0]} {item.get('location')} whose item carries the "
+                        f"garbled token «{token}», but the content does not show «{token}»{beside} — "
+                        f"keep the as-heard token visible next to the proposed match, marked "
+                        f"unconfirmed; never normalise it silently (SYNTHESIS.md rule 10)")
+                if (confidence is not None and _CONFIDENCE_RANK.get(confidence, 0)
+                        > _CONFIDENCE_RANK.get(item.get("confidence"), 0)):
+                    violations.append(
+                        f"{path}: confidence {confidence!r} is above the garbled item it cites "
+                        f"({item.get('confidence')!r}, {key[0]} {item.get('location')}) — an entry "
+                        f"carrying a garbled token takes that item's confidence (SYNTHESIS.md rule 10)")
+
+    for fieldname in gates.BRIEF_FIELDS:
+        for idx, entry in enumerate(brief.get(fieldname) or []):
+            _check(entry.get("content"), entry.get("evidence") or [], f"{fieldname}[{idx}]",
+                   entry.get("confidence"))
+    for idx, conflict in enumerate(brief.get("conflicts") or []):
+        for p_idx, position in enumerate(conflict.get("positions") or []):
+            _check(position.get("statement"), [position.get("evidence")],
+                   f"conflicts[{idx}].positions[{p_idx}]", None)
+    return violations
+
+
 def rule_schema(brief: dict, extracts: dict) -> list:
     """Schema violations are visible INSIDE the gate, where the repair loop can still act.
 
@@ -354,6 +427,7 @@ SYNTHESIS_RULES: tuple[SynthesisRule, ...] = (
     rule_superseded_claims,
     rule_anchor_integrity,
     rule_currency_discipline,
+    rule_garble_carry_through,
     rule_schema,
 )
 
@@ -390,10 +464,7 @@ def synthesize(run_dir: Path, project_id: str, client_config: dict, classificati
     attempts, failed = agents.run_gated(
         "synthesize", order,
         lambda: check_synthesis(output_file, extracts),
-        lambda v: agents.repair_order(
-            "brief", v,
-            f"Fix exactly these and rewrite {output_file}. Do not drop entries to make "
-            f"errors go away, and do not invent evidence to satisfy a check."),
+        lambda v: build_synthesis_repair_order(output_file, v, order),
         access_dirs, stage="synthesize", site="synthesize", run_dir=Path(run_dir),
     )
     if failed:

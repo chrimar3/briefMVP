@@ -8,7 +8,7 @@
 ## 1. Objectives
 - Meltemi wants to catch the end of the soft-drinks season with this launch (timing pressure driving the schedule). [emails_thread **Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22]
 - Successful launch of the new product line in the Greek market. [rfp_meltemi ## 2. Στόχος]
-- Building brand awareness is central: Meltemi Fizz enters a new category (sparkling tea) for the company, and they want to enter it strongly. [transcript_kickoff 00:02:05]
+- Building brand awareness is central: Meltemi Fizz enters a new category (sparkling tea) for the company, and they want to enter it strongly. (heard as «μπραντ αγουέρνες»; proposed match "brand awareness", unconfirmed) [transcript_kickoff 00:02:05]
 
 ## 2. Audiences
 > No confirmed entries — see Open Questions.
@@ -17,7 +17,7 @@
 - Tone of voice: confident, modern Greek with natural use of English category terms; humor is allowed but sarcasm about competitors is not. [background_brand_guidelines ## Tone (guidance)]
 - Core message angle: refreshment without the sugar guilt — zero sugar, natural ingredients. [transcript_kickoff 00:06:02]
 - Positioning: a Greek brand that owns the modern category (sparkling tea). [transcript_kickoff 00:06:02]
-- Visual direction: the key visual should evoke summer, but premium summer — not a generic beach-party feel. [transcript_kickoff 00:06:02]
+- Visual direction: the key visual should evoke summer, but premium summer — not a generic beach-party feel. (heard as «κι βίζουαλ»; proposed match "key visual", unconfirmed) [transcript_kickoff 00:06:02]
 
 ## 4. Deliverables
 - Final approval of the brief is a required step before proceeding (approval authority still unconfirmed — see open questions). [emails_thread **Message 1** · From: Eleni (Northlight) · To: Dimitris (Meltemi) · Date: 2026-07-11 09:40]

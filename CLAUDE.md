@@ -40,7 +40,7 @@ Two-stage AI briefing pipeline (extraction → synthesis → bilingual render �
 
 ## Model routing
 
-- Schema-following work (classify, fidelity) → haiku. Extraction → sonnet, plus an independent `verify-extract` second check per source (fresh session; sonnet when the extract carries risk classes — mandatories, figures, garbling, low confidence — else haiku; policy in `config/model_routing.json`). Judgment work (synthesize, render, creative-shadow) → sonnet. (Routing decision by the human, 2026-07-30.)
+- Schema-following work (classify, fidelity) → haiku. Extraction → sonnet, plus an independent `verify-extract` second check per source (fresh session, **always sonnet**: `strong_model` and `base_model` are both sonnet in `config/model_routing.json`, so the agent's haiku frontmatter is never used). Judgment work (synthesize, render, creative-shadow) → sonnet. (Routing decision by the human, 2026-07-30; verifier declared sonnet-only by owner decision 5, 2026-09-23 — the risk classes routed 66 of 66 stored extracts to sonnet, so the haiku branch never ran. The classes are still recorded per extract, descriptively.)
 - Never upgrade a stage's model to pass a quality gate — report the failure instead; routing changes are a human decision.
 
 ## Anti-patterns

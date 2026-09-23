@@ -325,7 +325,11 @@ def test_render_and_creative_prompts_quote_no_fixture_source(prompt):
     """Graded-fixture wording in a runtime prompt primes the model for the exam items. Source
     documents only — answer keys are never read here (and are not *.md)."""
     fixture_grams = set()
+    sealed = json.loads((REPO / "fixtures" / "SEALED_KEYS.json").read_text(encoding="utf-8"))
+    quarantined = tuple(REPO / q for q in sealed.get("quarantined_paths") or [])
     for source in sorted((REPO / "fixtures").glob("*/*.md")):
+        if any(source == q or q in source.parents for q in quarantined):
+            continue  # a sealed blind fixture is never read before its graded run (r2 rule 8)
         fixture_grams |= _grams(source.read_text(encoding="utf-8"))
     text = (REPO / prompt).read_text(encoding="utf-8")
     leaked = _grams(text) & fixture_grams

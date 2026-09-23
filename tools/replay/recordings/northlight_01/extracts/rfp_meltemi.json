@@ -103,7 +103,10 @@
       "field": "deliverables",
       "gap": "Video deliverables lack technical specification: quantity, duration, format, and intended distribution method not stated",
       "why_it_matters": "Production planning and budget allocation require clear technical specifications to scope work appropriately",
-      "suggested_question_for_client": "Πόσα βίντεο αναμένετε και ποια θα ήταν η ιδανική διάρκειά τους (π.χ., τυπικό μήκος TikTok vs Instagram Reels vs YouTube);"
+      "suggested_question_for_client": "Πόσα βίντεο αναμένετε και ποια θα ήταν η ιδανική διάρκειά τους (π.χ., τυπικό μήκος TikTok vs Instagram Reels vs YouTube);",
+      "linked_items": [
+        "deliverables[0]"
+      ]
     },
     {
       "field": "deliverables",

@@ -15,7 +15,7 @@
       "anchor": "Το βασικό για μας είναι το μπραντ αγουέρνες",
       "speaker_or_author": "DIMITRIS",
       "qualifier": "stated",
-      "confidence": "high"
+      "confidence": "low"
     }
   ],
   "audiences": [
@@ -55,7 +55,7 @@
       "anchor": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
       "speaker_or_author": "DIMITRIS",
       "qualifier": "stated",
-      "confidence": "high"
+      "confidence": "low"
     }
   ],
   "deliverables": [
@@ -116,21 +116,28 @@
       "gap": "DIMITRIS states 'some videos and social content' but explicitly says formats have not been decided ('Δεν έχω καταλήξει σε formats').",
       "why_it_matters": "Format decisions (short-form, long-form, reels, etc.) drive production timeline, budget scope, and platform strategy.",
       "suggested_question_for_client": "Πόσα videos και σε ποιες μορφές (π.χ. 15s reels, TikTok, YouTube shorts, long-form)? Και ποια είναι τα social channels προτεραιότητα;",
-      "linked_items": []
+      "linked_items": [
+        "deliverables[0]",
+        "deliverables[1]"
+      ]
     },
     {
       "field": "budget",
       "gap": "Figure stated as 'κάπου στα ογδόντα, μπορεί ογδόντα πέντε' (80–85) with no unit, currency, or scope clarification. ANNA explicitly states this excludes media spend.",
       "why_it_matters": "Budget amount in euros, thousands, or other unit; and separation of production vs. media spend determines feasibility of deliverables and platform investment.",
       "suggested_question_for_client": "Να επιβεβαιώσουμε: τα 80–85 είναι σε χιλιάδες ευρώ για production μόνο; Υπάρχει ξεχωριστό media budget και ποιο είναι το εύρος του;",
-      "linked_items": []
+      "linked_items": [
+        "budget[0]"
+      ]
     },
     {
       "field": "timeline",
       "gap": "Launch date hedged as 'κάπου εκεί' (around there) referring to October/autumn, pending board meeting approval end of month. No firm date.",
       "why_it_matters": "Production timeline, vendor booking, and campaign phasing depend on a confirmed launch date.",
       "suggested_question_for_client": "Πότε ακριβώς λαμβάνει απόφαση το board; Και ποια είναι η confirmed launch date ή το latest possible deadline;",
-      "linked_items": []
+      "linked_items": [
+        "timeline[1]"
+      ]
     },
     {
       "field": "objectives",
@@ -145,12 +152,30 @@
       "why_it_matters": "Audience definition drives channel mix, creative tone, and media strategy. Must confirm which definition the campaign targets.",
       "suggested_question_for_client": "Στο RFP ήταν Gen Z, αλλά σήμερα ειπώθηκε ότι ο πραγματικός buyer είναι 25–40 χρονών urban professionals. Ποια ακριβώς είναι η target audience για το campaign;",
       "linked_items": []
+    },
+    {
+      "field": "objectives",
+      "gap": "Replay wiring edit (round-2 extract contract), not model output: confidence low.",
+      "why_it_matters": "A medium or low item is confirmed before it is relied on.",
+      "suggested_question_for_client": "By «μπραντ αγουέρνες», do you mean \"brand awareness\"?",
+      "linked_items": [
+        "objectives[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "Replay wiring edit (round-2 extract contract), not model output: confidence low.",
+      "why_it_matters": "A medium or low item is confirmed before it is relied on.",
+      "suggested_question_for_client": "By «κι βίζουαλ», do you mean \"key visual\"?",
+      "linked_items": [
+        "key_messages[2]"
+      ]
     }
   ],
   "internal_conflicts": [],
   "extraction_notes": [
-    "[00:02:05] Token 'μπραντ αγουέρνες' (Greek-script rendering) flagged by fidelity gate with glossary-match proposal 'brand awareness' (confidence high). Extracted as-is per rule G; glossary match noted for downstream translation stage.",
-    "[00:06:02] Token 'κι βίζουαλ' (Greek-script rendering) — glossary term 'key visual' rendered in Greek as-is per rule G. Value preserves source language; anchor updated to be verbatim.",
+    "garble: «μπραντ αγουέρνες» at [00:02:05] — proposed match \"brand awareness\" (Replay wiring edit (round-2 extract contract), not model output)",
+    "garble: «κι βίζουαλ» at [00:06:02] — proposed match \"key visual\" (Replay wiring edit (round-2 extract contract), not model output)",
     "[REPAIR: audiences[0] with anchor 'Το RFP που σας στείλαμε λέει Gen Z' removed — anchor not found verbatim in source per validator (SOURCES.md rule 2).]",
     "[REPAIR: deliverables[2] with anchor containing combined metro proposal + retraction removed — combined anchor not found verbatim in source per validator (SOURCES.md rule 2). Metro retraction documented only via internal_conflict; both removed together.]"
   ]

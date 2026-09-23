@@ -14,10 +14,16 @@ The path must be absolute: `pipeline/agents.py` starts the binary from a neutral
   reports the model `offline-replay` and zero tokens, so a replayed manifest cannot be mistaken for a
   model run. `BRIEF_BUILDER_REPLAY_RUN=<dir>` replays a different recording.
 - `recordings/northlight_01/` is a **wiring fixture, not evidence**, and is never graded or cited
-  as a model result. Its classification, fidelity and extract files are `runs/tier3` byte for byte;
+  as a model result. Its classification and fidelity files are `runs/tier3` byte for byte;
   `brief.json` is `runs/tier3/brief.json` with the human layer reversed (sign-off, conflict
   resolutions, readiness injection); the verifier reports are synthesised `confirms` reports,
   because the graded run predates step 4b.
+- The extracts and the brief carry **documented round-2 contract edits** (r2-W-R), because the
+  graded run predates the gates replay now exercises: rule-G notes in the structured `garble:`
+  form, confidence by the SOURCES.md §4 definitions, every medium/low item linked from an open
+  question (questions added for this are marked as replay edits), and each garbled token kept
+  visible beside its proposed match (SYNTHESIS.md rule 10). An extract these edits leave
+  unchanged is `runs/tier3` byte for byte; `derive_recording.py` documents every edit.
 - The two renders are **generated, not recorded.** The graded renders predate the current
   client-brief template (`templates/northlight_client_brief.md`, `.el.md`, `.labels.json`), which
   the render stage now enforces with the blocking `check_render_template`. So
