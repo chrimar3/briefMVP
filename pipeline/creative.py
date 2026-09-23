@@ -61,9 +61,15 @@ _SPEC_TOKEN_RATIO = re.compile(r"\b[1-9]\d?\s*:\s*[1-9]\d?\b")   # 9:16, not 00:
 
 #: Durations and file types (draft mode). A range or "up to" duration is spec-shaped wherever it
 #: appears; a bare "15s" is only a spec token on a spec line (elsewhere it is creative timing).
-_DURATION_SPEC_SHAPED = re.compile(r"(?:\bup to\s+\d{1,3}\s*s\b)|(?:\b\d{1,3}\s*[-‐‑‒–—]\s*\d{1,3}\s*s\b)", re.IGNORECASE)
-_DURATION_ANY = re.compile(r"(?:\bup to\s+)?\b\d{1,3}(?:\s*[-‐‑‒–—]\s*\d{1,3})?\s*(?:s|sec|secs|seconds)\b", re.IGNORECASE)
-_FILE_TYPE = re.compile(r"(?<![\w.])(?:mp4|mov|m4v|avi|mkv|webm|jpe?g|png|gif|webp|heic|tiff?|psd|pdf|svg)(?![\w])", re.IGNORECASE)
+_DURATION_SPEC_SHAPED = re.compile(
+    r"(?:\bup to\s+\d{1,3}\s*s\b)|(?:\b\d{1,3}\s*[-‐‑‒–—]\s*\d{1,3}\s*s\b)", re.IGNORECASE
+)
+_DURATION_ANY = re.compile(
+    r"(?:\bup to\s+)?\b\d{1,3}(?:\s*[-‐‑‒–—]\s*\d{1,3})?\s*(?:s|sec|secs|seconds)\b", re.IGNORECASE
+)
+_FILE_TYPE = re.compile(
+    r"(?<![\w.])(?:mp4|mov|m4v|avi|mkv|webm|jpe?g|png|gif|webp|heic|tiff?|psd|pdf|svg)(?![\w])", re.IGNORECASE
+)
 _SPEC_TAG = re.compile(r"\[spec:\s*([^]\s]+)\s*\]")
 
 #: Thousands-scale figures: "85k", "85 χιλ.", "85 thousand", or thousands-grouped "85.000".
@@ -101,7 +107,7 @@ class NotSignedOff(gates.GateError):
     """Stage 2 was asked to run on a brief the human has not signed (DR-8)."""
 
 
-def load_spec_table(path: Path = None) -> dict:
+def load_spec_table(path: Optional[Path] = None) -> dict:
     path = Path(path) if path else gates.CONFIG_DIR / "channel_specs.json"
     if not path.is_file():
         raise CreativeError(f"channel spec table not found at {path}")
@@ -383,7 +389,7 @@ def build_creative_repair_order(output_file: Path, violations: list, work_order:
 
 
 def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
-                    model_alias: str, spec_table_path: Path = None) -> dict:
+                    model_alias: str, spec_table_path: Optional[Path] = None) -> dict:
     """Run the creative-shadow subagent once, on the given model, gated on its artifact."""
     require_signed_off(brief)
     # The run's RECORDED sign-off regime decides what else is required (approval.signoff_regime);
@@ -430,7 +436,7 @@ def creative_shadow(run_dir: Path, brief: dict, glossary_path: Path, access_dirs
 
 
 def run_ab(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
-           spec_table_path: Path = None) -> list:
+           spec_table_path: Optional[Path] = None) -> list:
     """The Tier-4 A/B: the same signed brief through creative-shadow on sonnet, then opus."""
     require_signed_off(brief)
     return [

@@ -14,10 +14,11 @@ from conftest import split_frontmatter
 #: judgment work -> sonnet. Changing a value here is a human decision (CLAUDE.md).
 AGENT_SPEC = {
     # Routing decision 2026-07-30: extraction runs sonnet, with an independent fresh-session
-    # second check (verify-extract) whose model is risk-routed at call time — haiku here is
-    # its frontmatter base; pipeline/extraction.py overrides to sonnet on risky extracts.
+    # second check (verify-extract). Owner decision 5 (2026-09-23) declared the verifier
+    # sonnet-only: config/model_routing.json routes both branches to sonnet, and the frontmatter
+    # says so too, so no file still names a haiku verifier.
     "extract": ("sonnet", "skills/SOURCES.md"),
-    "verify-extract": ("haiku", None),
+    "verify-extract": ("sonnet", None),
     "classify": ("haiku", None),
     "fidelity-check": ("haiku", "skills/TRANSCRIPTS.md"),
     "synthesize": ("sonnet", "skills/SYNTHESIS.md"),
@@ -238,14 +239,6 @@ def test_run_gated_passes_the_model_override_through(monkeypatch):
     agents.run_gated("creative-shadow", "ORDER", lambda: [], lambda v: "",
                      [], stage="creative-shadow", site="opus", model_override="opus")
     assert calls[0]["model_override"] == "opus"
-
-
-def test_repair_order_carries_the_violations_verbatim():
-    from pipeline import agents
-
-    text = agents.repair_order("brief", ["v1", "v2"], "Fix exactly these.")
-    assert text.startswith("REPAIR ORDER — your brief failed the gate:\n")
-    assert "  - v1\n  - v2" in text and text.endswith("Fix exactly these.")
 
 
 # --------------------------------------------------------------------------------------

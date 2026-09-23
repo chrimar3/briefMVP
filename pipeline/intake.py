@@ -161,7 +161,11 @@ STARTER_TERMS = [
     {"term": "key visual", "rule": "keep_latin", "note": "Standard EN creative term."},
     {"term": "launch", "rule": "keep_latin", "note": "Used untranslated in agency register."},
     {"term": "KPI", "rule": "keep_latin", "note": "Acronym stays Latin."},
-    {"term": "media spend", "rule": "keep_latin", "note": "Budget term; distinct from production budget — never merge the two."},
+    {
+        "term": "media spend",
+        "rule": "keep_latin",
+        "note": "Budget term; distinct from production budget — never merge the two.",
+    },
     {"term": "brand awareness", "rule": "keep_latin", "note": "Standard EN marketing term in agency Greek."},
 ]
 
@@ -185,7 +189,8 @@ def scaffold_glossary(glossary_path: Path, client_id: str, tier: str) -> bool:
     payload = {
         "client_id": client_id,
         "sensitivity_tier": tier,
-        "_scaffold_note": "Starter glossary written by pipeline/intake.py — review terms with the account lead before the run.",
+        "_scaffold_note": "Starter glossary written by pipeline/intake.py — review terms with the account lead "
+        "before the run.",
         "terms": STARTER_TERMS,
     }
     glossary_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -222,7 +227,7 @@ def write_declaration(out_dir: Path, payload: dict) -> bool:
     path = out_dir / data_policy.DECLARATION_FILE
     if path.exists():
         existing = data_policy.load_declaration(out_dir)
-        current = {"data_class": existing.data_class}
+        current: dict = {"data_class": existing.data_class}
         if not existing.is_synthetic:
             current.update(approval_ref=existing.approval_ref, approved_by=existing.approved_by,
                            approved_on=existing.approved_on)
@@ -246,7 +251,9 @@ def main(argv: list | None = None) -> int:
     parser.add_argument("--data-class", required=True, choices=data_policy.DATA_CLASSES,
                         help="What the documents are (never inferred): 'synthetic' for invented material, "
                              "'approved' for material covered by a recorded data-policy approval")
-    parser.add_argument("--approval-ref", default=None, help="With --data-class approved: the approval record's reference")
+    parser.add_argument(
+        "--approval-ref", default=None, help="With --data-class approved: the approval record's reference"
+    )
     parser.add_argument("--approved-by", default=None, help="With --data-class approved: who approved the processing")
     parser.add_argument("--approved-on", default=None, help="With --data-class approved: approval date, YYYY-MM-DD")
     parser.add_argument("--screened-by", default=None,
@@ -299,9 +306,15 @@ def main(argv: list | None = None) -> int:
                 project_dir=Path(args.out), glossary=glossary_path)
             if problems:
                 raise data_policy.DataDeclarationError("; ".join(problems))
-        print(f"Data class: {declaration['data_class']}"
-              + ("" if declaration["data_class"] == data_policy.SYNTHETIC
-                 else f" (approval {declaration['approval_ref']} by {declaration['approved_by']} on {declaration['approved_on']})"))
+        print(
+            f"Data class: {declaration['data_class']}"
+            + (
+                ""
+                if declaration["data_class"] == data_policy.SYNTHETIC
+                else f" (approval {declaration['approval_ref']} by {declaration['approved_by']} "
+                f"on {declaration['approved_on']})"
+            )
+        )
         print(f"Intake plan for {len(items)} source(s) → {args.out}")
         for item in items:
             note = "header already compliant" if item.already_compliant else f"date: {item.date_provenance}"
@@ -327,7 +340,11 @@ def main(argv: list | None = None) -> int:
           + (f"scaffolded at {glossary_path} — REVIEW TERMS before the run" if scaffolded
              else f"already present at {glossary_path} (untouched)"))
     print(f"readiness: {verdict.message}")
-    run_out = "" if declaration["data_class"] == data_policy.SYNTHETIC else " --out <pilot runs folder outside the repository>"
+    run_out = (
+        ""
+        if declaration["data_class"] == data_policy.SYNTHETIC
+        else " --out <pilot runs folder outside the repository>"
+    )
     print(f"\nRun (live model calls; owner-authorised):\n"
           f"  python pipeline/runner.py --project {args.out} --glossary {glossary_path}{run_out} --live")
     return 0 if verdict.ok else 1

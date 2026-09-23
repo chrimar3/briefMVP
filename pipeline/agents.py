@@ -209,7 +209,7 @@ class AccessScope:
         return iter(self.dirs())
 
     @classmethod
-    def coerce(cls, access_dirs) -> "AccessScope":
+    def coerce(cls, access_dirs) -> AccessScope:
         """A scope as-is; a plain list split into read-only repo skeleton dirs and the rest."""
         if isinstance(access_dirs, cls):
             return access_dirs
@@ -551,12 +551,6 @@ OUTPUT_DISCIPLINE = """EFFICIENCY — output discipline (the gate reads your FIL
   content in your visible reply or working notes.
   Run your skill's self-check silently and fix problems in the file itself; mention a check in
   your reply only to report a violation you could not fix."""
-
-
-def repair_order(subject: str, violations: list, instruction: str) -> str:
-    """The standard second-attempt prompt: the failures verbatim, then the stage's own coda."""
-    listed = "\n".join(f"  - {v}" for v in violations)
-    return f"REPAIR ORDER — your {subject} failed the gate:\n{listed}\n\n{instruction}"
 
 
 def run_gated(

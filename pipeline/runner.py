@@ -31,17 +31,33 @@ import json
 import re
 import shutil
 import sys
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable, Optional
+from typing import Callable, Optional, cast
 from uuid import uuid4
 
 if __package__ in (None, ""):  # allow `python pipeline/runner.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline import PIPELINE_VERSION
-from pipeline import (agents, approval, clock, conflicts, creative, data_policy, docview, extraction, gates,
-                      prescreen, publish, review, run_review, stages, revisions)
+from pipeline import (  # noqa: E402
+    PIPELINE_VERSION,
+    agents,
+    approval,
+    clock,
+    conflicts,
+    creative,
+    data_policy,
+    docview,
+    extraction,
+    gates,
+    prescreen,
+    publish,
+    review,
+    revisions,
+    run_review,
+    stages,
+)
 
 EXIT_OK = 0
 EXIT_INSUFFICIENT_INPUT = 2
@@ -98,7 +114,15 @@ STEP_SEQUENCE = (
 #: Which steps each stage selection runs. `extraction` is the Tier-1 path: prove the
 #: extraction leg end-to-end without pretending the stages around it exist yet.
 STAGE_SELECTIONS = {
-    "full": ("readiness_gate", "classification", "fidelity_check", "extraction", "conflict_pass", "synthesis", "render"),
+    "full": (
+        "readiness_gate",
+        "classification",
+        "fidelity_check",
+        "extraction",
+        "conflict_pass",
+        "synthesis",
+        "render",
+    ),
     "extraction": ("readiness_gate", "extraction"),
     # Re-run one leg against an existing run directory (`--run-id <existing>`). A run dir is
     # resumable state: re-rendering a brief should not mean re-extracting four sources.
@@ -137,7 +161,7 @@ class RunContext:
     sources: list
     started_ts: str
     project_id: str = ""
-    client_config: dict = None
+    client_config: dict = field(default_factory=dict)
     artifacts: dict = field(default_factory=dict)
     glossary_path: Optional[Path] = None
     source_filter: Optional[str] = None
@@ -176,7 +200,7 @@ PROTECTED_RUN_PATHS = (
     "approval.json", "language_review.json", "coverage_decisions.json", "clarifications.json",
     "amendments.json", "agency_audit.json", "creative_draft.json", "creative_approval.json",
     "approval_withdrawals.json", "releases.json", "handover.json", "revision_lineage.json",
-    "audit_log.jsonl",
+    "signoff_regime.json", "audit_log.jsonl",
 )
 
 #: Written by the runner itself while a model step runs, so left out of the integrity check
@@ -347,7 +371,7 @@ def protected_run_paths(step_name: Optional[str] = None, source_id: Optional[str
     return tuple(dict.fromkeys(paths))
 
 
-def _access_dirs(ctx: "RunContext", source_id: Optional[str] = None) -> agents.AccessScope:
+def _access_dirs(ctx: RunContext, source_id: Optional[str] = None) -> agents.AccessScope:
     """What a subagent may touch. It may WRITE the run directory only — minus the protected
     records inside it and the outputs of every earlier step (`protected_run_paths`) — and READ
     the staged inputs there plus the skeleton directories (schema/, templates/, config/), which
@@ -382,7 +406,7 @@ def _hash_tree(path: Path) -> dict:
             for p in sorted(path.rglob("*")) if p.is_file()}
 
 
-def integrity_state(ctx: "RunContext", originals=(), scope: Optional[agents.AccessScope] = None) -> dict:
+def integrity_state(ctx: RunContext, originals=(), scope: Optional[agents.AccessScope] = None) -> dict:
     """Hashes of everything a model step must leave untouched: the read-only skeleton dirs,
     the protected paths inside the run directory (human records and earlier steps' outputs),
     and the original project inputs. `scope` defaults to the current step's `_access_dirs`."""
@@ -415,11 +439,17 @@ def _summarise(attempts: list) -> str:
     return f"{len(attempts)} attempt(s) · {tokens:,} tokens · {', '.join(models) or 'model unreported'}"
 
 
-def _classification_handler(ctx: "RunContext", step: Step) -> dict:
+def _glossary(ctx: RunContext) -> Path:
+    """The staged client config a model step reads. `main` resolves it before the first step, so
+    the Optional field is a Path here (typed for mypy only; nothing is checked or changed)."""
+    return cast(Path, ctx.glossary_path)
+
+
+def _classification_handler(ctx: RunContext, step: Step) -> dict:
     """Step 2 — project type, plus the onboarding tier read from client config (DR-11)."""
     outcome = stages.classify(
         sources=ctx.sources, run_dir=ctx.run_dir, project_id=ctx.project_id,
-        client_config=ctx.client_config, glossary_path=ctx.glossary_path, access_dirs=_access_dirs(ctx),
+        client_config=ctx.client_config, glossary_path=_glossary(ctx), access_dirs=_access_dirs(ctx),
     )
     ctx.artifacts["classification"] = outcome
     print(
@@ -429,7 +459,7 @@ def _classification_handler(ctx: "RunContext", step: Step) -> dict:
     return {"classification": outcome}
 
 
-def _fidelity_handler(ctx: "RunContext", step: Step) -> dict:
+def _fidelity_handler(ctx: RunContext, step: Step) -> dict:
     """Step 3 — every transcript is scored and annotated before extraction may read it."""
     transcripts = [s for s in ctx.selected_sources() if s.source_type == "transcript"]
     if not transcripts:
@@ -439,7 +469,7 @@ def _fidelity_handler(ctx: "RunContext", step: Step) -> dict:
     results = []
     for source in transcripts:
         print(f"      · scoring {source.source_id}…")
-        outcome = stages.fidelity_check(source, ctx.run_dir, ctx.glossary_path, _access_dirs(ctx))
+        outcome = stages.fidelity_check(source, ctx.run_dir, _glossary(ctx), _access_dirs(ctx))
         ctx.artifacts.setdefault("annotated", {})[source.source_id] = Path(outcome["annotated_file"])
         print(
             f"        verdict={outcome['verdict']} · score={outcome['fidelity_score']}"
@@ -449,7 +479,7 @@ def _fidelity_handler(ctx: "RunContext", step: Step) -> dict:
     return {"fidelity": results}
 
 
-def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
+def _extraction_handler(ctx: RunContext, step: Step) -> dict:
     """Step 4 — one `extract` subagent invocation per source, each gated on its artifact."""
     results = []
     for source in ctx.selected_sources():
@@ -465,7 +495,7 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
             run_dir=ctx.run_dir,
             project_id=ctx.project_id,
             client_config=ctx.client_config,
-            glossary_path=ctx.glossary_path,
+            glossary_path=_glossary(ctx),
             access_dirs=scope,
             read_path=annotated,
         )
@@ -491,12 +521,12 @@ def _extraction_handler(ctx: "RunContext", step: Step) -> dict:
     return {"extracts": results}
 
 
-def _synthesis_handler(ctx: "RunContext", step: Step) -> dict:
+def _synthesis_handler(ctx: RunContext, step: Step) -> dict:
     """Step 6 — assemble the canonical brief, then inject the readiness block the model may not write."""
     outcome = stages.synthesize(
         run_dir=ctx.run_dir, project_id=ctx.project_id, client_config=ctx.client_config,
         classification=ctx.artifacts["classification"], sources=ctx.selected_sources(),
-        extracts=ctx.artifacts.get("extracts") or {}, glossary_path=ctx.glossary_path,
+        extracts=ctx.artifacts.get("extracts") or {}, glossary_path=_glossary(ctx),
         access_dirs=_access_dirs(ctx), readiness_policy=ctx.readiness_policy,
     )
     ctx.artifacts["brief"] = json.loads(Path(outcome["output_file"]).read_text(encoding="utf-8"))
@@ -512,11 +542,11 @@ def _synthesis_handler(ctx: "RunContext", step: Step) -> dict:
     return {"synthesis": outcome}
 
 
-def _render_handler(ctx: "RunContext", step: Step) -> dict:
+def _render_handler(ctx: RunContext, step: Step) -> dict:
     """Step 7 — both documents from the same object (DR-6)."""
     outcome = stages.render(
         run_dir=ctx.run_dir, brief=ctx.artifacts["brief"],
-        glossary_path=ctx.glossary_path, access_dirs=_access_dirs(ctx),
+        glossary_path=_glossary(ctx), access_dirs=_access_dirs(ctx),
     )
     print(
         f"        el={outcome['el_chars']} chars · en={outcome['en_chars']} chars"
@@ -535,11 +565,11 @@ def _render_handler(ctx: "RunContext", step: Step) -> dict:
     return {"render": outcome}
 
 
-def _creative_handler(ctx: "RunContext", step: Step) -> dict:
+def _creative_handler(ctx: RunContext, step: Step) -> dict:
     """Step 9 (Tier 4) — shadow creative brief A/B, sonnet vs opus, on the signed brief (DR-8)."""
     brief = ctx.artifacts["brief"]
     bound_specs = revisions.load(ctx.run_dir / "input_snapshot.json", {}).get("channel_specs")
-    results = creative.run_ab(ctx.run_dir, brief, ctx.glossary_path, _access_dirs(ctx),
+    results = creative.run_ab(ctx.run_dir, brief, _glossary(ctx), _access_dirs(ctx),
                              spec_table_path=Path(bound_specs["path"]) if bound_specs else None)
     for outcome in results:
         print(
@@ -552,7 +582,7 @@ def _creative_handler(ctx: "RunContext", step: Step) -> dict:
 
 #: Model-step handlers, registered per tier as each stage is built.
 #: Signature: handler(ctx: RunContext, step: Step) -> dict  (the step's manifest payload)
-AGENT_HANDLERS: dict[str, Callable[["RunContext", Step], dict]] = {
+AGENT_HANDLERS: dict[str, Callable[[RunContext, Step], dict]] = {
     "classify": _classification_handler,
     "fidelity-check": _fidelity_handler,
     "extract": _extraction_handler,
@@ -1023,8 +1053,12 @@ def main(argv: Optional[list] = None) -> int:
     """CLI entry point: parse the flags, run one leg, return its exit code."""
     _line_buffered_stdout()
     parser = argparse.ArgumentParser(description="Run the Brief Builder Stage-1 pipeline.")
-    parser.add_argument("--project", required=True, help="Input folder: data_declaration.json at its root plus *.md sources "
-                             "honouring the source-header contract")
+    parser.add_argument(
+        "--project",
+        required=True,
+        help="Input folder: data_declaration.json at its root plus *.md sources "
+        "honouring the source-header contract",
+    )
     parser.add_argument("--out", default=str(DEFAULT_OUT_DIR),
                         help="Where run directories are written (default runs/). Hermetic: nothing outside it "
                              "is written unless --publish is given")

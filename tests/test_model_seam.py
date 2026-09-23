@@ -29,7 +29,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import agents, approval, extraction, gates, prescreen, publish, runner, stages
+from pipeline import agents, approval, extraction, gates, prescreen, publish, revisions, runner, stages
 
 REPO = gates.REPO_ROOT
 INJECTION = Path(__file__).resolve().parent / "injection_project"
@@ -144,6 +144,20 @@ def test_deny_rules_follow_the_step(tmp_path, step, denied, allowed):
         assert f"Write({_rule(run_dir / name, recursive)})" not in deny, (step, name)
     # The fixed human records stay protected in every step.
     assert f"Write({_rule(run_dir / 'approval.json')})" in deny
+
+
+def test_every_vouched_human_record_and_the_audit_log_are_protected_in_every_step(tmp_path):
+    """A record the audit log vouches for (W-G), the sign-off regime and the log itself are denied
+    to every agent by rule and hashed around every model step, like the other human records."""
+    vouched = (set(revisions._VOUCHED_RECORDS) | set(revisions._VOUCHED_LISTS)
+               | set(revisions._VOUCHED_KEYED) | {revisions.AUDIT_LOG, approval.REGIME_FILE})
+    assert vouched <= set(runner.PROTECTED_RUN_PATHS)
+    for step in ("classification", "extraction", "synthesis", "render", "creative_shadow"):
+        ctx = _ctx(tmp_path, step)
+        deny = _deny(runner._access_dirs(ctx))
+        for name in (approval.REGIME_FILE, revisions.AUDIT_LOG):
+            assert f"Write({_rule(ctx.run_dir / name)})" in deny, (step, name)
+            assert f"Edit({_rule(ctx.run_dir / name)})" in deny, (step, name)
 
 
 def test_one_sources_extraction_leg_cannot_write_another_sources_files(tmp_path):
@@ -270,7 +284,9 @@ def test_a_resumed_leg_is_never_graded_on_the_earlier_legs_artifact(tmp_path, fi
     run_dir = out / "e2e"
     other_before = (run_dir / "extracts" / "rfp_meltemi.json").read_bytes()
 
-    silent = lambda *a, **k: agents.SubagentResult(agent=a[0], ok=True)  # an agent that writes nothing
+    def silent(*a, **k):  # an agent that writes nothing
+        return agents.SubagentResult(agent=a[0], ok=True)
+
     monkeypatch.setattr(agents, "invoke", silent)
     code = runner.main(["--project", str(project), "--out", str(out), "--run-id", "e2e",
                         "--stage", "extraction", "--source", "transcript_kickoff"])
@@ -337,7 +353,8 @@ def test_the_version_is_probed_once_per_binary(tmp_path, monkeypatch):
 def test_a_real_cli_without_opt_in_is_refused_before_anything_is_created(project, tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(agents, "CLAUDE_BIN", str(_fake_real_cli(tmp_path)))
     out = tmp_path / "runs"
-    assert _main(project, out, handlers={"classify": _halt}, monkeypatch=monkeypatch) == runner.EXIT_LIVE_NOT_ENABLED == 7
+    code = _main(project, out, handlers={"classify": _halt}, monkeypatch=monkeypatch)
+    assert code == runner.EXIT_LIVE_NOT_ENABLED == 7
     assert not out.exists()
     err = capsys.readouterr().err
     assert "[live calls]" in err and "--live" in err and "tools/replay/claude" in err
@@ -350,7 +367,8 @@ def test_the_live_opt_in_lets_a_real_cli_run_and_is_recorded(project, tmp_path, 
     if opt_in == "env":
         monkeypatch.setenv(agents.LIVE_ENV, "1")
     out = tmp_path / "runs"
-    assert _main(project, out, *extra, handlers={"classify": _halt}, monkeypatch=monkeypatch) == runner.EXIT_HALTED_FOR_HUMAN
+    code = _main(project, out, *extra, handlers={"classify": _halt}, monkeypatch=monkeypatch)
+    assert code == runner.EXIT_HALTED_FOR_HUMAN
     manifest = _manifest(out)
     assert manifest["live"] is True
     assert manifest["cli"]["version"] == "2.1.280 (Claude Code)" and manifest["cli"]["replay"] is False
@@ -402,7 +420,8 @@ def test_publishing_happens_for_the_default_out_or_on_request(tmp_path, fixture_
     untouched = tmp_path / "untouched-shelf"
     monkeypatch.setattr(publish, "DEFAULT_REVIEWS_DIR", untouched)
     assert runner.main(["--project", str(project), "--run-id", "n", "--no-publish"]) == runner.EXIT_OK
-    assert runner.main(["--project", str(project), "--out", str(tmp_path / "elsewhere"), "--run-id", "x"]) == runner.EXIT_OK
+    code = runner.main(["--project", str(project), "--out", str(tmp_path / "elsewhere"), "--run-id", "x"])
+    assert code == runner.EXIT_OK
     assert not untouched.exists()
 
 
@@ -423,6 +442,36 @@ def test_manifest_records_the_prescreen_of_the_declared_sources_only(project, tm
     assert screen["advisory"] is True and screen["blocking"] is False and screen["mode"] == "given_files"
     assert sorted(s["file"] for s in screen["sources"]) == declared
     assert "synthetic.person@example.invalid" not in json.dumps(screen)
+
+
+def test_the_manifest_records_the_declaration_hash_it_bound(project, tmp_path, monkeypatch):
+    """The manifest names the exact declaration bytes the run was checked against, and they are
+    the bytes the input snapshot binds (so a later relabel is visible from the manifest alone)."""
+    out = tmp_path / "runs"
+    _main(project, out, handlers={"classify": _halt}, monkeypatch=monkeypatch)
+    recorded = _manifest(out)["data_declaration"]
+    expected = hashlib.sha256((project / "data_declaration.json").read_bytes()).hexdigest()
+    assert recorded["data_class"] == "synthetic" and recorded["sha256"] == expected
+    snapshot = json.loads((out / "r" / "input_snapshot.json").read_text(encoding="utf-8"))
+    assert snapshot["data_declaration"]["sha256"] == expected
+
+
+def test_the_manifest_prescreen_shape_is_the_one_the_agency_audit_reads(project, tmp_path, monkeypatch):
+    """Cross-workstream contract (W-S writes `prescreen`, W-G's audit reads `sources[].findings`):
+    a finding the runner records becomes an audit notice, by line number and never by value."""
+    with (project / "rfp.md").open("a", encoding="utf-8") as handle:
+        handle.write("\nContact: synthetic.person@example.invalid\n")
+    out = tmp_path / "runs"
+    _main(project, out, handlers={"classify": _halt}, monkeypatch=monkeypatch)
+    screen = _manifest(out)["prescreen"]
+    (rfp,) = [s for s in screen["sources"] if s["file"] == "rfp.md"]
+    assert rfp["findings"]["email_address"]["count"] == 1
+    from pipeline import agency   # a Tier 5–8 reader, imported where the contract is checked
+
+    # The empty snapshot proves the notice came from the manifest, not from a re-scan.
+    notices = agency.prescreen_notices(out / "r", {})
+    assert len(notices) == 1 and "rfp.md" in notices[0] and "email_address ×1" in notices[0]
+    assert "synthetic.person@example.invalid" not in notices[0]
 
 
 def test_prescreen_of_a_declared_folder_skips_non_source_files(tmp_path):
@@ -473,7 +522,8 @@ def test_a_malformed_routing_config_fails_loudly(tmp_path, payload, needle):
 
 def test_a_missing_routing_config_or_block_means_the_defaults(tmp_path):
     assert extraction._verify_policy(tmp_path / "absent.json")["strong_model"] == "sonnet"
-    assert extraction._verify_policy(_routing(tmp_path, {"effort": {}}))["risk_classes"] == list(extraction.RISK_CLASSES)
+    policy = extraction._verify_policy(_routing(tmp_path, {"effort": {}}))
+    assert policy["risk_classes"] == list(extraction.RISK_CLASSES)
     policy = extraction._verify_policy(_routing(tmp_path, {"verify_extract": {"base_model": "sonnet",
                                                                                "_note": "sonnet-only"}}))
     assert policy["base_model"] == "sonnet"

@@ -30,6 +30,7 @@ runner and intake refuse before any source is read into a work order.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -69,7 +70,8 @@ class DataDeclarationError(gates.InputContractError):
 
 @dataclass(frozen=True)
 class DataDeclaration:
-    """A validated declaration. `path` is the file it was read from."""
+    """A validated declaration. `path` is the file it was read from; `sha256` hashes the exact
+    bytes that were validated (None only for a declaration built in memory, not read)."""
 
     data_class: str
     path: Path
@@ -80,6 +82,7 @@ class DataDeclaration:
     screened_on: Optional[str] = None
     processor_ref: Optional[str] = None
     dpia_ref: Optional[str] = None
+    sha256: Optional[str] = None
 
     @property
     def is_synthetic(self) -> bool:
@@ -95,7 +98,7 @@ class DataDeclaration:
 
     def as_record(self) -> dict:
         """What the run manifest records (never the material itself)."""
-        record = {"data_class": self.data_class, "file": str(self.path)}
+        record: dict = {"data_class": self.data_class, "file": str(self.path), "sha256": self.sha256}
         if not self.is_synthetic:
             record.update(approval_ref=self.approval_ref, approved_by=self.approved_by,
                           approved_on=self.approved_on)
@@ -167,14 +170,15 @@ def load_declaration(project_dir: Path, today: Optional[date] = None) -> DataDec
             f"before anything is read. {_HOW_TO_DECLARE}"
         )
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        data = path.read_bytes()
+        payload = json.loads(data.decode("utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise DataDeclarationError(f"{path}: not readable JSON ({exc}). {_HOW_TO_DECLARE}") from exc
     problems = validate_payload(payload, str(path), today)
     if problems:
         raise DataDeclarationError("; ".join(problems) + f". {_HOW_TO_DECLARE}")
     return DataDeclaration(
-        data_class=payload["data_class"], path=path.resolve(),
+        data_class=payload["data_class"], path=path.resolve(), sha256=hashlib.sha256(data).hexdigest(),
         **{name: payload.get(name) for name in (*APPROVAL_FIELDS, *PRECONDITION_FIELDS)},
     )
 
@@ -236,7 +240,7 @@ def build_declaration(data_class: str, approval_ref: Optional[str] = None, appro
                       screened_by: Optional[str] = None, screened_on: Optional[str] = None,
                       processor_ref: Optional[str] = None, dpia_ref: Optional[str] = None) -> dict:
     """The payload intake writes. Validated before it is returned; nothing is inferred."""
-    payload = {"data_class": data_class}
+    payload: dict = {"data_class": data_class}
     preconditions = {"screened_by": screened_by, "screened_on": screened_on,
                      "processor_ref": processor_ref, "dpia_ref": dpia_ref}
     if data_class == APPROVED:

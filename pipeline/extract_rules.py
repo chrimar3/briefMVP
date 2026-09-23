@@ -24,7 +24,8 @@ garbled token stays visible in the brief (SYNTHESIS.md rule 10).
 from __future__ import annotations
 
 import re
-from typing import Iterator, Optional
+from collections.abc import Iterator
+from typing import Optional
 
 from pipeline import gates
 

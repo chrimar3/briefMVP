@@ -23,6 +23,7 @@ import json
 import re
 import sys
 import unicodedata
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Optional
 
@@ -88,7 +89,7 @@ def _iban_spans(line: str) -> list:
     return spans
 
 
-def _phone_hits(line: str, skip: list = ()) -> int:
+def _phone_hits(line: str, skip: Sequence[tuple] = ()) -> int:
     hits = 0
     for match in PHONE_RE.finditer(line):
         if any(start < match.end() and match.start() < end for start, end in skip):
@@ -169,7 +170,9 @@ def scan(project_dir: Path, terms_path: Path = TERMS_PATH, files: Optional[list]
         paths, mode = [Path(p) for p in files if Path(p).name not in gates.HARNESS_ONLY_FILES], "given_files"
     else:
         paths, mode = _sources(project_dir)
-    sources, unreadable, totals = [], [], {}
+    sources: list = []
+    unreadable: list = []
+    totals: dict = {}
     for path in paths:
         try:
             text = path.read_text(encoding="utf-8")

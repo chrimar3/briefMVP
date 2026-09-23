@@ -73,25 +73,6 @@ keep-runtime-typing = true
 # Frozen file (CLAUDE.md): it cannot be edited, so only pyflakes correctness beyond its one
 # unused import (typing.Callable) is enforced there.
 "eval/harness.py" = ["F401", "E", "W", "B", "I", "UP", "SIM"]
-# PHASE-B MERGE DEBT (round 2, W-Q). These files are being rewritten in parallel by workstreams
-# W-G (agency, approval, creative, delivery, release_control, revisions, publish) and W-S (agents,
-# runner, intake, run_demo, publish). Their findings under the widened rule set are formatting and
-# modernisation only (long lines, import order, a lambda assignment, quoted annotations, typing
-# imports, a redundant open mode, E402 on an import after the sys.path bootstrap), so they are
-# listed here instead of being edited under the other workstreams' feet. After the phase-B merge:
-# `ruff check --fix .` (I001, UP015, UP035, UP037 are auto-fixable), wrap the long lines, turn the
-# lambda into a def, add `# noqa: E402` to runner's imports, then delete every entry below.
-"demo/run_demo.py" = ["I001"]
-"pipeline/agency.py" = ["E501", "E731", "I001"]
-"pipeline/agents.py" = ["UP037"]
-"pipeline/approval.py" = ["UP035"]
-"pipeline/creative.py" = ["E501"]
-"pipeline/delivery.py" = ["E501", "I001"]
-"pipeline/intake.py" = ["E501"]
-"pipeline/publish.py" = ["E501", "I001"]
-"pipeline/release_control.py" = ["E501", "I001"]
-"pipeline/revisions.py" = ["E501", "UP015", "UP035"]
-"pipeline/runner.py" = ["E402", "E501", "I001", "UP037"]
 
 # ---------------------------------------------------------------------------------------------
 # mypy — non-strict type check of the pipeline package (annotated functions are checked; a
@@ -102,20 +83,6 @@ files = ["pipeline"]
 ignore_missing_imports = true
 warn_unused_ignores = true
 warn_redundant_casts = true
-
-# PHASE-B MERGE DEBT (round 2, W-Q): real but small annotation errors (Optional defaults and
-# arguments, untyped empty containers) in modules W-S and W-G are rewriting in parallel. Fix them
-# after the phase-B merge and delete this block; every other pipeline module is clean.
-[[tool.mypy.overrides]]
-module = [
-    "pipeline.creative",
-    "pipeline.data_policy",
-    "pipeline.extraction",
-    "pipeline.intake",
-    "pipeline.prescreen",
-    "pipeline.runner",
-]
-ignore_errors = true
 
 # ---------------------------------------------------------------------------------------------
 # coverage (pytest-cov) — statement coverage of pipeline/ and eval/, measured in-process by the

@@ -476,7 +476,8 @@ def check_adjudication(path: Path, finding_ids: list) -> list:
     decisions = record.get("decisions") if isinstance(record, dict) else None
     if not isinstance(decisions, list):
         return ["adjudication record needs a 'decisions' list"]
-    violations, seen = [], []
+    violations: list = []
+    seen: list = []
     for idx, decision in enumerate(decisions):
         if not isinstance(decision, dict):
             violations.append(f"decisions[{idx}]: must be an object")
@@ -538,11 +539,13 @@ def extract_source(
 
     # Independent second check (step 4b): a fresh-session reviewer reads source + extract and
     # reports what the deterministic gates cannot see (missed claims, drift, mis-attribution).
-    # Risk-routed model: strong when the extract carries risk classes, base otherwise. Its
+    # Model: sonnet-only (owner decision 5, 2026-09-23) — config/model_routing.json sets both
+    # strong_model and base_model to sonnet, so the risk read below no longer changes routing; it
+    # is still computed and recorded per extract as a descriptive risk read. The verifier's
     # findings drive ONE standard repair round of the extractor; the deterministic gates then
     # re-verify the repaired artifact. One verification round by design — no verify loop.
     policy = _verify_policy()
-    # Only the classes the config routes on count (today: all four, so this is the full read).
+    # Only the classes the config lists count (today: all four, so this is the full read).
     risks = [r for r in risk_classes(extract) if r in policy["risk_classes"]]
     verify_model = policy["strong_model"] if risks else policy["base_model"]
     report_file = run_path(run_dir, "verification", f"{source.source_id}.verify.json")

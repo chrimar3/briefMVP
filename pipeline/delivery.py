@@ -6,7 +6,6 @@ No command sends anything to a client; release creates a local, inspectable pack
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
 import hashlib
 import json
 import os
@@ -14,6 +13,7 @@ import re
 import shutil
 import sys
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Union
 
@@ -23,7 +23,15 @@ from pipeline.money import money_figures
 from pipeline.release_control import require_not_withdrawn
 
 REF = re.compile(r'\[brief:([a-z_]+):(\d+)\]')
-CHECKS = ('all_facts_cited', 'qualifiers', 'mandatories', 'brand_voice', 'deliverables', 'rights_and_permissions', 'client_safe')
+CHECKS = (
+    'all_facts_cited',
+    'qualifiers',
+    'mandatories',
+    'brand_voice',
+    'deliverables',
+    'rights_and_permissions',
+    'client_safe',
+)
 ASSET_TYPES = {'.png', '.jpg', '.jpeg', '.webp', '.pdf', '.mp4', '.mov', '.svg'}
 
 
@@ -42,7 +50,14 @@ def inspect_creative(text: str, brief: dict) -> tuple:
         for field, index in REF.findall(line):
             if field in gates.BRIEF_FIELDS and int(index) < len(brief.get(field) or []):
                 entry = brief[field][int(index)]
-                refs.append({'field': field, 'index': int(index), 'content': entry['content'], 'qualifier': entry.get('qualifier')})
+                refs.append(
+                    {
+                        'field': field,
+                        'index': int(index),
+                        'content': entry['content'],
+                        'qualifier': entry.get('qualifier'),
+                    }
+                )
         if refs:
             claims.append({'text': line, 'references': refs})
     for index, entry in enumerate(brief.get('mandatories') or []):
@@ -108,9 +123,17 @@ def register(run, draft_path, actor, assets=()):
             with target.open('xb') as handle:
                 handle.write(data)
     revisions.archive(run, ['creative_draft.json', 'creative_approval.json'], copy_only=True)
-    record = {'revision': identity, 'brief_fingerprint': revisions.fingerprint(run), 'registered_by': actor,
-              'registered_at': revisions.timestamp(), 'claims': claims,
-              'files': [{'file': str((root/name).relative_to(run)), 'name': name, 'sha256': hashlib.sha256(data).hexdigest()} for name, data in payloads]}
+    record = {
+        'revision': identity,
+        'brief_fingerprint': revisions.fingerprint(run),
+        'registered_by': actor,
+        'registered_at': revisions.timestamp(),
+        'claims': claims,
+        'files': [
+            {'file': str((root / name).relative_to(run)), 'name': name, 'sha256': hashlib.sha256(data).hexdigest()}
+            for name, data in payloads
+        ],
+    }
     revisions.write_json(run / 'creative_draft.json', record)
     revisions.append_audit(run, 'creative_registered', actor, record='creative_draft.json',
                            details={'revision': identity})
@@ -141,8 +164,12 @@ def _recheck_separation(run, approval, draft):
     if (brief_approval.get('separation_of_duties') or {}).get('waived') == 'solo_rehearsal':
         agency.solo_rehearsal_waiver(run, ('language_attester', 'brief_signer'))
     else:
-        agency.require_distinct('language/source reviewer', revisions.load(run / 'language_review.json', {}).get('actor'),
-                                'brief signer', brief_approval.get('actor'))
+        agency.require_distinct(
+            'language/source reviewer',
+            revisions.load(run / 'language_review.json', {}).get('actor'),
+            'brief signer',
+            brief_approval.get('actor'),
+        )
 
 
 def current_draft(run):
@@ -258,8 +285,32 @@ def release(run: Path, output: Union[str, Path], actor: str) -> Path:
                 data = ('# Approved creative brief\n\n' + body.lstrip()).encode('utf-8')
             (staging / item['name']).write_bytes(data)
         # No raw client evidence, internal reference paths, audit comments or logs.
-        public_rows = [{k: v for k, v in row.items() if k in ('id','spec_id','quantity','languages','deadline','owner','approval_owner','dependencies','format','file_type','resolution','aspect_ratio','duration_seconds')} for row in rows]
-        revisions.write_json(staging / 'deliverables.json', {'status': 'APPROVED FOR DELIVERY', 'deliverables': public_rows})
+        public_rows = [
+            {
+                k: v
+                for k, v in row.items()
+                if k
+                in (
+                    'id',
+                    'spec_id',
+                    'quantity',
+                    'languages',
+                    'deadline',
+                    'owner',
+                    'approval_owner',
+                    'dependencies',
+                    'format',
+                    'file_type',
+                    'resolution',
+                    'aspect_ratio',
+                    'duration_seconds',
+                )
+            }
+            for row in rows
+        ]
+        revisions.write_json(
+            staging / 'deliverables.json', {'status': 'APPROVED FOR DELIVERY', 'deliverables': public_rows}
+        )
         brief = agency.read_run(run)
         manifest = {'status': 'APPROVED FOR DELIVERY', 'project_id': brief['meta']['project_id'],
                     'creative_revision': record['revision'], 'approved_by': approval['actor'],

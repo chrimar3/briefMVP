@@ -14,8 +14,19 @@ from pathlib import Path
 import pytest
 from conftest import bind_declaration
 
-from pipeline import (agents, approval, creative, extraction, gates, replay, stage_classify, stage_fidelity, stage_render,
-                      stage_synthesis, stages)
+from pipeline import (
+    agents,
+    approval,
+    creative,
+    extraction,
+    gates,
+    replay,
+    stage_classify,
+    stage_fidelity,
+    stage_render,
+    stage_synthesis,
+    stages,
+)
 
 SRC = gates.SourceDoc("t", "transcript", "2026-01-01", Path("/x/t.md"), "text")
 RFP = gates.SourceDoc("r", "rfp", "2026-01-01", Path("/x/r.md"), "text")

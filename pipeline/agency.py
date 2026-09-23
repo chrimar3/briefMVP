@@ -6,15 +6,27 @@ or permission to ingest real data. Reports are evidence checks plus human attest
 from __future__ import annotations
 
 import argparse
-from contextlib import nullcontext
 import copy
 import json
 import sys
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Optional
 
-from pipeline import (approval, clarifications, client_pack, data_policy, gates, handover, prescreen, quality,
-                      revisions, stages, review, docview)
+from pipeline import (
+    approval,
+    clarifications,
+    client_pack,
+    data_policy,
+    docview,
+    gates,
+    handover,
+    prescreen,
+    quality,
+    review,
+    revisions,
+    stages,
+)
 
 PROFILES = gates.CONFIG_DIR / "campaign_profiles.json"
 
@@ -31,7 +43,10 @@ class SeparationOfDutiesError(ValueError):
 
 def same_person(a, b) -> bool:
     """Actors are typed names, so compare them the way a reviewer would read them."""
-    norm = lambda s: " ".join(str(s or "").casefold().split())
+
+    def norm(s) -> str:
+        return " ".join(str(s or "").casefold().split())
+
     return bool(norm(a)) and norm(a) == norm(b)
 
 
@@ -130,7 +145,9 @@ def campaign_check(inputs, brief):
             problems.append(f"campaign.{key}: needs a sourced answer and an owner")
         refs = answer.get("evidence") or []
         if not refs or any(quality.ref_key(ref) not in known for ref in refs):
-            problems.append(f"campaign.{key}: evidence must reference the canonical brief; record new evidence as input first")
+            problems.append(
+                f"campaign.{key}: evidence must reference the canonical brief; record new evidence as input first"
+            )
     return problems
 
 
@@ -265,7 +282,10 @@ def audit(run: Path, *, persist: bool = True) -> dict:
     if (run / 'question_exchange' / 'proposals').exists():
         from pipeline.question_exchange import pending_proposals
         if pending_proposals(run):
-            problems.append('Unreviewed clarification replies; ingest relevant answers into a revised brief or explicitly dismiss irrelevant proposals')
+            problems.append(
+                'Unreviewed clarification replies; ingest relevant answers into a revised brief or explicitly '
+                'dismiss irrelevant proposals'
+            )
     for item in q:
         decision = item["decision"]
         if not decision:
@@ -273,11 +293,16 @@ def audit(run: Path, *, persist: bool = True) -> dict:
         elif decision["status"] == "answered":
             # Stored answers are a log, not new canonical evidence. Do not pretend the
             # brief changed merely because someone filled in a companion record.
-            problems.append(f"question.{item['id']}: answer recorded; update sources/brief and remove the answered question before approval")
+            problems.append(
+                f"question.{item['id']}: answer recorded; update sources/brief and remove the answered question "
+                "before approval"
+            )
         elif decision["status"] == "open" and decision["priority"] == "blocking":
             problems.append(f"question.{item['id']}: unresolved blocker")
     for i, conflict in enumerate(brief.get("conflicts") or []):
-        if conflict.get("status") != "resolved_by_human" or not all(conflict.get(k, "").strip() for k in ("resolution", "resolved_by")):
+        if conflict.get("status") != "resolved_by_human" or not all(
+            conflict.get(k, "").strip() for k in ("resolution", "resolved_by")
+        ):
             problems.append(f"conflict.{i}: needs a human resolution")
     # Every human decision this approval relies on must be vouched by the audit log: a
     # resolution, attestation, triage or exclusion written around the commands blocks.
@@ -293,24 +318,42 @@ def audit(run: Path, *, persist: bool = True) -> dict:
     else:
         problems.extend(handover.validate(inputs["deliverables"], specs, brief))
     if specs.get("_stub_notice"):
-        notices.append("Channel specs are a synthetic stub. Release requires a verified traffic catalog; no production readiness claim.")
+        notices.append(
+            "Channel specs are a synthetic stub. Release requires a verified traffic catalog; "
+            "no production readiness claim."
+        )
     attestation = revisions.load(run / "language_review.json", {})
     if (attestation.get("fingerprint") != revisions.fingerprint(run)
             or not attestation.get("actor")
             or not all(attestation.get("checks", {}).get(key) is True for key in quality.field_review_checklist())
             or type(attestation.get("greek_register")) is not int
             or not 1 <= attestation["greek_register"] <= 5):
-        problems.append("Current source-completeness, bilingual meaning, qualifiers and brand-voice human review required")
-    result = {"fingerprint": revisions.fingerprint(run), "checked_at": revisions.timestamp(),
-              "status": "blocked" if problems else "reviewed", "blockers": problems, "notices": notices,
-              "coverage": records, "questions": q,
-              "boundary": "Evidence links and structure checked automatically. Semantic judgments are human attestations. Fixtures-only data; creative delivery requires separate human approval."}
+        problems.append(
+            "Current source-completeness, bilingual meaning, qualifiers and brand-voice human review required"
+        )
+    result = {
+        "fingerprint": revisions.fingerprint(run),
+        "checked_at": revisions.timestamp(),
+        "status": "blocked" if problems else "reviewed",
+        "blockers": problems,
+        "notices": notices,
+        "coverage": records,
+        "questions": q,
+        "boundary": "Evidence links and structure checked automatically. Semantic judgments are human "
+        "attestations. Fixtures-only data; creative delivery requires separate human approval.",
+    }
     if persist:
         revisions.write_json(run / "agency_audit.json", result)
-    lines = ["# Agency review", "", result["boundary"], "", f"Status: {result['status']}", ""]
+    lines: list = ["# Agency review", "", result["boundary"], "", f"Status: {result['status']}", ""]
     lines += [f"- {p}" for p in problems + notices]
-    lines += ["", "## Fact coverage", ""] + [f"- {r['id']} · {r['field']}: {r['value']} → {', '.join(r['destinations']) or 'no destination; review exclusion if recorded'}" for r in records]
-    lines += ["", "## Clarification queue", ""] + [f"- {item['id']}: {item['question']} ({(item['decision'] or {}).get('status', 'untriaged')})" for item in q]
+    lines += ["", "## Fact coverage", ""] + [
+        f"- {r['id']} · {r['field']}: {r['value']} → "
+        f"{', '.join(r['destinations']) or 'no destination; review exclusion if recorded'}"
+        for r in records
+    ]
+    lines += ["", "## Clarification queue", ""] + [
+        f"- {item['id']}: {item['question']} ({(item['decision'] or {}).get('status', 'untriaged')})" for item in q
+    ]
     if persist:
         (run / "agency_audit.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return result
@@ -345,11 +388,20 @@ def initialize(run: Path, project: Path, glossary: Path, profile: str, actor: st
         current = {**prior, **current}
     revisions.write_json(run / "input_snapshot.json", current)
     profiles = revisions.load(PROFILES)["profiles"]
-    revisions.write_json(run / "agency_inputs.json", {
-        "campaign_profile": profile, "initialized_by": actor,
-        "baseline_origin": "runner snapshot" if prior else "human-adopted legacy evidence; source completeness review required",
-        "checklist": {k: {"prompt": v, "value": "", "owner": "", "evidence": []} for k, v in profiles[profile].items()},
-        "deliverables": []})
+    revisions.write_json(
+        run / "agency_inputs.json",
+        {
+            "campaign_profile": profile,
+            "initialized_by": actor,
+            "baseline_origin": "runner snapshot"
+            if prior
+            else "human-adopted legacy evidence; source completeness review required",
+            "checklist": {
+                k: {"prompt": v, "value": "", "owner": "", "evidence": []} for k, v in profiles[profile].items()
+            },
+            "deliverables": [],
+        },
+    )
     revisions.capture_evidence(run, {key: value["path"] for key, value in current.items()})
     # The creative stage of this run now needs the content-bound approval, recorded explicitly.
     approval.record_regime(run, approval.AGENCY_APPROVAL, actor, "agency init: content-bound approval regime")
@@ -367,7 +419,20 @@ def resolve(run: Path, index: int, actor: str, resolution: str) -> None:
     candidate["signoff"] = {"status": "draft"}
     gates.validate_brief(candidate)
     # Preserve the actual pre-review draft for scoring and history.
-    revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_el.md", "brief_en.md", "brief_el.html", "brief_en.html", "brief_review.html", "creative"])
+    revisions.archive(
+        run,
+        [
+            "brief.json",
+            "approval.json",
+            "language_review.json",
+            "brief_el.md",
+            "brief_en.md",
+            "brief_el.html",
+            "brief_en.html",
+            "brief_review.html",
+            "creative",
+        ],
+    )
     revisions.write_json(run / "brief.json", candidate)
     revisions.append_audit(run, "conflict_resolved", actor, record="brief.json",
                            details={"conflict": index, "resolution": resolution,
@@ -395,7 +460,12 @@ def apply_candidate(run, candidate_path, actor, reason):
                             "brief_el.html", "brief_en.html", "brief_review.html", "creative"])
     revisions.write_json(run / "brief.json", candidate)
     history = revisions.load(run / "amendments.json", [])
-    entry = {"actor": actor, "reason": reason, "at": revisions.timestamp(), "changes": revisions.changes(old, candidate)}
+    entry = {
+        "actor": actor,
+        "reason": reason,
+        "at": revisions.timestamp(),
+        "changes": revisions.changes(old, candidate),
+    }
     history.append(entry)
     revisions.write_json(run / "amendments.json", history)
     revisions.append_audit(run, "brief_amended", actor, record={"file": "amendments.json", "entry": entry},
@@ -417,8 +487,17 @@ def approve(run: Path, actor: str, summary: str, solo_rehearsal: bool = False) -
         separation = {"enforced": ["language_attester != brief_signer"]}
     revisions.require_intact_audit_log(run)
     brief = read_run(run)
-    revisions.archive(run, ["brief.json", "approval.json", "language_review.json", "brief_review.html", "brief_el.html", "brief_en.html"], copy_only=True)
-    brief["signoff"] = {"status": "signed_off", "signed_by": actor, "signed_ts": revisions.timestamp(), "edits_summary": summary}
+    revisions.archive(
+        run,
+        ["brief.json", "approval.json", "language_review.json", "brief_review.html", "brief_el.html", "brief_en.html"],
+        copy_only=True,
+    )
+    brief["signoff"] = {
+        "status": "signed_off",
+        "signed_by": actor,
+        "signed_ts": revisions.timestamp(),
+        "edits_summary": summary,
+    }
     gates.validate_brief(brief)
     revisions.write_json(run / "brief.json", brief)
     review.write_review(run)
@@ -432,8 +511,16 @@ def approve(run: Path, actor: str, summary: str, solo_rehearsal: bool = False) -
     # attestation stays vouched (by the signer who moved it, naming the attester who made it).
     revisions.append_audit(run, "language_attestation_rebound", actor, record="language_review.json",
                            details={"attested_by": attestation.get("actor"), "fingerprint": attestation["fingerprint"]})
-    revisions.write_json(run / "approval.json", {"actor": actor, "signed_at": revisions.timestamp(), "fingerprint": revisions.fingerprint(run), "language_review_sha256": revisions.file_hash(run / "language_review.json"),
-                                                 "separation_of_duties": separation})
+    revisions.write_json(
+        run / "approval.json",
+        {
+            "actor": actor,
+            "signed_at": revisions.timestamp(),
+            "fingerprint": revisions.fingerprint(run),
+            "language_review_sha256": revisions.file_hash(run / "language_review.json"),
+            "separation_of_duties": separation,
+        },
+    )
     revisions.append_audit(run, "brief_approved", actor, record="approval.json",
                            details={"summary": summary, "separation_of_duties": separation})
 
@@ -442,7 +529,20 @@ def main(argv: Optional[list] = None) -> int:
     """The `python -m pipeline.agency` command line: one explicit human command per call."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("init", "audit", "queue", "answer", "resolve", "exclude", "attest", "approve", "diff", "handover", "apply", "carry-decisions"):
+    for name in (
+        "init",
+        "audit",
+        "queue",
+        "answer",
+        "resolve",
+        "exclude",
+        "attest",
+        "approve",
+        "diff",
+        "handover",
+        "apply",
+        "carry-decisions",
+    ):
         p = commands.add_parser(name)
         p.add_argument("run", type=Path)
         if name in ("init", "answer", "resolve", "exclude", "attest", "approve", "apply", "carry-decisions"):
@@ -495,14 +595,18 @@ def main(argv: Optional[list] = None) -> int:
                 initialize(run, args.project, args.glossary, args.profile, args.actor)
             elif args.command == "audit":
                 result = audit(run)
-                print(json.dumps({k: result[k] for k in ("status", "blockers", "notices")}, ensure_ascii=False, indent=2))
+                print(
+                    json.dumps({k: result[k] for k in ("status", "blockers", "notices")}, ensure_ascii=False, indent=2)
+                )
                 return 2 if result["blockers"] else 0
             elif args.command in ("queue", "answer"):
                 q = clarifications.queue(read_run(run), revisions.load(run / "clarifications.json", {}))
                 if args.command == "queue":
                     print(json.dumps(q, ensure_ascii=False, indent=2))
                 else:
-                    clarifications.record(run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority)
+                    clarifications.record(
+                        run, q, args.id, args.status, args.actor, args.text, args.evidence, args.owner, args.priority
+                    )
                     decision = revisions.load(run / "clarifications.json", {})[args.id]
                     revisions.append_audit(run, "question_triaged", args.actor, record="clarifications.json",
                                            details={"question": args.id, "status": args.status,
@@ -537,22 +641,43 @@ def main(argv: Optional[list] = None) -> int:
                 read_run(run)
                 if not args.actor.strip() or not args.notes.strip():
                     raise ValueError("Named reviewer and review notes required")
-                revisions.write_json(run / "language_review.json", {"actor": args.actor, "notes": args.notes,
-                    "greek_register": args.greek_register, "checks": {k: k in args.checks for k in quality.field_review_checklist()},
-                    "fingerprint": revisions.fingerprint(run), "reviewed_at": revisions.timestamp()})
+                revisions.write_json(
+                    run / "language_review.json",
+                    {
+                        "actor": args.actor,
+                        "notes": args.notes,
+                        "greek_register": args.greek_register,
+                        "checks": {k: k in args.checks for k in quality.field_review_checklist()},
+                        "fingerprint": revisions.fingerprint(run),
+                        "reviewed_at": revisions.timestamp(),
+                    },
+                )
                 revisions.append_audit(run, "language_attested", args.actor, record="language_review.json",
                                        details={"checks": sorted(args.checks), "greek_register": args.greek_register})
             elif args.command == "approve":
                 approve(run, args.actor, args.summary, solo_rehearsal=args.solo_rehearsal)
             elif args.command == "diff":
-                print(json.dumps(revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2))
+                print(
+                    json.dumps(
+                        revisions.changes(revisions.load(args.before), read_run(run)), ensure_ascii=False, indent=2
+                    )
+                )
             elif args.command == "handover":
                 approval.require_current_approval(run)
                 result = audit(run)
                 if result["blockers"]:
                     raise ValueError("Handover blocked; inspect agency_audit.md")
                 rows = revisions.load(run / "agency_inputs.json")["deliverables"]
-                revisions.write_json(run / "handover.json", {"mode": "APPROVED BRIEF HANDOVER", "creative_release": "requires separate creative approval", "fingerprint": revisions.fingerprint(run), "deliverables": rows, "notices": result["notices"]})
+                revisions.write_json(
+                    run / "handover.json",
+                    {
+                        "mode": "APPROVED BRIEF HANDOVER",
+                        "creative_release": "requires separate creative approval",
+                        "fingerprint": revisions.fingerprint(run),
+                        "deliverables": rows,
+                        "notices": result["notices"],
+                    },
+                )
             return 0
     except (ValueError, OSError, KeyError, TypeError, gates.GateError) as exc:
         print(f"agency: {exc}", file=sys.stderr)

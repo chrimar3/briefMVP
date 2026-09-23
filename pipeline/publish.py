@@ -16,8 +16,8 @@ from typing import Optional, Union
 if __package__ in (None, ""):  # allow `python3 pipeline/publish.py`
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from pipeline.review import ReviewInputError, load_brief_meta  # noqa: E402
 from pipeline import approval, data_policy, docview, gates, review, revisions  # noqa: E402
+from pipeline.review import ReviewInputError, load_brief_meta  # noqa: E402
 
 #: The shelf lives beside `runs/` at the repo root unless a caller says otherwise.
 DEFAULT_REVIEWS_DIR = Path(__file__).resolve().parent.parent / "reviews"
@@ -98,7 +98,10 @@ def publish_locked(run_dir: Union[str, Path], reviews_dir: Optional[Union[str, P
             for lang in ("el", "en"):
                 html = run_dir / f"brief_{lang}.html"
                 md = run_dir / f"brief_{lang}.md"
-                if html.exists() and (not md.exists() or html.read_text(encoding="utf-8") != docview.render_document(md.read_text(encoding="utf-8"), lang)):
+                if html.exists() and (
+                    not md.exists()
+                    or html.read_text(encoding="utf-8") != docview.render_document(md.read_text(encoding="utf-8"), lang)
+                ):
                     raise ValueError("Document view differs from its render; regenerate the views")
             if brief.get("signoff", {}).get("status") == "signed_off":
                 approval.require_current_approval(run_dir)

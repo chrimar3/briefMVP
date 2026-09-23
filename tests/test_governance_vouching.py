@@ -10,7 +10,7 @@ import json
 import pytest
 from conftest import approve_synthetic, bind_declaration, make_review_run, prepare_release
 
-from pipeline import (agency, approval, creative, delivery, publish, quality, release_control, revisions)
+from pipeline import agency, approval, creative, delivery, publish, quality, release_control, revisions
 
 CHECKS = quality.field_review_checklist()
 

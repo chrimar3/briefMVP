@@ -20,9 +20,9 @@ import pytest
 PIPELINE = Path(__file__).resolve().parents[1] / "pipeline"
 
 STAGE_1 = {
-    "agents", "conflicts", "data_policy", "diagnostics", "docview", "extract_rules", "extraction", "gates", "greek_lint",
-    "intake",
-    "money", "prescreen", "render_checks", "render_template", "replay", "review", "run_review", "runner", "share",
+    "agents", "conflicts", "data_policy", "diagnostics", "docview", "extract_rules", "extraction", "gates",
+    "greek_lint", "intake", "money", "prescreen", "render_checks", "render_template", "replay", "review",
+    "run_review", "runner", "share",
     "stage_classify", "stage_common", "stage_fidelity", "stage_render", "stage_synthesis", "stages",
 }
 STAGE_2_AND_SHELF = {"creative", "publish"}

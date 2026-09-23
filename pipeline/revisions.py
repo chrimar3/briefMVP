@@ -13,9 +13,10 @@ import hashlib
 import importlib
 import json
 import shutil
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable, Iterator, Mapping, Optional, Union
+from typing import Any, Callable, Optional, Union
 from uuid import uuid4
 
 from pipeline import clock, records
@@ -111,7 +112,7 @@ def archive(run_dir: PathLike, names: list, copy_only: bool = False) -> None:
 
 
 def prepare_run(run_dir: PathLike, paths: Mapping[str, PathLike], stage: str,
-                require_approval: Optional[Callable[[Path], None]] = None) -> None:
+                require_approval: Optional[Callable[[Path], object]] = None) -> None:
     """Refuse changed-input reuse. Archive invalidated products before a leg rerun.
 
     Legacy runs without a snapshot remain usable for the original demo; they cannot
@@ -138,8 +139,20 @@ def prepare_run(run_dir: PathLike, paths: Mapping[str, PathLike], stage: str,
                              "pipeline.approval.prepare_run")
         require_approval(run_dir)
         return
-    downstream = ["approval.json", "language_review.json", "agency_audit.json", "creative_approval.json", "creative_draft.json", "creative", "brief_review.html", "run_review.html",
-                  "brief_el.html", "brief_en.html", "brief_el.md", "brief_en.md"]
+    downstream = [
+        "approval.json",
+        "language_review.json",
+        "agency_audit.json",
+        "creative_approval.json",
+        "creative_draft.json",
+        "creative",
+        "brief_review.html",
+        "run_review.html",
+        "brief_el.html",
+        "brief_en.html",
+        "brief_el.md",
+        "brief_en.md",
+    ]
     if stage in ("synthesis", "extraction", "full"):
         downstream += ["brief.json", "conflict_candidates.json"]
     if stage == "extraction":
@@ -195,7 +208,7 @@ def read_lock(run_dir: Union[str, Path]) -> Iterator[None]:
         if lock_path.exists():
             raise RunBusyError('Run changed during a read-only check; retry after it finishes')
         return
-    with lock_path.open('r') as handle:
+    with lock_path.open() as handle:
         try:
             fcntl.flock(handle, fcntl.LOCK_SH | fcntl.LOCK_NB)
         except BlockingIOError as exc:

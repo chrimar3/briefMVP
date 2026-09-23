@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 
 from pipeline import revisions
 
@@ -47,11 +47,21 @@ def verify(package, run=None):
                     withdrawn = True
             if withdrawn:
                 errors.append('Approval was withdrawn for this release; do not use')
-        return {'valid': not errors, 'errors': errors, 'receipt_matched': receipt_matched,
-                'withdrawn': withdrawn,
-                'boundary': 'File integrity only without --run. Matching local receipts are not authenticated signatures. Consult the run for withdrawal status.'}
+        return {
+            'valid': not errors,
+            'errors': errors,
+            'receipt_matched': receipt_matched,
+            'withdrawn': withdrawn,
+            'boundary': 'File integrity only without --run. Matching local receipts are not authenticated '
+            'signatures. Consult the run for withdrawal status.',
+        }
     except (ValueError, OSError, TypeError, KeyError) as exc:
-        return {'valid': False, 'errors': errors + [str(exc)], 'receipt_matched': receipt_matched, 'withdrawn': withdrawn}
+        return {
+            'valid': False,
+            'errors': errors + [str(exc)],
+            'receipt_matched': receipt_matched,
+            'withdrawn': withdrawn,
+        }
 
 
 def withdraw(run, actor, reason):
@@ -59,7 +69,11 @@ def withdraw(run, actor, reason):
         raise ValueError('Named human actor and withdrawal reason required')
     run = Path(run)
     with revisions.run_lock(run):
-        approvals = {name: revisions.file_hash(run/name) for name in ('approval.json', 'creative_approval.json') if (run/name).is_file()}
+        approvals = {
+            name: revisions.file_hash(run / name)
+            for name in ('approval.json', 'creative_approval.json')
+            if (run / name).is_file()
+        }
         receipts = revisions.load(run/'releases.json', [])
         if not approvals and not receipts:
             raise ValueError('No active approval or recorded release to withdraw')

@@ -2,7 +2,7 @@
 name: verify-extract
 description: Independent second check on one extraction (pipeline step 4b). Fresh-session reviewer that reads the source document and the finished extract, hunting for errors the deterministic gates cannot see. It reports issues; it never edits the extract.
 tools: Read, Write
-model: haiku
+model: sonnet
 color: orange
 ---
 
