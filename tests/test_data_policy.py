@@ -234,3 +234,70 @@ def test_only_synthetic_runs_publish_to_the_in_repo_review_shelf(tmp_path, monke
         r.data_declaration = {"data_class": data_class}
         r._write_manifest("complete", runner.EXIT_OK)
         assert len(published) == expected
+
+
+# -- data-protection preconditions on an approved declaration (round 2) -------------------
+
+PRECONDITIONS = {"screened_by": "Synthetic account lead", "screened_on": "2026-08-30",
+                 "processor_ref": "SYNTH-DPA-01", "dpia_ref": "SYNTH-DPIA-SCREEN-01"}
+
+
+def test_approved_declaration_records_its_preconditions_in_the_manifest_record(tmp_path):
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, **PRECONDITIONS}), encoding="utf-8")
+    declaration = data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
+    assert declaration.missing_preconditions == []
+    record = declaration.as_record()
+    assert {k: record[k] for k in PRECONDITIONS} == PRECONDITIONS
+    assert record["preconditions_missing"] == []
+
+
+def test_missing_preconditions_are_listed_not_hidden(tmp_path):
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, "screened_by": "Synthetic lead"}),
+                                                    encoding="utf-8")
+    declaration = data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
+    assert declaration.missing_preconditions == ["screened_on", "processor_ref", "dpia_ref"]
+    assert declaration.as_record()["preconditions_missing"] == ["screened_on", "processor_ref", "dpia_ref"]
+    synthetic = data_policy.DataDeclaration("synthetic", tmp_path)
+    assert synthetic.missing_preconditions == [] and "preconditions_missing" not in synthetic.as_record()
+
+
+@pytest.mark.parametrize("override, needle", [
+    ({"screened_on": "30/08/2026"}, "screened_on must be an ISO date"),
+    ({"screened_on": "2099-01-01"}, "screened_on 2099-01-01 is in the future"),
+    ({"processor_ref": "  "}, "processor_ref, when present, must be non-empty"),
+    ({"dpia_ref": 7}, "dpia_ref, when present, must be non-empty"),
+])
+def test_invalid_precondition_values_are_refused(tmp_path, override, needle):
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, **PRECONDITIONS, **override}),
+                                                    encoding="utf-8")
+    with pytest.raises(data_policy.DataDeclarationError, match=needle):
+        data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
+
+
+def test_synthetic_declaration_carries_no_precondition_fields(tmp_path):
+    (tmp_path / "data_declaration.json").write_text(json.dumps({"data_class": "synthetic", "screened_by": "X"}),
+                                                    encoding="utf-8")
+    with pytest.raises(data_policy.DataDeclarationError, match="carries no approval fields"):
+        data_policy.load_declaration(tmp_path)
+    with pytest.raises(data_policy.DataDeclarationError, match="only valid with --data-class approved"):
+        data_policy.build_declaration("synthetic", dpia_ref="X")
+
+
+def test_build_declaration_writes_preconditions_when_given():
+    payload = data_policy.build_declaration("approved", "DP-SYNTH-001", "Synthetic lead", "2026-09-01",
+                                            today=date(2026, 9, 23), **PRECONDITIONS)
+    assert {k: payload[k] for k in PRECONDITIONS} == PRECONDITIONS
+    # The existing intake call (four positional arguments) is unchanged.
+    assert data_policy.build_declaration("approved", "DP-SYNTH-001", "Synthetic lead", "2026-09-01") == {
+        "data_class": "approved", "approval_ref": "DP-SYNTH-001", "approved_by": "Synthetic lead",
+        "approved_on": "2026-09-01"}
+
+
+def test_preconditions_become_mandatory_with_one_switch(tmp_path, monkeypatch):
+    (tmp_path / "data_declaration.json").write_text(json.dumps(APPROVED), encoding="utf-8")
+    assert data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))  # optional today
+    monkeypatch.setattr(data_policy, "REQUIRE_PRECONDITIONS", True)
+    with pytest.raises(data_policy.DataDeclarationError, match="requires a non-empty screened_by"):
+        data_policy.load_declaration(tmp_path, today=date(2026, 9, 23))
+    (tmp_path / "data_declaration.json").write_text(json.dumps({**APPROVED, **PRECONDITIONS}), encoding="utf-8")
+    assert data_policy.load_declaration(tmp_path, today=date(2026, 9, 23)).missing_preconditions == []

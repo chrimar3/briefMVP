@@ -2,6 +2,16 @@
 
 Missing is never zero and never a pass; examples never count. Each rule reports
 pass / fail / insufficient_data per phase (end of week 3 = retro, end of week 4 = live).
+Reported-only measures (net team minutes, the retro side-by-side, the agency-steps subset of
+review time, the timed baseline check, canonical survival) are summarised under
+`pass_rules.reported`; none of them is gated.
+
+    python3 eval/pilot_scorecard.py SCORECARD.csv [--output report.json]
+    python3 eval/pilot_scorecard.py --draft DRAFT.md --final FINAL.md
+    python3 eval/pilot_scorecard.py --draft-dir PILOT/BRIEF/draft --approved-run RUN
+
+The last form is the survival measure of SCORECARD.md §2: the first draft archived before
+review against the renders and brief.json that `agency approve` bound in the run directory.
 """
 from __future__ import annotations
 
@@ -11,14 +21,22 @@ import json
 import math
 from pathlib import Path
 from statistics import mean, median
+from typing import Optional
 
 METRICS = ("assembly_min", "review_min", "total_attention_min", "operator_min", "strategy_min", "creative_min", "production_min", "total_team_min",
-           "survival_en_pct", "survival_el_pct", "el_register_1to5", "ce_total", "creative_rework_requests_q1", "client_revision_rounds_q1")
+           "survival_en_pct", "survival_el_pct", "el_register_1to5", "ce_total", "creative_rework_requests_q1", "client_revision_rounds_q1",
+           "baseline_min", "baseline_timed_min", "baseline_team_min", "agency_steps_min", "survival_canonical_pct")
 CLASSES = ("oq_real", "oq_duplicate", "oq_answered_in_sources", "oq_not_worth_asking")
-MISSING = (None, "", "not_recorded", "n/a")
+#: Retro side-by-side against the brief the agency actually wrote (SCORECARD.md §2): integer
+#: counts recorded by the lead after sign-off on retro rows. Reported, never gated.
+SIDE_BY_SIDE = ("human_conflicts_missed", "human_gaps_unasked", "draft_facts_missing", "human_facts_unsourced")
+#: SCORECARD.md §6: a cell not measured reads `not_recorded`; no cell carries any other text,
+#: so 'n/a' or any other placeholder is a data error, never a silent missing value.
+MISSING = (None, "", "not_recorded")
 
 
-def number(row, key):
+def number(row: dict, key: str) -> Optional[float]:
+    """A nonnegative finite number, or None when the cell is missing. Anything else is a data error."""
     raw = row.get(key)
     if raw in MISSING:
         return None
@@ -32,10 +50,12 @@ def number(row, key):
         raise ValueError(f"{key} must be in 0–100")
     if key == "el_register_1to5" and (value not in range(1, 6)):
         raise ValueError("Greek register must be an integer in 1–5")
+    if key in SIDE_BY_SIDE and value != int(value):
+        raise ValueError(f"{row.get('brief_id', '?')}: {key} must be an integer count")
     return value
 
 
-def _summarize(rows):
+def _summarize(rows: list) -> dict:
     pilots = []
     for row in rows:
         if row.get("row_type") == "EXAMPLE":
@@ -66,6 +86,12 @@ def _summarize(rows):
             precision = 100 * classes[0] / total if total else None
         per_brief.append({"brief_id": row.get("brief_id", "not_recorded"),
                           "precision_pct": precision})
+        steps, review = number(row, "agency_steps_min"), number(row, "review_min")
+        if steps is not None and review is not None and steps > review:
+            raise ValueError(f"{row.get('brief_id', '?')}: agency_steps_min is a subset of review_min "
+                             "and cannot exceed it")
+        for key in SIDE_BY_SIDE:
+            number(row, key)
     metrics = {}
     for key in METRICS:
         values = [number(row, key) for row in pilots]
@@ -184,6 +210,63 @@ def _gate(rules):
     return INSUFFICIENT if INSUFFICIENT in statuses else PASS
 
 
+def _spread(values: list) -> dict:
+    observed = [v for v in values if v is not None]
+    return {"measured": len(observed), "missing": len(values) - len(observed),
+            "median": median(observed) if observed else None, "mean": mean(observed) if observed else None,
+            "min": min(observed) if observed else None, "max": max(observed) if observed else None}
+
+
+def _net(rows: list, baseline: str, actual: str) -> dict:
+    """Per-brief (baseline - actual) minutes where both are measured; never imputed."""
+    values = []
+    for row in rows:
+        before, after = number(row, baseline), number(row, actual)
+        values.append(None if before is None or after is None else before - after)
+    result = _spread(values)
+    result["formula"] = f"{baseline} - {actual}, per retro brief"
+    result["complete"] = bool(rows) and result["missing"] == 0
+    return result
+
+
+def reported_measures(pilots: list) -> dict:
+    """Reported-only measures (SCORECARD.md §2, §3, §5a). None is gated; missing stays missing.
+
+    - net_lead_minutes: baseline_min - total_attention_min on retro rows (the capacity formula's
+      per-brief input, account lead only).
+    - net_team_minutes: baseline_team_min - total_team_min on retro rows: the same saving net
+      of every role the Tier 5-7 layer adds (operator, strategy, creative, production).
+    - agency_steps_min: the lead's minutes on audit, triage, exclusions, checklist and
+      deliverable rows, a subset of review_min (never added twice).
+    - baseline_check: recalled baseline_min against a timed fresh manual brief
+      (baseline_timed_min), for the recall-bias threat.
+    - retro_side_by_side: the countable comparison with the brief the agency actually wrote.
+    - survival_canonical_pct: field-level survival of brief.json, draft against approved.
+    """
+    retro = [row for row in pilots if row.get("phase") == "retro"]
+    side = {}
+    for key in SIDE_BY_SIDE:
+        values = [number(row, key) for row in retro]
+        observed = [v for v in values if v is not None]
+        side[key] = {"measured": len(observed), "missing": len(values) - len(observed),
+                     "sum": int(sum(observed)) if observed else None,
+                     "mean_per_brief": mean(observed) if observed else None}
+    steps = _spread([number(row, "agency_steps_min") for row in pilots])
+    review = [number(row, "review_min") for row in pilots]
+    shares = [100 * number(row, "agency_steps_min") / r for row, r in zip(pilots, review)
+              if r and number(row, "agency_steps_min") is not None]
+    steps["share_of_review_pct_median"] = median(shares) if shares else None
+    return {
+        "net_lead_minutes": _net(retro, "baseline_min", "total_attention_min"),
+        "net_team_minutes": _net(retro, "baseline_team_min", "total_team_min"),
+        "agency_steps_min": steps,
+        "baseline_check": _net(retro, "baseline_min", "baseline_timed_min") | {
+            "formula": "baseline_min (recalled) - baseline_timed_min (timed fresh manual brief), per brief"},
+        "retro_side_by_side": side,
+        "survival_canonical_pct": _spread([number(row, "survival_canonical_pct") for row in pilots]),
+    }
+
+
 def pass_rules(rows):
     """Evaluate every SCORECARD.md §4 pass rule per phase: pass / fail / insufficient_data.
 
@@ -236,6 +319,7 @@ def pass_rules(rows):
         "sod_waivers": sum(bool(_flag(r, "sod_waiver")) for r in pilots),
         "not_machine_evaluated": ["immediate-stop events (incident log)", "stop-rule decision (sponsor)",
                                   "month-2 onboarding requests (report)"],
+        **reported_measures(pilots),
     }
     if result["reported"]["sod_waivers"]:
         result["reported"]["warning"] = ("A separation-of-duties waiver is recorded on a PILOT row; waivers are "
@@ -273,15 +357,74 @@ def survival(draft, final):
     return round(max(0, 100 * (1 - previous[-1] / len(draft))))
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+#: Fields of brief.json whose entry text a reader sees; evidence and metadata are excluded so
+#: citation churn and sign-off stamps are not counted as edits.
+_CANONICAL_ENTRY_FIELDS = ("objectives", "audiences", "key_messages", "deliverables", "timeline", "budget",
+                           "mandatories")
+
+
+def canonical_text(brief: dict) -> str:
+    """The reader-facing text of a brief object, one line per entry, in schema field order."""
+    lines = []
+    for field in _CANONICAL_ENTRY_FIELDS:
+        for entry in brief.get(field) or []:
+            lines.append(f"{field}: {entry.get('content', '')}")
+    for question in brief.get("open_questions") or []:
+        lines.append(f"question/{question.get('field', '')}: {question.get('gap', '')} | "
+                     f"{question.get('suggested_question_for_client', '')}")
+    for conflict in brief.get("conflicts") or []:
+        positions = " / ".join(p.get("statement", "") for p in conflict.get("positions") or [])
+        lines.append(f"conflict/{conflict.get('field', '')}: {positions} | {conflict.get('status', '')} | "
+                     f"{conflict.get('resolution', '')}")
+    return "\n".join(lines)
+
+
+def _require_current_approval(run: Path) -> None:
+    try:  # the approval-binding policy may live in pipeline.approval (round 2) or pipeline.revisions
+        from pipeline.approval import require_current_approval
+    except ImportError:
+        from pipeline.revisions import require_current_approval
+    require_current_approval(run)
+
+
+def survival_bundle(draft_dir: Path, approved_run: Path, check_approval: bool = True) -> dict:
+    """Survival per SCORECARD.md §2: the archived first draft against what `agency approve` bound.
+
+    `draft_dir` holds the copies taken before review (`brief_en.md`, `brief_el.md`,
+    `brief.json`); `approved_run` is the run directory whose approval is current. The
+    approval is checked first, so a number is never produced for an unapproved or stale
+    revision. Returns integer percentages for EN, EL and the canonical object.
+    """
+    draft_dir, approved_run = Path(draft_dir), Path(approved_run)
+    if check_approval:
+        _require_current_approval(approved_run)
+    result = {}
+    for lang in ("en", "el"):
+        draft, final = draft_dir / f"brief_{lang}.md", approved_run / f"brief_{lang}.md"
+        result[f"survival_{lang}_pct"] = survival(draft.read_text(encoding="utf-8"), final.read_text(encoding="utf-8"))
+    draft_brief = json.loads((draft_dir / "brief.json").read_text(encoding="utf-8"))
+    final_brief = json.loads((approved_run / "brief.json").read_text(encoding="utf-8"))
+    result["survival_canonical_pct"] = survival(canonical_text(draft_brief), canonical_text(final_brief))
+    return result
+
+
+def main(argv: Optional[list] = None) -> int:
+    """CLI: summarize a scorecard CSV, or compute survival for one brief."""
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("csv", type=Path, nargs="?")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--draft", type=Path)
     parser.add_argument("--final", type=Path)
+    parser.add_argument("--draft-dir", type=Path,
+                        help="Archived first-draft copies (brief_en.md, brief_el.md, brief.json)")
+    parser.add_argument("--approved-run", type=Path, help="Run directory whose `agency approve` is current")
     args = parser.parse_args(argv)
     try:
-        if args.draft or args.final:
+        if args.draft_dir or args.approved_run:
+            if not args.draft_dir or not args.approved_run:
+                raise ValueError("Both --draft-dir and --approved-run are required")
+            result = survival_bundle(args.draft_dir, args.approved_run)
+        elif args.draft or args.final:
             if not args.draft or not args.final:
                 raise ValueError("Both --draft and --final are required")
             result = {"survival_pct": survival(args.draft.read_text(encoding="utf-8"), args.final.read_text(encoding="utf-8"))}

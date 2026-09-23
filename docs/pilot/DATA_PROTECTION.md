@@ -12,14 +12,17 @@ cite it. Open items are consolidated in `GO_LIVE_DECISIONS.md`.
 | Control | Where | What it does |
 |---|---|---|
 | Data declaration | `pipeline/data_policy.py`; runner exit 6; intake `--data-class` | A project folder without a valid `data_declaration.json` is refused before any source is read. `approved` requires `approval_ref`, `approved_by`, `approved_on`; approved projects, their client config and run output must be outside the repository. The run manifest records the declaration. |
+| Data-protection preconditions on the declaration | `pipeline/data_policy.py` (`PRECONDITION_FIELDS`) | An `approved` declaration may record `screened_by` and `screened_on` (§10), `processor_ref` (the filed processor terms, D-03) and `dpia_ref` (the DPIA or screening decision, D-09). Each is validated when present (non-empty; `screened_on` an ISO date, not in the future); the absent ones are listed in the run manifest as `preconditions_missing`. They become mandatory with one switch (`REQUIRE_PRECONDITIONS`) once intake can write them; synthetic declarations carry none of them. |
+| Advisory personal-data pre-screen | `pipeline/prescreen.py`; `config/prescreen_terms.json` | `python3 -m pipeline.prescreen PROJECT_DIR` counts, per source and category, the lines carrying e-mail addresses, phone numbers, IBAN-like strings, or Greek/English special-category terms (Art. 9, Art. 10, children). It records counts and line numbers, never the matched values; it never blocks. An aid for the §10 screening, not a control. |
+| CLI session persistence off | `pipeline/agents.py` (`--no-session-persistence`; round 2, phase B) | Runtime agents run with session persistence disabled, so no transcript of the sources is kept in the operator's Claude Code profile. The flag exists in the CLI version the flags were checked against (2.1.280, `claude --help`). Runs made before the flag was added (every committed run) did keep transcripts; retention lists their session IDs (§6). |
 | Sensitivity tier | `gates.enforce_sensitivity_tier`, schema enum S0/S1 | S2/S3 clients are refused at intake and on every run and agency read. |
 | Answer-key exclusion | `gates.HARNESS_ONLY_FILES`, `revisions.capture_evidence` | The grading key is never a source or an evidence copy. |
 | Release minimisation | `pipeline/delivery.py` release | Packages carry the approved creative and deliverable rows only: no raw sources, evidence, glossary, audit notes or paths. |
 | Retention inventory and purge | `pipeline/retention.py` | Finds every copy of a source (evidence/, history/, the staged `inputs/` copies agents read, packages), deletes on instruction, writes a tombstone; never deletes committed evidence unless explicitly named; never deletes a run's `audit_log.jsonl` silently (a source purge never touches it; a run purge records its hash, entry count and chain head in the tombstone first). |
 | Pseudonymised scorecard | `SCORECARD.md` §6 | Leads appear as L1/L2; the name mapping stays outside the repository. |
 
-Not implemented (open, §11): an automated special-category or personal-data pre-screen, and
-speaker pseudonymisation before extraction.
+Not implemented (open, §11): speaker pseudonymisation before extraction, and any blocking
+personal-data control (the pre-screen above is advisory by design).
 
 ## 2. Personal-data inventory
 
@@ -72,6 +75,15 @@ regulators' usual screening criteria (EDPB/WP248 list):
 | Transfer outside the EEA | Depends on the account and processing region: **OWNER/DPO TO CONFIRM**. |
 | Prevents exercise of rights | No automated decision about individuals; every decision is a named human's. |
 
+**Hellenic DPA list (Art. 35(4)).** The Hellenic Data Protection Authority's Decision 65/2018
+lists the processing operations for which a DPIA is mandatory in Greece. Screen this processing
+against that list as well as against WP248. Items to check first, given §2 and §9: innovative use
+of new technology (language models on client documents), systematic monitoring or evaluation of
+employees (effort records, if ever used about individuals), processing of special-category data
+(incidental only, §10), and combination of datasets (none intended). The list's exact wording must
+be read from the Authority's own publication, not from this summary, and the result of the check
+is **OWNER/DPO TO CONFIRM** (D-09).
+
 Risk and measure pairs for the DPIA, if one is run: provider access to client staff statements
 (DPA, zero retention, EU region — §8); over-retention through copies (`pipeline/retention.py`,
 §6); real data landing in a tracked repository (data declaration, out-of-repository rule);
@@ -88,7 +100,7 @@ data category, is **OWNER/DPO TO CONFIRM** and decides whose lawful basis and no
 | Client staff and third-party data in briefing documents | Art. 6(1)(f) legitimate interest (preparing the commissioned work), with a balancing test; or processing on the client's documented instructions if the agency is processor | OWNER/DPO TO CONFIRM |
 | Recorded kickoff meetings | Consent of participants (PRD §8 Plan B already requires it) or another basis the DPO names | OWNER/DPO TO CONFIRM |
 | Agency staff actor names on approvals | Art. 6(1)(f) or (c) (accountability of approvals) | OWNER/DPO TO CONFIRM |
-| Effort recording | Art. 6(1)(f) with an employee information step; national employment-data rules (Art. 88; the Greek implementing law's employment provisions) | OWNER/DPO TO CONFIRM |
+| Effort recording | Art. 6(1)(f) with an employee information step; national employment-data rules (GDPR Art. 88; Law 4624/2019 Art. 27, processing in the employment context) | OWNER/DPO TO CONFIRM |
 
 Legitimate-interest balancing template (one per processing): purpose; why the processing is
 necessary (could the brief be built without names? speaker attribution is what makes a
@@ -116,14 +128,15 @@ agency must keep for accountability (**OWNER/DPO TO CONFIRM**, `GO_LIVE_DECISION
 | Effort records | `effort.json` in the run; exported CSV | staff minutes | until the pilot report; CSV keeps only L1/L2 | with the run; CSV by file deletion |
 | Release packages | wherever `delivery release --output` wrote them | approved creative, deliverable rows | the agency's delivery retention | not deleted by `purge --run` (listed in the tombstone) |
 | Review shelf and share pages | `reviews/` (inside the repository, git-ignored) and wherever shared | brief views | never for pilot data: publish to the pilot location instead | file deletion |
-| `claude -p` session transcripts | the operator's Claude Code profile (per-project session files) | everything the agents read and wrote | delete at run end, or disable persistence if the installed CLI supports it (OPERATOR TO CONFIRM) | the CLI profile; `retention inventory` lists each run's session IDs |
+| `claude -p` session transcripts | the operator's Claude Code profile (per-project session files) | everything the agents read and wrote | none kept: runtime agents run with `--no-session-persistence` (round 2, §1); legacy runs made before the flag: delete at run end (D-24) | legacy runs only: the CLI profile; `retention inventory` lists each run's session IDs |
 | Provider-side data | model provider | prompts and outputs | per account terms (zero retention requested) | per DPA: OWNER/DPO TO CONFIRM |
 | Tombstones | `retention_tombstones.jsonl` beside purged runs | what/when/who/why, hashes only | accountability period | file deletion by the DPO's decision |
 
 ## 7. Data-subject rights procedure
 
 1. Log the request (date, requester, right: access, rectification, erasure, restriction,
-   objection) in the agency's rights log; the one-month clock (Art. 12(3)) starts.
+   objection) in the agency's rights log, which the data-protection lead keeps; the one-month
+   clock (Art. 12(3)) starts.
 2. Locate: `python3 -m pipeline.retention inventory --runs <pilot runs>`; search run
    directories for the person's name (sources, extracts, briefs, governance records); list
    release packages and session IDs from the inventory.
@@ -150,8 +163,10 @@ agency must keep for accountability (**OWNER/DPO TO CONFIRM**, `GO_LIVE_DECISION
   (adequacy decision or standard contractual clauses)? sub-processor list and change notice?
 - Security measures, breach notification timeline, assistance with rights requests and DPIAs,
   deletion or return at the end, audit rights.
-- The Claude Code CLI itself: which telemetry or error reports leave the machine, can they be
-  disabled, where are session transcripts stored locally (OPERATOR TO CONFIRM).
+- The Claude Code CLI itself: which telemetry or error reports leave the machine and whether
+  they can be disabled (OPERATOR TO CONFIRM, D-24). Local session transcripts are switched off
+  for runtime agents (`--no-session-persistence`, §1); interactive developer sessions are not
+  runtime agents and never see pilot data.
 - Any transcription (STT) vendor used before intake is a separate processor with its own
   checklist; the pipeline does not call one.
 
@@ -162,7 +177,11 @@ whether the brief workflow saves attention and reduces rework, per brief and per
 not used for individual performance evaluation, discipline, pay or ranking of staff. Before the
 first real record, staff receive the information in §5; records name roles and fictional or
 pseudonymous actor IDs where possible; the scorecard carries L1/L2 only; access is limited to
-the operator and the sponsor. Any other use needs a new decision: **OWNER/DPO TO CONFIRM**.
+the operator and the sponsor. Greek law adds employment-context rules for this processing (Law
+4624/2019 Art. 27, implementing GDPR Art. 88), including when employee data may be processed
+and the information owed to staff; whether and how they apply here, and whether any works-council
+or staff-consultation step is needed, is **OWNER/DPO TO CONFIRM** (D-12). Any other use needs a new
+decision: **OWNER/DPO TO CONFIRM**.
 
 ## 10. Special-category screening step (before `approved` is declared)
 
@@ -170,9 +189,12 @@ Before an account lead declares a project `approved` and runs it: open each sour
 for health, ethnic origin, political opinion, religious belief, trade-union membership, sexual
 life, genetic or biometric data, criminal-offence data, and data about children. If present and
 not needed for the brief, remove it from the source before intake (keep the original out of the
-pilot location); if it cannot be removed, do not run the project. Record "screened by / date" in
-the approval record that `approval_ref` points to. An automated keyword pre-screen is an open
-option, not a control (§11).
+pilot location); if it cannot be removed, do not run the project. Start from the advisory
+pre-screen (`python3 -m pipeline.prescreen RAW_FOLDER`): it lists the lines to look at, never the
+values, and a clean result proves nothing. Record who screened and when in the approval record
+that `approval_ref` points to and in the declaration itself (`screened_by`, `screened_on`), with
+`processor_ref` and `dpia_ref`; a run on a declaration without them lists them as
+`preconditions_missing`.
 
 ## 11. Committed-artifact minimisation and open items
 
@@ -182,5 +204,42 @@ option, not a control (§11).
   lifecycle rehearsal (`runs/rehearsal-lifecycle/`) replaces that name when it copies tier3.
   Tests use "Synthetic …" actors.
 - Pilot data is never committed: approved projects are refused inside the repository.
-- Open: automated special-category/personal-data pre-screen; speaker pseudonymisation before
-  extraction (would change citations and needs an evaluation); CLI session persistence setting.
+- Open: speaker pseudonymisation before extraction (§13); making the declaration's
+  precondition fields mandatory once intake can write them (§1); CLI telemetry settings (D-24).
+  Closed in round 2: an advisory pre-screen exists (advisory by design, not a control); session
+  persistence is off for runtime agents.
+
+## 12. Record of processing activities (Art. 30) — entry template
+
+One entry for the pilot, kept by the agency as controller (Art. 30(1)). If the DPO concludes that
+the agency acts as the client's processor for client documents (§5), the processor record of Art.
+30(2) applies to that part instead. Contents: **OWNER/DPO TO CONFIRM**.
+
+| Art. 30(1) item | Entry for "AI-assisted brief preparation (pilot)" |
+|---|---|
+| (a) Controller, representative, DPO contact | The agency; the data-protection lead named at kickoff (D-01) |
+| (b) Purposes | Preparing campaign briefs from client documents; recording review decisions for accountability; measuring the workflow (effort, §9) |
+| (c) Categories of data subjects and personal data | §2: client staff and third parties named in documents (names, roles, statements); agency staff (names as actors, decisions, effort minutes); no special categories intended (§10) |
+| (d) Recipients | The model provider as processor (§3, §8); nobody else: packages are released locally, nothing is sent automatically |
+| (e) Transfers to third countries and safeguards | Per the account's terms: **OWNER/DPO TO CONFIRM** (§8) |
+| (f) Erasure time limits | §6 retention schedule (D-07) |
+| (g) Technical and organisational measures | §1 controls; run-directory access limited to the pilot location (D-04); hash-chained audit log; retention tool with tombstones |
+
+## 13. Data minimisation of the model flow (options, not changes)
+
+**Classify.** The classify stage decides one thing, the project type, and copies the tier from
+the client config (`.claude/agents/classify.md` rules 1 and 4: "read enough to route"). Its work
+order lists every source, so every source's full text reaches the provider at this stage (§3),
+although every source reaches the provider again at extraction anyway. Options, none
+implemented: (a) pass only the source headers (type, date, title) and the RFP; (b) pass the
+first part of each source. Either reduces what one stage sends, not what the run sends. Both
+could lower classification confidence and raise halts (`unclassified_ask_human`). Evaluation
+before any change: the same graded fixtures classified both ways, compared on project type and
+confidence. It is a prompt change under the routing and prompt-change rules, so it needs the
+owner's decision. **OWNER/DPO TO CONFIRM** whether the reduction is worth that trade.
+
+**Speaker pseudonymisation.** Replacing speaker names with role labels before extraction would
+keep names away from the provider. It changes citations (`speaker_or_author`) and conflict
+attribution, which is what makes a conflict checkable. Evaluation plan: pseudonymise one graded
+fixture's sources, run it under the current routing, and compare harness recall, conflict
+attribution and the lead's ability to act on the brief. Not started.

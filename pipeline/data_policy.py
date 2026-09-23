@@ -9,7 +9,17 @@ policy text:
      "approved_by": "Agency data-protection lead", "approved_on": "2026-10-01"}
 
 `synthetic` is invented material (every fixture). `approved` is anything else, and it must
-carry the reference, approver and date of the agency's recorded data-policy approval. The
+carry the reference, approver and date of the agency's recorded data-policy approval.
+
+An `approved` declaration may also record the data-protection preconditions the pilot pack
+sets before real material is run (`docs/pilot/DATA_PROTECTION.md` §10, `GO_LIVE_DECISIONS.md`
+D-03 and D-09): `screened_by` and `screened_on` (the special-category screening step),
+`processor_ref` (the filed processor terms for the account in use) and `dpia_ref` (the DPIA or
+screening decision). Each is validated when present. Absent ones are listed in the run
+manifest as `preconditions_missing`, so a run on an approved folder shows which preconditions
+were never recorded. They are not yet required: `pipeline/intake.py` has no flags for them, so
+requiring them would refuse every approved intake. Making them mandatory is a one-line change
+(`REQUIRE_PRECONDITIONS`) once intake can write them. The
 declaration is a control, not a grant: writing an `approved` declaration does not approve
 anything; it records WHO approved it and WHERE that decision lives, so the run manifest can
 show it. Whether real client data may be processed at all remains the agency's data-policy
@@ -35,6 +45,13 @@ SYNTHETIC = "synthetic"
 APPROVED = "approved"
 DATA_CLASSES = (SYNTHETIC, APPROVED)
 APPROVAL_FIELDS = ("approval_ref", "approved_by", "approved_on")
+#: Data-protection preconditions an `approved` declaration records (validated when present).
+PRECONDITION_FIELDS = ("screened_by", "screened_on", "processor_ref", "dpia_ref")
+#: Date-valued fields: ISO YYYY-MM-DD, never in the future.
+DATE_FIELDS = ("approved_on", "screened_on")
+#: False until `pipeline/intake.py` can write the precondition fields; then True makes an
+#: approved declaration without them a refusal (exit 6), which is a tightening.
+REQUIRE_PRECONDITIONS = False
 
 _ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
@@ -42,7 +59,7 @@ _HOW_TO_DECLARE = (
     'Synthetic fixtures declare {"data_class": "synthetic"}; any other material needs '
     '{"data_class": "approved", "approval_ref": "...", "approved_by": "...", "approved_on": "YYYY-MM-DD"} '
     "recorded from the agency's data-policy approval (docs/OPERATING_DECISIONS.md, 2026-09-22 decision 4; "
-    "docs/pilot/DATA_PROTECTION.md)."
+    "docs/pilot/DATA_PROTECTION.md), plus, when recorded, screened_by, screened_on, processor_ref and dpia_ref."
 )
 
 
@@ -59,10 +76,22 @@ class DataDeclaration:
     approval_ref: Optional[str] = None
     approved_by: Optional[str] = None
     approved_on: Optional[str] = None
+    screened_by: Optional[str] = None
+    screened_on: Optional[str] = None
+    processor_ref: Optional[str] = None
+    dpia_ref: Optional[str] = None
 
     @property
     def is_synthetic(self) -> bool:
+        """True for invented material; the only class allowed inside the repository."""
         return self.data_class == SYNTHETIC
+
+    @property
+    def missing_preconditions(self) -> list:
+        """Precondition fields an approved declaration does not record (always [] for synthetic)."""
+        if self.is_synthetic:
+            return []
+        return [name for name in PRECONDITION_FIELDS if not getattr(self, name)]
 
     def as_record(self) -> dict:
         """What the run manifest records (never the material itself)."""
@@ -70,10 +99,24 @@ class DataDeclaration:
         if not self.is_synthetic:
             record.update(approval_ref=self.approval_ref, approved_by=self.approved_by,
                           approved_on=self.approved_on)
+            record.update({name: getattr(self, name) for name in PRECONDITION_FIELDS if getattr(self, name)})
+            record["preconditions_missing"] = self.missing_preconditions
         return record
 
 
-def validate_payload(payload, where: str = DECLARATION_FILE, today: Optional[date] = None) -> list:
+def _date_problem(where: str, key: str, value: str, today: Optional[date]) -> Optional[str]:
+    try:
+        if not _ISO_DATE_RE.fullmatch(value):
+            raise ValueError
+        when = date.fromisoformat(value)
+    except ValueError:
+        return f"{where}: {key} must be an ISO date YYYY-MM-DD, got {value!r}"
+    if when > (today or date.today()):
+        return f"{where}: {key} {value} is in the future"
+    return None
+
+
+def validate_payload(payload: object, where: str = DECLARATION_FILE, today: Optional[date] = None) -> list:
     """Every problem with a parsed declaration, as sentences. Empty list = valid."""
     if not isinstance(payload, dict):
         return [f"{where}: must be a JSON object"]
@@ -81,33 +124,34 @@ def validate_payload(payload, where: str = DECLARATION_FILE, today: Optional[dat
     data_class = payload.get("data_class")
     if data_class not in DATA_CLASSES:
         problems.append(f"{where}: data_class must be one of {list(DATA_CLASSES)}, got {data_class!r}")
-    allowed = {"data_class", *APPROVAL_FIELDS}
+    allowed = {"data_class", *APPROVAL_FIELDS, *PRECONDITION_FIELDS}
     unknown = sorted(k for k in payload if k not in allowed and not str(k).startswith("_"))
     if unknown:
         problems.append(f"{where}: unknown key(s) {unknown} (notes go in keys starting with '_')")
     if data_class == SYNTHETIC:
-        present = [k for k in APPROVAL_FIELDS if k in payload]
+        present = [k for k in (*APPROVAL_FIELDS, *PRECONDITION_FIELDS) if k in payload]
         if present:
             problems.append(
                 f"{where}: a synthetic declaration carries no approval fields ({present}); "
                 "use data_class 'approved' for approved non-synthetic material"
             )
     elif data_class == APPROVED:
-        for key in APPROVAL_FIELDS:
+        required = APPROVAL_FIELDS + (PRECONDITION_FIELDS if REQUIRE_PRECONDITIONS else ())
+        for key in required:
             value = payload.get(key)
             if not isinstance(value, str) or not value.strip():
                 problems.append(f"{where}: data_class 'approved' requires a non-empty {key}")
-        approved_on = payload.get("approved_on")
-        if isinstance(approved_on, str) and approved_on.strip():
-            try:
-                if not _ISO_DATE_RE.fullmatch(approved_on):
-                    raise ValueError
-                when = date.fromisoformat(approved_on)
-            except ValueError:
-                problems.append(f"{where}: approved_on must be an ISO date YYYY-MM-DD, got {approved_on!r}")
-            else:
-                if when > (today or date.today()):
-                    problems.append(f"{where}: approved_on {approved_on} is in the future")
+        for key in PRECONDITION_FIELDS:
+            if key in payload and key not in required:
+                value = payload[key]
+                if not isinstance(value, str) or not value.strip():
+                    problems.append(f"{where}: {key}, when present, must be non-empty text")
+        for key in DATE_FIELDS:
+            value = payload.get(key)
+            if isinstance(value, str) and value.strip():
+                problem = _date_problem(where, key, value, today)
+                if problem:
+                    problems.append(problem)
     return problems
 
 
@@ -131,8 +175,7 @@ def load_declaration(project_dir: Path, today: Optional[date] = None) -> DataDec
         raise DataDeclarationError("; ".join(problems) + f". {_HOW_TO_DECLARE}")
     return DataDeclaration(
         data_class=payload["data_class"], path=path.resolve(),
-        approval_ref=payload.get("approval_ref"), approved_by=payload.get("approved_by"),
-        approved_on=payload.get("approved_on"),
+        **{name: payload.get(name) for name in (*APPROVAL_FIELDS, *PRECONDITION_FIELDS)},
     )
 
 
@@ -189,12 +232,17 @@ def require_for_run(project_dir: Path, *, out_dir: Optional[Path] = None, glossa
 
 
 def build_declaration(data_class: str, approval_ref: Optional[str] = None, approved_by: Optional[str] = None,
-                      approved_on: Optional[str] = None, today: Optional[date] = None) -> dict:
+                      approved_on: Optional[str] = None, today: Optional[date] = None, *,
+                      screened_by: Optional[str] = None, screened_on: Optional[str] = None,
+                      processor_ref: Optional[str] = None, dpia_ref: Optional[str] = None) -> dict:
     """The payload intake writes. Validated before it is returned; nothing is inferred."""
     payload = {"data_class": data_class}
+    preconditions = {"screened_by": screened_by, "screened_on": screened_on,
+                     "processor_ref": processor_ref, "dpia_ref": dpia_ref}
     if data_class == APPROVED:
         payload.update(approval_ref=approval_ref, approved_by=approved_by, approved_on=approved_on)
-    elif any(v is not None for v in (approval_ref, approved_by, approved_on)):
+        payload.update({k: v for k, v in preconditions.items() if v is not None})
+    elif any(v is not None for v in (approval_ref, approved_by, approved_on, *preconditions.values())):
         raise DataDeclarationError("approval fields are only valid with --data-class approved")
     problems = validate_payload(payload, "declaration", today)
     if problems:
