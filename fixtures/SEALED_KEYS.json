@@ -1,0 +1,15 @@
+{
+  "fixture": "levanta_03",
+  "files": {
+    "fixtures/levanta_03/answer_key.json": "d56647080dcb0d6bd302b7bc81b4b16e2c16820e4fa96b3036e729b8f96438ea",
+    "fixtures/SEALED_EXTRA_CHECKS_levanta_03.md": "46e01687781633d90ed2dd558a43b89736b6fb09c9d892b49f30f93500e27288"
+  },
+  "quarantined_paths": [
+    "fixtures/levanta_03/",
+    "fixtures/SEALED_EXTRA_CHECKS_levanta_03.md"
+  ],
+  "sealed_on": "2026-09-23",
+  "author": "blind W-F subagent (claude-opus-5-5)",
+  "rule": "no pipeline developer opens this folder before its first graded run is committed",
+  "note": "SEALED_EXTRA_CHECKS sits beside this file, not inside the fixture folder: a header-less .md inside an Input folder fails the input contract (discover_sources) and could be staged to runtime agents."
+}
