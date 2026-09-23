@@ -26,6 +26,10 @@ def _never_call_a_real_model(monkeypatch):
     from pipeline import agents
 
     monkeypatch.setattr(agents, "CLAUDE_BIN", "brief-builder-tests-must-not-call-a-model")
+    # The `--version` probe is cached per binary; every test starts without a cached answer,
+    # and never inherits the operator's live opt-in.
+    monkeypatch.setattr(agents, "_CLI_VERSIONS", {})
+    monkeypatch.delenv(agents.LIVE_ENV, raising=False)
 
 
 #: Committed run evidence the suite reads but must never write into (not even a lock file).
@@ -65,7 +69,8 @@ def fake_claude(monkeypatch) -> Path:
     from pipeline import agents
 
     monkeypatch.setattr(agents, "CLAUDE_BIN", str(FAKE_CLAUDE))
-    for name in ("BRIEF_BUILDER_FAKE_CLAUDE_MODE", "BRIEF_BUILDER_FAKE_CLAUDE_ARGV", "BRIEF_BUILDER_REPLAY_RUN"):
+    for name in ("BRIEF_BUILDER_FAKE_CLAUDE_MODE", "BRIEF_BUILDER_FAKE_CLAUDE_ARGV", "BRIEF_BUILDER_REPLAY_RUN",
+                 "BRIEF_BUILDER_FAKE_CLAUDE_VERSION"):
         monkeypatch.delenv(name, raising=False)
     return FAKE_CLAUDE
 

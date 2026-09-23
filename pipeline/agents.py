@@ -28,6 +28,17 @@ read-only directory and protected record, a deny rule for any `answer_key.json`,
 web tools, no user/project settings, hooks or MCP servers, and no interactive permission
 prompts (anything not pre-approved is refused). The CLI enforces the rules; the runner's
 post-stage integrity check (pipeline/runner.py) detects a write that got through anyway.
+
+Session hygiene (round 2). Every invocation passes `--no-session-persistence`, so the CLI keeps
+no transcript of what the agent read (client documents) in the operator's profile, and
+`--restricted`, which drops every code-running tool and all settings files and confines the file
+tools to the granted directories. The CLI's version is probed once per binary and refused below
+`MIN_CLI_VERSION` — the release these flags were checked against — so an older CLI can never run
+a stage without them. The probe result is what the run manifest records (`cli_record`).
+
+Live calls are opt-in. Which binary is in use is decided here (`resolve_cli`, `is_replay_cli`);
+the runner and the demo refuse to start a real CLI unless `--live` or `BRIEF_BUILDER_LIVE=1`
+is given (`live_refusal`). The offline replay binary (`tools/replay/claude`) needs no opt-in.
 """
 
 from __future__ import annotations
@@ -49,6 +60,26 @@ AGENTS_DIR = REPO_ROOT / ".claude" / "agents"
 
 #: Overridable so tests never shell out to a real model.
 CLAUDE_BIN = os.environ.get("BRIEF_BUILDER_CLAUDE_BIN", "claude")
+
+#: The offline stand-in for the CLI (pipeline/replay.py). It makes no model call, so running it
+#: needs no live opt-in.
+REPLAY_CLI = REPO_ROOT / "tools" / "replay" / "claude"
+
+#: Live model calls are opt-in: `--live` on the command line, or this variable set to "1".
+LIVE_ENV = "BRIEF_BUILDER_LIVE"
+
+#: The oldest CLI release the flags in `build_command` were checked against (`claude --help`,
+#: 2026-09-23). `--no-session-persistence`, `--restricted`, `--permission-prompts` and `--tools`
+#: are recent; an older CLI is refused before any stage runs rather than trusted to reject them.
+MIN_CLI_VERSION = (2, 1, 280)
+
+#: `claude --version` answers within seconds; this is an infrastructure ceiling, not a gate.
+VERSION_PROBE_TIMEOUT_S = 60
+
+_VERSION_RE = re.compile(r"(\d+)\.(\d+)\.(\d+)")
+
+#: {absolute binary path: its `--version` line}, probed once per process and binary.
+_CLI_VERSIONS: dict = {}
 
 #: Runtime agents read sources and write artifacts. This mirrors the `tools:` frontmatter and
 #: is passed as `--tools`, so no other built-in tool is even available to the session.
@@ -248,6 +279,13 @@ def build_command(agent: str, prompt: str, access_dirs, model_override: Optional
         # Nobody answers a prompt in a pipeline run: anything not pre-approved is refused
         # outright instead of hanging or being waved through.
         "--permission-prompts", "none",
+        # No transcript of the client documents an agent read stays in the operator's CLI
+        # profile (docs/pilot/DATA_PROTECTION.md §1, §6).
+        "--no-session-persistence",
+        # No code-running tool, no settings file of any source, file tools confined to the
+        # --add-dir directories (docs/SECURITY.md §3.2). Kept alongside --tools and
+        # --setting-sources: each flag states one restriction and is tested on its own.
+        "--restricted",
         "--setting-sources", SETTING_SOURCES,
         "--strict-mcp-config",  # no --mcp-config is passed, so no MCP server loads
         "--output-format", "json",
@@ -286,6 +324,111 @@ def stage_effort(agent: str, path: Optional[Path] = None) -> Optional[str]:
             f"{p}: effort[{agent!r}] must be one of {list(EFFORT_LEVELS)}, got {level!r}"
         )
     return level
+
+
+def resolve_cli() -> Optional[str]:
+    """Absolute path of the CLI `CLAUDE_BIN` names, or None when it is not on PATH."""
+    found = shutil.which(CLAUDE_BIN)
+    return os.path.abspath(found) if found else None
+
+
+def is_replay_cli(path: Optional[str]) -> bool:
+    """True when `path` is the offline replay stand-in, which never calls a model."""
+    if not path:
+        return False
+    try:
+        return Path(path).resolve() == REPLAY_CLI.resolve()
+    except OSError:
+        return False
+
+
+def live_opt_in(explicit: Optional[bool] = None) -> bool:
+    """The caller's live opt-in: an explicit flag wins, else `BRIEF_BUILDER_LIVE=1`."""
+    if explicit is not None:
+        return bool(explicit)
+    return os.environ.get(LIVE_ENV, "") == "1"
+
+
+#: The offline command every live-call refusal points at.
+REPLAY_HINT = ('BRIEF_BUILDER_CLAUDE_BIN="$PWD/tools/replay/claude" python3 pipeline/runner.py '
+               "--project fixtures/northlight_01 --out /tmp/bb-replay")
+
+
+def live_refusal(explicit: Optional[bool] = None) -> Optional[str]:
+    """Why a run must not start (a real CLI without the live opt-in), or None when it may.
+
+    A binary that is not on PATH is not refused here: nothing can be invoked, and `invoke`
+    reports the missing CLI when a stage first needs it. The replay binary needs no opt-in.
+    """
+    found = resolve_cli()
+    if found is None or is_replay_cli(found) or live_opt_in(explicit):
+        return None
+    return (f"live model calls are opt-in: {found} is a real Claude Code CLI, and a run spends "
+            f"usage on the operator's account. Pass --live (or set {LIVE_ENV}=1) for an "
+            f"owner-authorised live run. To watch the pipeline offline, with zero model calls:\n"
+            f"  {REPLAY_HINT}")
+
+
+def parse_cli_version(text: str) -> Optional[tuple]:
+    """(major, minor, patch) from a `claude --version` line, or None when there is none."""
+    match = _VERSION_RE.search(text or "")
+    return tuple(int(part) for part in match.groups()) if match else None
+
+
+def cli_version(path: str) -> str:
+    """The first line `<path> --version` prints, probed once per process, from the neutral cwd."""
+    if path not in _CLI_VERSIONS:
+        try:
+            proc = subprocess.run([path, "--version"], cwd=_neutral_cwd(), capture_output=True,
+                                  text=True, timeout=VERSION_PROBE_TIMEOUT_S, check=False)
+        except subprocess.TimeoutExpired as exc:
+            raise SubagentError(f"'{path} --version' exceeded {VERSION_PROBE_TIMEOUT_S}s") from exc
+        except OSError as exc:
+            raise SubagentError(f"could not start {path!r} to read its version: {exc}") from exc
+        lines = (proc.stdout or "").strip().splitlines()
+        _CLI_VERSIONS[path] = lines[0].strip() if lines else ""
+    return _CLI_VERSIONS[path]
+
+
+def require_supported_cli(path: str) -> str:
+    """The CLI's version line; SubagentError when it is unreadable or below MIN_CLI_VERSION."""
+    line = cli_version(path)
+    version = parse_cli_version(line)
+    minimum = ".".join(map(str, MIN_CLI_VERSION))
+    if version is None:
+        raise SubagentError(f"{path}: cannot read a version from '--version' (got {line!r}); "
+                            f"Brief Builder needs Claude Code {minimum} or later")
+    if version < MIN_CLI_VERSION:
+        raise SubagentError(
+            f"{path}: Claude Code {'.'.join(map(str, version))} is older than {minimum}, the release "
+            f"the runtime flags (--no-session-persistence, --restricted, --permission-prompts, "
+            f"--tools) were checked against. Update the CLI; no stage runs on an older one."
+        )
+    return line
+
+
+def cli_record(explicit_live: Optional[bool] = None) -> dict:
+    """What a run manifest records about the model transport: binary, version, replay, live.
+
+    Probes `--version` once (no model call). Never raises: a missing or unreadable CLI is
+    recorded as such, and `invoke` refuses it when a stage needs it.
+    """
+    found = resolve_cli()
+    replay = is_replay_cli(found)
+    record = {
+        "binary": Path(found).name if found else CLAUDE_BIN,
+        "found": bool(found),
+        "replay": replay,
+        "live": bool(found) and not replay and live_opt_in(explicit_live),
+        "version": None,
+        "min_version": ".".join(map(str, MIN_CLI_VERSION)),
+    }
+    if found:
+        try:
+            record["version"] = cli_version(found)
+        except SubagentError as exc:
+            record["version_error"] = str(exc)
+    return record
 
 
 @dataclass
@@ -350,17 +493,19 @@ def invoke(
     output is not this function's problem — the caller validates artifacts against the schema,
     because "the model replied" and "the model was right" are different questions.
     """
-    found = shutil.which(CLAUDE_BIN)
+    found = resolve_cli()
     if found is None:
         raise SubagentError(
             f"'{CLAUDE_BIN}' not found on PATH. The pipeline drives Claude Code subagents; "
             f"set BRIEF_BUILDER_CLAUDE_BIN if the CLI lives elsewhere."
         )
+    # Below MIN_CLI_VERSION nothing runs (probed once per binary, no model call).
+    require_supported_cli(found)
 
     cmd = build_command(agent, prompt, access_dirs, model_override=model_override)
     # Execute exactly what the availability check found, made absolute here: the process starts
     # in a neutral cwd, where a relative BRIEF_BUILDER_CLAUDE_BIN would no longer resolve.
-    cmd[0] = os.path.abspath(found)
+    cmd[0] = found
 
     try:
         proc = subprocess.run(

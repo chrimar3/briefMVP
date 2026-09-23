@@ -56,7 +56,8 @@ def _attempts(step):
 
 def test_full_run_completes_through_every_stage_with_zero_model_calls(project, replayed, tmp_path):
     out = tmp_path / "runs"
-    assert _run(project, out) == runner.EXIT_OK
+    # --out is hermetic; --publish asks for the (private, monkeypatched) shelf copy explicitly.
+    assert _run(project, out, "--publish") == runner.EXIT_OK
 
     run_dir = out / "e2e"
     manifest = _manifest(run_dir)

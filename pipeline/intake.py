@@ -249,6 +249,14 @@ def main(argv: list | None = None) -> int:
     parser.add_argument("--approval-ref", default=None, help="With --data-class approved: the approval record's reference")
     parser.add_argument("--approved-by", default=None, help="With --data-class approved: who approved the processing")
     parser.add_argument("--approved-on", default=None, help="With --data-class approved: approval date, YYYY-MM-DD")
+    parser.add_argument("--screened-by", default=None,
+                        help="With --data-class approved: who did the special-category screening "
+                             "(docs/pilot/DATA_PROTECTION.md §10)")
+    parser.add_argument("--screened-on", default=None, help="With --data-class approved: screening date, YYYY-MM-DD")
+    parser.add_argument("--processor-ref", default=None,
+                        help="With --data-class approved: reference of the filed processor terms (GO_LIVE D-03)")
+    parser.add_argument("--dpia-ref", default=None,
+                        help="With --data-class approved: reference of the DPIA or screening decision (GO_LIVE D-09)")
     parser.add_argument("--type", action="append", default=[], metavar="FILE=TYPE",
                         help="Explicit source_type for a file, e.g. --type notes.txt=background")
     parser.add_argument("--date", action="append", default=[], metavar="FILE=YYYY-MM-DD",
@@ -277,8 +285,10 @@ def main(argv: list | None = None) -> int:
         return out
 
     try:
-        declaration = data_policy.build_declaration(args.data_class, args.approval_ref,
-                                                    args.approved_by, args.approved_on)
+        declaration = data_policy.build_declaration(
+            args.data_class, args.approval_ref, args.approved_by, args.approved_on,
+            screened_by=args.screened_by, screened_on=args.screened_on,
+            processor_ref=args.processor_ref, dpia_ref=args.dpia_ref)
         items = plan_intake(raw_files, parse_kv(args.type, "--type"), parse_kv(args.date, "--date"))
         glossary_dir = Path(args.glossary_dir) if args.glossary_dir else Path(args.out)
         glossary_path = glossary_dir / f"client_{args.client}.json"
@@ -308,6 +318,8 @@ def main(argv: list | None = None) -> int:
         sources = gates.discover_sources(Path(args.out))
         verdict = gates.readiness_gate(sources)
     except (IntakeError, gates.InputContractError, gates.ScopeError) as exc:
+        # DataDeclarationError is an InputContractError: an approved declaration missing a
+        # precondition (screened_by/on, processor_ref, dpia_ref) is refused here, before any write.
         print(f"[intake] {exc}", file=sys.stderr)
         return 2
 
@@ -316,7 +328,8 @@ def main(argv: list | None = None) -> int:
              else f"already present at {glossary_path} (untouched)"))
     print(f"readiness: {verdict.message}")
     run_out = "" if declaration["data_class"] == data_policy.SYNTHETIC else " --out <pilot runs folder outside the repository>"
-    print(f"\nRun:\n  python pipeline/runner.py --project {args.out} --glossary {glossary_path}{run_out}")
+    print(f"\nRun (live model calls; owner-authorised):\n"
+          f"  python pipeline/runner.py --project {args.out} --glossary {glossary_path}{run_out} --live")
     return 0 if verdict.ok else 1
 
 

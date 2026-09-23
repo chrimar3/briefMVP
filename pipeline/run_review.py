@@ -126,7 +126,10 @@ def collect_run(run_dir) -> dict:
 
     raw_sources = {}
     project_dir = Path(str(manifest.get("project_dir") or ""))
-    if project_dir.is_dir():
+    if manifest.get("project_dir") and not project_dir.is_absolute():
+        # Manifests record a project inside the repository relative to it (pipeline/runner.py).
+        project_dir = Path(__file__).resolve().parent.parent / project_dir
+    if manifest.get("project_dir") and project_dir.is_dir():
         for source in sources:
             source_id = str(source.get("source_id") or "")
             doc = project_dir / f"{source_id}.md"
