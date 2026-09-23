@@ -263,7 +263,7 @@ def _known_anchors(extracts: dict) -> set:
 
 def rule_anchor_integrity(brief: dict, extracts: dict) -> list:
     """Anchors survive assembly untouched: they are what the Greek render re-anchors on (rule 1)."""
-    violations = []
+    violations: list[str] = []
     known_anchors = _known_anchors(extracts)
     if not known_anchors:
         return violations

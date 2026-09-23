@@ -1,8 +1,8 @@
 """A reply proposal cannot leave a previously approved campaign releasable."""
 import pytest
+from conftest import approve_synthetic, prepare_release
+
 from pipeline import agency, clarifications, delivery, gates, question_exchange, revisions
-from test_delivery import prepare_release
-from test_agency_operations import approve_synthetic
 
 
 def test_reply_blocks_approved_release_until_explicit_review(tmp_path):
@@ -17,7 +17,9 @@ def test_reply_blocks_approved_release_until_explicit_review(tmp_path):
         with (run/f'brief_{lang}.md').open('a') as handle:
             handle.write('\n## ⚠ Open questions\n1. Who reviews? [rfp L1]\n')
     queue = clarifications.queue(brief)
-    clarifications.record(run, queue, queue[0]['id'], 'open', 'Synthetic lead', 'Can wait', '', 'Synthetic account', 'nonblocking')
+    clarifications.record(
+        run, queue, queue[0]['id'], 'open', 'Synthetic lead', 'Can wait', '', 'Synthetic account', 'nonblocking'
+    )
     approve_synthetic(run)
     delivery.register(run, tmp_path/'draft.txt', 'Synthetic operator')
     delivery.approve(run, 'Synthetic lead', 'Reviewed', delivery.CHECKS)
@@ -28,5 +30,7 @@ def test_reply_blocks_approved_release_until_explicit_review(tmp_path):
     assert any('Unreviewed clarification' in p for p in agency.audit(run, persist=False)['blockers'])
     with pytest.raises(ValueError, match='Unreviewed clarification'):
         delivery.release(run, tmp_path/'blocked', 'Synthetic releaser')
-    question_exchange.dismiss(run, proposal['proposal_id'], actor='Synthetic lead', reason='Wrong campaign; verified irrelevant')
+    question_exchange.dismiss(
+        run, proposal['proposal_id'], actor='Synthetic lead', reason='Wrong campaign; verified irrelevant'
+    )
     assert delivery.release(run, tmp_path/'approved', 'Synthetic releaser').is_dir()

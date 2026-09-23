@@ -5,7 +5,9 @@ import argparse
 import json
 import math
 import sys
+from collections.abc import Iterable, Sequence
 from pathlib import Path
+from typing import Any, Optional, Union
 
 if __package__ in (None, ''):  # allow `python3 eval/rework_report.py` as well as `-m eval.rework_report`
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -13,7 +15,7 @@ if __package__ in (None, ''):  # allow `python3 eval/rework_report.py` as well a
 from pipeline import effort  # noqa: E402
 
 
-def _sum(values):
+def _sum(values: Sequence[float]) -> Optional[float]:
     if not values:
         return None
     try:
@@ -25,7 +27,7 @@ def _sum(values):
     return value
 
 
-def _measure(events, run):
+def _measure(events: list[dict[str, Any]], run: str) -> dict[str, Any]:
     handoffs = [e for e in events if e['kind'] == 'handoff']
     timed = [e for e in events if e['kind'] == 'effort']
     attributed = [dict(run=run, event_id=e['event_id'], actor=e['actor'], role=e['role'],
@@ -33,7 +35,7 @@ def _measure(events, run):
                        corrected_by=e.get('corrected_by'), correction_reason=e.get('correction_reason'))
                   for e in timed if e.get('reason') is not None]
     unattributed = [e['minutes'] for e in timed if e.get('reason') is None]
-    reasons = {}
+    reasons: dict[str, int] = {}
     for event in handoffs:
         if event['accepted'] == 'no':
             reason = event['return_reason']
@@ -47,9 +49,11 @@ def _measure(events, run):
                 unattributed_minutes=_sum(unattributed), unattributed_events=len(unattributed))
 
 
-def summarize(runs):
+def summarize(runs: Iterable[Union[str, Path]]) -> dict[str, Any]:
     """Missing/error rows remain visible; aggregates cover observed events only."""
-    seen, rows, duplicates = set(), [], 0
+    seen: set[Path] = set()
+    rows: list[dict[str, Any]] = []
+    duplicates = 0
     for raw in runs:
         try:
             path = Path(raw).resolve()
@@ -63,12 +67,17 @@ def summarize(runs):
                 rows.append(dict(run=run, status='missing', error='effort.json not recorded'))
             else:
                 rows.append(dict(run=run, status='ok', **_measure(events, run)))
-        except (OSError, ValueError, TypeError, OverflowError, RuntimeError) as exc:
+        # Deliberate per-row degrade: one unreadable or invalid ledger becomes an 'error' row and the
+        # other runs are still reported. The set is what reading a ledger really raises: OSError (I/O),
+        # ValueError (corrupt JSON, invalid events), OverflowError (an integer too large for a float)
+        # and RecursionError (pathologically nested JSON); anything else is a bug and must surface.
+        except (OSError, ValueError, OverflowError, RecursionError) as exc:
             rows.append(dict(run=str(raw), status='error', error=str(exc)))
     measured = [r for r in rows if r['status'] == 'ok']
     handoffs = [r for r in measured if r['first_handoff'] is not None]
     attributions = [e for r in measured for e in r['attributions']]
-    reasons, minutes_by_reason = {}, {}
+    reasons: dict[str, int] = {}
+    minutes_by_reason: dict[str, list[float]] = {}
     for row in measured:
         for reason, count in row['return_reasons'].items():
             reasons[reason] = reasons.get(reason, 0) + count
@@ -91,19 +100,22 @@ def summarize(runs):
                           measured_runs=len(handoffs), missing_runs=len(rows) - len(handoffs)),
         return_reasons=reasons, attributions=attributions,
         unattributed_events=sum(r['unattributed_events'] for r in measured),
-        boundary='Observed synthetic events only; reason labels are self-reported, not proven causes or measured savings. '
-                 'Absent handoff/effort records do not establish zero work. Aggregates may cover only part of the requested runs.')
+        boundary='Observed synthetic events only; reason labels are self-reported, not proven causes or '
+                 'measured savings. Absent handoff/effort records do not establish zero work. '
+                 'Aggregates may cover only part of the requested runs.')
     try:
         result['attributed_reason_minutes'] = {reason: _sum(values) for reason, values in minutes_by_reason.items()}
         result['observed_attributed_minutes'] = _sum([e['minutes'] for e in attributions])
-        result['unattributed_minutes'] = _sum([r['unattributed_minutes'] for r in measured if r['unattributed_minutes'] is not None])
+        result['unattributed_minutes'] = _sum([r['unattributed_minutes'] for r in measured
+                                               if r['unattributed_minutes'] is not None])
     except ValueError as exc:
         result.update(aggregation_error=str(exc), attributed_reason_minutes=None,
                       observed_attributed_minutes=None, unattributed_minutes=None)
     return result
 
 
-def main(argv=None):
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: print the cross-run rework summary as JSON; exit 2 on missing/error runs."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('runs', nargs='+', type=Path)
     args = parser.parse_args(argv)

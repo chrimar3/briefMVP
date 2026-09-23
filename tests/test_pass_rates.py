@@ -67,8 +67,12 @@ def test_rates_are_grouped_by_fixture_and_era(tmp_path):
 def test_a_resumed_leg_graded_twice_counts_once(tmp_path):
     """Two reports on the same extracts (resumed synthesis re-roll): T1.x has one distinct leg,
     synthesis checks have two."""
-    _write_run(tmp_path, "roll1", _report("northlight_01", {"T1.3": "pass", "T3.1": "fail"}), _manifest("e1", "s1", "r1"))
-    _write_run(tmp_path, "roll2", _report("northlight_01", {"T1.3": "pass", "T3.1": "pass"}), _manifest("e1", "s2", "r2"))
+    _write_run(
+        tmp_path, "roll1", _report("northlight_01", {"T1.3": "pass", "T3.1": "fail"}), _manifest("e1", "s1", "r1")
+    )
+    _write_run(
+        tmp_path, "roll2", _report("northlight_01", {"T1.3": "pass", "T3.1": "pass"}), _manifest("e1", "s2", "r2")
+    )
     checks = _groups(tmp_path)[("northlight_01", "haiku-era")]["checks"]
     assert (checks["T1.3"]["n"], checks["T1.3"]["legs_n"], checks["T1.3"]["legs_pass"]) == (2, 1, 1)
     assert (checks["T3.1"]["legs_n"], checks["T3.1"]["legs_pass"]) == (2, 1)

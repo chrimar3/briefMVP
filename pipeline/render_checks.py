@@ -155,7 +155,7 @@ def _warning_section_violations(lang: str, render: str, brief: dict) -> list:
     survive translation character-exact. Both checks are ≥-shaped — a render may elaborate, it
     may not omit.
     """
-    violations = []
+    violations: list[str] = []
     open_qs = brief.get("open_questions") or []
     brief_conflicts = brief.get("conflicts") or []
     if not (open_qs or brief_conflicts):

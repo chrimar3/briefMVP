@@ -9,8 +9,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from pipeline import publish
 
 
@@ -59,6 +57,7 @@ def test_awkward_client_ids_become_safe_slugs(tmp_path):
     prefix = publish.shelf_prefix(run_dir)
     published = publish.publish_run(run_dir, reviews_dir=shelf)
     assert published[0].name.startswith("acme-s-da-gmbh-co-run-2026-07-30-")
+    assert published[0].name.startswith(prefix)
 
 
 def test_shelf_walkthrough_buttons_link_shelf_names(tmp_path):
@@ -109,6 +108,7 @@ def test_missing_meta_falls_back_to_the_run_dir_name(tmp_path):
     prefix = publish.shelf_prefix(run_dir)
     published = publish.publish_run(run_dir, reviews_dir=shelf)
     assert published[0].name.startswith("run-run-undated-")
+    assert published[0].name.startswith(prefix)
 
 
 def test_cli_prints_shelf_paths_and_fails_legibly_when_empty(tmp_path, capsys, monkeypatch):

@@ -87,7 +87,8 @@ def test_citation_survives_a_line_wrap():
 def test_anchor_crossing_a_markdown_boundary_resolves():
     """The Tier-3 re-run failure: the model anchors on text spanning a ** boundary and drops
     the markers. That is a valid citation to the bolded content, matched on content not markup."""
-    md_source = "# RFP\nsource_id: t · source_type: rfp · source_date: 2026-01-01\n\nLaunch την **πρώτη εβδομάδα του Οκτωβρίου 2026**, ώστε...\n"
+    md_source = ("# RFP\nsource_id: t · source_type: rfp · source_date: 2026-01-01\n\n"
+                 "Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**, ώστε...\n")
     item = _item(value="launch first week October", location="Launch",
                  anchor="Launch την πρώτη εβδομάδα του Οκτωβρίου 2026")
     assert gates.verify_citations(_extract(timeline=[item], budget=[]), md_source) == []

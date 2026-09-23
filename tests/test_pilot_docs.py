@@ -14,7 +14,7 @@ def _sh_blocks(text):
 
 def test_campaign_editing_deliverable_example_runs_as_documented(tmp_path, repo_root):
     """Regression: the documented --dependency used free text, which validation rejects."""
-    from test_agency_operations import make_review_run
+    from conftest import make_review_run
     run = make_review_run(tmp_path)
     text = (repo_root / "docs" / "pilot" / "CAMPAIGN_EDITING.md").read_text(encoding="utf-8")
     block = next(b for b in _sh_blocks(text) if "agency_edit deliverable" in b)
@@ -35,7 +35,9 @@ def test_pilot_pack_cross_references_resolve(repo_root):
                  "PILOT_INVESTMENT.md", "PILOT_REPORT_TEMPLATE.md", "ACCOUNT_LEAD_CARD.md", "GLOSSARY_BUILDING.md"):
         text = (pilot / name).read_text(encoding="utf-8")
         for ref in set(re.findall(r"`([A-Z_]+\.md)`", text)):
-            assert any((d / ref).is_file() for d in (pilot, repo_root / "docs", repo_root)), f"{name} cites missing {ref}"
+            assert any(
+                (d / ref).is_file() for d in (pilot, repo_root / "docs", repo_root)
+            ), f"{name} cites missing {ref}"
         for ref in set(re.findall(r"`((?:pipeline|eval|runs|fixtures|config|schema)/[\w./-]+)`", text)):
             path = repo_root / ref.rstrip("/")
             if "<" in ref or "*" in ref or ref in ("runs/routing-validate-01",):  # cited as not committed

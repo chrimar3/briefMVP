@@ -20,15 +20,16 @@ import argparse
 import json
 import re
 import sys
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional, Union
 
 #: Ordered signature → (rule_id, human title). First match wins, so put the specific rules
 #: (which quote a stable tail phrase from the violation message) before the schema buckets.
 #: Every phrase here is copied from an actual violation string in pipeline/gates.py or
 #: pipeline/stages.py — when a message changes there, its signature changes here, on purpose.
-_SIGNATURES = (
+_SIGNATURES: tuple[tuple[Union[str, re.Pattern[str]], str, str], ...] = (
     # Extraction / citation discipline
     ("does not occur in the source", "citation-unresolvable",
      "Citation (location/anchor) not found verbatim in the source"),
@@ -94,7 +95,7 @@ _SIGNATURES = (
 )
 
 
-def classify_violation(text: str) -> tuple:
+def classify_violation(text: str) -> tuple[str, str]:
     """Map one free-text violation to (rule_id, rule_title). Unknown → ('other', <trimmed text>)."""
     for signature, rule_id, title in _SIGNATURES:
         if isinstance(signature, re.Pattern):
@@ -109,14 +110,17 @@ def classify_violation(text: str) -> tuple:
 
 @dataclass
 class RuleStat:
+    """Running tally for one normalised rule across every analysed attempt."""
+
     rule_id: str
     title: str
     occurrences: int = 0                       # total times the rule fired
     first_attempt_hits: int = 0                # times it fired on a first attempt (the teachable ones)
-    sources: set = field(default_factory=set)  # distinct (run, stage, source) it fired on
+    sources: set[tuple[str, str, str]] = field(default_factory=set)  # distinct (run, stage, source) it fired on
     example: str = ""
 
-    def as_dict(self) -> dict:
+    def as_dict(self) -> dict[str, Any]:
+        """The JSON-ready row for this rule (sources reduced to a distinct-site count)."""
         return {
             "rule_id": self.rule_id,
             "title": self.title,
@@ -127,7 +131,7 @@ class RuleStat:
         }
 
 
-def _iter_attempts(manifest: dict, repair_log: list):
+def _iter_attempts(manifest: dict, repair_log: list) -> Iterator[tuple[str, str, Optional[int], list[str]]]:
     """Yield (stage, site, attempt_number, violations) for every gated attempt in a run.
 
     Prefers the durable repair log (written per attempt, survives stage failure and manifest
@@ -160,8 +164,9 @@ def _iter_attempts(manifest: dict, repair_log: list):
             yield stage, stage, attempt.get("attempt"), attempt.get("violations") or []
 
 
-def analyse(manifests: list) -> dict:
-    stats: dict = {}
+def analyse(manifests: list) -> dict[str, Any]:
+    """Totals plus every violated rule ranked by first-attempt hits, then by occurrences."""
+    stats: dict[str, RuleStat] = {}
     totals = {"runs": 0, "attempts": 0, "repair_rounds": 0, "clean_first_attempts": 0}
 
     for entry in manifests:
@@ -188,7 +193,8 @@ def analyse(manifests: list) -> dict:
     return {"totals": totals, "rules": [s.as_dict() for s in ranked]}
 
 
-def load_manifests(path: Path) -> list:
+def load_manifests(path: Path) -> list[tuple[str, dict[str, Any], list[Any]]]:
+    """(run id, manifest, repair log) for a manifest file, one run, or every run under a directory."""
     path = Path(path)
     if path.is_file() and path.name == "run_manifest.json":
         files = [path]
@@ -196,7 +202,7 @@ def load_manifests(path: Path) -> list:
         files = [path / "run_manifest.json"]
     else:
         files = sorted(path.glob("*/run_manifest.json"))
-    out = []
+    out: list[tuple[str, dict[str, Any], list[Any]]] = []
     for f in files:
         try:
             manifest = json.loads(f.read_text(encoding="utf-8"))
@@ -214,7 +220,7 @@ def _load_repair_log(run_dir: Path) -> list:
     path = run_dir / "diagnostics" / "repair_log.jsonl"
     if not path.is_file():
         return []
-    records = []
+    records: list[Any] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line:
@@ -226,6 +232,7 @@ def _load_repair_log(run_dir: Path) -> list:
 
 
 def report(result: dict, as_json: bool) -> None:
+    """Print the ranked rule table and the most recurrent teachable rule (or JSON)."""
     if as_json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return
@@ -252,10 +259,11 @@ def report(result: dict, as_json: bool) -> None:
         top = teachable[0]
         print(f"  ▸ Most recurrent teachable rule: {top['rule_id']} — {top['distinct_sites']} distinct sites.")
         print(f"    Example: {top['example'][:110]}")
-        print(f"    If this keeps recurring, teach it once in the skeleton rather than paying a retry per source.\n")
+        print("    If this keeps recurring, teach it once in the skeleton rather than paying a retry per source.\n")
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: analyse the manifests under a path; exit 2 when none is found."""
     parser = argparse.ArgumentParser(description="Aggregate recurring gate violations across runs.")
     parser.add_argument("path", help="A run directory, a runs/ parent, or a run_manifest.json")
     parser.add_argument("--json", action="store_true", help="Machine-readable output")

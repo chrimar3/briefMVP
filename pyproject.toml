@@ -1,6 +1,7 @@
 # Project metadata and tool configuration. The model side runs through Claude Code subagents,
 # so there is no model SDK dependency by design (PRD DR-1: buy the model, build the skeleton).
-# Exact, tested versions live in requirements.lock; the ranges below are the supported window.
+# Exact, tested versions live in requirements.lock (runtime + tests) and requirements-dev.lock
+# (that plus ruff, mypy and pytest-cov); the ranges below are the supported window.
 
 [build-system]
 requires = ["setuptools>=61"]
@@ -13,11 +14,15 @@ description = "Two-stage AI briefing pipeline: deterministic gates around Claude
 readme = "README.md"
 # 3.9 is the floor (the code uses 3.9 APIs such as Path.is_relative_to). POSIX only: run locking
 # uses fcntl (pipeline/revisions.py, pipeline/effort.py), so Windows is not supported.
+# Known item: CPython 3.9 reached end of life in October 2025 (no security fixes). The floor stays
+# at 3.9 because the owner's workstation runs 3.9.6; CI also tests 3.12. Raising it is an owner
+# decision (it would let the code use `X | None` at runtime and drop `typing.Optional`).
 requires-python = ">=3.9"
 dependencies = ["jsonschema>=4.18,<5"]
 
 [project.optional-dependencies]
 test = ["pytest>=7,<9", "PyYAML>=6,<7"]
+dev = ["pytest>=7,<9", "PyYAML>=6,<7", "pytest-cov>=4,<6", "mypy>=1.7,<2", "ruff>=0.6,<0.7"]
 
 [tool.setuptools]
 packages = ["pipeline"]
@@ -34,7 +39,9 @@ python_files = ["test_*.py"]
 addopts = "--strict-markers"
 
 # ---------------------------------------------------------------------------------------------
-# ruff — pyflakes-level correctness (F) plus syntax errors (E9). CI runs `ruff check .`.
+# ruff — pycodestyle errors and warnings (E, W), pyflakes (F), bugbear (B), isort (I), pyupgrade
+# (UP, for the 3.9 floor) and a subset of flake8-simplify. `scripts/check.sh` and CI run
+# `ruff check .` with the version pinned in requirements-dev.lock.
 [tool.ruff]
 target-version = "py39"
 line-length = 120
@@ -42,31 +49,84 @@ extend-include = ["tools/replay/claude"]
 extend-exclude = [
     "runs",
     ".codex",
-    # Historical one-off scripts, kept for the record and never run (see its README).
+    # Historical records, kept as they were run and never maintained (see its README).
     "tools/walkthrough/archive",
 ]
 
 [tool.ruff.lint]
-select = ["E9", "F"]
+select = [
+    "E", "W", "F", "B", "I", "UP",
+    # flake8-simplify, the rules whose rewrite is always clearer: duplicate isinstance, collapsible
+    # if, comparison chains, `in dict.keys()`, negated comparisons, double negation, bool ternaries
+    # and Yoda conditions. SIM105/SIM108/SIM117 are left out on purpose (the explicit try/except,
+    # if/else and nested lock-then-raises `with` blocks read better in this codebase).
+    "SIM101", "SIM102", "SIM109", "SIM118", "SIM201", "SIM202", "SIM208", "SIM210", "SIM211", "SIM300",
+]
 
-# Known findings in files outside round-1 workstream W5's ownership, listed rather than silently
-# excluded. Each entry is debt for the owning workstream: fix the finding, then delete the line.
+[tool.ruff.lint.pyupgrade]
+# Keep `Optional[X]` / `Union[...]` in annotations: the 3.9 floor cannot evaluate `X | None` at
+# runtime, and one spelling across files with and without `from __future__ import annotations`
+# is easier to read than two.
+keep-runtime-typing = true
+
 [tool.ruff.lint.per-file-ignores]
-"eval/harness.py" = ["F401"]                  # frozen file (CLAUDE.md): unused typing.Callable
-"eval/repair_analysis.py" = ["F541"]          # f-string without placeholders, line 255
-"demo/run_demo.py" = ["F541"]                 # f-strings without placeholders, lines 187-188
-"pipeline/docview.py" = ["F401"]              # unused ReviewInputError import
-"tools/walkthrough/codex_round.py" = ["F401"] # unused sys import
-"tools/walkthrough/embed_packaging.py" = ["F401"]  # unused sys import
-"tools/walkthrough/redesign/build_v2.py" = ["F401", "F541"]  # retired v2 builder
-"tests/test_agency_operations.py" = ["F401"]
-"tests/test_agency_quality.py" = ["F401"]
-"tests/test_cost_report.py" = ["F401"]
-"tests/test_creative.py" = ["F401"]
-"tests/test_delivery.py" = ["F401"]
-"tests/test_docview.py" = ["F401"]
-"tests/test_effort.py" = ["F401"]
-"tests/test_harness.py" = ["F541"]
-"tests/test_publish.py" = ["F401", "F841"]
-"tests/test_rework_report.py" = ["F401"]
-"tests/test_stages.py" = ["F401"]
+# Frozen file (CLAUDE.md): it cannot be edited, so only pyflakes correctness beyond its one
+# unused import (typing.Callable) is enforced there.
+"eval/harness.py" = ["F401", "E", "W", "B", "I", "UP", "SIM"]
+# PHASE-B MERGE DEBT (round 2, W-Q). These files are being rewritten in parallel by workstreams
+# W-G (agency, approval, creative, delivery, release_control, revisions, publish) and W-S (agents,
+# runner, intake, run_demo, publish). Their findings under the widened rule set are formatting and
+# modernisation only (long lines, import order, a lambda assignment, quoted annotations, typing
+# imports, a redundant open mode, E402 on an import after the sys.path bootstrap), so they are
+# listed here instead of being edited under the other workstreams' feet. After the phase-B merge:
+# `ruff check --fix .` (I001, UP015, UP035, UP037 are auto-fixable), wrap the long lines, turn the
+# lambda into a def, add `# noqa: E402` to runner's imports, then delete every entry below.
+"demo/run_demo.py" = ["I001"]
+"pipeline/agency.py" = ["E501", "E731", "I001"]
+"pipeline/agents.py" = ["UP037"]
+"pipeline/approval.py" = ["UP035"]
+"pipeline/creative.py" = ["E501"]
+"pipeline/delivery.py" = ["E501", "I001"]
+"pipeline/intake.py" = ["E501"]
+"pipeline/publish.py" = ["E501", "I001"]
+"pipeline/release_control.py" = ["E501", "I001"]
+"pipeline/revisions.py" = ["E501", "UP015", "UP035"]
+"pipeline/runner.py" = ["E402", "E501", "I001", "UP037"]
+
+# ---------------------------------------------------------------------------------------------
+# mypy — non-strict type check of the pipeline package (annotated functions are checked; a
+# function without annotations is not, as mypy's default). CI and scripts/check.sh run `mypy`.
+[tool.mypy]
+python_version = "3.9"
+files = ["pipeline"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+# PHASE-B MERGE DEBT (round 2, W-Q): real but small annotation errors (Optional defaults and
+# arguments, untyped empty containers) in modules W-S and W-G are rewriting in parallel. Fix them
+# after the phase-B merge and delete this block; every other pipeline module is clean.
+[[tool.mypy.overrides]]
+module = [
+    "pipeline.creative",
+    "pipeline.data_policy",
+    "pipeline.extraction",
+    "pipeline.intake",
+    "pipeline.prescreen",
+    "pipeline.runner",
+]
+ignore_errors = true
+
+# ---------------------------------------------------------------------------------------------
+# coverage (pytest-cov) — statement coverage of pipeline/ and eval/, measured in-process by the
+# test suite (the subprocess entry-point tests are not counted). fail_under is a GATE: the value
+# measured when it was introduced (90.1 %, round 2) minus one point. Raise it as coverage grows;
+# lowering it is an owner decision.
+[tool.coverage.run]
+source = ["pipeline", "eval"]
+
+[tool.coverage.report]
+fail_under = 89
+precision = 1
+skip_covered = true
+show_missing = true

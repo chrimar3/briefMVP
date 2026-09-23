@@ -2,6 +2,7 @@
 
 import ast
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -59,6 +60,52 @@ def test_failed_atomic_write_keeps_the_old_record(tmp_path, monkeypatch):
 
 
 # -- clock ------------------------------------------------------------------------------
+
+@pytest.fixture
+def umask_022():
+    """Run with the common permissive umask, so an owner-only mode can only come from the code."""
+    previous = os.umask(0o022)
+    yield
+    os.umask(previous)
+
+
+def _mode(path):
+    return path.stat().st_mode & 0o777
+
+
+@pytest.mark.parametrize("name", records.PERSONAL_RECORDS)
+def test_every_personal_record_is_written_owner_only(tmp_path, umask_022, name):
+    """Records that name agency staff are 0600 whoever writes them (write_json or append_text)."""
+    path = tmp_path / name
+    if name.endswith(".jsonl"):
+        records.append_text(path, "{}\n")
+    else:
+        records.write_json(path, {"actor": "Synthetic reviewer"})
+    assert _mode(path) == 0o600
+
+
+def test_other_records_keep_the_umask_and_private_can_be_forced(tmp_path, umask_022):
+    records.write_json(tmp_path / "brief.json", {})
+    assert _mode(tmp_path / "brief.json") == 0o644
+    records.write_json(tmp_path / "export.json", {}, private=True)
+    assert _mode(tmp_path / "export.json") == 0o600
+
+
+def test_append_tightens_a_personal_log_created_before_the_rule(tmp_path, umask_022):
+    log = tmp_path / "audit_log.jsonl"
+    log.write_text("{}\n")
+    log.chmod(0o644)
+    records.append_text(log, "{}\n")
+    assert _mode(log) == 0o600 and log.read_text() == "{}\n{}\n"
+
+
+def test_audit_log_and_retention_tombstone_are_owner_only(tmp_path, umask_022):
+    revisions.append_audit(tmp_path, "test_event", "Synthetic reviewer")
+    assert _mode(tmp_path / revisions.AUDIT_LOG) == 0o600
+    tombstone = retention._write_tombstone(tmp_path, {"actor": "Synthetic operator"})
+    assert _mode(tombstone) == 0o600
+    assert retention.PERSONAL_RECORDS is records.PERSONAL_RECORDS
+
 
 def test_frozen_clock_drives_every_written_timestamp(tmp_path):
     with clock.frozen(FROZEN):

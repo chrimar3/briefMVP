@@ -12,9 +12,10 @@ date, a catalog's review due date) stay local `date.today()` comparisons with an
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import datetime, timezone
-from typing import Callable, Iterator, Optional
+from typing import Callable, Optional
 
 #: The injected time source, or None for the system clock. Set only through `set_clock`/`frozen`.
 _source: Optional[Callable[[], datetime]] = None

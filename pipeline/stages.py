@@ -33,13 +33,7 @@ from __future__ import annotations
 from pipeline import PIPELINE_VERSION, agents, gates
 from pipeline.greek_lint import GREEK_STYLE_PATH, load_greek_style, render_language_warnings
 from pipeline.money import money_figures
-from pipeline.render_checks import (
-    CITATION_TAG_RE,
-    CLAIM_SECTION_RE,
-    STRUCTURAL_PREFIXES,
-    check_render,
-    claim_lines,
-)
+from pipeline.render_checks import CITATION_TAG_RE, CLAIM_SECTION_RE, STRUCTURAL_PREFIXES, check_render, claim_lines
 from pipeline.render_template import (
     DEFAULT_BRIEF_TEMPLATE,
     TEMPLATES_DIR,

@@ -32,8 +32,9 @@ import hashlib
 import json
 import os
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Any, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -136,7 +137,8 @@ def _add_tokens(row: dict, sub: dict) -> None:
         row["total"] += value
 
 
-def load_runs(path: Path) -> list:
+def load_runs(path: Path) -> list[tuple[str, dict[str, Any]]]:
+    """(run id, manifest) for one run directory or every run under a runs/ directory; unreadable ones skipped."""
     path = Path(path)
     files = [path / "run_manifest.json"] if (path / "run_manifest.json").is_file() \
         else sorted(path.glob("*/run_manifest.json"))
@@ -152,7 +154,8 @@ def load_runs(path: Path) -> list:
 def routing_era(manifest: dict) -> tuple:
     """(era, basis) for one run: read from the models the extraction step actually used,
     falling back to the run date only when the manifest holds no extraction record."""
-    ext_models, verified = set(), False
+    ext_models: set[str] = set()
+    verified = False
     for step in manifest.get("steps") or []:
         if step.get("name") != "extraction":
             continue
@@ -210,7 +213,8 @@ def token_ledger(runs: list, dedupe: bool = True) -> dict:
 def _brief_tokens(manifest: dict) -> dict:
     """Tokens by model for one brief: every attempt of every model step in the run
     (Stage 1 and, separately, Stage 2), inherited legs included — this is what the brief used."""
-    stage1, stage2 = {}, {}
+    stage1: dict[str, dict[str, int]] = {}
+    stage2: dict[str, dict[str, int]] = {}
     for step in manifest.get("steps") or []:
         if step.get("kind") != "model":
             continue
@@ -235,6 +239,7 @@ def _fmt(n: int) -> str:
 
 
 def report_ledger(ledger: dict, briefs: list, as_json: bool, path: str = "") -> None:
+    """Print the default view: tokens by stage and model, totals, and per-brief means (or JSON)."""
     if as_json:
         print(json.dumps({
             "unit": "tokens",
@@ -319,7 +324,9 @@ def _groups(briefs: list) -> dict:
 
 
 def brief_means(briefs: list) -> dict:
+    """Mean Stage-1 tokens per brief, over all complete briefs and over clean briefs only."""
     def mean(sel: list) -> dict:
+        """Mean Stage-1 total and per-model tokens over the selected briefs."""
         if not sel:
             return {"n": 0, "stage1_total": 0, "by_model": {}}
         by: dict = {}
@@ -382,6 +389,7 @@ def attribute_dollars(row: dict) -> dict:
 
 
 def report_tokens(stages: dict, as_json: bool) -> None:
+    """Print the --tokens view: per-stage token categories, turns and attributed dollars (or JSON)."""
     ordered = sorted(stages.items(), key=lambda kv: -kv[1]["cost"])
     if as_json:
         payload = {
@@ -431,6 +439,7 @@ def report_tokens(stages: dict, as_json: bool) -> None:
 
 
 def analyse(runs: list) -> dict:
+    """Per-run CLI-reported dollars by stage for complete Stage-1 runs and creative runs (the --usd view)."""
     stage1_runs, creative_runs = [], []
     for run_id, m in runs:
         by_stage: dict = {}
@@ -467,6 +476,7 @@ def analyse(runs: list) -> dict:
 
 
 def report(result: dict, labour_eur: float, as_json: bool) -> None:
+    """Print the --usd view: dollars per brief next to the assumed account-lead labour cost (or JSON)."""
     all_runs = result["stage1"]
     if as_json:
         print(json.dumps({"unit": "usd_cli_reported", "stage1": all_runs, "creative": result["creative"],
@@ -578,6 +588,7 @@ def risk_replay(roots: Iterable[Path]) -> dict:
 
 
 def report_risk_replay(result: dict, as_json: bool) -> None:
+    """Print the verify-extract risk-routing replay: branch shares and per-class triggers (or JSON)."""
     if as_json:
         print(json.dumps(result, indent=2, ensure_ascii=False))
         return
@@ -603,7 +614,8 @@ def report_risk_replay(result: dict, as_json: bool) -> None:
 # --------------------------------------------------------------------------------------
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: pick the view from the flags; exit 2 when no run manifest is found."""
     p = argparse.ArgumentParser(description="Usage ruler: tokens by model from run manifests.")
     p.add_argument("path", nargs="?", default=str(REPO_ROOT / "runs"), help="runs/ dir or one run")
     p.add_argument("--tokens", action="store_true", help="per-stage token categories + turns (C0 view)")

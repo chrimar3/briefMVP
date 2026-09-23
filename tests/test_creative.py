@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from pipeline import creative, gates
+from pipeline import creative
 
 SPEC_TABLE = {
     "specs": [
@@ -138,8 +138,8 @@ def test_every_table_spec_value_is_self_consistent():
     body = "> SHADOW MODE\n" + " ".join(
         f"{r.get('resolution','')} {r.get('aspect_ratio','')}" for r in table["specs"]
     )
-    from pathlib import Path
     import tempfile
+    from pathlib import Path
     p = Path(tempfile.mkdtemp()) / "d.md"
     p.write_text(body, encoding="utf-8")
     assert creative.check_creative_brief(p, table) == []

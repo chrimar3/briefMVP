@@ -17,31 +17,43 @@ import repair_analysis as ra  # noqa: E402
 
 # Verbatim samples of what each gate emits (pipeline/gates.py, pipeline/stages.py).
 SAMPLES = {
-    "citation-unresolvable": "objectives[0]: location '[00:07]' does not occur in the source — citations are copied from the document, never constructed",
-    "glossary-term-repaired": "objectives[0]: value contains glossary term 'brand awareness', which never appears in Latin script in the source. If the source renders it collapsed...",
+    "citation-unresolvable": "objectives[0]: location '[00:07]' does not occur in the source — citations are copied "
+        "from the document, never constructed",
+    "glossary-term-repaired": "objectives[0]: value contains glossary term 'brand awareness', which never appears in "
+        "Latin script in the source. If the source renders it collapsed...",
     "citation-empty": "budget[0]: empty anchor — value='around eighty'",
-    "readiness-populated": "brief contains a `readiness` block — that field is computed by the runner, not by the model (SYNTHESIS.md rule 8). Remove it.",
+    "readiness-populated": "brief contains a `readiness` block — that field is computed by the runner, not by the "
+        "model (SYNTHESIS.md rule 8). Remove it.",
     "agent-signed-off": "signoff.status must be 'draft' — sign-off is a human act (PRD DR-8)",
-    "conflict-resolved": "conflicts[0]: status 'resolved_by_human' — synthesis emits 'open'; resolution is human-only (PRD DR-10)",
-    "anchor-altered": "budget[0].evidence[0]: anchor 'around eighty thousand' does not match any extract anchor — refs are copied verbatim (SYNTHESIS.md rule 1)",
+    "conflict-resolved": "conflicts[0]: status 'resolved_by_human' — synthesis emits 'open'; resolution is human-only "
+        "(PRD DR-10)",
+    "anchor-altered": "budget[0].evidence[0]: anchor 'around eighty thousand' does not match any extract anchor — refs "
+        "are copied verbatim (SYNTHESIS.md rule 1)",
     "entry-without-evidence": "budget[0]: no evidence — every claim traces to an extract item",
     "render-uncited-line": "en: claim line with no citation tag — 'We recommend a larger budget.'",
     "render-unknown-source": "en: citation tag names no known source — 'Grow. [made_up 00:01]'",
     "render-glossary-lost": "el: glossary term 'media spend' is in the brief but missing from the render",
-    "render-missing-section": "el: brief has open questions but the render has no '⚠' section heading — open questions and conflicts are the product",
-    "tier-inferred": "sensitivity_tier 'S0' does not match the client config ('S1') — the tier is read from onboarding, never inferred (PRD DR-11)",
+    "render-missing-section": "el: brief has open questions but the render has no '⚠' section heading — open questions "
+        "and conflicts are the product",
+    "tier-inferred": "sensitivity_tier 'S0' does not match the client config ('S1') — the tier is read from "
+        "onboarding, never inferred (PRD DR-11)",
     "classification-uncited": "no evidence for the project_type decision — a routing call with no citation is a vibe",
-    "fidelity-repaired": "annotated transcript differs from the original by more than [FIDELITY: ...] insertions — this stage annotates, it never repairs (TRANSCRIPTS.md §3)",
+    "fidelity-repaired": "annotated transcript differs from the original by more than [FIDELITY: ...] insertions — "
+        "this stage annotates, it never repairs (TRANSCRIPTS.md §3)",
     "malformed-json": "not valid JSON: Expecting value: line 1 column 1",
     "no-output-file": "no file written at /run/extracts/talk.json",
     "schema-missing-required": "objectives/0: 'anchor' is a required property",
     "schema-additional-properties": "meta: Additional properties are not allowed ('foo' was unexpected)",
     "schema-invalid-enum": "meta/sensitivity_tier: 'S3' is not one of ['S0', 'S1']",
     "schema-wrong-type": "budget/0/confidence: 5 is not of type 'string'",
-    "spec-not-in-table": "spec value '16:9' does not appear in the deterministic spec table — channel specs are looked up, never generated (PRD DR-7)",
-    "creative-missing-banner": "missing the SHADOW MODE banner — every creative draft must declare it is not for delivery",
-    "render-question-dropped": "el: render numbers 3 item(s) in the ⚠ sections but the brief carries 10 open question(s) — every question reaches both renders",
-    "render-conflict-dropped": "el: conflicts[0] position 1 cites source 'paper' but that source never appears in the ⚠ region — both sides of a conflict render with their citations",
+    "spec-not-in-table": "spec value '16:9' does not appear in the deterministic spec table — channel specs are looked "
+        "up, never generated (PRD DR-7)",
+    "creative-missing-banner": "missing the SHADOW MODE banner — every creative draft must declare it is not for "
+        "delivery",
+    "render-question-dropped": "el: render numbers 3 item(s) in the ⚠ sections but the brief carries 10 open "
+        "question(s) — every question reaches both renders",
+    "render-conflict-dropped": "el: conflicts[0] position 1 cites source 'paper' but that source never appears in the "
+        "⚠ region — both sides of a conflict render with their citations",
 }
 
 
@@ -54,7 +66,9 @@ def test_each_violation_lands_on_its_rule(expected_rule, message):
 def test_classification_uncited_beats_the_generic_no_evidence_rule():
     """Order matters: 'no evidence for the project_type decision' must not fall into
     entry-without-evidence, which also contains 'no evidence'."""
-    rule_id, _ = ra.classify_violation("no evidence for the project_type decision — a routing call with no citation is a vibe")
+    rule_id, _ = ra.classify_violation(
+        "no evidence for the project_type decision — a routing call with no citation is a vibe"
+    )
     assert rule_id == "classification-uncited"
 
 
@@ -111,15 +125,34 @@ def test_manifest_fallback_sees_every_step_shape():
     """Design audit F5: the manifest fallback must read the shapes the runner actually writes —
     fidelity/creative outcome lists and the named single-outcome keys — not only extracts[].
     The Tier-4 spec-gate false positive was invisible to this tool for exactly this reason."""
-    manifest = {"steps": [
-        {"name": "fidelity_check", "status": "pass",
-         "fidelity": [{"source_id": "t", "attempts": [{"attempt": 1, "violations": []}]}]},
-        {"name": "creative_shadow", "status": "pass",
-         "creative": [{"model_alias": "sonnet",
-                       "attempts": [{"attempt": 1, "violations": ["spec value '16:9' does not appear in the deterministic spec table — never generated"]}]}]},
-        {"name": "synthesis", "status": "pass",
-         "synthesis": {"attempts": [{"attempt": 1, "violations": []}]}},
-    ]}
+    manifest = {
+        "steps": [
+            {
+                "name": "fidelity_check",
+                "status": "pass",
+                "fidelity": [{"source_id": "t", "attempts": [{"attempt": 1, "violations": []}]}],
+            },
+            {
+                "name": "creative_shadow",
+                "status": "pass",
+                "creative": [
+                    {
+                        "model_alias": "sonnet",
+                        "attempts": [
+                            {
+                                "attempt": 1,
+                                "violations": [
+                                    "spec value '16:9' does not appear in the deterministic spec table — never "
+                                        "generated"
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            },
+            {"name": "synthesis", "status": "pass", "synthesis": {"attempts": [{"attempt": 1, "violations": []}]}},
+        ]
+    }
     rows = list(ra._iter_attempts(manifest, []))
     assert len(rows) == 3
     sites = {site for _stage, site, _n, _v in rows}

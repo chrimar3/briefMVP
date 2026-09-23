@@ -2,15 +2,24 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator, Mapping
+from typing import Any
+
 from pipeline import gates
 from pipeline.revisions import digest
 
+#: (source_id, location, anchor) — the identity of one evidence reference.
+RefKey = tuple[str, str, str]
 
-def ref_key(ref):
-    return tuple(str(ref.get(k, "")).strip() for k in ("source_id", "location", "anchor"))
+
+def ref_key(ref: Mapping[str, Any]) -> RefKey:
+    """The (source_id, location, anchor) identity of an evidence reference, stripped."""
+    source_id, location, anchor = (str(ref.get(k, "")).strip() for k in ("source_id", "location", "anchor"))
+    return source_id, location, anchor
 
 
-def destinations(brief):
+def destinations(brief: Mapping[str, Any]) -> Iterator[tuple[Any, str, list[dict[str, Any]]]]:
+    """Every place in the brief that can carry evidence: (field, locator such as `goals[0]`, evidence refs)."""
     for field in gates.BRIEF_FIELDS:
         for i, entry in enumerate(brief.get(field) or []):
             yield field, f"{field}[{i}]", entry.get("evidence") or []
@@ -20,9 +29,10 @@ def destinations(brief):
         yield item.get("field"), f"conflicts[{i}]", [p.get("evidence") or {} for p in item.get("positions") or []]
 
 
-def coverage(brief, extracts):
+def coverage(brief: Mapping[str, Any], extracts: Mapping[str, Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """One record per extracted item: its evidence and the brief locations that cite that same evidence."""
     targets = list(destinations(brief))
-    records = []
+    records: list[dict[str, Any]] = []
     for source_id, extract in sorted(extracts.items()):
         items = [(field, item) for field in gates.BRIEF_FIELDS for item in extract.get(field) or []]
         items += [(c.get("field"), c[side]) for c in extract.get("internal_conflicts") or []
@@ -37,11 +47,11 @@ def coverage(brief, extracts):
     return records
 
 
-def render_coverage(brief, text, lang):
+def render_coverage(brief: Mapping[str, Any], text: str, lang: str) -> list[str]:
     """Check field-level statement counts and sources. Meaning still needs a reviewer."""
-    problems = []
-    sections = {}
-    current = None
+    problems: list[str] = []
+    sections: dict[str, list[str]] = {}
+    current: Any = None
     for line in text.splitlines():
         match = re.match(r"^##\s+([1-7])[.)]?\s", line)
         if match:
@@ -63,7 +73,7 @@ def render_coverage(brief, text, lang):
     # Question blocks have a numbered, language-independent template contract. A
     # citation elsewhere in the brief does not establish a question's evidence.
     warning_sections = re.split(r"(?m)^##\s+", text)
-    blocks = []
+    blocks: list[str] = []
     for section in warning_sections:
         if section.startswith("⚠"):
             numbered = re.findall(r"(?ms)^\s*\d+[.)]\s+.*?(?=^\s*\d+[.)]\s+|\Z)", section)
@@ -80,7 +90,7 @@ def render_coverage(brief, text, lang):
     return problems
 
 
-def tag_location(location):
+def tag_location(location: Any) -> str:
     """The location as it sits inside a `[source_id location]` citation tag.
 
     A transcript location is itself bracketed (`[00:03:41]`); a tag cannot contain `]`, so the
@@ -93,5 +103,6 @@ def tag_location(location):
     return location
 
 
-def field_review_checklist():
+def field_review_checklist() -> list[str]:
+    """The per-field items a language reviewer attests (agency attest)."""
     return ["source_completeness", "el_meaning", "en_meaning", "qualifiers_and_commitments", "brand_voice"]

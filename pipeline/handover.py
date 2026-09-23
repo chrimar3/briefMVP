@@ -1,16 +1,21 @@
 """Structured brief handover; traffic-owned specs, never invented platform values."""
+
 from __future__ import annotations
 
-from datetime import date
 import re
+from collections.abc import Mapping, Sequence
+from datetime import date
+from typing import Any
+
 from pipeline.quality import destinations, ref_key
 
 
-def validate(rows, spec_table, brief):
-    problems = []
+def validate(rows: Sequence[Mapping[str, Any]], spec_table: Mapping[str, Any], brief: Mapping[str, Any]) -> list[str]:
+    """Problems with deliverable rows against the traffic spec table and the canonical brief."""
+    problems: list[str] = []
     specs = {r["id"]: r for r in spec_table.get("specs", [])}
     refs = {ref_key(ref) for _, _, evidence in destinations(brief) for ref in evidence}
-    ids = set()
+    ids: set[Any] = set()
     for i, row in enumerate(rows):
         prefix = f"deliverable {i}"
         for key in ("id", "spec_id", "owner", "approval_owner", "deadline"):
@@ -21,7 +26,9 @@ def validate(rows, spec_table, brief):
         ids.add(row.get("id"))
         if type(row.get("quantity")) is not int or row["quantity"] < 1:
             problems.append(f"{prefix}: quantity must be a positive integer")
-        if not isinstance(row.get("languages"), list) or not row["languages"] or not all(isinstance(v, str) and v.strip() for v in row["languages"]):
+        languages = row.get("languages")
+        if (not isinstance(languages, list) or not languages
+                or not all(isinstance(v, str) and v.strip() for v in languages)):
             problems.append(f"{prefix}: languages required")
         if not isinstance(row.get("dependencies"), list):
             problems.append(f"{prefix}: explicit dependencies list required (empty if none)")
@@ -58,16 +65,17 @@ def validate(rows, spec_table, brief):
     return problems
 
 
-def validate_dependencies(rows):
+def validate_dependencies(rows: Sequence[Mapping[str, Any]]) -> list[str]:
     """Traffic dependencies are deliverable IDs, with predecessors due no later."""
-    problems, graph = [], {}
-    dates = {r.get('id'): r.get('deadline') for r in rows if isinstance(r.get('id'), str)}
+    problems: list[str] = []
+    graph: dict[str, list[str]] = {}
+    dates: dict[str, Any] = {r['id']: r.get('deadline') for r in rows if isinstance(r.get('id'), str)}
     for row in rows:
         key, dependencies = row.get('id'), row.get('dependencies')
         if not isinstance(key, str) or not isinstance(dependencies, list):
             continue
         graph[key] = []
-        seen = set()
+        seen: set[str] = set()
         for dep in dependencies:
             if not isinstance(dep, str) or dep not in dates:
                 problems.append(f'{key}: dependency must name an existing deliverable')

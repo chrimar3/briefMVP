@@ -59,6 +59,11 @@ def _manifest(out, run_id="r"):
     return json.loads((out / run_id / "run_manifest.json").read_text(encoding="utf-8"))
 
 
+def _halt(ctx, step):
+    """A classify handler that stops the run for a human, as a halted model step would."""
+    raise stages.HaltForHuman("stop")
+
+
 def _ctx(tmp_path, project_dir, glossary):
     return runner.RunContext(project_dir=project_dir, run_dir=tmp_path / "run", run_id="r",
                              sources=[], started_ts="", glossary_path=glossary)
@@ -221,7 +226,7 @@ def test_render_inputs_are_bound_to_the_run_and_write_denied(project, tmp_path, 
 def test_a_run_recorded_before_the_style_table_was_bound_still_resumes(project, tmp_path, monkeypatch):
     """Binding a new input must not strand an older run: a snapshot without `greek_style` stays
     as recorded, exactly like the schema/template rule above it."""
-    halt = lambda ctx, step: (_ for _ in ()).throw(stages.HaltForHuman("stop"))
+    halt = _halt
     out = tmp_path / "runs"
     _main(project, out, monkeypatch=monkeypatch, handlers={"classify": halt})
     path = out / "r" / "input_snapshot.json"
@@ -249,7 +254,7 @@ def test_injected_text_never_reaches_a_work_order(project, tmp_path):
 
 
 def test_a_modified_staged_input_is_refused_on_resume(project, tmp_path, monkeypatch):
-    halt = lambda ctx, step: (_ for _ in ()).throw(stages.HaltForHuman("stop"))
+    halt = _halt
     out = tmp_path / "runs"
     _main(project, out, monkeypatch=monkeypatch, handlers={"classify": halt})
     staged = out / "r" / "inputs" / "rfp.md"
@@ -324,7 +329,9 @@ def test_a_halt_does_not_hide_a_tampered_record(project, tmp_path, monkeypatch):
         (Path(ctx.run_dir) / "coverage_decisions.json").write_text('{"x": {"actor": "a", "reason": "r"}}')
         raise stages.HaltForHuman("asks a question")
     out = tmp_path / "runs"
-    assert _main(project, out, monkeypatch=monkeypatch, handlers={"classify": tamper_then_halt}) == runner.EXIT_GATE_ERROR
+    assert (
+        _main(project, out, monkeypatch=monkeypatch, handlers={"classify": tamper_then_halt}) == runner.EXIT_GATE_ERROR
+    )
     assert "coverage_decisions.json was created" in _manifest(out)["steps"][-1]["error"]
 
 
@@ -333,4 +340,7 @@ def test_integrity_state_ignores_the_agents_own_outputs(project, tmp_path, monke
         (Path(ctx.run_dir) / "classification.json").write_text("{}", encoding="utf-8")
         raise stages.HaltForHuman("fine")
     out = tmp_path / "runs"
-    assert _main(project, out, monkeypatch=monkeypatch, handlers={"classify": writes_its_output}) == runner.EXIT_HALTED_FOR_HUMAN
+    assert (
+        _main(project, out, monkeypatch=monkeypatch, handlers={"classify": writes_its_output})
+        == runner.EXIT_HALTED_FOR_HUMAN
+    )

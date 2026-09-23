@@ -6,21 +6,34 @@ lock file), so they are safe to point at committed evidence such as runs/tier3.
 from __future__ import annotations
 
 import argparse
-from collections import Counter
 import json
 import sys
+from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
+from typing import Any, Optional
 
 if __package__ in (None, ''):  # allow `python3 pipeline/operations.py` as well as `-m pipeline.operations`
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline import agency, approval, delivery, gates, revisions  # noqa: E402
+from pipeline.records import PathLike  # noqa: E402
+
+#: Review order of the portfolio queue: the most urgent stage first.
+STAGE_PRIORITY = {'error': 0, 'blocked': 1, 'brief_approval': 2, 'creative_selection': 3, 'creative_review': 4,
+                  'ready_to_release': 5}
+PORTFOLIO_BOUNDARY = ('Current local checks, not semantic certification. Read next_actions and notices; '
+                      'role labels are not assigned staff identities.')
 
 
-def status(run: Path) -> dict:
-    """One run's stage, next actions, blockers and notices — read-only, never cached."""
+def status(run: PathLike) -> dict[str, Any]:
+    """One run's stage, next actions, blockers and notices — read-only, never cached.
+
+    Input problems (a missing or invalid run, a corrupt record, a refused brief) become the
+    `error` stage; any other exception is a bug and propagates.
+    """
     run = Path(run).resolve()
-    result = {'run': str(run), 'stage': 'error', 'next_actions': [], 'blockers': [], 'notices': []}
+    result: dict[str, Any] = {'run': str(run), 'stage': 'error', 'next_actions': [], 'blockers': [], 'notices': []}
     try:
         if not run.is_dir():
             raise ValueError('Run directory does not exist')
@@ -41,40 +54,48 @@ def status(run: Path) -> dict:
                 if brief['signoff']['status'] != 'signed_off':
                     raise ValueError('Brief must be signed off by the account lead')
             except ValueError as exc:
-                result.update(stage='brief_approval', next_actions=[str(exc), 'Account lead: review and approve the current brief.'])
+                result.update(stage='brief_approval',
+                              next_actions=[str(exc), 'Account lead: review and approve the current brief.'])
                 return result
             if not (run/'creative_draft.json').exists():
-                result.update(stage='creative_selection', next_actions=['Operator: register the selected creative draft and assets.'])
+                result.update(stage='creative_selection',
+                              next_actions=['Operator: register the selected creative draft and assets.'])
                 return result
             try:
                 delivery.current_draft(run)
             except ValueError as exc:
-                result.update(stage='creative_selection', next_actions=[str(exc), 'Operator: register an updated creative selection.'])
+                result.update(stage='creative_selection',
+                              next_actions=[str(exc), 'Operator: register an updated creative selection.'])
                 return result
             try:
                 delivery.require_creative_approval(run)
             except ValueError as exc:
-                result.update(stage='creative_review', next_actions=[str(exc), 'Creative lead and traffic: check the selected files and specifications, then approve.'])
+                result.update(stage='creative_review', next_actions=[
+                    str(exc), 'Creative lead and traffic: check the selected files and specifications, then approve.'])
                 return result
-            result.update(stage='ready_to_release', next_actions=['Operator: create a new delivery package and verify it against this run.'])
+            result.update(stage='ready_to_release',
+                          next_actions=['Operator: create a new delivery package and verify it against this run.'])
             return result
-    except (ValueError, OSError, TypeError, KeyError, AttributeError, gates.GateError) as exc:
-        result.update(stage='error', blockers=[str(exc)], next_actions=['Operator: repair or initialize this run before review.'])
+    except (ValueError, OSError, gates.GateError) as exc:
+        result.update(stage='error', blockers=[str(exc)],
+                      next_actions=['Operator: repair or initialize this run before review.'])
         return result
 
 
-def portfolio(runs):
+def portfolio(runs: Iterable[PathLike]) -> dict[str, Any]:
+    """Status of each distinct run, most urgent stage first, with per-stage counts."""
     unique = list(dict.fromkeys(str(Path(run).resolve()) for run in runs))
     projects = [status(run) for run in unique]
-    priority = {'error': 0, 'blocked': 1, 'brief_approval': 2, 'creative_selection': 3, 'creative_review': 4, 'ready_to_release': 5}
-    projects.sort(key=lambda item: (priority[item['stage']], item['run']))
+    projects.sort(key=lambda item: (STAGE_PRIORITY[item['stage']], item['run']))
     return {'projects': projects, 'counts': dict(Counter(p['stage'] for p in projects)),
-            'boundary': 'Current local checks, not semantic certification. Read next_actions and notices; role labels are not assigned staff identities.'}
+            'boundary': PORTFOLIO_BOUNDARY}
 
 
-def main(argv=None):
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry point: print the status/portfolio JSON; exit 2 when any run is in error or blocked."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('runs', type=Path, nargs='+', help='Explicit run directories; one for project status, several for a portfolio')
+    parser.add_argument('runs', type=Path, nargs='+',
+                        help='Explicit run directories; one for project status, several for a portfolio')
     args = parser.parse_args(argv)
     result = portfolio(args.runs)
     print(json.dumps(result, ensure_ascii=False, indent=2))

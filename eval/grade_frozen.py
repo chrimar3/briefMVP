@@ -41,12 +41,12 @@ def tree_fingerprint(root: Path) -> str:
     """SHA-256 over every file's relative path and bytes under `root` (sorted, stable)."""
     digest = hashlib.sha256()
     for path in sorted(p for p in Path(root).rglob("*") if p.is_file()):
-        digest.update(str(path.relative_to(root)).encode("utf-8") + b"\0")
+        digest.update(str(path.relative_to(root)).encode() + b"\0")
         digest.update(hashlib.sha256(path.read_bytes()).digest())
     return digest.hexdigest()
 
 
-def grade_read_only(run_dir: Path) -> list:
+def grade_read_only(run_dir: Path) -> list[harness.CheckResult]:
     """harness.grade on `run_dir`; raises RuntimeError if grading changed any file in it."""
     run_dir = Path(run_dir).resolve()
     before = tree_fingerprint(run_dir)
@@ -56,7 +56,8 @@ def grade_read_only(run_dir: Path) -> list:
     return results
 
 
-def main(argv: Optional[list] = None) -> int:
+def main(argv: Optional[list[str]] = None) -> int:
+    """CLI entry: grade the run read-only; exit 0 all pass, 1 a check failed or count differs, 2 ungradable."""
     parser = argparse.ArgumentParser(description="Read-only grade of committed evidence with the frozen harness.")
     parser.add_argument("run", nargs="?", default=str(DEFAULT_RUN), help="Run directory (default: runs/tier3)")
     parser.add_argument("--expect", type=int, default=DEFAULT_EXPECTED_CHECKS,

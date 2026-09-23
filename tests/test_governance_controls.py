@@ -8,10 +8,9 @@ Synthetic runs only (tests/test_agency_operations.make_review_run); no model cal
 import json
 
 import pytest
+from conftest import approve_synthetic, make_review_run, prepare_release
 
 from pipeline import agency, delivery, quality, release_control, revisions
-from test_agency_operations import approve_synthetic, make_review_run
-from test_delivery import prepare_release
 
 CHECKS = quality.field_review_checklist()
 
@@ -19,8 +18,13 @@ CHECKS = quality.field_review_checklist()
 def _with_conflict(run):
     brief = revisions.load(run / "brief.json")
     ref = brief["objectives"][0]["evidence"][0]
-    brief["conflicts"] = [{"field": "timeline", "status": "open",
-                           "positions": [{"statement": "June", "evidence": ref}, {"statement": "July", "evidence": ref}]}]
+    brief["conflicts"] = [
+        {
+            "field": "timeline",
+            "status": "open",
+            "positions": [{"statement": "June", "evidence": ref}, {"statement": "July", "evidence": ref}],
+        }
+    ]
     brief["open_questions"] = [{"field": "budget", "gap": "Unknown", "why_it_matters": "Planning",
                                 "suggested_question_for_client": "What is the production budget?"}]
     revisions.write_json(run / "brief.json", brief)
@@ -99,7 +103,8 @@ def _uncovered_fact(run):
 def test_exclusion_counts_only_for_the_brief_it_was_made_against(tmp_path):
     run = make_review_run(tmp_path)
     fact = _uncovered_fact(run)
-    blocked = lambda: [b for b in agency.audit(run, persist=False)["blockers"] if b.startswith(f"coverage.{fact}")]
+    def blocked():
+        return [b for b in agency.audit(run, persist=False)["blockers"] if b.startswith(f"coverage.{fact}")]
     assert blocked()
     assert agency.main(["exclude", str(run), "--actor", "Synthetic lead", "--fact", fact,
                         "--reason", "Duplicate of the objective"]) == 0

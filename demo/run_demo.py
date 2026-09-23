@@ -184,8 +184,8 @@ def main(argv=None) -> int:
               f"{_cell(item.get('anchor'), 34)} {_cell(item.get('location'), 14)} "
               f"{_cell(item.get('confidence'), 6)} {item.get('qualifier')}")
 
-    print(f"\nVERIFICATION GATES (deterministic, no model):")
-    print(f"  ✅ schema: extract validates against schema/extract_schema.json")
+    print("\nVERIFICATION GATES (deterministic, no model):")
+    print("  ✅ schema: extract validates against schema/extract_schema.json")
     print(f"  {'✅' if resolved == len(items) else '❌'} citations: {resolved}/{len(items)} "
           f"anchor+location strings occur verbatim in the source")
     if notes:

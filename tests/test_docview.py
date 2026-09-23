@@ -10,8 +10,6 @@ import html
 import re
 from pathlib import Path
 
-import pytest
-
 from pipeline import docview
 
 REPO = Path(__file__).resolve().parents[1]

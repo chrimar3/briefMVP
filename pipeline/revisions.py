@@ -281,8 +281,7 @@ def append_audit(run_dir: PathLike, event: str, actor: str, record: Any = None,
         entry["record_sha256"] = file_hash(run_dir / record)
     if details:
         entry["details"] = details
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")
+    records.append_text(path, json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n")  # owner-only (0600)
     return entry
 
 

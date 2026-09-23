@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from pipeline import gates
 from pipeline.stage_common import StageError
@@ -22,7 +22,7 @@ TEMPLATES_DIR = gates.REPO_ROOT / "templates"
 _TEMPLATE_KEY_RE = re.compile(r"[a-z0-9][a-z0-9_]*")
 
 
-def resolve_brief_template(client_config: Optional[dict], templates_dir: Path = None) -> dict:
+def resolve_brief_template(client_config: Optional[dict], templates_dir: Optional[Path] = None) -> dict:
     """The client's template set: English layout, Greek twin and the fixed-label table.
 
     Chosen by the optional client-config key `brief_template` (a template name, not a path),
@@ -38,9 +38,10 @@ def resolve_brief_template(client_config: Optional[dict], templates_dir: Path = 
             f"client config brief_template {key!r} is not a template name "
             f"([a-z0-9_], no path) — name a template set under templates/"
         )
-    paths = {"key": key, "en": templates_dir / f"{key}.md", "el": templates_dir / f"{key}.el.md",
+    files = {"en": templates_dir / f"{key}.md", "el": templates_dir / f"{key}.el.md",
              "labels": templates_dir / f"{key}.labels.json"}
-    missing = [str(p) for name, p in paths.items() if name != "key" and not p.is_file()]
+    paths: dict[str, Any] = {"key": key, **files}
+    missing = [str(p) for p in files.values() if not p.is_file()]
     if missing:
         raise StageError(
             f"template set {key!r} is incomplete — missing {missing}. A client template needs "
@@ -71,7 +72,7 @@ def resolution_links(brief: dict) -> dict:
     citations (or all of them, when the positions share one citation). A question that merely
     shares a field (a KPI question beside an objectives conflict) stays a live question.
     """
-    links = {}
+    links: dict[int, Any] = {}
     conflicts = brief.get("conflicts") or []
     for q_idx, question in enumerate(brief.get("open_questions") or []):
         q_field = (question.get("field") or "").strip().lower()
@@ -89,7 +90,8 @@ def resolution_links(brief: dict) -> dict:
 
 def _split_sections(render: str) -> tuple:
     """(preamble lines, [(heading, [body lines])]) — headings are `## ` lines, stripped."""
-    preamble, sections = [], []
+    preamble: list[str] = []
+    sections: list[tuple[str, list[str]]] = []
     for raw in render.splitlines():
         line = raw.strip()
         if line.startswith("## "):
@@ -206,7 +208,7 @@ def _field_section_violations(lang: str, lab: dict, body: dict, brief: dict, con
 
 def _answered_question_violations(lang: str, lab: dict, body: dict, open_qs: list, links: dict) -> list:
     """Questions a resolution answered render as answered; every other question stays live."""
-    violations = []
+    violations: list[str] = []
     if not (open_qs and lab["open_questions"] in body):
         return violations
     items = _numbered_items(body[lab["open_questions"]])

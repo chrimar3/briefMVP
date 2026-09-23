@@ -1,28 +1,33 @@
 """Validate human-maintained release catalogs and bind them to a review run."""
+
 from __future__ import annotations
 
 import argparse
-from datetime import date
 import math
-from pathlib import Path
 import re
 import sys
+from collections.abc import Iterable, Sequence
+from datetime import date
+from pathlib import Path
+from typing import Any, Optional, Union
 from urllib.parse import urlsplit
 
-from pipeline import agency, handover, revisions
+from pipeline import agency, gates, handover, revisions
+from pipeline.records import PathLike
 
 
-def _text(value):
+def _text(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
-def _date(value):
+def _date(value: Any) -> date:
     if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
         raise ValueError('expected YYYY-MM-DD')
     return date.fromisoformat(value)
 
 
-def validate(table, selected_ids=None, today=None) -> list[str]:
+def validate(table: Any, selected_ids: Optional[Iterable[str]] = None,
+             today: Union[date, str, None] = None) -> list[str]:
     """Check release metadata; URL syntax is not proof of source authenticity.
 
     IDs are checked globally. Row metadata is checked for selected IDs, or all
@@ -31,7 +36,7 @@ def validate(table, selected_ids=None, today=None) -> list[str]:
     today = date.today() if today is None else today
     if isinstance(today, str):
         today = _date(today)
-    problems = []
+    problems: list[str] = []
     if not isinstance(table, dict):
         return ['catalog must be an object']
     if '_stub_notice' in table:
@@ -42,7 +47,7 @@ def validate(table, selected_ids=None, today=None) -> list[str]:
     if not isinstance(rows, list) or not rows:
         return problems + ['catalog specs must be a nonempty list']
     selected = None if selected_ids is None else set(selected_ids)
-    seen = set()
+    seen: set[Any] = set()
     for i, row in enumerate(rows):
         prefix = f'spec {i}'
         if not isinstance(row, dict) or not _text(row.get('id')):
@@ -63,14 +68,17 @@ def validate(table, selected_ids=None, today=None) -> list[str]:
                 problems.append(f'{prefix}: invalid {key}')
         url = row.get('source_url')
         try:
-            parsed = urlsplit(url) if isinstance(url, str) else None
-            if (not parsed or parsed.scheme != 'https' or not parsed.hostname
+            if not isinstance(url, str):
+                raise ValueError()
+            parsed = urlsplit(url)
+            if (parsed.scheme != 'https' or not parsed.hostname
                     or parsed.username or parsed.password or any(c.isspace() for c in url)):
                 raise ValueError()
-            parsed.port
+            _ = parsed.port  # Raises ValueError for a malformed port.
         except ValueError:
             problems.append(f'{prefix}: source_url must be an HTTPS official source URL with a host')
-        checked = due = None
+        checked: Optional[date] = None
+        due: Optional[date] = None
         for key in ('checked_on', 'review_due'):
             try:
                 value = _date(row.get(key))
@@ -110,7 +118,7 @@ def validate(table, selected_ids=None, today=None) -> list[str]:
     return problems
 
 
-def bind(run, table_path, *, actor):
+def bind(run: PathLike, table_path: PathLike, *, actor: str) -> dict[str, Any]:
     """Bind a validated catalog; shared run_lock is required from revisions."""
     run, table_path = Path(run).resolve(), Path(table_path).resolve()
     if not _text(actor):
@@ -129,18 +137,23 @@ def bind(run, table_path, *, actor):
             raise ValueError('; '.join(problems))
         if revisions.file_hash(table_path) != state['sha256']:
             raise ValueError('Catalog changed during validation; retry')
+        deliverables = inputs.get('deliverables', [])
+        if not isinstance(deliverables, list) or not all(isinstance(row, dict) for row in deliverables):
+            raise ValueError('agency_inputs.json deliverables must be a list of objects')
         snapshot['channel_specs'] = state
         inputs['catalog_binding'] = {**state, 'actor': actor, 'bound_at': revisions.timestamp(),
-                                     'recheck_deliverables': handover.validate(inputs.get('deliverables', []), table, brief)}
+                                     'recheck_deliverables': handover.validate(deliverables, table, brief)}
         revisions.archive(run, ['agency_inputs.json', 'input_snapshot.json'], copy_only=True)
-        revisions.archive(run, ['approval.json', 'language_review.json', 'agency_audit.json', 'handover.json', 'creative_approval.json'])
+        revisions.archive(run, ['approval.json', 'language_review.json', 'agency_audit.json', 'handover.json',
+                                'creative_approval.json'])
         revisions.write_json(run / 'input_snapshot.json', snapshot)
         revisions.write_json(run / 'agency_inputs.json', inputs)
         revisions.capture_evidence(run, {key: value['path'] for key, value in snapshot.items()})
     return inputs['catalog_binding']
 
 
-def main(argv=None):
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    """CLI: bind a reviewed catalog to a run; exit 2 with the reason on refusal."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('run', type=Path)
     parser.add_argument('table', type=Path)
@@ -148,7 +161,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         bind(args.run, args.table, actor=args.actor)
-    except (ValueError, OSError, AttributeError) as exc:
+    except (ValueError, OSError, gates.GateError) as exc:
         print(str(exc), file=sys.stderr)
         return 2
     return 0

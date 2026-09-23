@@ -7,7 +7,6 @@ import pytest
 
 from pipeline import gates, intake
 
-
 RAW_TRANSCRIPT = (
     "Kickoff call notes\n"
     "[00:01:10] ANNA: Καλημέρα σε όλους.\n"

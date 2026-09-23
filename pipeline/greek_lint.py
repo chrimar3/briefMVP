@@ -32,7 +32,7 @@ _INTERROGATIVE_RE = re.compile(r"(?:^|[«(:]\s*|(?<!\w)(?:και|ή)\s+)(που|
 _QUOTED_RE = re.compile(r"«([^«»]*)»|\"([^\"]*)\"")
 
 
-def load_greek_style(path: Path = None) -> dict:
+def load_greek_style(path: Optional[Path] = None) -> dict:
     """The render-stage style table ({} when the file is absent)."""
     path = Path(path) if path else GREEK_STYLE_PATH
     if not path.is_file():
