@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "rfp_voreas",
+    "source_type": "rfp",
+    "source_date": "2026-07-05",
+    "extraction_ts": "2026-09-23T21:19:27+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Επιτυχημένο launch της σειράς στην ελληνική αγορά, με έμφαση στην καθιέρωση της Voreas Athletics ως premium επιλογής στη νέα κατηγορία.",
+      "lang": "mixed",
+      "location": "## 2. Στόχος",
+      "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Γυναίκες 30–45, με ενεργό lifestyle, στα δύο μεγάλα αστικά κέντρα (Αθήνα, Θεσσαλονίκη).",
+      "lang": "mixed",
+      "location": "## 4. Κοινό-στόχος",
+      "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "Η σειρά τοποθετείται στο premium performance: τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα. Η επικοινωνία να αναδεικνύει την τεχνική υπεροχή έναντι της κατηγορίας.",
+      "lang": "mixed",
+      "location": "## 3. Τοποθέτηση",
+      "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια.",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Παρουσία σε social media και ψηφιακά κανάλια.",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).",
+      "lang": "el",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Launch μέσα Μαρτίου 2027, ώστε να συμπέσει με την ανοιξιάτικη ανανέωση των καταστημάτων και την έναρξη της σεζόν outdoor.",
+      "lang": "mixed",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "Launch **μέσα Μαρτίου 2027**, ώστε να συμπέσει",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "Συνολικός προϋπολογισμός €140.000, συμπεριλαμβανομένου του media.",
+      "lang": "el",
+      "location": "## 7. Προϋπολογισμός",
+      "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Το tagline Move Like the Wind είναι εγκεκριμένο από το ΔΣ και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+      "speaker_or_author": "Voreas Athletics S.A. (client)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "timeline",
+      "gap": "Launch is given as 'μέσα Μαρτίου 2027' (mid-March 2027), not a specific date; no dates are given for the proposal, approvals, or production milestones.",
+      "why_it_matters": "The production and retail-material schedule must be worked back from a fixed launch date, and the store refresh may set a hard deadline.",
+      "suggested_question_for_client": "Το «μέσα Μαρτίου 2027» αφορά συγκεκριμένη ημερομηνία launch; Υπάρχει σταθερή ημερομηνία για την ανανέωση των καταστημάτων και ποια είναι η προθεσμία για την υποβολή της πρότασης;",
+      "linked_items": ["timeline[0]"]
+    },
+    {
+      "field": "budget",
+      "gap": "The €140.000 total includes media, but the split between media, production and agency fees is not stated, and it is not stated whether VAT is included.",
+      "why_it_matters": "The amount left for creative and production depends on the media share and on whether VAT is included.",
+      "suggested_question_for_client": "Το ποσό των €140.000 περιλαμβάνει ΦΠΑ; Πόσο από αυτό προορίζεται για media, πόσο για παραγωγή και πόσο για αμοιβή του πράκτορα;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP says the attached brand guidelines apply, but their content is not part of this source, so the rules they impose (logo use, tone, prohibited claims) are unknown.",
+      "why_it_matters": "Brand-guideline rules can constrain every creative asset, and a missed rule means rework or approval delays.",
+      "suggested_question_for_client": "Μπορείτε να μας στείλετε τα συνημμένα brand guidelines και να μας επισημάνετε ποιοι κανόνες είναι απαράβατοι για αυτή την καμπάνια;",
+      "linked_items": ["mandatories[1]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "The objective 'επιτυχημένο launch' has no stated success measure or KPI (sales, awareness, share, reach).",
+      "why_it_matters": "Without a measurable target we cannot set channel mix, budget priorities or a way to report results.",
+      "suggested_question_for_client": "Πώς θα μετρήσετε την επιτυχία του launch; Υπάρχουν συγκεκριμένα KPI ή στόχοι πωλήσεων και brand awareness που πρέπει να έχουμε υπόψη;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Requirements are listed by type only: no quantities, formats, durations, social platforms or number of store locations are given, and no objective is linked to the social media and digital presence.",
+      "why_it_matters": "Scope, cost and production planning depend on how many assets, in which formats and on which channels and stores.",
+      "suggested_question_for_client": "Ποια social και ψηφιακά κανάλια θέλετε να καλύψουμε; Πόσα βίντεο και key visuals περιμένετε, και για πόσα σημεία πώλησης χρειάζεται υλικό βιτρίνας;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

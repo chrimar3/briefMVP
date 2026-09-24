@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "project_id": "levanta_03",
+    "source_id": "rfp_levanta",
+    "source_type": "rfp",
+    "source_date": "2026-09-01",
+    "extraction_ts": "2026-09-24T06:26:24+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Αύξηση των απευθείας κρατήσεων (website και app) έναντι των πρακτορείων και των OTAs.",
+      "lang": "mixed",
+      "location": "## 2. Στόχοι",
+      "anchor": "Αύξηση των απευθείας κρατήσεων (website και app)",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app.",
+      "lang": "mixed",
+      "location": "## 2. Στόχοι",
+      "anchor": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Έλληνες ταξιδιώτες: κυρίως οικογένειες που ταξιδεύουν με ΙΧ",
+      "lang": "el",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "κυρίως οικογένειες που ταξιδεύουν με ΙΧ",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "νέοι 20–30 που ταξιδεύουν ως foot passengers",
+      "lang": "mixed",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "νέοι 20–30 που ταξιδεύουν ως foot passengers",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά.",
+      "lang": "el",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "Κλείσε νωρίς, πλήρωσε λιγότερο: εκπτώσεις early booking έως 30% στα εισιτήρια επιβατών.",
+      "lang": "mixed",
+      "location": "## 4. Βασικά μηνύματα",
+      "anchor": "Κλείσε νωρίς, πλήρωσε λιγότερο: εκπτώσεις early booking έως 30%",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το νέο Levanta Club ζει πλέον στο app.",
+      "lang": "mixed",
+      "location": "## 4. Βασικά μηνύματα",
+      "anchor": "Το νέο Levanta Club ζει πλέον στο app",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Κεντρική δημιουργική ιδέα και key visual.",
+      "lang": "mixed",
+      "location": "## 5. Ζητούμενα παραδοτέα",
+      "anchor": "Κεντρική δημιουργική ιδέα και key visual",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Hero video και cutdowns για social media.",
+      "lang": "mixed",
+      "location": "## 5. Ζητούμενα παραδοτέα",
+      "anchor": "Hero video και cutdowns για social media",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Display και social ads, landing page καμπάνιας.",
+      "lang": "mixed",
+      "location": "## 5. Ζητούμενα παραδοτέα",
+      "anchor": "Display και social ads, landing page καμπάνιας",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "OOH στα λιμάνια Πειραιά και Ραφήνας.",
+      "lang": "mixed",
+      "location": "## 5. Ζητούμενα παραδοτέα",
+      "anchor": "OOH στα λιμάνια Πειραιά και Ραφήνας",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Email και ειδοποιήσεις app προς τη βάση των μελών.",
+      "lang": "mixed",
+      "location": "## 5. Ζητούμενα παραδοτέα",
+      "anchor": "Email και ειδοποιήσεις app προς τη βάση των μελών",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Παρουσίαση δημιουργικών προτάσεων έως 20 Οκτωβρίου 2026",
+      "lang": "el",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "Παρουσίαση δημιουργικών προτάσεων έως 20 Οκτωβρίου 2026",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Go-live της καμπάνιας 15 Ιανουαρίου 2027",
+      "lang": "mixed",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "Go-live της καμπάνιας **15 Ιανουαρίου 2027**",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "με διάρκεια έως 31 Μαρτίου 2027",
+      "lang": "el",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "με διάρκεια έως 31 Μαρτίου 2027",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [
+    {
+      "value": "€150.000 πλέον ΦΠΑ για δημιουργικό, παραγωγή και αμοιβές",
+      "lang": "el",
+      "location": "## 7. Προϋπολογισμός",
+      "anchor": "**€150.000 πλέον ΦΠΑ** για δημιουργικό, παραγωγή και αμοιβές",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας, και δεν περιλαμβάνεται στο ποσό αυτό.",
+      "lang": "mixed",
+      "location": "## 7. Προϋπολογισμός",
+      "anchor": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Το tagline Sail Your Summer είναι εγκεκριμένο και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες των συνημμένων brand guidelines.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες των συνημμένων brand guidelines",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά.",
+      "lang": "el",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται· το Levanta Club μεταφέρεται εξ ολοκλήρου στο νέο mobile app της εταιρείας.",
+      "lang": "el",
+      "location": "## 1. Πλαίσιο",
+      "anchor": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται",
+      "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε.",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The RFP says the attached brand guidelines apply, but their content is not part of this source, so the rules they impose are unknown.",
+      "why_it_matters": "Brand rules are binding on all creative; missing one means rework or a non-compliant proposal.",
+      "suggested_question_for_client": "Μπορείτε να μας στείλετε τα brand guidelines που αναφέρονται στο RFP και να μας πείτε αν υπάρχουν κανόνες πέρα από το tagline Sail Your Summer που πρέπει να τηρήσουμε από την πρώτη πρόταση;",
+      "linked_items": ["mandatories[1]"]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP context states that the plastic-card loyalty programme is discontinued and Levanta Club moves entirely into the app, but it does not say whether this is a rule the campaign content and messaging must follow (e.g. no reference to the card, app-only sign-up).",
+      "why_it_matters": "If it binds the creative, any material that mentions the card or a non-app sign-up route would be non-compliant.",
+      "suggested_question_for_client": "Το ότι το πρόγραμμα με τις πλαστικές κάρτες καταργείται και το Levanta Club μεταφέρεται εξ ολοκλήρου στο app, θέτει περιορισμούς στο περιεχόμενο της καμπάνιας, π.χ. να μην αναφέρεται καθόλου η κάρτα ή οι υπάρχοντες κάτοχοι να ενημερώνονται με συγκεκριμένο τρόπο;",
+      "linked_items": ["mandatories[3]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "Both objectives are stated without any target, baseline or KPI.",
+      "why_it_matters": "Without a measurable target we cannot size the plan or show the campaign worked.",
+      "suggested_question_for_client": "Έχετε συγκεκριμένους στόχους ή KPI, π.χ. ποσοστό απευθείας κρατήσεων ή αριθμό νέων μελών στο Levanta Club μέσω app, με τους οποίους θα κριθεί η καμπάνια;",
+      "linked_items": []
+    },
+    {
+      "field": "budget",
+      "gap": "The €150.000 plus VAT covers creative, production and fees only; the media amount, bought directly by the client via its media agency, is not stated.",
+      "why_it_matters": "The channel mix and the scale of the OOH, display and social work depend on the media budget available.",
+      "suggested_question_for_client": "Ποιο είναι το budget media που θα διαθέσετε μέσω της media agency σας, και πώς θα συντονιστούμε μαζί της στο media planning;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Deliverables are listed without quantities, formats or durations (hero video and cutdowns, ad formats, number of OOH sites, email and app notification volume).",
+      "why_it_matters": "Production cost and the fee fit within the stated budget depend on the exact volumes and formats.",
+      "suggested_question_for_client": "Μπορείτε να μας δώσετε τον αναμενόμενο αριθμό και τις διάρκειες των video και των cutdowns, τα formats των ads και των OOH, και πόσα emails και ειδοποιήσεις app προβλέπετε;",
+      "linked_items": []
+    },
+    {
+      "field": "timeline",
+      "gap": "The RFP does not say when the new Levanta Club app experience will be live relative to the 15 Ιανουαρίου 2027 go-live.",
+      "why_it_matters": "The registration objective and the message that Levanta Club now lives in the app depend on the app being ready at go-live.",
+      "suggested_question_for_client": "Θα είναι έτοιμο το νέο Levanta Club στο app έως τις 15 Ιανουαρίου 2027, όταν ξεκινά η καμπάνια;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

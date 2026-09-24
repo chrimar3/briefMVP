@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "transcript_kickoff",
+    "source_type": "transcript",
+    "source_date": "2026-07-10",
+    "extraction_ts": "2026-09-23T21:07:18+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Το βασικό για μας είναι το μπραντ αγουέρνες — είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί",
+      "lang": "mixed",
+      "location": "[00:02:05]",
+      "anchor": "μπραντ αγουέρνες",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "our buyer is 25 to 40, urban professionals. Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea",
+      "lang": "mixed",
+      "location": "[00:03:41]",
+      "anchor": "our buyer is 25 to 40, urban professionals",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς",
+      "lang": "mixed",
+      "location": "[00:10:22]",
+      "anchor": "Some videos and social stuff, κυρίως",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα",
+      "lang": "mixed",
+      "location": "[00:11:47]",
+      "anchor": "maybe a TikTok dance thing? Don't hold me to it",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "conditional",
+      "confidence": "low"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο (reply to the agency's \"Το RFP έλεγε Οκτώβριο\")",
+      "lang": "el",
+      "location": "[00:17:03]",
+      "anchor": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα",
+      "lang": "el",
+      "location": "[00:17:03]",
+      "anchor": "έχουν συνεδρίαση τέλη του μήνα",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend",
+      "lang": "mixed",
+      "location": "[00:14:32]",
+      "anchor": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε",
+      "speaker_or_author": "ANNA (Meltemi, CFO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Το media το βλέπουμε ξεχωριστά με τον media shop μας",
+      "lang": "mixed",
+      "location": "[00:14:32]",
+      "anchor": "Το media το βλέπουμε ξεχωριστά με τον media shop μας",
+      "speaker_or_author": "ANNA (Meltemi, CFO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
+      "lang": "mixed",
+      "location": "[00:06:02]",
+      "anchor": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι",
+      "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "objectives",
+      "gap": "The objective was spoken as «μπραντ αγουέρνες», a probable garble of \"brand awareness\"; it is not confirmed as the primary objective.",
+      "why_it_matters": "The objective drives the whole strategy and how success is judged.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε ότι το βασικό σας ζητούμενο για το launch είναι το brand awareness στην κατηγορία sparkling tea;",
+      "linked_items": ["objectives[0]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "No success metric or target (sales or awareness) exists yet; the client said nothing is written down.",
+      "why_it_matters": "Without a target we cannot set KPIs or show the campaign worked.",
+      "suggested_question_for_client": "Ποιο νούμερο ή ποιον δείκτη, σε sales ή awareness, θα θεωρήσετε ότι δείχνει πως το launch πέτυχε, και ποιος θα τον ορίσει μαζί μας;",
+      "linked_items": []
+    },
+    {
+      "field": "audiences",
+      "gap": "The speaker says the RFP's Gen Z audience is a leftover from the previous agency's positioning and the real buyer is 25 to 40 urban professionals; this correction is made verbally only.",
+      "why_it_matters": "The target audience drives channel, tone and creative, and it differs from the RFP.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε ότι το κοινό-στόχος είναι αστοί επαγγελματίες 25 έως 40 ετών και ότι το Gen Z του RFP δεν ισχύει πλέον;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Deliverables were described only as \"some videos and social stuff\", with no formats, quantities or channels.",
+      "why_it_matters": "Production scope and cost cannot be estimated without concrete outputs.",
+      "suggested_question_for_client": "Ποια formats, πόσα κομμάτια και ποια κανάλια περιμένετε από τα videos και το social, ή θέλετε να τα προτείνουμε εμείς;",
+      "linked_items": ["deliverables[0]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "A TikTok dance idea was floated as a passing thought, explicitly not to be held to and not yet discussed internally.",
+      "why_it_matters": "It should not enter scope as a commitment unless the client decides it should.",
+      "suggested_question_for_client": "Η ιδέα με το TikTok dance ήταν απλώς σκέψη; Θέλετε να την εξετάσουμε ή να την αφήσουμε εκτός;",
+      "linked_items": ["deliverables[1]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "The timing is only \"φθινόπωρο\" and \"κάπου εκεί\", in reply to the RFP's October; no exact launch date or milestones were given.",
+      "why_it_matters": "Production and media planning depend on a fixed launch date.",
+      "suggested_question_for_client": "Το launch είναι για τον Οκτώβριο όπως έγραφε το RFP; Υπάρχει συγκεκριμένη ημερομηνία ή παράθυρο;",
+      "linked_items": ["timeline[0]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "The board meeting that will finalise the timing is dated only as \"τέλη του μήνα\", a relative date.",
+      "why_it_matters": "The board decision is a gate for the timeline, so its date sets when planning can be locked.",
+      "suggested_question_for_client": "Με το «τέλη του μήνα» εννοείτε τέλη Ιουλίου 2026, δηλαδή 31 Ιουλίου; Τι ακριβώς θα αποφασίσει το board;",
+      "linked_items": ["timeline[1]"]
+    },
+    {
+      "field": "budget",
+      "gap": "The figure is a hedged range (\"κάπου στα ογδόντα, μπορεί ογδόντα πέντε\") with no stated currency or units, and it excludes media spend. Scope (production only or not) and VAT treatment are not stated.",
+      "why_it_matters": "We cannot size production or the deliverable mix without knowing the amount, currency and what it covers.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: το 80–85 αφορά χιλιάδες ευρώ; Είναι μόνο για production, και είναι με ή χωρίς ΦΠΑ;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "budget",
+      "gap": "Media spend is handled separately with the client's media shop, and the CFO said the figure is not yet hers; it is unknown.",
+      "why_it_matters": "Channel mix and reach targets depend on the media budget, which is kept distinct from production.",
+      "suggested_question_for_client": "Ποιος στο media shop σας αποφασίζει το media spend και πότε θα έχουμε ένα εύρος για να σχεδιάσουμε τα κανάλια;",
+      "linked_items": []
+    },
+    {
+      "field": "mandatories",
+      "gap": "The key visual direction was spoken as «κι βίζουαλ», a probable garble of \"key visual\". \"Premium καλοκαίρι\" is not defined.",
+      "why_it_matters": "It is the only creative constraint stated so far, and it is a garbled token to be confirmed before it is treated as a rule.",
+      "suggested_question_for_client": "Εννοείτε ότι το key visual πρέπει να φωνάζει καλοκαίρι αλλά με premium αισθητική; Έχετε παραδείγματα του τι σημαίνει για εσάς «premium καλοκαίρι»;",
+      "linked_items": ["mandatories[0]"]
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "deliverables",
+      "value_a": {
+        "value": "ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές",
+        "lang": "mixed",
+        "location": "[00:08:15]",
+        "anchor": "ίσως κάνουμε OOH στις στάσεις του μετρό",
+        "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+        "qualifier": "conditional",
+        "confidence": "medium"
+      },
+      "value_b": {
+        "value": "actually scratch that, το μετρό είναι πανάκριβο φέτος, το κοίταξα τον Μάιο. Ξεχάστε το.",
+        "lang": "mixed",
+        "location": "[00:08:34]",
+        "anchor": "actually scratch that, το μετρό είναι πανάκριβο φέτος",
+        "speaker_or_author": "DIMITRIS (Meltemi, CMO)",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "The same speaker explicitly retracted his own OOH metro-stops idea about 20 seconds later (\"Ξεχάστε το\"), giving cost as the reason. The reversal is settled, so no open question is raised; the trail is kept here and OOH is not carried into deliverables."
+    }
+  ],
+  "extraction_notes": [
+    "garble: «μπραντ αγουέρνες» at [00:02:05] — proposed match \"brand awareness\"",
+    "garble: «κι βίζουαλ» at [00:06:02] — proposed match \"key visual\"",
+    "At [00:03:41] the speaker refers to the RFP's Gen Z audience and corrects it; no Gen Z audience item is extracted from this source. Reconciliation with the RFP is downstream.",
+    "At [00:15:10] the agency-side speaker inferred the budget is \"production\"; that is an agency inference, not a client statement, and it is not extracted."
+  ]
+}

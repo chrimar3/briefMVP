@@ -1,0 +1,29 @@
+{
+  "_status": "Proposed synthetic pilot checklists; agency leads must review applicability before any real use.",
+  "profiles": {
+    "paid_campaign": {
+      "business_objective": "What business outcome does this campaign support?",
+      "conversion_and_kpi": "What conversion and KPI will define success, and over what period?",
+      "audience_and_offer": "Who is the audience, and what offer or message is approved?",
+      "landing_page": "Which landing page is required and who owns its readiness?",
+      "tracking_owner": "Who owns measurement and verifies tracking before launch?",
+      "budget_and_dates": "What budget and dates have been agreed or remain unresolved?",
+      "assets_and_approvals": "Which assets, rights and approvals are required?"
+    },
+    "organic_social": {
+      "business_objective": "What outcome and audience should the content serve?",
+      "channels_and_cadence": "Which channels, quantities and publishing cadence are required?",
+      "voice_and_mandatories": "Which brand voice and mandatory restrictions apply?",
+      "assets_and_rights": "Which assets and usage permissions are available?",
+      "approvals_and_dates": "Who approves the content and by which dates?",
+      "measurement": "Which measures and reporting period will assess the work?"
+    },
+    "creative_production": {
+      "objective_and_audience": "What objective, audience and proposition govern production?",
+      "deliverables_and_variants": "Which deliverables, quantities, variants and languages are required?",
+      "mandatories_and_rights": "Which restrictions, brand requirements and usage rights apply?",
+      "dependencies": "Which supplied assets or other teams does production depend on?",
+      "approvals_and_dates": "Who approves each milestone, and by which dates?"
+    }
+  }
+}

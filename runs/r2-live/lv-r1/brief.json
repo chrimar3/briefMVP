@@ -1,0 +1,1418 @@
+{
+  "meta": {
+    "project_id": "levanta_03",
+    "client_id": "levanta_lines",
+    "project_type": "advertising_creative",
+    "classification_confidence": "high",
+    "sensitivity_tier": "S1",
+    "sources": [
+      {
+        "source_id": "background_brand_guidelines",
+        "source_type": "background",
+        "source_date": "2026-02-20"
+      },
+      {
+        "source_id": "emails_thread",
+        "source_type": "email_thread",
+        "source_date": "2026-09-17 (latest message)"
+      },
+      {
+        "source_id": "rfp_levanta",
+        "source_type": "rfp",
+        "source_date": "2026-09-01"
+      },
+      {
+        "source_id": "transcript_kickoff",
+        "source_type": "transcript",
+        "source_date": "2026-09-08"
+      }
+    ],
+    "created_ts": "2026-09-24T06:31:54+00:00",
+    "pipeline_version": "1.4.0"
+  },
+  "objectives": [
+    {
+      "content": "Increase direct bookings (website and app) as against agencies and OTAs. At the kickoff the client added that last year more than half of bookings still came from agencies and OTAs, with a commission paid on each.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 2. Στόχοι",
+          "anchor": "Αύξηση των απευθείας κρατήσεων (website και app)",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:01:30]",
+          "anchor": "Το μεγάλο θέμα για εμάς είναι οι απευθείας κρατήσεις",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "New member sign-ups to Levanta Club through the app. No target or baseline is given in the RFP.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 2. Στόχοι",
+          "anchor": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "This year early booking (heard as «έρλι μπούκινγκ»; proposed match \"early booking\", unconfirmed) has to draw people to the site and mainly to the app.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:01:30]",
+          "anchor": "πρέπει να τραβήξει τον κόσμο στο site και κυρίως στο app",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Commercial target stated at the kickoff: 25% of early booking (heard as «έρλι μπούκινγκ»; proposed match \"early booking\", unconfirmed) bookings to be made through the app; stated to have been presented to the board (ΔΣ). Baseline, timeframe and definition are not given. Conflicts with the 35% figure in the later email — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:02:52]",
+          "anchor": "ο εμπορικός στόχος είναι το 25% των κρατήσεων",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Bookings through the app are what count for the app-based target; the website is measured separately.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:03:48]",
+          "anchor": "Μέσα από το app. Το site μετράει ξεχωριστά.",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Sofia relays that Άρης set a target of 35% of early booking bookings through the app and asks that it be entered as a KPI (second-hand; base and period not stated). Conflicts with the 25% figure stated at the kickoff — see conflicts.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 5** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-17 11:20",
+          "anchor": "έθεσε στόχο **35%** των κρατήσεων early booking",
+          "speaker_or_author": "Sofia (Levanta, Digital Marketing Manager), relaying a target set by Άρης at the kickoff"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Second strand of the objective is «Λεβάντα Κλαμπ» (heard as; proposed match \"Levanta Club\", unconfirmed): the cards are being closed and everything moves to the app. No target stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:04:30]",
+          "anchor": "Τις κάρτες τις κλείνουμε, όλο περνάει στο app",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Tracking inside the app: the old app has no analytics; the new app is supposed to have analytics, but which tool and from when is unknown.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:19:45]",
+          "anchor": "Στο νέο υποτίθεται ότι θα έχει analytics",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    }
+  ],
+  "audiences": [
+    {
+      "content": "Greek travellers, mainly families travelling by car.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "κυρίως οικογένειες που ταξιδεύουν με ΙΧ",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Young people aged 20–30 travelling as foot passengers.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "νέοι 20–30 που ταξιδεύουν ως foot passengers",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The RFP states the campaign concerns the Greek market exclusively (recited by the agency at the kickoff). Contradicted by the client's Head of Marketing at the kickoff — see conflicts; this is not a settled position.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:06:02]",
+          "anchor": "οικογένειες με ΙΧ και νέοι foot passengers",
+          "speaker_or_author": "ELENI (Northlight, account lead), reading out the RFP"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Management decided in July to open Germany and Italy as well, digital only; they are the two largest foreign markets in the Dodecanese. Contradicts the RFP's Greece-only statement — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:06:20]",
+          "anchor": "να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Language of the Germany and Italy activity is not decided; possibly English at first, the speaker does not know.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:07:14]",
+          "anchor": "Ίσως αγγλικά στην αρχή, δεν ξέρω",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    }
+  ],
+  "key_messages": [
+    {
+      "content": "Book early, pay less: early booking discounts of up to 30% on passenger tickets (stated in both the RFP and the kickoff).",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 4. Βασικά μηνύματα",
+          "anchor": "Κλείσε νωρίς, πλήρωσε λιγότερο: εκπτώσεις early booking έως 30%",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:05]",
+          "anchor": "κλείσε νωρίς, πλήρωσε λιγότερο",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The new Levanta Club now lives in the app.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 4. Βασικά μηνύματα",
+          "anchor": "Το νέο Levanta Club ζει πλέον στο app",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "A large \"from €29\" price in the key visual is requested. The fare, route, season, conditions and whether taxes and port fees are included are not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:05]",
+          "anchor": "μεγάλο «από €29»",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The tagline Sail Your Summer stays; it is approved.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:52]",
+          "anchor": "το tagline, το Sail Your Summer, μένει",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    }
+  ],
+  "deliverables": [
+    {
+      "content": "Central creative idea and key visual.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "Κεντρική δημιουργική ιδέα και key visual",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "hero video and cutdowns for social media.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "Hero video και cutdowns για social media",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Display and social ads, and a campaign landing page.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "Display και social ads, landing page καμπάνιας",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "OOH at the ports of Piraeus and Rafina.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "OOH στα λιμάνια Πειραιά και Ραφήνας",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Email and app notifications to the member base.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "Email και ειδοποιήσεις app προς τη βάση των μελών",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The client confirmed at the kickoff that the RFP deliverables list stands as it is (the list itself was not restated in the transcript). No quantities, formats or durations are given.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:08:33]",
+          "anchor": "Ναι, ισχύουν όπως είναι",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing), on the RFP deliverables list"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Strong retargeting (heard as «ριτάργκετινγκ»; proposed match \"retargeting\", unconfirmed) in digital: find again anyone who entered the booking engine and did not complete. Whether this is in addition to the RFP list is not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:08:33]",
+          "anchor": "όποιος μπήκε στο booking engine και δεν ολοκλήρωσε",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Push notifications (heard as «πους νοτιφικέισονς»; proposed match \"push notifications\", unconfirmed) in the app for members, with the offers of the week. Whether this is in addition to the RFP list is not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:09:21]",
+          "anchor": "στο app για τα μέλη, με τις προσφορές της εβδομάδας",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "A branded podcast about the islands, stories from the routes, floated as thinking out loud; the speaker said not to quote her on it and that it has not been discussed internally at all. Not a committed deliverable.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:11:30]",
+          "anchor": "just thinking out loud: ένα branded podcast για τα νησιά",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    }
+  ],
+  "timeline": [
+    {
+      "content": "Presentation of creative proposals by 20 October 2026.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 6. Χρονοδιάγραμμα",
+          "anchor": "Παρουσίαση δημιουργικών προτάσεων έως 20 Οκτωβρίου 2026",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Campaign go-live 15 January 2027 per the RFP; Sofia's email of 2026-09-11 said it stays 15 January as in the RFP, and the agency put 15 January to the client as a question at the kickoff. A later email moves it — see conflicts; this is not a settled date.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 6. Χρονοδιάγραμμα",
+          "anchor": "Go-live της καμπάνιας **15 Ιανουαρίου 2027**",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 2** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-11 12:40",
+          "anchor": "go-live μένει **15 Ιανουαρίου**, όπως στο RFP",
+          "speaker_or_author": "Sofia (Levanta, Digital Marketing Manager)"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:17:20]",
+          "anchor": "go-live 15 Ιανουαρίου, όπως στο RFP",
+          "speaker_or_author": "ELENI (Northlight, account lead), posed as a question"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Pavlos wrote on 2026-09-16 that the campaign go-live is moved to 2 February 2027 (his message states that it replaces the earlier dates; acknowledged by the agency on 2026-09-17). Differs from the RFP date — see conflicts.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 4** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-16 18:30",
+          "anchor": "μετατίθεται για **2 Φεβρουαρίου 2027**",
+          "speaker_or_author": "Pavlos (Levanta)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Campaign duration runs to 31 March 2027.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 6. Χρονοδιάγραμμα",
+          "anchor": "με διάρκεια έως 31 Μαρτίου 2027",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "At the kickoff the agency asked what must be achieved \"by April\" for the campaign to be called a success; the year is not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:00:41]",
+          "anchor": "μέχρι τον Απρίλιο για να πείτε «πέτυχε»",
+          "speaker_or_author": "ELENI (Northlight, account lead)"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Early booking (heard as «έρλι μπούκινγκ»; proposed match \"early booking\", unconfirmed) opens in mid-January every year. There is a risk with the new booking engine (part of the statement was inaudible); the client will inform the agency in writing if anything changes.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:17:31]",
+          "anchor": "ανοίγει μέσα Ιανουαρίου κάθε χρόνο, ναι",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The new app version with «Λεβάντα Κλαμπ» (heard as; proposed match \"Levanta Club\", unconfirmed) is with IT and no release date has been given; the speaker hopes for December.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:18:18]",
+          "anchor": "Εγώ ελπίζω Δεκέμβριο",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    },
+    {
+      "content": "The investment committee is expected to pass the budget figure some time in November.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:15:47]",
+          "anchor": "κάπου μέσα στον Νοέμβριο",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    }
+  ],
+  "budget": [
+    {
+      "content": "€150.000 plus VAT for creative, production and fees (RFP). Contradicted by the CFO's account at the kickoff — see conflicts; this is not a settled figure.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 7. Προϋπολογισμός",
+          "anchor": "**€150.000 πλέον ΦΠΑ** για δημιουργικό, παραγωγή και αμοιβές",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Media is bought directly by the client through its media agency and is not included in the RFP amount (media spend is separate from the production budget). The CFO's kickoff account differs on scope — see conflicts.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 7. Προϋπολογισμός",
+          "anchor": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The client has been majority-owned by a fund since March, and the fund's investment committee approved the 2027 marketing plan in dollars.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:14:52]",
+          "anchor": "το marketing plan του 2027 το ενέκρινε το investment committee τους σε δολάρια",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The approved figure is two hundred thousand dollars (\"διακόσιες χιλιάδες δολάρια\"), all-in: creative, production, fees and media together. Differs from the RFP figure in currency and scope — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:14:52]",
+          "anchor": "διακόσιες χιλιάδες δολάρια",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Disbursement is made in euros at the exchange rate of the day the committee passes it, some time in November; the euro amount is therefore not yet known.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:15:47]",
+          "anchor": "Η εκταμίευση γίνεται σε ευρώ, με την ισοτιμία της ημέρας",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The media/production split has not been defined; Pavlos decides it with the media agency once the amount is locked in euros.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:16:38]",
+          "anchor": "Δεν έχει οριστεί. Το αποφασίζει ο Παύλος με τη media agency",
+          "speaker_or_author": "ARIS (Levanta, CFO), on the media/production split"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Previous agency Harbourline Digital reported an average paid social cost per booking of €4,10 (past-agency context forwarded by Pavlos; not a 2027 commitment, and whether it serves as a benchmark is unconfirmed).",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 3** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-12 09:15",
+          "anchor": "Μέσο κόστος ανά κράτηση από paid social: €4,10",
+          "speaker_or_author": "Harbourline Digital (previous agency), forwarded by Pavlos (Levanta)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "implied"
+    }
+  ],
+  "mandatories": [
+    {
+      "content": "The company name Levanta Lines and the loyalty programme Levanta Club are always written in full in Latin characters — never transliterated into Greek, never shortened to \"Club\".",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Ονόματα & tagline",
+          "anchor": "γράφονται πάντα σε λατινικούς χαρακτήρες, πλήρη",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The tagline Sail Your Summer is approved and its use is mandatory on all campaign materials; it is used verbatim, without translation or paraphrase (stated in the brand guidelines, the RFP and the kickoff).",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Ονόματα & tagline",
+          "anchor": "Το tagline **Sail Your Summer** χρησιμοποιείται αυτούσιο",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 8. Λοιπά",
+          "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:52]",
+          "anchor": "το tagline, το Sail Your Summer, μένει",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Primary palette: Levante Blue #164E7A and Sand White #F4EFE6.",
+      "original_lang": "en",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Χρώμα & εικόνα",
+          "anchor": "Primary palette: Levante Blue #164E7A, Sand White #F4EFE6",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Accent colour Harbour Orange #F28C28, only on CTA.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Χρώμα & εικόνα",
+          "anchor": "Accent: Harbour Orange #F28C28, μόνο σε CTA",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The sea always appears calm; never images with waves, wind or rain on the deck.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Χρώμα & εικόνα",
+          "anchor": "Η θάλασσα εμφανίζεται πάντα ήρεμη",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Every price in advertising material is the final price the passenger pays, including taxes and port fees. Conflicts with the fine-print request made at the kickoff — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Τιμές — αυστηροί κανόνες",
+          "anchor": "είναι η **τελική τιμή** που πληρώνει ο επιβάτης",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "A \"from\" price is allowed only as a final price: taxes and fees appear at the same visual level and in the same font size as the price, never in a footnote. Conflicts with the fine-print request made at the kickoff — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Τιμές — αυστηροί κανόνες",
+          "anchor": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "At the kickoff the Commercial Director wanted taxes and port fees to go in the fine print, \"as everyone in the market does\". Contradicts the brand guidelines' price rules — see conflicts.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:05]",
+          "anchor": "οι φόροι με τα λιμενικά τέλη να μπαίνουν στα ψιλά γράμματα",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "No image of passengers in the garage or on the bow while under way.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Ασφάλεια & ισχυρισμοί",
+          "anchor": "Καμία εικόνα επιβατών στο γκαράζ ή στην πλώρη εν πλω",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "No speed claim (\"the fastest\") without verification from the approved routes.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Ασφάλεια & ισχυρισμοί",
+          "anchor": "Κανένας ισχυρισμός ταχύτητας («το πιο γρήγορο») χωρίς επαλήθευση",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "No comparison that names a competitor.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Ασφάλεια & ισχυρισμοί",
+          "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Tone (labelled \"guidance\" in the brand guidelines): warm, everyday Greek, with natural use of English terms where the traveller uses them (app, early booking); a promise of rest, not adventure. Whether this is binding for the project is unconfirmed.",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Tone (guidance)",
+          "anchor": "Υπόσχεση ξεκούρασης, όχι περιπέτειας",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The brand guidelines apply; version 4.0 is the version in force (RFP: the attached guidelines apply; email: version 4.0 applies).",
+      "original_lang": "mixed",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 8. Λοιπά",
+          "anchor": "Ισχύουν οι οδηγίες των συνημμένων brand guidelines",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 2** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-11 12:40",
+          "anchor": "brand guidelines (ισχύει η έκδοση 4.0)",
+          "speaker_or_author": "Sofia (Levanta, Digital Marketing Manager)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The RFP states that the campaign concerns the Greek market exclusively. Contradicted at the kickoff (Germany and Italy, digital only) — see conflicts; not a settled restriction.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Context from the RFP: the current plastic-card programme is discontinued and Levanta Club moves entirely to the company's new mobile app. Whether this constrains campaign content is not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 1. Πλαίσιο",
+          "anchor": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Do not write Levanta Club perks that have not been decided; the client will send them once they have passed the board (ΔΣ).",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:05:15]",
+          "anchor": "Μη γράψετε προνόμια που δεν έχουμε αποφασίσει",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Do not convert the approved dollar figure into euros in the proposal: a different number would result and it would raise an issue with the client's controls.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:15:47]",
+          "anchor": "Μην το μετατρέψετε εσείς σε ευρώ στην πρόταση",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Approval of the creative is not settled: Pavlos handles the brief; for the creative the commercial team will be involved because it contains prices, and the fund may also want to see it. He will clarify and tell the agency.",
+      "original_lang": "el",
+      "evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:20:41]",
+          "anchor": "μπαίνει και το εμπορικό, και ίσως θέλει να το δει και το fund",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing), on who approves the creative"
+        }
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "objectives",
+      "gap": "No agreed measurable target: the RFP gives none; the kickoff states 25% of early booking bookings through the app (no baseline, timeframe or definition); a later email relays a 35% target set by Άρης as a KPI (no base or period). The two figures differ.",
+      "why_it_matters": "A KPI with an unclear figure, base and period cannot be measured or reported against, and the campaign's success criterion depends on it.",
+      "suggested_question_for_client": "Ποιο είναι το σωστό ποσοστό στόχου για τις κρατήσεις early booking μέσα από το app: το 25% που ειπώθηκε στο kickoff ή το 35% του τελευταίου email; Ποιο είναι το σημερινό ποσοστό, για ποια περίοδο ισχύει, και μετρούν μόνο οι κρατήσεις early booking ή το σύνολο των κρατήσεων; Ποιος αποφασίζει τον στόχο (ο ρόλος του Άρη);",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:02:52]",
+          "anchor": "ο εμπορικός στόχος είναι το 25% των κρατήσεων",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        },
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 5** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-17 11:20",
+          "anchor": "έθεσε στόχο **35%** των κρατήσεων early booking",
+          "speaker_or_author": "Sofia (Levanta, Digital Marketing Manager), relaying a target set by Άρης at the kickoff"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 2. Στόχοι",
+          "anchor": "Αύξηση των απευθείας κρατήσεων (website και app)",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "objectives",
+      "gap": "The Levanta Club leg of the objective is stated loosely (what 'Τις κάρτες τις κλείνουμε' means, any target for sign-ups) and the new perks are not yet decided.",
+      "why_it_matters": "Without a stated Levanta Club outcome and confirmed perks, no Levanta Club messaging can be briefed.",
+      "suggested_question_for_client": "Ποιος είναι ο στόχος για το Levanta Club στην καμπάνια (π.χ. αριθμός νέων μελών μέσω app), και τι εννοείτε ακριβώς με το «τις κάρτες τις κλείνουμε»;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:04:30]",
+          "anchor": "Τις κάρτες τις κλείνουμε, όλο περνάει στο app",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 2. Στόχοι",
+          "anchor": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "objectives",
+      "gap": "Tracking and attribution inside the new app are unknown: no analytics tool or start date is given, and the old app has none.",
+      "why_it_matters": "If the app-share target cannot be measured by channel, the success of the campaign cannot be proven.",
+      "suggested_question_for_client": "Ποιο analytics εργαλείο θα έχει το νέο app και από ποια ημερομηνία, ώστε να μετράμε τον στόχο και το attribution ανά κανάλι;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:19:45]",
+          "anchor": "Στο νέο υποτίθεται ότι θα έχει analytics",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ]
+    },
+    {
+      "field": "audiences",
+      "gap": "The RFP says Greece only; the client's Head of Marketing said at the kickoff that Germany and Italy (digital only) are added. It is not stated whether the same audience segments apply in Germany and Italy, or whether the RFP's Greece-only statement no longer holds.",
+      "why_it_matters": "Targeting, media mix and creative scope differ if two foreign markets are added to a Greece-only audience.",
+      "suggested_question_for_client": "Για Γερμανία και Ιταλία, απευθυνόμαστε στα ίδια κοινά (οικογένειες με ΙΧ και νέοι foot passengers) ή σε διαφορετικά; Και επιβεβαιώνετε ότι το «μόνο Ελλάδα» του RFP δεν ισχύει πια;",
+      "linked_evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:06:20]",
+          "anchor": "να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ]
+    },
+    {
+      "field": "audiences",
+      "gap": "The language of the materials for Germany and Italy is undecided (English for all, or localised German and Italian); Pavlos said it is being discussed internally (2026-09-16) and the agency was still waiting on 2026-09-17.",
+      "why_it_matters": "The language decision determines how many versions of each asset are needed and drives production cost and timing.",
+      "suggested_question_for_client": "Μπορείτε να μας πείτε σε ποια γλώσσα θα είναι τα υλικά για Γερμανία και Ιταλία (αγγλικά για όλους ή localised γερμανικά και ιταλικά) και πότε αναμένεται η απόφαση;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:07:14]",
+          "anchor": "Ίσως αγγλικά στην αρχή, δεν ξέρω",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Deliverables are listed without quantities, formats or durations (hero video and cutdowns, ad formats, number of OOH sites, email and app notification volume).",
+      "why_it_matters": "Production cost and the fee fit within the stated budget depend on the exact volumes and formats.",
+      "suggested_question_for_client": "Μπορείτε να μας δώσετε τον αναμενόμενο αριθμό και τις διάρκειες των video και των cutdowns, τα formats των ads και των OOH, και πόσα emails και ειδοποιήσεις app προβλέπετε;",
+      "linked_evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 5. Ζητούμενα παραδοτέα",
+          "anchor": "Hero video και cutdowns για social media",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "The RFP deliverables list was confirmed as valid 'as is' without being restated, and retargeting and push notifications were named without stating whether they are additions to that list.",
+      "why_it_matters": "The scope, and the production and media budget, depend on the exact deliverable list.",
+      "suggested_question_for_client": "Το ριτάργκετινγκ και τα push notifications που αναφέρθηκαν στο kickoff είναι επιπλέον των παραδοτέων του RFP ή ήδη περιλαμβάνονται σε αυτά;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:08:33]",
+          "anchor": "Ναι, ισχύουν όπως είναι",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing), on the RFP deliverables list"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:08:33]",
+          "anchor": "όποιος μπήκε στο booking engine και δεν ολοκλήρωσε",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:09:21]",
+          "anchor": "στο app για τα μέλη, με τις προσφορές της εβδομάδας",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "A branded podcast was floated as an off-the-cuff idea, explicitly not discussed internally; no objective links it to the audience.",
+      "why_it_matters": "We must not budget or plan a deliverable the client has not committed to.",
+      "suggested_question_for_client": "Το branded podcast που αναφέρθηκε ήταν απλώς μια σκέψη. Θέλετε να το διερευνήσουμε ως πιθανό παραδοτέο και με ποιον στόχο;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:11:30]",
+          "anchor": "just thinking out loud: ένα branded podcast για τα νησιά",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "The \"from €29\" price claim does not state which fare, route, season or conditions it refers to, or whether taxes and port fees are included.",
+      "why_it_matters": "A headline price in the key visual creates a commitment to the customer that must be substantiated.",
+      "suggested_question_for_client": "Το «από €29» αφορά ποιο δρομολόγιο και ποια κατηγορία εισιτηρίου, με ποιες προϋποθέσεις ισχύει, και περιλαμβάνει φόρους και λιμενικά τέλη;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:05]",
+          "anchor": "μεγάλο «από €29»",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "The new Levanta Club perks are not yet available (Sofia, 2026-09-11: nothing yet), the client said they will be sent once they pass the board, and no later message provides them.",
+      "why_it_matters": "The perks are likely a core message for the early booking offer, and creative cannot be finalised without them.",
+      "suggested_question_for_client": "Πότε αναμένετε να κλειδώσουν τα νέα προνόμια του Levanta Club και ποιος θα μας τα στείλει;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:05:15]",
+          "anchor": "Μη γράψετε προνόμια που δεν έχουμε αποφασίσει",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 4. Βασικά μηνύματα",
+          "anchor": "Το νέο Levanta Club ζει πλέον στο app",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "Go-live date: the RFP and an earlier email say 15 January 2027; Pavlos's email of 2026-09-16 moves it to 2 February 2027. At the kickoff a risk with the new booking engine was mentioned (partly inaudible). The effect on the campaign end date of 31 March 2027 is not stated.",
+      "why_it_matters": "The go-live date anchors the whole campaign calendar and creative delivery deadlines.",
+      "suggested_question_for_client": "Επιβεβαιώνετε ότι το go-live είναι πλέον 2 Φεβρουαρίου 2027 και ότι η 15η Ιανουαρίου δεν ισχύει; Αλλάζει και η λήξη της καμπάνιας (31 Μαρτίου 2027); Ποιο είναι το ρίσκο με το νέο booking engine;",
+      "linked_evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 6. Χρονοδιάγραμμα",
+          "anchor": "Go-live της καμπάνιας **15 Ιανουαρίου 2027**",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 4** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-16 18:30",
+          "anchor": "μετατίθεται για **2 Φεβρουαρίου 2027**",
+          "speaker_or_author": "Pavlos (Levanta)"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:17:31]",
+          "anchor": "ανοίγει μέσα Ιανουαρίου κάθε χρόνο, ναι",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+        }
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "The success horizon 'μέχρι τον Απρίλιο' names no year.",
+      "why_it_matters": "The end of the measurement window shapes the flighting and reporting plan.",
+      "suggested_question_for_client": "Με το «μέχρι τον Απρίλιο» εννοείτε Απρίλιο 2027;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:00:41]",
+          "anchor": "μέχρι τον Απρίλιο για να πείτε «πέτυχε»",
+          "speaker_or_author": "ELENI (Northlight, account lead)"
+        }
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "The new app with Levanta Club is not live and has no release date (IT has not given one; Marina hopes for December); a release date requested on 2026-09-09 has not been given in any later message. The RFP does not say whether the new Levanta Club experience will be live at go-live.",
+      "why_it_matters": "The app-based booking goal, the Levanta Club sign-up objective and the message that Levanta Club now lives in the app depend on the app being available at go-live.",
+      "suggested_question_for_client": "Ποια είναι η ημερομηνία κυκλοφορίας του νέου app με το Levanta Club, και τι θα γίνει αν δεν είναι έτοιμο στο go-live;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:18:18]",
+          "anchor": "Εγώ ελπίζω Δεκέμβριο",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 4. Βασικά μηνύματα",
+          "anchor": "Το νέο Levanta Club ζει πλέον στο app",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "budget",
+      "gap": "The RFP gives €150.000 plus VAT for creative, production and fees, media excluded; the CFO said at the kickoff that the fund's committee approved two hundred thousand dollars all-in (including media), with the euro amount known only after the committee passes it some time in November. It is not stated whether the dollar figure replaces the RFP figure.",
+      "why_it_matters": "The total budget, its currency and what it covers determine scope, channel mix and what can be quoted in the proposal.",
+      "suggested_question_for_client": "Επιβεβαιώνετε ότι το ποσό των διακοσίων χιλιάδων δολαρίων all-in αντικαθιστά το ποσό του RFP; Και ποια ακριβώς ημερομηνία αναμένεται η απόφαση του committee και το ποσό σε ευρώ;",
+      "linked_evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 7. Προϋπολογισμός",
+          "anchor": "**€150.000 πλέον ΦΠΑ** για δημιουργικό, παραγωγή και αμοιβές",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:14:52]",
+          "anchor": "διακόσιες χιλιάδες δολάρια",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:15:47]",
+          "anchor": "Η εκταμίευση γίνεται σε ευρώ, με την ισοτιμία της ημέρας",
+          "speaker_or_author": "ARIS (Levanta, CFO)"
+        }
+      ]
+    },
+    {
+      "field": "budget",
+      "gap": "The split between media spend and production is not defined, and the media amount bought by the client via its media agency is not stated.",
+      "why_it_matters": "The channel mix and the scale of the OOH, display and social work depend on the media budget available.",
+      "suggested_question_for_client": "Ποιο μέρος του budget αφορά media spend και ποιο παραγωγή, και πώς θα συντονιστούμε με τη media agency σας στο media planning;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:16:38]",
+          "anchor": "Δεν έχει οριστεί. Το αποφασίζει ο Παύλος με τη media agency",
+          "speaker_or_author": "ARIS (Levanta, CFO), on the media/production split"
+        },
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 7. Προϋπολογισμός",
+          "anchor": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "budget",
+      "gap": "The forwarded Harbourline note gives an average paid-social cost per booking of €4,10; it is past-agency context, not a 2027 commitment, and it is unclear whether it should serve as a planning benchmark.",
+      "why_it_matters": "Using a past-season cost per booking as a benchmark without confirmation could distort channel mix and budget expectations.",
+      "suggested_question_for_client": "Το μέσο κόστος ανά κράτηση από paid social των €4,10 της Harbourline θέλετε να το χρησιμοποιήσουμε ως βάση σύγκρισης για το 2027;",
+      "linked_evidence": [
+        {
+          "source_id": "emails_thread",
+          "location": "**Message 3** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-12 09:15",
+          "anchor": "Μέσο κόστος ανά κράτηση από paid social: €4,10",
+          "speaker_or_author": "Harbourline Digital (previous agency), forwarded by Pavlos (Levanta)"
+        }
+      ]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The brand guidelines label the tone section as 'guidance' rather than a firm rule, so it is unclear whether the tone is binding for this project.",
+      "why_it_matters": "Tone shapes all copy and scripts; treating guidance as a hard rule (or the reverse) risks rework or off-brand output.",
+      "suggested_question_for_client": "Οι οδηγίες για το tone (ζεστά, καθημερινά ελληνικά, υπόσχεση ξεκούρασης και όχι περιπέτειας) ισχύουν ως δεσμευτικός κανόνας για αυτό το έργο ή ως γενική κατεύθυνση;",
+      "linked_evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Tone (guidance)",
+          "anchor": "Υπόσχεση ξεκούρασης, όχι περιπέτειας",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        }
+      ]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP context states that the plastic-card loyalty programme is discontinued and Levanta Club moves entirely into the app, but does not say whether this is a rule the campaign content must follow (e.g. no reference to the card, app-only sign-up).",
+      "why_it_matters": "If it binds the creative, any material that mentions the card or a non-app sign-up route would be non-compliant.",
+      "suggested_question_for_client": "Το ότι το πρόγραμμα με τις πλαστικές κάρτες καταργείται και το Levanta Club μεταφέρεται εξ ολοκλήρου στο app, θέτει περιορισμούς στο περιεχόμενο της καμπάνιας, π.χ. να μην αναφέρεται καθόλου η κάρτα ή οι υπάρχοντες κάτοχοι να ενημερώνονται με συγκεκριμένο τρόπο;",
+      "linked_evidence": [
+        {
+          "source_id": "rfp_levanta",
+          "location": "## 1. Πλαίσιο",
+          "anchor": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται",
+          "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+        }
+      ]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The client wants taxes and port fees in the fine print beneath a large headline price, while the brand guidelines require them at the same visual level and size as the price; it is not stated which governs or whether a regulatory requirement or client policy applies.",
+      "why_it_matters": "For a regulated client, how prices and fees are displayed is a compliance-critical requirement.",
+      "suggested_question_for_client": "Ποιος κανόνας ισχύει για την εμφάνιση φόρων και λιμενικών τελών δίπλα στην τιμή «από»: οι οδηγίες των brand guidelines ή η τοποθέτηση στα ψιλά γράμματα; Υπάρχει κανονιστική απαίτηση ή εσωτερική πολιτική που μπορείτε να μας στείλετε;",
+      "linked_evidence": [
+        {
+          "source_id": "background_brand_guidelines",
+          "location": "## Τιμές — αυστηροί κανόνες",
+          "anchor": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή",
+          "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:13:05]",
+          "anchor": "οι φόροι με τα λιμενικά τέλη να μπαίνουν στα ψιλά γράμματα",
+          "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+        }
+      ]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The person who gives final creative approval has not been named. Sofia says 'το κρατάει ο Παύλος' without confirming he is the approver; at the kickoff Pavlos said the commercial team will be involved and the fund may want to see the creative, and that he would clarify; the agency was still waiting for a name on 2026-09-17.",
+      "why_it_matters": "Without a named approver and approval chain the approval step can stall and delay the campaign.",
+      "suggested_question_for_client": "Ποιοι εγκρίνουν το δημιουργικό, με ποια σειρά, και θα το δει το fund; Είναι ο Παύλος το πρόσωπο που δίνει το τελικό approval ή κάποιος άλλος; Πότε θα το ξεκαθαρίσετε;",
+      "linked_evidence": [
+        {
+          "source_id": "transcript_kickoff",
+          "location": "[00:20:41]",
+          "anchor": "μπαίνει και το εμπορικό, και ίσως θέλει να το δει και το fund",
+          "speaker_or_author": "PAVLOS (Levanta, Head of Marketing), on who approves the creative"
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "field": "timeline",
+      "positions": [
+        {
+          "statement": "Campaign go-live is 15 January 2027 (RFP).",
+          "evidence": {
+            "source_id": "rfp_levanta",
+            "location": "## 6. Χρονοδιάγραμμα",
+            "anchor": "Go-live της καμπάνιας **15 Ιανουαρίου 2027**",
+            "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+          }
+        },
+        {
+          "statement": "Campaign go-live is moved to 2 February 2027 (Pavlos's email of 2026-09-16, which states that it replaces the earlier dates).",
+          "evidence": {
+            "source_id": "emails_thread",
+            "location": "**Message 4** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-16 18:30",
+            "anchor": "μετατίθεται για **2 Φεβρουαρίου 2027**",
+            "speaker_or_author": "Pavlos (Levanta)"
+          }
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "audiences",
+      "positions": [
+        {
+          "statement": "The campaign concerns the Greek market exclusively (RFP).",
+          "evidence": {
+            "source_id": "rfp_levanta",
+            "location": "## 3. Κοινό-στόχος",
+            "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά",
+            "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+          }
+        },
+        {
+          "statement": "It is not Greece only: management decided in July to open Germany and Italy as well, digital only (Pavlos at the kickoff).",
+          "evidence": {
+            "source_id": "transcript_kickoff",
+            "location": "[00:06:20]",
+            "anchor": "να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital",
+            "speaker_or_author": "PAVLOS (Levanta, Head of Marketing)"
+          }
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "budget",
+      "positions": [
+        {
+          "statement": "€150.000 plus VAT for creative, production and fees, with media bought separately by the client and not included (RFP).",
+          "evidence": {
+            "source_id": "rfp_levanta",
+            "location": "## 7. Προϋπολογισμός",
+            "anchor": "**€150.000 πλέον ΦΠΑ** για δημιουργικό, παραγωγή και αμοιβές",
+            "speaker_or_author": "Levanta Lines Ναυτιλιακή Α.Ε."
+          }
+        },
+        {
+          "statement": "The fund's investment committee approved the 2027 marketing plan in dollars: two hundred thousand dollars (\"διακόσιες χιλιάδες δολάρια\"), all-in — creative, production, fees and media together; disbursement in euros at the day's exchange rate (CFO at the kickoff).",
+          "evidence": {
+            "source_id": "transcript_kickoff",
+            "location": "[00:14:52]",
+            "anchor": "διακόσιες χιλιάδες δολάρια",
+            "speaker_or_author": "ARIS (Levanta, CFO)"
+          }
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "objectives",
+      "positions": [
+        {
+          "statement": "Commercial target: 25% of early booking (heard as «έρλι μπούκινγκ»; proposed match \"early booking\", unconfirmed) bookings through the app (Marina at the kickoff).",
+          "evidence": {
+            "source_id": "transcript_kickoff",
+            "location": "[00:02:52]",
+            "anchor": "ο εμπορικός στόχος είναι το 25% των κρατήσεων",
+            "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+          }
+        },
+        {
+          "statement": "Άρης set a target of 35% of early booking bookings through the app, to be entered as a KPI (Sofia's email of 2026-09-17, second-hand).",
+          "evidence": {
+            "source_id": "emails_thread",
+            "location": "**Message 5** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-17 11:20",
+            "anchor": "έθεσε στόχο **35%** των κρατήσεων early booking",
+            "speaker_or_author": "Sofia (Levanta, Digital Marketing Manager), relaying a target set by Άρης at the kickoff"
+          }
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "mandatories",
+      "positions": [
+        {
+          "statement": "A \"from\" price is allowed only as a final price; taxes and fees appear at the same visual level and font size as the price, never in a footnote (brand guidelines v4.0).",
+          "evidence": {
+            "source_id": "background_brand_guidelines",
+            "location": "## Τιμές — αυστηροί κανόνες",
+            "anchor": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή",
+            "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0"
+          }
+        },
+        {
+          "statement": "Taxes and port fees to go in the fine print, \"as everyone in the market does\" (Marina at the kickoff).",
+          "evidence": {
+            "source_id": "transcript_kickoff",
+            "location": "[00:13:05]",
+            "anchor": "οι φόροι με τα λιμενικά τέλη να μπαίνουν στα ψιλά γράμματα",
+            "speaker_or_author": "MARINA (Levanta, Commercial Director)"
+          }
+        }
+      ],
+      "status": "open"
+    }
+  ],
+  "signoff": {
+    "status": "draft"
+  },
+  "readiness": {
+    "fields_with_evidence": 7,
+    "low_confidence_share": 0.2542,
+    "open_question_count": 20,
+    "verdict": "ready_for_review"
+  }
+}

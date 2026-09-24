@@ -54,3 +54,5 @@ tools/walkthrough/archive/codex_round/*/work/
 tools/walkthrough/archive/codex_round/*.log
 tools/walkthrough/archive/redesign/*.log
 tools/walkthrough/archive/redesign/chrome/
+!runs/r2-live
+runs/r2-live/latest

@@ -1,0 +1,21 @@
+{
+  "client_id": "levanta_lines",
+  "sensitivity_tier": "S1",
+  "terms": [
+    { "term": "Levanta Lines", "rule": "keep_latin", "note": "Company name — never transliterate." },
+    { "term": "Levanta Club", "rule": "keep_latin", "note": "Loyalty programme name — never transliterate, never shorten to 'Club'." },
+    { "term": "Sail Your Summer", "rule": "keep_latin", "note": "Mandatory campaign tagline — character-exact in every render." },
+    { "term": "early booking", "rule": "keep_latin", "note": "Standard EN travel-trade term in agency Greek." },
+    { "term": "retargeting", "rule": "keep_latin", "note": "Standard EN performance-marketing term." },
+    { "term": "push notifications", "rule": "keep_latin", "note": "Standard EN app-channel term." },
+    { "term": "booking engine", "rule": "keep_latin", "note": "Client's own term for the reservation platform." },
+    { "term": "foot passengers", "rule": "keep_latin", "note": "Shipping-trade term for passengers without a vehicle." },
+    { "term": "key visual", "rule": "keep_latin", "note": "Standard EN creative term." },
+    { "term": "hero video", "rule": "keep_latin", "note": "Standard EN deliverable term." },
+    { "term": "landing page", "rule": "keep_latin", "note": "Standard EN digital term." },
+    { "term": "OOH", "rule": "keep_latin", "note": "Acronym stays Latin." },
+    { "term": "OTAs", "rule": "keep_latin", "note": "Online travel agencies; acronym stays Latin." },
+    { "term": "KPI", "rule": "keep_latin", "note": "Acronym stays Latin." },
+    { "term": "media spend", "rule": "keep_latin", "note": "Budget term; distinct from production budget — never merge the two." }
+  ]
+}

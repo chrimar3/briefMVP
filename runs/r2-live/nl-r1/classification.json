@@ -1,0 +1,23 @@
+{
+  "project_id": "northlight_01",
+  "client_id": "meltemi_beverages",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S1",
+  "tier_source": "client_config",
+  "rationale": "The RFP and kickoff transcript explicitly request a campaign launch with creative deliverables (videos, key visuals) for audience engagement via TikTok and social channels. This is audience-facing creative work for a product launch.",
+  "evidence": [
+    {
+      "source_id": "rfp_meltemi",
+      "location": "Section 4: Απαιτήσεις καμπάνιας",
+      "anchor": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok. Παρουσία σε social media και ψηφιακά κανάλια. Δημιουργικό υλικό για το launch (βίντεο, key visuals)."
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "Lines 19–20",
+      "anchor": "Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς."
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "rfp_meltemi",
+    "source_type": "rfp",
+    "source_date": "2026-06-28",
+    "extraction_ts": "2026-09-23T21:06:12+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+      "lang": "mixed",
+      "location": "## 2. Στόχος",
+      "anchor": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα",
+      "lang": "mixed",
+      "location": "## 3. Κοινό-στόχος",
+      "anchor": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [],
+  "deliverables": [
+    {
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Launch την πρώτη εβδομάδα του Οκτωβρίου 2026, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης",
+      "lang": "mixed",
+      "location": "## 5. Χρονοδιάγραμμα",
+      "anchor": "Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media",
+      "lang": "mixed",
+      "location": "## 6. Προϋπολογισμός",
+      "anchor": "Συνολικός προϋπολογισμός **€90.000, συμπεριλαμβανομένου του media**",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Στρατηγική TikTok-first: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok",
+      "lang": "mixed",
+      "location": "## 4. Απαιτήσεις καμπάνιας",
+      "anchor": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "lang": "mixed",
+      "location": "## 7. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "speaker_or_author": "Meltemi Beverages S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "objectives",
+      "gap": "The objective is stated only as a 'successful launch'; no measurable outcome, KPI or target is given.",
+      "why_it_matters": "Without a measurable goal we cannot judge whether the proposed strategy, channel mix and budget are fit for purpose.",
+      "suggested_question_for_client": "Τι σημαίνει για εσάς «επιτυχημένο launch»; Υπάρχουν συγκεκριμένα KPI ή στόχοι (π.χ. brand awareness, δοκιμές προϊόντος, πωλήσεις) που θα το μετρήσουν;",
+      "linked_items": ["objectives[0]"]
+    },
+    {
+      "field": "key_messages",
+      "gap": "The RFP states no key message or proposition for Meltemi Fizz.",
+      "why_it_matters": "The creative territory depends on what the client wants the audience to take away.",
+      "suggested_question_for_client": "Υπάρχει κάποιο βασικό μήνυμα ή θέση για το Meltemi Fizz που θέλετε να επικοινωνήσουμε, ή αναμένετε να το προτείνουμε εμείς;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Creative material is listed as 'βίντεο, key visuals' with no quantities, formats, lengths or channel breakdown; 'social media και ψηφιακά κανάλια' is not specified further.",
+      "why_it_matters": "Scope of production and the cost estimate depend on the number and type of assets and on which channels are covered.",
+      "suggested_question_for_client": "Πόσα και τι είδους βίντεο και key visuals περιμένετε, και σε ποια συγκεκριμένα social και ψηφιακά κανάλια πέρα από το TikTok θέλετε παρουσία;",
+      "linked_items": ["deliverables[0]", "deliverables[1]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "Launch is given as 'the first week of October 2026' with no exact date; no dates are given for the proposal, approvals, production or the point-of-sale placement deadline that drives the launch.",
+      "why_it_matters": "Production and approval milestones are worked back from the exact launch date and the point-of-sale placement deadline.",
+      "suggested_question_for_client": "Ποια ακριβώς ημερομηνία είναι το launch μέσα στην πρώτη εβδομάδα του Οκτωβρίου 2026, και ποια είναι η καταληκτική ημερομηνία για την τοποθέτηση στα σημεία πώλησης;",
+      "linked_items": ["timeline[0]"]
+    },
+    {
+      "field": "budget",
+      "gap": "€90.000 is a total that includes media; it is not stated whether production, agency fees and VAT are also included, or how much is intended for media spend versus production.",
+      "why_it_matters": "It determines how much is actually available for media spend and for production.",
+      "suggested_question_for_client": "Τα €90.000 περιλαμβάνουν επίσης παραγωγή, αμοιβή agency και ΦΠΑ; Ποιο μέρος προορίζεται για media spend και ποιο για παραγωγή;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP mandates a TikTok-first strategy but states no objective or rationale linking that channel to the launch goal or audience.",
+      "why_it_matters": "If TikTok-first is a hard constraint rather than a preference, it shapes the whole creative and media approach.",
+      "suggested_question_for_client": "Το TikTok-first είναι υποχρεωτική απαίτηση ή προτίμηση; Τι σας οδήγησε σε αυτήν, και πώς σχετίζεται με τον στόχο του launch;",
+      "linked_items": []
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP refers to attached brand guidelines whose content was not available in this source, so the specific brand rules are unknown.",
+      "why_it_matters": "Brand rules are binding on all creative work and a missed rule means rework or a compliance issue.",
+      "suggested_question_for_client": "Μπορείτε να μας στείλετε τα συνημμένα brand guidelines, και να μας επισημάνετε ποιες οδηγίες είναι απαράβατες για το Meltemi Fizz;",
+      "linked_items": ["mandatories[1]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Section 7 refers to attached guidelines; the attachments are not part of this source and nothing was extracted from them.",
+    "Section 1 product facts (sparkling tea, zero sugar, three flavours, new category) are context, not client-stated key messages, and were not extracted as key_messages."
+  ]
+}

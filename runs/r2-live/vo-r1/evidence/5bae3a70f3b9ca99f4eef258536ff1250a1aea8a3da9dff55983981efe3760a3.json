@@ -1,0 +1,52 @@
+{
+  "_what_this_is": "Deterministic channel spec table (PRD DR-7). Channel dimensions, durations and file formats are FACTS, not creative decisions. The creative-shadow model SELECTS rows from this table and cites the row id; it NEVER generates a spec value. Every spec-shaped token in a creative brief must appear here byte-for-byte — that is the Tier-4 machine check.",
+  "_owner": "traffic/production team (DR-7). Maintained here as a stub for the pilot; a real deployment points at their live table.",
+  "_stub_notice": "Synthetic values for the demo. Plausible but not authoritative — confirm against platform docs before any real delivery.",
+  "specs": [
+    {
+      "id": "tiktok_infeed_video",
+      "channel": "TikTok",
+      "format": "In-feed video",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "duration": "9-60s",
+      "file_type": "MP4"
+    },
+    {
+      "id": "instagram_reel",
+      "channel": "Instagram",
+      "format": "Reel",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "duration": "up to 90s",
+      "file_type": "MP4"
+    },
+    {
+      "id": "instagram_story",
+      "channel": "Instagram",
+      "format": "Story",
+      "aspect_ratio": "9:16",
+      "resolution": "1080x1920",
+      "duration": "up to 60s",
+      "file_type": "MP4"
+    },
+    {
+      "id": "instagram_feed_image",
+      "channel": "Instagram",
+      "format": "Feed image (portrait)",
+      "aspect_ratio": "4:5",
+      "resolution": "1080x1350",
+      "duration": "n/a",
+      "file_type": "JPG"
+    },
+    {
+      "id": "key_visual_digital_master",
+      "channel": "Cross-channel",
+      "format": "Key visual — digital master",
+      "aspect_ratio": "1:1",
+      "resolution": "2048x2048",
+      "duration": "n/a",
+      "file_type": "PNG"
+    }
+  ]
+}

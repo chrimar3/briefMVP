@@ -1,0 +1,11 @@
+{
+  "source_id": "transcript_kickoff",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "budget[0]",
+      "problem": "The CFO's figure is hedged (approximate 'κάπου στα', 'ίσως' 125 only if money is tightened elsewhere) but is carried with qualifier 'stated' instead of 'conditional'.",
+      "evidence": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού"
+    }
+  ]
+}

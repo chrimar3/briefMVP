@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-15 (latest message)",
+    "extraction_ts": "2026-09-23T21:05:26+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [
+    {
+      "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου — θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "**το board μετέθεσε το launch για 15 Σεπτεμβρίου**",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "brand guidelines (ισχύει η έκδοση 3.1)",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "ισχύει η έκδοση 3.1",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The client states that version 3.1 of the brand guidelines is the valid one, but the email does not say which rules in them are binding for this brief; the attachment itself is not part of this source.",
+      "why_it_matters": "Brand rules are downstream-critical; a missed brand mandatory would surface late, at approval.",
+      "suggested_question_for_client": "Τα brand guidelines έκδοση 3.1 είναι δεσμευτικά στο σύνολό τους για αυτό το project; Υπάρχουν σημεία που θέλετε να τονίσουμε ιδιαίτερα ή εξαιρέσεις;",
+      "linked_items": ["mandatories[0]"]
+    },
+    {
+      "field": "mandatories",
+      "gap": "Final approver of the brief on the client side is not named: the client says it is 'between me and the management' and will come back; the agency is still waiting for the name.",
+      "why_it_matters": "The brief cannot be signed off, and the review timeline cannot be planned, without a named decision-maker.",
+      "suggested_question_for_client": "Ποιος θα κάνει το τελικό approval του brief από πλευράς σας — εσείς, κάποιο μέλος της διοίκησης ή και οι δύο; Μπορείτε να μας δώσετε το όνομα;",
+      "linked_items": []
+    },
+    {
+      "field": "timeline",
+      "gap": "The thread gives only the new launch date; the date it replaced and any intermediate milestones (concept, production, approval dates) are not stated, and the revised plan has not yet been sent.",
+      "why_it_matters": "A shorter run-up changes what can be produced and approved in time.",
+      "suggested_question_for_client": "Με το launch στις 15 Σεπτεμβρίου, υπάρχουν ενδιάμεσες ημερομηνίες (έγκριση concept, παραγωγή, παράδοση υλικού) που είναι ήδη κλειδωμένες από τη δική σας πλευρά;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Message 2: client has no category market research of its own ('Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο'); no brief field fits, recorded here only.",
+    "Message 3 (Eleni, Northlight, 2026-07-15 10:05) acknowledges the 15/9 date and promises a revised plan; agency-side statement, not extracted as a client item."
+  ]
+}

@@ -1,0 +1,1007 @@
+{
+  "boundary": "Evidence-link accounting; human review must confirm meaning and source completeness",
+  "records": [
+    {
+      "field": "mandatories",
+      "value": "Η επωνυμία **Levanta Lines** και το πρόγραμμα επιβράβευσης **Levanta Club** γράφονται πάντα σε λατινικούς χαρακτήρες, πλήρη. Ποτέ μεταγραμμένα στα ελληνικά, ποτέ σκέτο «Club».",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Ονόματα & tagline",
+        "anchor": "γράφονται πάντα σε λατινικούς χαρακτήρες, πλήρη"
+      },
+      "id": "d547cc445056451accc2",
+      "destinations": [
+        "mandatories[0]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το tagline **Sail Your Summer** χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Ονόματα & tagline",
+        "anchor": "Το tagline **Sail Your Summer** χρησιμοποιείται αυτούσιο"
+      },
+      "id": "bc78a57cd4f23738133c",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Primary palette: Levante Blue #164E7A, Sand White #F4EFE6.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Χρώμα & εικόνα",
+        "anchor": "Primary palette: Levante Blue #164E7A, Sand White #F4EFE6"
+      },
+      "id": "bdcc932128b144f19b5d",
+      "destinations": [
+        "mandatories[2]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Accent: Harbour Orange #F28C28, μόνο σε CTA.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Χρώμα & εικόνα",
+        "anchor": "Accent: Harbour Orange #F28C28, μόνο σε CTA"
+      },
+      "id": "bfcab5d92134e8a20da8",
+      "destinations": [
+        "mandatories[3]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Η θάλασσα εμφανίζεται πάντα ήρεμη· ποτέ εικόνες με κυματισμό, αέρα ή βροχή στο κατάστρωμα.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Χρώμα & εικόνα",
+        "anchor": "Η θάλασσα εμφανίζεται πάντα ήρεμη"
+      },
+      "id": "386dfc261918f1528340",
+      "destinations": [
+        "mandatories[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Κάθε τιμή σε διαφημιστικό υλικό είναι η **τελική τιμή** που πληρώνει ο επιβάτης, με φόρους και λιμενικά τέλη.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Τιμές — αυστηροί κανόνες",
+        "anchor": "είναι η **τελική τιμή** που πληρώνει ο επιβάτης"
+      },
+      "id": "c51a75064be45a4738d7",
+      "destinations": [
+        "mandatories[5]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή: οι φόροι και τα τέλη εμφανίζονται στο ίδιο οπτικό επίπεδο και στο ίδιο μέγεθος γραμματοσειράς με την τιμή, ποτέ σε υποσημείωση.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Τιμές — αυστηροί κανόνες",
+        "anchor": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή"
+      },
+      "id": "1548b96cb79d51068854",
+      "destinations": [
+        "mandatories[6]",
+        "open_questions[18]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Καμία εικόνα επιβατών στο γκαράζ ή στην πλώρη εν πλω.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Ασφάλεια & ισχυρισμοί",
+        "anchor": "Καμία εικόνα επιβατών στο γκαράζ ή στην πλώρη εν πλω"
+      },
+      "id": "8e8b4f4cb6e1e195a607",
+      "destinations": [
+        "mandatories[8]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Κανένας ισχυρισμός ταχύτητας («το πιο γρήγορο») χωρίς επαλήθευση από τα εγκεκριμένα δρομολόγια",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Ασφάλεια & ισχυρισμοί",
+        "anchor": "Κανένας ισχυρισμός ταχύτητας («το πιο γρήγορο») χωρίς επαλήθευση"
+      },
+      "id": "7ee3d3ba5948c7811b44",
+      "destinations": [
+        "mandatories[9]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Ασφάλεια & ισχυρισμοί",
+        "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή"
+      },
+      "id": "c44942c5f60569b54122",
+      "destinations": [
+        "mandatories[10]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Ζεστά, καθημερινά ελληνικά, με φυσική χρήση αγγλικών όρων όπου τους χρησιμοποιεί ο ταξιδιώτης (app, early booking). Υπόσχεση ξεκούρασης, όχι περιπέτειας.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Tone (guidance)",
+        "anchor": "Υπόσχεση ξεκούρασης, όχι περιπέτειας"
+      },
+      "id": "ed822bd1b54944066521",
+      "destinations": [
+        "mandatories[11]",
+        "open_questions[16]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "ο Άρης έθεσε στόχο 35% των κρατήσεων early booking μέσα από το app — παρακαλώ να μπει ως KPI",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 5** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-17 11:20",
+        "anchor": "έθεσε στόχο **35%** των κρατήσεων early booking"
+      },
+      "id": "3b005f2eb101a53e60c6",
+      "destinations": [
+        "objectives[5]",
+        "open_questions[0]",
+        "conflicts[3]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "το go-live της καμπάνιας μετατίθεται για 2 Φεβρουαρίου 2027",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 4** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-16 18:30",
+        "anchor": "μετατίθεται για **2 Φεβρουαρίου 2027**"
+      },
+      "id": "bc3951c9440d1343640d",
+      "destinations": [
+        "timeline[2]",
+        "open_questions[10]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Μέσο κόστος ανά κράτηση από paid social: €4,10",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 3** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-12 09:15",
+        "anchor": "Μέσο κόστος ανά κράτηση από paid social: €4,10"
+      },
+      "id": "ed3fd6a9bbfbc7603de0",
+      "destinations": [
+        "budget[6]",
+        "open_questions[15]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "brand guidelines (ισχύει η έκδοση 4.0)",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-11 12:40",
+        "anchor": "brand guidelines (ισχύει η έκδοση 4.0)"
+      },
+      "id": "1a1159bb42a6409b5a73",
+      "destinations": [
+        "mandatories[12]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "το go-live μένει 15 Ιανουαρίου, όπως στο RFP",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Sofia (Levanta, Digital Marketing Manager) · To: Eleni (Northlight) · Cc: Pavlos (Levanta) · Date: 2026-09-11 12:40",
+        "anchor": "go-live μένει **15 Ιανουαρίου**, όπως στο RFP"
+      },
+      "id": "ba33fd96e1af3ebc53fc",
+      "destinations": [
+        "timeline[1]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "το go-live της καμπάνιας μετατίθεται για 2 Φεβρουαρίου 2027",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 4** · From: Pavlos (Levanta) · To: Eleni (Northlight) · Cc: Sofia (Levanta) · Date: 2026-09-16 18:30",
+        "anchor": "μετατίθεται για **2 Φεβρουαρίου 2027**"
+      },
+      "id": "bc3951c9440d1343640d",
+      "destinations": [
+        "timeline[2]",
+        "open_questions[10]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Αύξηση των απευθείας κρατήσεων (website και app) έναντι των πρακτορείων και των OTAs.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 2. Στόχοι",
+        "anchor": "Αύξηση των απευθείας κρατήσεων (website και app)"
+      },
+      "id": "fc0e900fb3d5e5405f02",
+      "destinations": [
+        "objectives[0]",
+        "open_questions[0]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 2. Στόχοι",
+        "anchor": "Εγγραφές νέων μελών στο Levanta Club μέσα από το app"
+      },
+      "id": "16389702a657b57db134",
+      "destinations": [
+        "objectives[1]",
+        "open_questions[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Έλληνες ταξιδιώτες: κυρίως οικογένειες που ταξιδεύουν με ΙΧ",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 3. Κοινό-στόχος",
+        "anchor": "κυρίως οικογένειες που ταξιδεύουν με ΙΧ"
+      },
+      "id": "3785b590b57efee11832",
+      "destinations": [
+        "audiences[0]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "νέοι 20–30 που ταξιδεύουν ως foot passengers",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 3. Κοινό-στόχος",
+        "anchor": "νέοι 20–30 που ταξιδεύουν ως foot passengers"
+      },
+      "id": "a46283369e4f41d08ccd",
+      "destinations": [
+        "audiences[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 3. Κοινό-στόχος",
+        "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά"
+      },
+      "id": "a73fb82cb71cd2e0e924",
+      "destinations": [
+        "audiences[2]",
+        "open_questions[3]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Κλείσε νωρίς, πλήρωσε λιγότερο: εκπτώσεις early booking έως 30% στα εισιτήρια επιβατών.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 4. Βασικά μηνύματα",
+        "anchor": "Κλείσε νωρίς, πλήρωσε λιγότερο: εκπτώσεις early booking έως 30%"
+      },
+      "id": "40443fb5278c1989102a",
+      "destinations": [
+        "key_messages[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Το νέο Levanta Club ζει πλέον στο app.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 4. Βασικά μηνύματα",
+        "anchor": "Το νέο Levanta Club ζει πλέον στο app"
+      },
+      "id": "34044c7492d8fc3238d8",
+      "destinations": [
+        "key_messages[1]",
+        "open_questions[9]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Κεντρική δημιουργική ιδέα και key visual.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 5. Ζητούμενα παραδοτέα",
+        "anchor": "Κεντρική δημιουργική ιδέα και key visual"
+      },
+      "id": "6353e31c0108c0afb987",
+      "destinations": [
+        "deliverables[0]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Hero video και cutdowns για social media.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 5. Ζητούμενα παραδοτέα",
+        "anchor": "Hero video και cutdowns για social media"
+      },
+      "id": "d5a251be4107da7d541c",
+      "destinations": [
+        "deliverables[1]",
+        "open_questions[5]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Display και social ads, landing page καμπάνιας.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 5. Ζητούμενα παραδοτέα",
+        "anchor": "Display και social ads, landing page καμπάνιας"
+      },
+      "id": "05ba746557dee916a8c9",
+      "destinations": [
+        "deliverables[2]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "OOH στα λιμάνια Πειραιά και Ραφήνας.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 5. Ζητούμενα παραδοτέα",
+        "anchor": "OOH στα λιμάνια Πειραιά και Ραφήνας"
+      },
+      "id": "1f0e9e583cee27afdb57",
+      "destinations": [
+        "deliverables[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Email και ειδοποιήσεις app προς τη βάση των μελών.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 5. Ζητούμενα παραδοτέα",
+        "anchor": "Email και ειδοποιήσεις app προς τη βάση των μελών"
+      },
+      "id": "d019f899537ee67735b3",
+      "destinations": [
+        "deliverables[4]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Παρουσίαση δημιουργικών προτάσεων έως 20 Οκτωβρίου 2026",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 6. Χρονοδιάγραμμα",
+        "anchor": "Παρουσίαση δημιουργικών προτάσεων έως 20 Οκτωβρίου 2026"
+      },
+      "id": "447cfbc79c53594e4974",
+      "destinations": [
+        "timeline[0]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Go-live της καμπάνιας 15 Ιανουαρίου 2027",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 6. Χρονοδιάγραμμα",
+        "anchor": "Go-live της καμπάνιας **15 Ιανουαρίου 2027**"
+      },
+      "id": "e8e9c18549c7bb9cd805",
+      "destinations": [
+        "timeline[1]",
+        "open_questions[10]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "με διάρκεια έως 31 Μαρτίου 2027",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 6. Χρονοδιάγραμμα",
+        "anchor": "με διάρκεια έως 31 Μαρτίου 2027"
+      },
+      "id": "1e81ba6d0e5dcc58069d",
+      "destinations": [
+        "timeline[3]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "€150.000 πλέον ΦΠΑ για δημιουργικό, παραγωγή και αμοιβές",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 7. Προϋπολογισμός",
+        "anchor": "**€150.000 πλέον ΦΠΑ** για δημιουργικό, παραγωγή και αμοιβές"
+      },
+      "id": "a23a8d58c73c0ed87f89",
+      "destinations": [
+        "budget[0]",
+        "open_questions[13]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας, και δεν περιλαμβάνεται στο ποσό αυτό.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 7. Προϋπολογισμός",
+        "anchor": "Το media αγοράζεται απευθείας από εμάς, μέσω της media agency μας"
+      },
+      "id": "d4c32ec5bc54d6e143d6",
+      "destinations": [
+        "budget[1]",
+        "open_questions[14]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το tagline Sail Your Summer είναι εγκεκριμένο και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 8. Λοιπά",
+        "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας"
+      },
+      "id": "e7784d9f10cc6407f1f4",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Ισχύουν οι οδηγίες των συνημμένων brand guidelines.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 8. Λοιπά",
+        "anchor": "Ισχύουν οι οδηγίες των συνημμένων brand guidelines"
+      },
+      "id": "02a58454df29738629bf",
+      "destinations": [
+        "mandatories[12]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 3. Κοινό-στόχος",
+        "anchor": "Η καμπάνια αφορά αποκλειστικά την ελληνική αγορά"
+      },
+      "id": "6a510a930abbc6c4b2e5",
+      "destinations": [
+        "mandatories[13]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται· το Levanta Club μεταφέρεται εξ ολοκλήρου στο νέο mobile app της εταιρείας.",
+      "evidence": {
+        "source_id": "rfp_levanta",
+        "location": "## 1. Πλαίσιο",
+        "anchor": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται"
+      },
+      "id": "2b2c4ca3ff6aa89177a1",
+      "destinations": [
+        "mandatories[14]",
+        "open_questions[17]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Το μεγάλο θέμα για εμάς είναι οι απευθείας κρατήσεις. Πέρσι πάνω από τις μισές κρατήσεις ήρθαν ακόμα από πρακτορεία και OTAs, και σε κάθε μία πληρώνουμε προμήθεια.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:01:30]",
+        "anchor": "Το μεγάλο θέμα για εμάς είναι οι απευθείας κρατήσεις"
+      },
+      "id": "0a3d33600f3cdb29095a",
+      "destinations": [
+        "objectives[0]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Άρα φέτος το έρλι μπούκινγκ πρέπει να τραβήξει τον κόσμο στο site και κυρίως στο app.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:01:30]",
+        "anchor": "πρέπει να τραβήξει τον κόσμο στο site και κυρίως στο app"
+      },
+      "id": "8f032d463c030c3f2ac6",
+      "destinations": [
+        "objectives[2]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "ο εμπορικός στόχος είναι το 25% των κρατήσεων του έρλι μπούκινγκ να γίνεται μέσα από το app. Αυτό έχουμε παρουσιάσει και στο ΔΣ.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:02:52]",
+        "anchor": "ο εμπορικός στόχος είναι το 25% των κρατήσεων"
+      },
+      "id": "135f28f71f5b7103e837",
+      "destinations": [
+        "objectives[3]",
+        "open_questions[0]",
+        "conflicts[3]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Μέσα από το app. Το site μετράει ξεχωριστά.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:48]",
+        "anchor": "Μέσα από το app. Το site μετράει ξεχωριστά."
+      },
+      "id": "8ee57d65eaacdc4e8faa",
+      "destinations": [
+        "objectives[4]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Το δεύτερο σκέλος είναι το Λεβάντα Κλαμπ. Τις κάρτες τις κλείνουμε, όλο περνάει στο app.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:04:30]",
+        "anchor": "Τις κάρτες τις κλείνουμε, όλο περνάει στο app"
+      },
+      "id": "2bd956a4ef893b922ec5",
+      "destinations": [
+        "objectives[6]",
+        "open_questions[1]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Στο παλιό app όχι. Στο νέο υποτίθεται ότι θα έχει analytics, αλλά ποιο εργαλείο και από πότε, δεν ξέρω.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:19:45]",
+        "anchor": "Στο νέο υποτίθεται ότι θα έχει analytics"
+      },
+      "id": "88c7ecbc73a747e96c5a",
+      "destinations": [
+        "objectives[7]",
+        "open_questions[2]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Το RFP λέει οικογένειες με ΙΧ και νέοι foot passengers, μόνο Ελλάδα.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "οικογένειες με ΙΧ και νέοι foot passengers"
+      },
+      "id": "6814d93c29d2b5e3ff73",
+      "destinations": [
+        "audiences[2]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Δεν είναι μόνο Ελλάδα. Η διοίκηση αποφάσισε τον Ιούλιο να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital — είναι οι δύο μεγαλύτερες ξένες αγορές μας στα Δωδεκάνησα.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:20]",
+        "anchor": "να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital"
+      },
+      "id": "01903a1afe851f801f98",
+      "destinations": [
+        "audiences[3]",
+        "open_questions[3]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Καλή ερώτηση… δεν το έχουμε αποφασίσει. Ίσως αγγλικά στην αρχή, δεν ξέρω. Θα σας πω.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:07:14]",
+        "anchor": "Ίσως αγγλικά στην αρχή, δεν ξέρω"
+      },
+      "id": "a3e4f34bd5800bcfcfde",
+      "destinations": [
+        "audiences[4]",
+        "open_questions[4]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "κλείσε νωρίς, πλήρωσε λιγότερο",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:13:05]",
+        "anchor": "κλείσε νωρίς, πλήρωσε λιγότερο"
+      },
+      "id": "57c2696ce51ad4d9e6fd",
+      "destinations": [
+        "key_messages[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Θέλω στο κεντρικό visual μεγάλο «από €29»",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:13:05]",
+        "anchor": "μεγάλο «από €29»"
+      },
+      "id": "d2aa985c7c4eaf905ac7",
+      "destinations": [
+        "key_messages[2]",
+        "open_questions[8]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Και το tagline, το Sail Your Summer, μένει. Είναι εγκεκριμένο.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:13:52]",
+        "anchor": "το tagline, το Sail Your Summer, μένει"
+      },
+      "id": "1696eea648f2bad56857",
+      "destinations": [
+        "key_messages[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Ναι, ισχύουν όπως είναι.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:08:33]",
+        "anchor": "Ναι, ισχύουν όπως είναι"
+      },
+      "id": "90d55bdad6d406a24e5f",
+      "destinations": [
+        "deliverables[5]",
+        "open_questions[6]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Και στο digital θέλουμε δυνατό ριτάργκετινγκ — όποιος μπήκε στο booking engine και δεν ολοκλήρωσε, να τον ξαναβρίσκουμε.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:08:33]",
+        "anchor": "όποιος μπήκε στο booking engine και δεν ολοκλήρωσε"
+      },
+      "id": "b9d61fa07b86e56519e5",
+      "destinations": [
+        "deliverables[6]",
+        "open_questions[6]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Και πους νοτιφικέισονς στο app για τα μέλη, με τις προσφορές της εβδομάδας.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:09:21]",
+        "anchor": "στο app για τα μέλη, με τις προσφορές της εβδομάδας"
+      },
+      "id": "8add22520d87f64d7ab9",
+      "destinations": [
+        "deliverables[7]",
+        "open_questions[6]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "just thinking out loud: ένα branded podcast για τα νησιά, ιστορίες από τα δρομολόγια, κάτι τέτοιο. Don't quote me on that, δεν το έχουμε συζητήσει καθόλου μέσα.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:11:30]",
+        "anchor": "just thinking out loud: ένα branded podcast για τα νησιά"
+      },
+      "id": "628b43f2b49f281f4c25",
+      "destinations": [
+        "deliverables[8]",
+        "open_questions[7]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "τι πρέπει να γίνει μέχρι τον Απρίλιο για να πείτε «πέτυχε»",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:00:41]",
+        "anchor": "μέχρι τον Απρίλιο για να πείτε «πέτυχε»"
+      },
+      "id": "7366067f2877c34790b2",
+      "destinations": [
+        "timeline[4]",
+        "open_questions[11]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "go-live 15 Ιανουαρίου, όπως στο RFP;",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:17:20]",
+        "anchor": "go-live 15 Ιανουαρίου, όπως στο RFP"
+      },
+      "id": "c998903015acd816a5fc",
+      "destinations": [
+        "timeline[1]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Το έρλι μπούκινγκ ανοίγει μέσα Ιανουαρίου κάθε χρόνο, ναι. Υπάρχει ένα ρίσκο με το νέο booking engine… [inaudible] …θα σας ενημερώσουμε γραπτώς αν αλλάξει κάτι.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:17:31]",
+        "anchor": "ανοίγει μέσα Ιανουαρίου κάθε χρόνο, ναι"
+      },
+      "id": "2ff764e2ce2a95c74785",
+      "destinations": [
+        "timeline[5]",
+        "open_questions[10]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Όχι ακόμα. Η νέα έκδοση με το Λεβάντα Κλαμπ είναι στο IT, ημερομηνία κυκλοφορίας δεν μας έχουν δώσει. Εγώ ελπίζω Δεκέμβριο.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:18:18]",
+        "anchor": "Εγώ ελπίζω Δεκέμβριο"
+      },
+      "id": "ce0122e98b9bdc1a0dba",
+      "destinations": [
+        "timeline[6]",
+        "open_questions[12]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "θα το περάσει το committee, κάπου μέσα στον Νοέμβριο",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:15:47]",
+        "anchor": "κάπου μέσα στον Νοέμβριο"
+      },
+      "id": "d60f09257f1359fa8459",
+      "destinations": [
+        "timeline[7]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "το marketing plan του 2027 το ενέκρινε το investment committee τους σε δολάρια: διακόσιες χιλιάδες δολάρια, all-in — δημιουργικό, παραγωγή, αμοιβές και media, όλα μαζί.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:52]",
+        "anchor": "διακόσιες χιλιάδες δολάρια"
+      },
+      "id": "9c47a661b1676ac35727",
+      "destinations": [
+        "budget[3]",
+        "open_questions[13]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Από τον Μάρτιο ανήκουμε κατά πλειοψηφία στο fund, και το marketing plan του 2027 το ενέκρινε το investment committee τους σε δολάρια",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:52]",
+        "anchor": "το marketing plan του 2027 το ενέκρινε το investment committee τους σε δολάρια"
+      },
+      "id": "336362fdc08114ca67e3",
+      "destinations": [
+        "budget[2]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Η εκταμίευση γίνεται σε ευρώ, με την ισοτιμία της ημέρας που θα το περάσει το committee, κάπου μέσα στον Νοέμβριο.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:15:47]",
+        "anchor": "Η εκταμίευση γίνεται σε ευρώ, με την ισοτιμία της ημέρας"
+      },
+      "id": "73e19a83507659fdf637",
+      "destinations": [
+        "budget[4]",
+        "open_questions[13]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Δεν έχει οριστεί. Το αποφασίζει ο Παύλος με τη media agency, αφού κλειδώσει το ποσό σε ευρώ.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:16:38]",
+        "anchor": "Δεν έχει οριστεί. Το αποφασίζει ο Παύλος με τη media agency"
+      },
+      "id": "1af6eea53b725fcf1956",
+      "destinations": [
+        "budget[5]",
+        "open_questions[14]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Και το tagline, το Sail Your Summer, μένει. Είναι εγκεκριμένο.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:13:52]",
+        "anchor": "το tagline, το Sail Your Summer, μένει"
+      },
+      "id": "03fdbe7767a2a956c8e1",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Μη γράψετε προνόμια που δεν έχουμε αποφασίσει — θα σας τα στείλουμε όταν περάσουν από το ΔΣ.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:05:15]",
+        "anchor": "Μη γράψετε προνόμια που δεν έχουμε αποφασίσει"
+      },
+      "id": "f7986c1614ad21225272",
+      "destinations": [
+        "mandatories[15]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Μην το μετατρέψετε εσείς σε ευρώ στην πρόταση — θα βγει άλλο νούμερο και θα έχουμε θέμα με τον έλεγχο.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:15:47]",
+        "anchor": "Μην το μετατρέψετε εσείς σε ευρώ στην πρόταση"
+      },
+      "id": "3a85a3c5595a4f0dc7e9",
+      "destinations": [
+        "mandatories[16]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "οι φόροι με τα λιμενικά τέλη να μπαίνουν στα ψιλά γράμματα, όπως κάνουν όλοι στην αγορά",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:13:05]",
+        "anchor": "οι φόροι με τα λιμενικά τέλη να μπαίνουν στα ψιλά γράμματα"
+      },
+      "id": "8e563f6b2759be9c460b",
+      "destinations": [
+        "mandatories[7]",
+        "open_questions[18]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το brief εγώ. Το δημιουργικό… επειδή έχει τιμές μπαίνει και το εμπορικό, και ίσως θέλει να το δει και το fund. Θα το ξεκαθαρίσω και θα σας πω.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:20:41]",
+        "anchor": "μπαίνει και το εμπορικό, και ίσως θέλει να το δει και το fund"
+      },
+      "id": "8ece0f27afd042466f08",
+      "destinations": [
+        "mandatories[17]",
+        "open_questions[19]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Το RFP λέει οικογένειες με ΙΧ και νέοι foot passengers, μόνο Ελλάδα.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "οικογένειες με ΙΧ και νέοι foot passengers, μόνο Ελλάδα"
+      },
+      "id": "82535d001d745ec300f7",
+      "destinations": []
+    },
+    {
+      "field": "audiences",
+      "value": "Δεν είναι μόνο Ελλάδα. Η διοίκηση αποφάσισε τον Ιούλιο να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:20]",
+        "anchor": "να ανοίξουμε και Γερμανία και Ιταλία, μόνο digital"
+      },
+      "id": "735c1b089eda375a41c2",
+      "destinations": [
+        "audiences[3]",
+        "open_questions[3]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Το RFP γράφει €150.000 πλέον ΦΠΑ, χωρίς το media.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:30]",
+        "anchor": "€150.000 πλέον ΦΠΑ, χωρίς το media"
+      },
+      "id": "6fa849259506727032aa",
+      "destinations": []
+    },
+    {
+      "field": "budget",
+      "value": "το marketing plan του 2027 το ενέκρινε το investment committee τους σε δολάρια: διακόσιες χιλιάδες δολάρια, all-in — δημιουργικό, παραγωγή, αμοιβές και media, όλα μαζί.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:52]",
+        "anchor": "διακόσιες χιλιάδες δολάρια"
+      },
+      "id": "9c47a661b1676ac35727",
+      "destinations": [
+        "budget[3]",
+        "open_questions[13]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "μια ιδέα που είχα: ένα boat party στο λιμάνι του Πειραιά για το άνοιγμα του έρλι μπούκινγκ, με DJ πάνω στο πλοίο, live στο Instagram…",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:10:02]",
+        "anchor": "μια ιδέα που είχα: ένα boat party στο λιμάνι του Πειραιά"
+      },
+      "id": "46cfa98bf220a892170c",
+      "destinations": []
+    },
+    {
+      "field": "deliverables",
+      "value": "Εντάξει, δίκιο έχεις. Το αποσύρω — βγάλτε το από τις σημειώσεις.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:10:58]",
+        "anchor": "Το αποσύρω — βγάλτε το από τις σημειώσεις"
+      },
+      "id": "357584f0ec9163cd9742",
+      "destinations": []
+    }
+  ]
+}

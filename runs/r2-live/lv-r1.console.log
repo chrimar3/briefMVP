@@ -1,0 +1,46 @@
+Brief Builder 1.4.0 · run lv-r1
+  input : /Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03
+  output: /Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1
+  model : LIVE model calls · 2.1.280 (Claude Code)
+
+  data  : synthetic
+
+  · background_brand_guidelines (background, 2026-02-20)
+  · emails_thread (email_thread, 2026-09-17 (latest message))
+  · rfp_levanta (rfp, 2026-09-01)
+  · transcript_kickoff (transcript, 2026-09-08)
+
+  client: levanta_lines · tier S1
+
+[1] readiness_gate: input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript
+[2] classification: dispatching 'classify'…
+        advertising_creative (high confidence) · tier S1 · 1 attempt(s) · 34,219 tokens · claude-haiku-4-5-20251001
+[2] classification: ok
+[3] fidelity_check: dispatching 'fidelity-check'…
+      · scoring transcript_kickoff…
+        verdict=pass_with_flags · score=high · 8 token(s) flagged · 1 attempt(s) · 43,428 tokens · claude-haiku-4-5-20251001
+[3] fidelity_check: ok
+[4] extraction: dispatching 'extract'…
+      · extracting background_brand_guidelines (background)…
+        11 items · 1 open questions · 1 attempt(s) · 44,709 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, low_confidence) · 0 issue(s) · 1 attempt(s) · 23,242 tokens · claude-sonnet-5
+      · extracting emails_thread (email_thread)…
+        4 items · 7 open questions · 1 attempt(s) · 55,053 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, garbling, low_confidence) · 0 issue(s) · 1 attempt(s) · 27,685 tokens · claude-sonnet-5
+      · extracting rfp_levanta (rfp)…
+        21 items · 6 open questions · 2 attempt(s) · 108,736 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures) · 1 issue(s) · 1 attempt(s) · 29,017 tokens · claude-sonnet-5
+      · extracting transcript_kickoff (transcript) (fidelity-annotated)…
+        30 items · 14 open questions · 1 attempt(s) · 93,476 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, garbling, low_confidence) · 0 issue(s) · 1 attempt(s) · 50,385 tokens · claude-sonnet-5
+[4] extraction: ok
+[5] conflict_pass: 7 candidate field(s) ['objectives', 'audiences', 'key_messages', 'deliverables', 'timeline', 'budget', 'mandatories'] · 4 internal
+[6] synthesis: dispatching 'synthesize'…
+        59 entries · 5 conflicts · 20 open questions · 1 attempt(s) · 187,421 tokens · claude-sonnet-5
+        readiness: 7/7 fields evidenced · 0.2542 low-confidence share → ready_for_review
+[6] synthesis: ok
+[7] render: dispatching 'render'…
+        language lint: 1 warning(s) for the human language review (non-blocking; listed under render.language_warnings in the manifest)
+        el=28557 chars · en=26665 chars · 1 attempt(s) · 190,134 tokens · claude-sonnet-5
+        review page → /Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_review.html
+[7] render: ok

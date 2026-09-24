@@ -1,0 +1,11 @@
+{
+  "source_id": "transcript_kickoff",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "budget[0]",
+      "problem": "The budget is a hedged, approximate range (\"somewhere around eighty, maybe eighty-five\") but is carried with qualifier \"stated\" rather than a hedged/conditional qualifier, so an estimate is treated as a firm figure.",
+      "evidence": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε"
+    }
+  ]
+}

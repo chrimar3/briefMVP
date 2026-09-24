@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-24 (latest message)",
+    "extraction_ts": "2026-09-23T21:18:30+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [
+    {
+      "value": "κλείδωσε τελικά 14 Φεβρουαρίου — μέση λύση ανάμεσα στο αρχικό πλάνο και στο αίτημα για Ιανουάριο. Αυτό είναι οριστικό, προχωρήστε με αυτή την ημερομηνία",
+      "lang": "el",
+      "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02",
+      "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**",
+      "speaker_or_author": "Nikos (Voreas), 2026-07-23",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "brand guidelines (ισχύει η έκδοση 2.0)",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-19 17:48",
+      "anchor": "τα brand guidelines (ισχύει η έκδοση 2.0)",
+      "speaker_or_author": "Nikos (Voreas), 2026-07-19",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "approval",
+      "gap": "The name of the person who gives final approval of the brief on the Voreas side is still unconfirmed: Nikos says it is between himself and Stella and has not yet confirmed. Eleni has asked for the name twice.",
+      "why_it_matters": "The approval process and sign-off timing for the brief and the revised plan cannot be locked without a named approver.",
+      "suggested_question_for_client": "Ποιος κάνει το τελικό approval του brief από πλευράς Voreas — εσείς ή η Στέλλα; Μπορείτε να μας το επιβεβαιώσετε ώστε να κλειδώσουμε τη διαδικασία εγκρίσεων;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "timeline",
+      "value_a": {
+        "value": "το board θέλει να φέρουμε το launch στις 31 Ιανουαρίου",
+        "lang": "mixed",
+        "location": "**Message 2** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-19 17:48",
+        "anchor": "**το board θέλει να φέρουμε το launch στις 31 Ιανουαρίου**",
+        "speaker_or_author": "Nikos (Voreas), 2026-07-19",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "value_b": {
+        "value": "κλείδωσε τελικά 14 Φεβρουαρίου — μέση λύση ανάμεσα στο αρχικό πλάνο και στο αίτημα για Ιανουάριο. Αυτό είναι οριστικό, προχωρήστε με αυτή την ημερομηνία",
+        "lang": "el",
+        "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02",
+        "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**",
+        "speaker_or_author": "Nikos (Voreas), 2026-07-23",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "Explicit supersession by the same sender: Nikos's Message 4 (2026-07-23) states the date is locked at 14 Φεβρουαρίου following the board meeting and calls it οριστικό, replacing the 31 Ιανουαρίου request in his Message 2 (2026-07-19). Message 2 also refers to the earlier plan as Μάρτιο (\"μεγάλη αλλαγή από τον Μάρτιο\"). Latest position kept in timeline[0]; earlier positions retained here as trail."
+    }
+  ],
+  "extraction_notes": [
+    "Message 2 refers to an earlier launch plan of March (\"μεγάλη αλλαγή από τον Μάρτιο\") with no exact date; not extracted as a timeline item. It is the \"αρχικό πλάνο\" mentioned in Message 4.",
+    "Message 3 (Eleni, agency side) states that 31/1 is very tight and that a new photo shoot would not fit safely; this is an agency assessment, not client evidence, and is not extracted.",
+    "Message 4 gives the 14 Φεβρουαρίου date without a year; the year is not stated in the source."
+  ]
+}

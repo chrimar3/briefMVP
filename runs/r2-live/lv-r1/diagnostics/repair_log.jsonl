@@ -1,0 +1,13 @@
+{"stage": "classify", "site": "classify", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.045175799999999995}
+{"stage": "fidelity-check", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.092114}
+{"stage": "extraction", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.12013739999999999}
+{"stage": "verification", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0432808}
+{"stage": "extraction", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.15705619999999998}
+{"stage": "verification", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0546456}
+{"stage": "extraction", "site": "rfp_levanta", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.1406416}
+{"stage": "verification", "site": "rfp_levanta", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0534978}
+{"stage": "extraction", "site": "rfp_levanta:verified-repair", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.13277}
+{"stage": "extraction", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.3997068}
+{"stage": "verification", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.108549}
+{"stage": "synthesize", "site": "synthesize", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.7477063999999999}
+{"stage": "render", "site": "render", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.6054032}

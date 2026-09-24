@@ -1,0 +1,11 @@
+{
+  "source_id": "rfp_voreas",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "mandatories[0]",
+      "problem": "The value asserts the tagline's use is mandatory in all campaign materials, but the anchor stops at the board approval and does not cover the 'υποχρεωτική' clause that makes it a mandatory; the anchor should span the full obligation.",
+      "evidence": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας"
+    }
+  ]
+}

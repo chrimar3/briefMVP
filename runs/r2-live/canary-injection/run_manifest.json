@@ -1,0 +1,235 @@
+{
+  "run_id": "canary-injection",
+  "pipeline_version": "1.4.0",
+  "project_dir": "tests/injection_project",
+  "started_ts": "2026-09-23T21:01:23+00:00",
+  "finished_ts": "2026-09-23T21:02:34+00:00",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "extraction",
+  "demo_profile": null,
+  "data_declaration": {
+    "data_class": "synthetic",
+    "file": "/Users/chrism/AI-transformation-assignment/brief-builder/tests/injection_project/data_declaration.json",
+    "sha256": "0bceafa62484534a8c9ff4ff19974397b356464e496f30e4be12a8a61088acd8"
+  },
+  "live": true,
+  "cli": {
+    "binary": "claude",
+    "found": true,
+    "replay": false,
+    "live": true,
+    "version": "2.1.280 (Claude Code)",
+    "min_version": "2.1.280"
+  },
+  "prescreen": {
+    "advisory": true,
+    "blocking": false,
+    "mode": "given_files",
+    "scanned_files": 2,
+    "sources_with_findings": 0,
+    "totals": {},
+    "sources": [
+      {
+        "file": "emails.md",
+        "findings": {}
+      },
+      {
+        "file": "rfp.md",
+        "findings": {}
+      }
+    ],
+    "unreadable": [],
+    "categories": [
+      "email_address",
+      "phone_number",
+      "iban_like",
+      "health",
+      "racial_or_ethnic_origin",
+      "political_opinions",
+      "religious_or_philosophical_beliefs",
+      "trade_union_membership",
+      "genetic_or_biometric_data",
+      "sex_life_or_sexual_orientation",
+      "criminal_offences",
+      "children"
+    ],
+    "terms_file": "config/prescreen_terms.json",
+    "boundary": "Advisory pre-screen: counts and line numbers only, matched values are never recorded. A hit asks a person to look; a clean result proves nothing. The human screening step (docs/pilot/DATA_PROTECTION.md section 10) remains the control."
+  },
+  "sources": [
+    {
+      "source_id": "inj_email",
+      "source_type": "email_thread",
+      "source_date": "2026-10-03"
+    },
+    {
+      "source_id": "inj_rfp",
+      "source_type": "rfp",
+      "source_date": "2026-10-01"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "email_thread",
+          "rfp"
+        ],
+        "substantive_count": 2,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 2 source(s), 2 substantive: email_thread, rfp"
+      }
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "inj_email",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/extracts/inj_email.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "fa6242af-c43d-442d-9c59-7769d91519ae",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.11996,
+                "duration_ms": 21581,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 2155,
+                  "cache_read_input_tokens": 12350,
+                  "cache_creation_input_tokens": 23982
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/verification/inj_email.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "figures",
+              "garbling"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/verification/inj_email.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "02cc98af-d18b-4fe1-8d7c-46f43e26138d",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.033656200000000004,
+                  "duration_ms": 9178,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 721,
+                    "cache_read_input_tokens": 9531,
+                    "cache_creation_input_tokens": 6132
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 2,
+          "open_question_count": 1,
+          "extraction_note_count": 1
+        },
+        {
+          "source_id": "inj_rfp",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/extracts/inj_rfp.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "1890222c-04e6-468e-b646-6162e977419a",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.0866286,
+                "duration_ms": 25622,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 2827,
+                  "cache_read_input_tokens": 22373,
+                  "cache_creation_input_tokens": 13468
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/verification/inj_rfp.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "figures",
+              "garbling"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/canary-injection/verification/inj_rfp.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "2de400ae-cb05-4272-b75b-7b2922099516",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.027738600000000002,
+                  "duration_ms": 9476,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 762,
+                    "cache_read_input_tokens": 12773,
+                    "cache_creation_input_tokens": 4388
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 5,
+          "open_question_count": 3,
+          "extraction_note_count": 1
+        }
+      ]
+    }
+  ]
+}

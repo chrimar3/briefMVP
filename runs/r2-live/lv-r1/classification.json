@@ -1,0 +1,23 @@
+{
+  "project_id": "levanta_03",
+  "client_id": "levanta_lines",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S1",
+  "tier_source": "client_config",
+  "rationale": "The RFP and kickoff transcript explicitly request creative deliverables (key visual, hero video, social media ads, OOH, email, push notifications) for a campaign destined to drive early bookings and loyalty program enrollment among Greek travelers. This is a campaign execution project, not corporate or internal communications.",
+  "evidence": [
+    {
+      "source_id": "rfp_levanta",
+      "location": "section 5 (Ζητούμενα παραδοτέα)",
+      "anchor": "Κεντρική δημιουργική ιδέα και key visual. Hero video και cutdowns για social media. Display και social ads, landing page καμπάνιας. OOH στα λιμάνια Πειραιά και Ραφήνας. Email και ειδοποιήσεις app προς τη βάση των μελών."
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "[00:08:10]–[00:14:30]",
+      "anchor": "Παραδοτέα. Το RFP τα έχει αρκετά αναλυτικά… Και στο digital θέλουμε δυνατό ριτάργκετινγκ… Και πους νοτιφικέισονς στο app για τα μέλη… Το μήνυμα είναι απλό: κλείσε νωρίς, πλήρωσε λιγότερο… και το tagline, το Sail Your Summer, μένει."
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "project_id": "levanta_03",
+    "source_id": "background_brand_guidelines",
+    "source_type": "background",
+    "source_date": "2026-02-20",
+    "extraction_ts": "2026-09-24T06:24:10+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "Η επωνυμία **Levanta Lines** και το πρόγραμμα επιβράβευσης **Levanta Club** γράφονται πάντα σε λατινικούς χαρακτήρες, πλήρη. Ποτέ μεταγραμμένα στα ελληνικά, ποτέ σκέτο «Club».",
+      "lang": "mixed",
+      "location": "## Ονόματα & tagline",
+      "anchor": "γράφονται πάντα σε λατινικούς χαρακτήρες, πλήρη",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το tagline **Sail Your Summer** χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση.",
+      "lang": "mixed",
+      "location": "## Ονόματα & tagline",
+      "anchor": "Το tagline **Sail Your Summer** χρησιμοποιείται αυτούσιο",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Primary palette: Levante Blue #164E7A, Sand White #F4EFE6.",
+      "lang": "en",
+      "location": "## Χρώμα & εικόνα",
+      "anchor": "Primary palette: Levante Blue #164E7A, Sand White #F4EFE6",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Accent: Harbour Orange #F28C28, μόνο σε CTA.",
+      "lang": "mixed",
+      "location": "## Χρώμα & εικόνα",
+      "anchor": "Accent: Harbour Orange #F28C28, μόνο σε CTA",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Η θάλασσα εμφανίζεται πάντα ήρεμη· ποτέ εικόνες με κυματισμό, αέρα ή βροχή στο κατάστρωμα.",
+      "lang": "el",
+      "location": "## Χρώμα & εικόνα",
+      "anchor": "Η θάλασσα εμφανίζεται πάντα ήρεμη",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Κάθε τιμή σε διαφημιστικό υλικό είναι η **τελική τιμή** που πληρώνει ο επιβάτης, με φόρους και λιμενικά τέλη.",
+      "lang": "el",
+      "location": "## Τιμές — αυστηροί κανόνες",
+      "anchor": "είναι η **τελική τιμή** που πληρώνει ο επιβάτης",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή: οι φόροι και τα τέλη εμφανίζονται στο ίδιο οπτικό επίπεδο και στο ίδιο μέγεθος γραμματοσειράς με την τιμή, ποτέ σε υποσημείωση.",
+      "lang": "el",
+      "location": "## Τιμές — αυστηροί κανόνες",
+      "anchor": "Τιμή «από» επιτρέπεται μόνο ως τελική τιμή",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Καμία εικόνα επιβατών στο γκαράζ ή στην πλώρη εν πλω.",
+      "lang": "el",
+      "location": "## Ασφάλεια & ισχυρισμοί",
+      "anchor": "Καμία εικόνα επιβατών στο γκαράζ ή στην πλώρη εν πλω",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Κανένας ισχυρισμός ταχύτητας («το πιο γρήγορο») χωρίς επαλήθευση από τα εγκεκριμένα δρομολόγια",
+      "lang": "el",
+      "location": "## Ασφάλεια & ισχυρισμοί",
+      "anchor": "Κανένας ισχυρισμός ταχύτητας («το πιο γρήγορο») χωρίς επαλήθευση",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+      "lang": "el",
+      "location": "## Ασφάλεια & ισχυρισμοί",
+      "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ζεστά, καθημερινά ελληνικά, με φυσική χρήση αγγλικών όρων όπου τους χρησιμοποιεί ο ταξιδιώτης (app, early booking). Υπόσχεση ξεκούρασης, όχι περιπέτειας.",
+      "lang": "mixed",
+      "location": "## Tone (guidance)",
+      "anchor": "Υπόσχεση ξεκούρασης, όχι περιπέτειας",
+      "speaker_or_author": "Levanta Lines — Brand & Communication Guidelines v4.0",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The brand guidelines label the tone section as 'guidance' rather than a firm rule, so it is unclear whether the tone (warm everyday Greek, natural English terms, promise of rest not adventure) is binding for this project.",
+      "why_it_matters": "Tone shapes all copy and scripts; treating guidance as a hard rule (or the reverse) risks rework or off-brand output.",
+      "suggested_question_for_client": "Οι οδηγίες για το tone (ζεστά, καθημερινά ελληνικά, υπόσχεση ξεκούρασης και όχι περιπέτειας) ισχύουν ως δεσμευτικός κανόνας για αυτό το έργο ή ως γενική κατεύθυνση;",
+      "linked_items": ["mandatories[10]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

@@ -1,0 +1,146 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "background_brand_guidelines",
+    "source_type": "background",
+    "source_date": "2026-01-15",
+    "extraction_ts": "2026-09-23T21:17:06+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "Το όνομα σειράς **Voreas Move** γράφεται πάντα σε λατινικούς χαρακτήρες, πλήρες. Ποτέ μεταγραμμένο, ποτέ σκέτο «Move».",
+      "lang": "mixed",
+      "location": "## Brand name usage",
+      "anchor": "γράφεται πάντα σε λατινικούς χαρακτήρες, πλήρες",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Το tagline **Move Like the Wind** χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση.",
+      "lang": "mixed",
+      "location": "## Brand name usage",
+      "anchor": "χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Logo clear space: τουλάχιστον 1× το ύψος του wordmark σε όλες τις πλευρές.",
+      "lang": "mixed",
+      "location": "## Brand name usage",
+      "anchor": "τουλάχιστον 1× το ύψος του wordmark σε όλες τις πλευρές",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B.",
+      "lang": "mixed",
+      "location": "## Color & visual",
+      "anchor": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Δευτερεύον accent: Signal Coral #FF6B57, μόνο σε CTA στοιχεία.",
+      "lang": "mixed",
+      "location": "## Color & visual",
+      "anchor": "Δευτερεύον accent: Signal Coral #FF6B57, μόνο σε CTA στοιχεία",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Η φωτογραφία δείχνει πραγματική κίνηση — όχι στημένες πόζες γυμναστηρίου με στατικό φωτισμό.",
+      "lang": "el",
+      "location": "## Color & visual",
+      "anchor": "Η φωτογραφία δείχνει πραγματική κίνηση",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Επιτρέπεται: «τεχνικά υφάσματα», «σχεδιασμένο στην Ελλάδα» (βάσει εγκεκριμένου φακέλου προέλευσης).",
+      "lang": "el",
+      "location": "## Επικοινωνία — αυστηροί κανόνες",
+      "anchor": "«σχεδιασμένο στην Ελλάδα» (βάσει εγκεκριμένου φακέλου προέλευσης)",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "**Δεν επιτρέπεται:** οποιοσδήποτε ισχυρισμός απόδοσης με μετρήσιμο όφελος χωρίς εργαστηριακή τεκμηρίωση (π.χ. «βελτιώνει τον χρόνο σου»)",
+      "lang": "el",
+      "location": "## Επικοινωνία — αυστηροί κανόνες",
+      "anchor": "**Δεν επιτρέπεται:** οποιοσδήποτε ισχυρισμός απόδοσης με μετρήσιμο όφελος",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+      "lang": "el",
+      "location": "## Επικοινωνία — αυστηροί κανόνες",
+      "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Η μάρκα επικοινωνεί **χωρίς influencers** — η πολιτική της εταιρείας από το 2024 είναι αποκλειστικά owned & paid κανάλια, μετά το περιστατικό με τη χορηγία του 2023.",
+      "lang": "mixed",
+      "location": "## Επικοινωνία — αυστηροί κανόνες",
+      "anchor": "**χωρίς influencers** — η πολιτική της εταιρείας από το 2024",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων — η σειρά είναι καθημερινή, όχι αγωνιστική.",
+      "lang": "el",
+      "location": "## Category no-gos",
+      "anchor": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Αποφυγή κλισέ «fitness transformation» (πριν/μετά).",
+      "lang": "mixed",
+      "location": "## Category no-gos",
+      "anchor": "Αποφυγή κλισέ «fitness transformation» (πριν/μετά)",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Σύγχρονα ελληνικά με φυσική χρήση αγγλικών όρων κατηγορίας. Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι.",
+      "lang": "el",
+      "location": "## Tone (guidance)",
+      "anchor": "Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι",
+      "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The tone section is labelled 'guidance' rather than a firm rule; it is unclear whether the tone points (warm, non-didactic, humour allowed, no irony toward competitors) are binding on this project.",
+      "why_it_matters": "Determines whether copy and scripts can be rejected for tone, or whether tone is left to agency judgement.",
+      "suggested_question_for_client": "Οι οδηγίες για το ύφος (ζεστό, όχι διδακτικό, χιούμορ ναι, ειρωνεία για τον ανταγωνισμό όχι) είναι δεσμευτικές για αυτό το project ή ενδεικτικές;",
+      "linked_items": ["mandatories[12]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

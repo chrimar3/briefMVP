@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Per-source extract (output contract of skills/SOURCES.md §4)",
+  "type": "object",
+  "required": [
+    "meta",
+    "objectives",
+    "audiences",
+    "key_messages",
+    "deliverables",
+    "timeline",
+    "budget",
+    "mandatories",
+    "open_questions",
+    "internal_conflicts",
+    "extraction_notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "project_id",
+        "source_id",
+        "source_type",
+        "source_date",
+        "extraction_ts",
+        "agent_version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": {
+          "type": "string"
+        },
+        "source_id": {
+          "type": "string"
+        },
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "transcript",
+            "rfp",
+            "email_thread",
+            "background"
+          ]
+        },
+        "source_date": {
+          "type": "string"
+        },
+        "extraction_ts": {
+          "type": "string"
+        },
+        "agent_version": {
+          "type": "string"
+        }
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "audiences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "key_messages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "budget": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "mandatories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/item"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "gap",
+          "why_it_matters",
+          "suggested_question_for_client"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "gap": {
+            "type": "string"
+          },
+          "why_it_matters": {
+            "type": "string"
+          },
+          "suggested_question_for_client": {
+            "type": "string"
+          },
+          "linked_items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "internal_conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "value_a",
+          "value_b"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "value_a": {
+            "$ref": "#/definitions/item"
+          },
+          "value_b": {
+            "$ref": "#/definitions/item"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "extraction_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "definitions": {
+    "item": {
+      "type": "object",
+      "required": [
+        "value",
+        "lang",
+        "location",
+        "anchor",
+        "qualifier",
+        "confidence",
+        "speaker_or_author"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "el",
+            "en",
+            "mixed"
+          ]
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "anchor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "speaker_or_author": {
+          "type": "string"
+        },
+        "qualifier": {
+          "type": "string",
+          "enum": [
+            "stated",
+            "implied",
+            "conditional"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "transcript_kickoff",
+    "source_type": "transcript",
+    "source_date": "2026-07-12",
+    "extraction_ts": "2026-09-23T21:22:48+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Το βασικό ζητούμενο είναι το μπραντ αγουέρνες — να μάθει ο κόσμος ότι υπάρχουμε στη νέα κατηγορία",
+      "lang": "el",
+      "location": "[00:02:18]",
+      "anchor": "Το βασικό ζητούμενο είναι το μπραντ αγουέρνες",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "low"
+    },
+    {
+      "value": "Και δεύτερον δοκιμή, να μπει το προϊόν σε ντουλάπες",
+      "lang": "el",
+      "location": "[00:02:18]",
+      "anchor": "να μπει το προϊόν σε ντουλάπες",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Honestly, the line is unisex and our real buyer is 25 to 55.",
+      "lang": "en",
+      "location": "[00:03:55]",
+      "anchor": "our real buyer is 25 to 55",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "πιστεύω το story είναι athleisure lifestyle — ρούχο που φοράς από το γυμναστήριο στο γραφείο. Αν το πάμε καθαρά performance θα μας συγκρίνουν με τους τεχνικούς παίκτες και θα χάσουμε. Δεν το έχουμε κλειδώσει με το board, να το ξέρετε.",
+      "lang": "mixed",
+      "location": "[00:05:47]",
+      "anchor": "το story είναι athleisure lifestyle",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Σίγουρα ένα χίρο βίντεο για το λανσάρισμα",
+      "lang": "el",
+      "location": "[00:09:04]",
+      "anchor": "Σίγουρα ένα χίρο βίντεο",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "low"
+    },
+    {
+      "value": "social stuff — cutdowns, stories, τέτοια. Formats και διάρκειες δεν έχω καταλήξει, θα μας καθοδηγήσετε εσείς.",
+      "lang": "mixed",
+      "location": "[00:09:04]",
+      "anchor": "cutdowns, stories, τέτοια",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "«μέσα Μαρτίου» — Προς το παρόν ναι, αλλά το board συζητάει τη σεζόν — μπορεί να κουνηθεί",
+      "lang": "el",
+      "location": "[00:16:05]",
+      "anchor": "Προς το παρόν ναι",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    },
+    {
+      "value": "Θα ξέρουμε μέσα στον μήνα",
+      "lang": "el",
+      "location": "[00:16:05]",
+      "anchor": "Θα ξέρουμε μέσα στον μήνα",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού — αλλά καθαρά production και αμοιβές",
+      "lang": "el",
+      "location": "[00:12:41]",
+      "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε",
+      "speaker_or_author": "MARIA (Voreas, CFO)",
+      "qualifier": "conditional",
+      "confidence": "medium"
+    },
+    {
+      "value": "Το media spend δεν περνάει από εμένα, το κρατάει η διοίκηση με τη media εταιρεία τους.",
+      "lang": "el",
+      "location": "[00:12:41]",
+      "anchor": "Το media spend δεν περνάει από εμένα",
+      "speaker_or_author": "MARIA (Voreas, CFO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Μη σχεδιάσετε μόνο για γυναικείο κοινό.",
+      "lang": "el",
+      "location": "[00:03:55]",
+      "anchor": "Μη σχεδιάσετε μόνο για γυναικείο κοινό",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "objectives",
+      "gap": "The primary objective is spoken as «μπραντ αγουέρνες», a token that looks like a garbled rendering of a glossary term.",
+      "why_it_matters": "The lead objective of the brief must be exactly what the client meant, not a guess at a garbled word.",
+      "suggested_question_for_client": "Όταν είπατε ότι το βασικό ζητούμενο είναι το «μπραντ αγουέρνες», εννοείτε brand awareness για τη νέα κατηγορία;",
+      "linked_items": ["objectives[0]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "The second objective is given as «δοκιμή, να μπει το προϊόν σε ντουλάπες» without a definition, and no KPIs or success measures have been set.",
+      "why_it_matters": "Without a defined outcome and measures, the agency cannot size the work or show later that it succeeded.",
+      "suggested_question_for_client": "Με το «δοκιμή, να μπει το προϊόν σε ντουλάπες» εννοείτε δοκιμή του προϊόντος από καταναλωτές ή sell-in στα καταστήματα; Και ποιο νούμερο θα θεωρούσατε επιτυχία;",
+      "linked_items": ["objectives[1]"]
+    },
+    {
+      "field": "key_messages",
+      "gap": "Positioning as athleisure lifestyle is the CMO's current view; he says it is not locked with the board.",
+      "why_it_matters": "The creative platform and every message depend on which positioning the board approves.",
+      "suggested_question_for_client": "Το athleisure lifestyle είναι η θέση που θα προτείνετε στο board; Πότε περιμένετε να κλειδώσει, και ποια είναι η θέση μέχρι τότε;",
+      "linked_items": ["key_messages[0]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "The hero video is spoken as «χίρο βίντεο», a token that looks like a garbled rendering of a glossary term.",
+      "why_it_matters": "The hero video is the anchor deliverable, so its name must be confirmed rather than assumed.",
+      "suggested_question_for_client": "Όταν είπατε «χίρο βίντεο» για το λανσάρισμα, εννοείτε hero video;",
+      "linked_items": ["deliverables[0]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Social deliverables are described loosely (cutdowns, stories); formats, durations and quantities are undecided and left to the agency.",
+      "why_it_matters": "Production cost and timeline depend on the number, format and length of assets.",
+      "suggested_question_for_client": "Για τα social (cutdowns, stories), υπάρχουν πλατφόρμες, ποσότητες ή διάρκειες που θέλετε να έχουμε υπόψη, ή να σας προτείνουμε εμείς;",
+      "linked_items": ["deliverables[1]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "«Μέσα Μαρτίου» is confirmed only provisionally, no year is stated, and the board may move it with the season.",
+      "why_it_matters": "The launch date drives the whole production and media schedule.",
+      "suggested_question_for_client": "Με το «μέσα Μαρτίου» εννοείτε μέσα Μαρτίου 2027; Και τι θα αλλάξει στην ημερομηνία αν το board μετακινήσει τη σεζόν;",
+      "linked_items": ["timeline[0]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "The date of the board's decision is given only as «μέσα στον μήνα», relative to the call date.",
+      "why_it_matters": "The launch date stays unconfirmed until this decision, so the agency needs a firm date to plan around.",
+      "suggested_question_for_client": "Με το «μέσα στον μήνα» εννοείτε ότι θα ξέρετε έως τις 31 Ιουλίου 2026;",
+      "linked_items": ["timeline[1]"]
+    },
+    {
+      "field": "budget",
+      "gap": "The CFO's figure is a hedged range («εκατόν είκοσι, ίσως εκατόν είκοσι πέντε») with no stated currency, units or VAT treatment; the higher figure applies only if money is tightened elsewhere. It is described as production and fees only.",
+      "why_it_matters": "The scope and scale of the work depend on how much of the total this figure covers.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: το 120 (ή 125 αν σφίξετε αλλού) αφορά χιλιάδες ευρώ, με ή χωρίς ΦΠΑ, και καλύπτει μόνο production και αμοιβές; Ποιο είναι το ανώτατο όριο;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "budget",
+      "gap": "The media spend is held by the board and their media agency, and the CFO declined to give an order of magnitude. No media figure or contact is known.",
+      "why_it_matters": "Channel mix and reach targets cannot be planned without the media spend, which is a separate budget from production.",
+      "suggested_question_for_client": "Ποιος στη διοίκηση κρατάει το media spend, και μπορούμε να κανονίσουμε να μας δώσει μια τάξη μεγέθους ή να μιλήσουμε με τη media εταιρεία;",
+      "linked_items": ["budget[1]"]
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "deliverables",
+      "value_a": {
+        "value": "μια ιδέα που έπαιζε: pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο",
+        "lang": "mixed",
+        "location": "[00:10:26]",
+        "anchor": "pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο",
+        "speaker_or_author": "NIKOS (Voreas, CMO)",
+        "qualifier": "conditional",
+        "confidence": "low"
+      },
+      "value_b": {
+        "value": "ξεχάστε το που το είπα — ρώτησα τον Ιούνιο, το κόστος στην Ερμού είναι εξωφρενικό φέτος. Δεν προχωράει.",
+        "lang": "el",
+        "location": "[00:10:48]",
+        "anchor": "ξεχάστε το που το είπα",
+        "speaker_or_author": "NIKOS (Voreas, CMO)",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "Explicit retraction by the same speaker within seconds: he withdraws the pop-up store idea, citing cost. Eleni logs it as inactive («Καταγράφηκε ως ανενεργό», [00:12:10]). The idea is kept here as a position trail only, not as a deliverable."
+    }
+  ],
+  "extraction_notes": [
+    "garble: «μπραντ αγουέρνες» at [00:02:18] — proposed match \"brand awareness\"",
+    "garble: «χίρο βίντεο» at [00:09:04] — proposed match \"hero video\"",
+    "Eleni's references to RFP content at [00:05:12] and [00:12:10] (positioning, €140.000 with media) were not extracted, because they are statements about another document and not client statements in this call."
+  ]
+}

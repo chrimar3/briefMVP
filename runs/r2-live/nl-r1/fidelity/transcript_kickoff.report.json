@@ -1,0 +1,10 @@
+{
+  "source_id": "transcript_kickoff",
+  "tokens_flagged": 2,
+  "glossary_matches": 2,
+  "no_match_flags": 0,
+  "diarization_issues": 0,
+  "summary_suspicion": false,
+  "fidelity_score": "high",
+  "verdict": "pass_with_flags"
+}

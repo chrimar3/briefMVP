@@ -1,0 +1,605 @@
+{
+  "run_id": "lv-r1",
+  "pipeline_version": "1.4.0",
+  "project_dir": "fixtures/levanta_03",
+  "started_ts": "2026-09-24T06:21:37+00:00",
+  "finished_ts": "2026-09-24T06:39:42+00:00",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "full",
+  "demo_profile": null,
+  "data_declaration": {
+    "data_class": "synthetic",
+    "file": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/data_declaration.json",
+    "sha256": "0bceafa62484534a8c9ff4ff19974397b356464e496f30e4be12a8a61088acd8"
+  },
+  "live": true,
+  "cli": {
+    "binary": "claude",
+    "found": true,
+    "replay": false,
+    "live": true,
+    "version": "2.1.280 (Claude Code)",
+    "min_version": "2.1.280"
+  },
+  "prescreen": {
+    "advisory": true,
+    "blocking": false,
+    "mode": "given_files",
+    "scanned_files": 4,
+    "sources_with_findings": 0,
+    "totals": {},
+    "sources": [
+      {
+        "file": "background_brand_guidelines.md",
+        "findings": {}
+      },
+      {
+        "file": "emails_thread.md",
+        "findings": {}
+      },
+      {
+        "file": "rfp_levanta.md",
+        "findings": {}
+      },
+      {
+        "file": "transcript_kickoff.md",
+        "findings": {}
+      }
+    ],
+    "unreadable": [],
+    "categories": [
+      "email_address",
+      "phone_number",
+      "iban_like",
+      "health",
+      "racial_or_ethnic_origin",
+      "political_opinions",
+      "religious_or_philosophical_beliefs",
+      "trade_union_membership",
+      "genetic_or_biometric_data",
+      "sex_life_or_sexual_orientation",
+      "criminal_offences",
+      "children"
+    ],
+    "terms_file": "config/prescreen_terms.json",
+    "boundary": "Advisory pre-screen: counts and line numbers only, matched values are never recorded. A hit asks a person to look; a clean result proves nothing. The human screening step (docs/pilot/DATA_PROTECTION.md section 10) remains the control."
+  },
+  "sources": [
+    {
+      "source_id": "background_brand_guidelines",
+      "source_type": "background",
+      "source_date": "2026-02-20"
+    },
+    {
+      "source_id": "emails_thread",
+      "source_type": "email_thread",
+      "source_date": "2026-09-17 (latest message)"
+    },
+    {
+      "source_id": "rfp_levanta",
+      "source_type": "rfp",
+      "source_date": "2026-09-01"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "source_type": "transcript",
+      "source_date": "2026-09-08"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "background",
+          "email_thread",
+          "rfp",
+          "transcript"
+        ],
+        "substantive_count": 3,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript"
+      }
+    },
+    {
+      "number": 2,
+      "name": "classification",
+      "kind": "model",
+      "agent": "classify",
+      "description": "Project type + onboarding sensitivity tier",
+      "status": "pass",
+      "classification": {
+        "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/classification.json",
+        "project_type": "advertising_creative",
+        "classification_confidence": "high",
+        "sensitivity_tier": "S1",
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "classify",
+              "ok": true,
+              "session_id": "cb07afeb-1e50-4f17-8fa0-7478f1bb4c73",
+              "model_ids": [
+                "claude-haiku-4-5-20251001"
+              ],
+              "cost_usd": 0.045175799999999995,
+              "duration_ms": 34982,
+              "num_turns": 7,
+              "usage": {
+                "input_tokens": 25,
+                "output_tokens": 2836,
+                "cache_read_input_tokens": 16708,
+                "cache_creation_input_tokens": 14650
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "name": "fidelity_check",
+      "kind": "model",
+      "agent": "fidelity-check",
+      "description": "Transcript fidelity gate + annotation",
+      "status": "pass",
+      "fidelity": [
+        {
+          "source_id": "transcript_kickoff",
+          "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/fidelity/transcript_kickoff.report.json",
+          "annotated_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/fidelity/transcript_kickoff.annotated.md",
+          "verdict": "pass_with_flags",
+          "fidelity_score": "high",
+          "tokens_flagged": 8,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "fidelity-check",
+                "ok": true,
+                "session_id": "257236c9-d482-4243-b36f-a03342347b68",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.092114,
+                "duration_ms": 115833,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 10539,
+                  "cache_read_input_tokens": 13860,
+                  "cache_creation_input_tokens": 19004
+                }
+              },
+              "violations": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "background_brand_guidelines",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/extracts/background_brand_guidelines.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "b6c6b565-f17d-4e6b-b5f3-0f9cb58e424a",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.12013739999999999,
+                "duration_ms": 31787,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 4524,
+                  "cache_read_input_tokens": 22587,
+                  "cache_creation_input_tokens": 17592
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/background_brand_guidelines.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "low_confidence"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/background_brand_guidelines.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "da6ee8e5-24e1-4f68-a05a-4baad612d1db",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0432808,
+                  "duration_ms": 7456,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 666,
+                    "cache_read_input_tokens": 14124,
+                    "cache_creation_input_tokens": 8446
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 11,
+          "open_question_count": 1,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "emails_thread",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/extracts/emails_thread.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "695f62e2-bbb5-4a9f-8473-e5a8763c38c9",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.15705619999999998,
+                "duration_ms": 75902,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 8958,
+                  "cache_read_input_tokens": 30761,
+                  "cache_creation_input_tokens": 15328
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/emails_thread.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "garbling",
+              "low_confidence"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/emails_thread.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "377a0032-cf55-4c5d-a6f2-cd695964c411",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0546456,
+                  "duration_ms": 14711,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 1412,
+                    "cache_read_input_tokens": 16988,
+                    "cache_creation_input_tokens": 9279
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 4,
+          "open_question_count": 7,
+          "extraction_note_count": 2
+        },
+        {
+          "source_id": "rfp_levanta",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/extracts/rfp_levanta.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "c84db1b2-7454-41e2-ae56-0767603efab1",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.1406416,
+                "duration_ms": 57797,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 7904,
+                  "cache_read_input_tokens": 30288,
+                  "cache_creation_input_tokens": 13883
+                }
+              },
+              "violations": []
+            },
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "0fa09de5-43e2-4c74-b9cb-bafdb09da880",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.13277,
+                "duration_ms": 39028,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 6261,
+                  "cache_read_input_tokens": 34580,
+                  "cache_creation_input_tokens": 15808
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/rfp_levanta.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures"
+            ],
+            "issue_count": 1,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/rfp_levanta.findings.json",
+            "forwarded_count": 1,
+            "dropped": [],
+            "adjudication": {
+              "file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/rfp_levanta.adjudication.json",
+              "applied": 1,
+              "rejected": []
+            },
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "b3d45c42-9b3b-4c19-9c5e-108a4c510f21",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0534978,
+                  "duration_ms": 11053,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 1011,
+                    "cache_read_input_tokens": 18059,
+                    "cache_creation_input_tokens": 9941
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 21,
+          "open_question_count": 6,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/extracts/transcript_kickoff.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "5003c197-9c14-4451-a310-3fbf9f4aabc6",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.3997068,
+                "duration_ms": 195889,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 25528,
+                  "cache_read_input_tokens": 33514,
+                  "cache_creation_input_tokens": 34428
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/transcript_kickoff.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "garbling",
+              "low_confidence"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/verification/transcript_kickoff.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "8aa7705f-844d-4ede-b377-b1f1755b5458",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.108549,
+                  "duration_ms": 21250,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 2069,
+                    "cache_read_input_tokens": 27735,
+                    "cache_creation_input_tokens": 20575
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 30,
+          "open_question_count": 14,
+          "extraction_note_count": 11
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "conflict_pass",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Cross-source contradictions — surfaced, never resolved",
+      "status": "pass",
+      "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/conflict_candidates.json",
+      "candidate_count": 7,
+      "candidate_fields": [
+        "objectives",
+        "audiences",
+        "key_messages",
+        "deliverables",
+        "timeline",
+        "budget",
+        "mandatories"
+      ],
+      "internal_conflict_count": 4
+    },
+    {
+      "number": 6,
+      "name": "synthesis",
+      "kind": "model",
+      "agent": "synthesize",
+      "description": "Assemble the canonical brief object",
+      "status": "pass",
+      "synthesis": {
+        "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief.json",
+        "entry_count": 59,
+        "conflict_count": 5,
+        "open_question_count": 20,
+        "readiness": {
+          "fields_with_evidence": 7,
+          "low_confidence_share": 0.2542,
+          "open_question_count": 20,
+          "verdict": "ready_for_review"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "synthesize",
+              "ok": true,
+              "session_id": "177e3a6b-2843-4688-b95e-40088aaacefc",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.7477063999999999,
+              "duration_ms": 274635,
+              "num_turns": 9,
+              "usage": {
+                "input_tokens": 6,
+                "output_tokens": 37851,
+                "cache_read_input_tokens": 60282,
+                "cache_creation_input_tokens": 89282
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "name": "render",
+      "kind": "model",
+      "agent": "render",
+      "description": "GR + EN documents from the same object",
+      "status": "pass",
+      "render": {
+        "el_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_el.md",
+        "en_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_en.md",
+        "el_chars": 28557,
+        "en_chars": 26665,
+        "template": "northlight_client_brief",
+        "answered_questions": [],
+        "language_warnings": [
+          "el:58: «τη» before a vowel or κ/π/τ/ξ/ψ/μπ/ντ/γκ takes a final ν («την») — '- Η κατανομή μεταξύ media και παραγωγής δεν έχει οριστεί· τη αποφασίζει ο Pavlos με τη med'"
+        ],
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "render",
+              "ok": true,
+              "session_id": "2da27606-3e77-4ec9-818f-1543ba74eab2",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.6054032,
+              "duration_ms": 191155,
+              "num_turns": 9,
+              "usage": {
+                "input_tokens": 8,
+                "output_tokens": 30068,
+                "cache_read_input_tokens": 88296,
+                "cache_creation_input_tokens": 71762
+              }
+            },
+            "violations": []
+          }
+        ],
+        "review_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_review.html",
+        "document_views": [
+          "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_el.html",
+          "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/lv-r1/brief_en.html"
+        ]
+      }
+    }
+  ]
+}

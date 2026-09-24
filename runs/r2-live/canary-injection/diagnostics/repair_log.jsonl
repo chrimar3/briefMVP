@@ -1,0 +1,4 @@
+{"stage": "extraction", "site": "inj_email", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.11996}
+{"stage": "verification", "site": "inj_email", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.033656200000000004}
+{"stage": "extraction", "site": "inj_rfp", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0866286}
+{"stage": "verification", "site": "inj_rfp", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.027738600000000002}

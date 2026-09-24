@@ -1,0 +1,747 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "client_id": "voreas_athletics",
+    "project_type": "advertising_creative",
+    "classification_confidence": "high",
+    "sensitivity_tier": "S0",
+    "sources": [
+      {"source_id": "background_brand_guidelines", "source_type": "background", "source_date": "2026-01-15"},
+      {"source_id": "background_market_research", "source_type": "background", "source_date": "2026-05-30"},
+      {"source_id": "emails_thread", "source_type": "email_thread", "source_date": "2026-07-24 (latest message)"},
+      {"source_id": "rfp_voreas", "source_type": "rfp", "source_date": "2026-07-05"},
+      {"source_id": "transcript_followup", "source_type": "transcript", "source_date": "2026-07-18"},
+      {"source_id": "transcript_kickoff", "source_type": "transcript", "source_date": "2026-07-12"}
+    ],
+    "created_ts": "2026-09-23T21:25:30+00:00",
+    "pipeline_version": "1.4.0"
+  },
+  "objectives": [
+    {
+      "content": "A successful launch of the series in the Greek market, with emphasis on establishing Voreas Athletics as the premium choice in the new category. No success measure or KPI is stated.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 2. Στόχος", "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The main ask is for people to learn that Voreas exists in the new category (heard as «μπραντ αγουέρνες»; proposed match \"brand awareness\", unconfirmed).",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:02:18]", "anchor": "Το βασικό ζητούμενο είναι το μπραντ αγουέρνες", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "A second objective is trial — for the product to get into people's wardrobes (speaker's wording: «δοκιμή, να μπει το προϊόν σε ντουλάπες»); the exact meaning (consumer trial or sell-in) and any measure are not defined.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:02:18]", "anchor": "να μπει το προϊόν σε ντουλάπες", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    }
+  ],
+  "audiences": [
+    {
+      "content": "Women 30–45 with an active lifestyle, in the two major urban centres (Athens, Thessaloniki). See open conflict with the kickoff position on age and gender.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 4. Κοινό-στόχος", "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The line is unisex and the real buyer is 25 to 55 (CMO: \"honestly\"). See open conflict with the RFP audience.",
+      "original_lang": "en",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:03:55]", "anchor": "our real buyer is 25 to 55", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Geography: mainly Greece.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:10:02]", "anchor": "Κυρίως Ελλάδα", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Cyprus may be added (Voreas has two points of sale there), but the board has not decided; the client asked that it not yet be put in the plan.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:10:02]", "anchor": "ίσως τρέξουμε και Κύπρο", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    }
+  ],
+  "key_messages": [
+    {
+      "content": "The series is positioned as premium performance: technical fabrics of racing specification, designed in Greece; communication should highlight technical superiority over the category. See open conflict with the kickoff positioning.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 3. Τοποθέτηση", "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "CMO's belief: the story is athleisure lifestyle — a garment worn from the gym to the office; if positioned purely as performance, the brand would be compared with the technical players and lose. Not locked with the board.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:05:47]", "anchor": "το story είναι athleisure lifestyle", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "conditional"
+    }
+  ],
+  "deliverables": [
+    {
+      "content": "Presence on social media and digital channels.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 5. Απαιτήσεις καμπάνιας", "anchor": "Παρουσία σε social media και ψηφιακά κανάλια.", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Creative material for the launch (video, key visuals). No quantities, formats or durations are given.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 5. Απαιτήσεις καμπάνιας", "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Support for the points of sale (window-display material). Number of stores is not given.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 5. Απαιτήσεις καμπάνιας", "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Instagram and YouTube are certain channels.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:02:14]", "anchor": "Instagram και YouTube σίγουρα", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Wants to try shoppable posts — buying from within the feed (heard as «σόσιαλ κόμερς»; proposed match \"social commerce\", unconfirmed).",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:02:14]", "anchor": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "For Voreas this is half the campaign — window displays, stands, anything that makes a passer-by stop (heard as «ρίτεϊλ ακτιβέισον»; proposed match \"retail activation\", unconfirmed).",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:03:47]", "anchor": "Το ρίτεϊλ ακτιβέισον", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "CMO wants three micro-influencers for the first wave — fitness and lifestyle profiles — to show the garment on a real day. Brand guidelines v2.0 state the brand communicates without influencers; see open conflict.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:05:05]", "anchor": "τρεις micro-influencers για το πρώτο κύμα", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Maybe an AR filter on Instagram to \"try on\" colours of the collection — the CMO calls it just thinking out loud, not to be held to, and not yet discussed with the board.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:08:10]", "anchor": "Just thinking out loud, don't hold me to it", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    },
+    {
+      "content": "A photo shoot took place in May for the e-shop; the Brand Director does not know whether the rights cover advertising use.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:12:15]", "anchor": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Certainly a video for the launch (heard as «χίρο βίντεο»; proposed match \"hero video\", unconfirmed).",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:09:04]", "anchor": "Σίγουρα ένα χίρο βίντεο", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Social content — cutdowns, stories and the like. Formats and durations are undecided; the client expects the agency to guide.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:09:04]", "anchor": "cutdowns, stories, τέτοια", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    }
+  ],
+  "timeline": [
+    {
+      "content": "Launch date locked at 14 February — described by the CMO as final (οριστικό), a middle ground between the original plan and the request for January; the agency is to proceed with this date. The year is not stated. See open conflict with the mid-March positions.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "emails_thread", "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02", "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**", "speaker_or_author": "Nikos (Voreas), 2026-07-23"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Launch in mid-March 2027, to coincide with the spring refresh of the stores and the start of the outdoor season. No dates are given for proposal, approvals or production milestones.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 6. Χρονοδιάγραμμα", "anchor": "Launch **μέσα Μαρτίου 2027**, ώστε να συμπέσει", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Asked whether the timeline remains \"mid-March\" (μέσα Μαρτίου): \"officially yes\".",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:14:07]", "anchor": "Επίσημα ναι", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Unofficially, the board is looking at the timeline again; Voreas will confirm in writing once it closes.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:14:07]", "anchor": "Ανεπίσημα, το board το ξανακοιτάει", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "low",
+      "qualifier": "conditional"
+    },
+    {
+      "content": "\"Mid-March\" (μέσα Μαρτίου): for now yes, but the board is discussing the season and it may move.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:16:05]", "anchor": "Προς το παρόν ναι", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "conditional"
+    },
+    {
+      "content": "The board's decision on the timeline will be known \"within the month\" (relative to the kickoff call; no exact date).",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:16:05]", "anchor": "Θα ξέρουμε μέσα στον μήνα", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    }
+  ],
+  "budget": [
+    {
+      "content": "Total budget €140.000, including media. The split between media, production and agency fees, and VAT treatment, are not stated. See open conflict with the CFO's figure.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 7. Προϋπολογισμός", "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "CFO: somewhere around a hundred and twenty, maybe a hundred and twenty-five if money is tightened elsewhere — but purely production and fees. Currency, units and VAT treatment are not stated.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε", "speaker_or_author": "MARIA (Voreas, CFO)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "conditional"
+    },
+    {
+      "content": "The media spend does not pass through the CFO; it is held by the management with their media company. No media spend figure is known.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "Το media spend δεν περνάει από εμένα", "speaker_or_author": "MARIA (Voreas, CFO)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Category benchmark only, not a Voreas budget: market research reports €300–500 thousand media spend per launch campaign for launches by international brands of the category in the Greek market.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_market_research", "location": "## Benchmark επένδυσης επικοινωνίας", "anchor": "κινούνται σε **€300–500 χιλ. media spend** ανά καμπάνια λανσαρίσματος", "speaker_or_author": "Agora Insights (commissioned research for Voreas Athletics)"}
+      ],
+      "confidence": "low",
+      "qualifier": "implied"
+    }
+  ],
+  "mandatories": [
+    {
+      "content": "The series name Voreas Move is always written in Latin characters, in full — never transliterated, never shortened to \"Move\".",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Brand name usage", "anchor": "γράφεται πάντα σε λατινικούς χαρακτήρες, πλήρες", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The tagline Move Like the Wind is used verbatim, without translation or paraphrase.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Brand name usage", "anchor": "χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The tagline Move Like the Wind is approved by the board and its use is mandatory on all campaign materials.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 8. Λοιπά", "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Logo clear space: at least 1× the height of the wordmark on all sides.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Brand name usage", "anchor": "τουλάχιστον 1× το ύψος του wordmark σε όλες τις πλευρές", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Color & visual", "anchor": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Secondary accent: Signal Coral #FF6B57, only on CTA elements.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Color & visual", "anchor": "Δευτερεύον accent: Signal Coral #FF6B57, μόνο σε CTA στοιχεία", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Photography shows real movement — not staged gym poses with static lighting.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Color & visual", "anchor": "Η φωτογραφία δείχνει πραγματική κίνηση", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Permitted claims: \"technical fabrics\" (τεχνικά υφάσματα) and \"designed in Greece\" (σχεδιασμένο στην Ελλάδα), the latter based on an approved provenance file.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "«σχεδιασμένο στην Ελλάδα» (βάσει εγκεκριμένου φακέλου προέλευσης)", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Not permitted: any performance claim with a measurable benefit without laboratory substantiation (e.g. \"improves your time\").",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "**Δεν επιτρέπεται:** οποιοσδήποτε ισχυρισμός απόδοσης με μετρήσιμο όφελος", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "No comparison that names a competitor.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The brand communicates without influencers — company policy since 2024 is exclusively owned and paid channels, following the incident with the 2023 sponsorship. See open conflict with the micro-influencer request.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "**χωρίς influencers** — η πολιτική της εταιρείας από το 2024", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "No connection with competitive athletics of records/performance — the series is everyday, not competitive.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Category no-gos", "anchor": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Avoid the \"fitness transformation\" cliché (before/after).",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Category no-gos", "anchor": "Αποφυγή κλισέ «fitness transformation» (πριν/μετά)", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "Tone (labelled guidance): modern Greek with natural use of English category terms; warm, not didactic; humour is allowed, irony toward the competition is not.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Tone (guidance)", "anchor": "Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ],
+      "confidence": "low",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The brand guidelines apply; version 2.0 is the one in force.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "emails_thread", "location": "**Message 2** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-19 17:48", "anchor": "τα brand guidelines (ισχύει η έκδοση 2.0)", "speaker_or_author": "Nikos (Voreas), 2026-07-19"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    },
+    {
+      "content": "The brand instructions of the attached guidelines apply.",
+      "original_lang": "mixed",
+      "evidence": [
+        {"source_id": "rfp_voreas", "location": "## 8. Λοιπά", "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ],
+      "confidence": "medium",
+      "qualifier": "stated"
+    },
+    {
+      "content": "During the micro-influencer discussion the Brand Director refers to what the guidelines say (\"you know what the guidelines say\"); the point is implied and not spelled out.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_followup", "location": "[00:06:29]", "anchor": "ξέρεις τι λένε τα guidelines", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ],
+      "confidence": "low",
+      "qualifier": "implied"
+    },
+    {
+      "content": "Do not design only for a female audience. See open conflict on the audience.",
+      "original_lang": "el",
+      "evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:03:55]", "anchor": "Μη σχεδιάσετε μόνο για γυναικείο κοινό", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ],
+      "confidence": "high",
+      "qualifier": "stated"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "approval",
+      "gap": "The name of the person who gives final approval of the brief on the Voreas side is unconfirmed: Nikos says it is between himself and Stella and has not yet confirmed; the agency has asked for the name twice.",
+      "why_it_matters": "The approval process and sign-off timing for the brief and the revised plan cannot be locked without a named approver.",
+      "suggested_question_for_client": "Ποιος κάνει το τελικό approval του brief από πλευράς Voreas — εσείς ή η Στέλλα; Μπορείτε να μας το επιβεβαιώσετε ώστε να κλειδώσουμε τη διαδικασία εγκρίσεων;"
+    },
+    {
+      "field": "objectives",
+      "gap": "The objective 'successful launch' has no stated success measure or KPI, and no business outcome was stated in the follow-up call.",
+      "why_it_matters": "Without a measurable target the channel mix, budget priorities and reporting cannot be set.",
+      "suggested_question_for_client": "Ποιο είναι το βασικό business αποτέλεσμα που θέλετε να πετύχει η καμπάνια και πώς θα μετρήσετε την επιτυχία του launch; Υπάρχουν συγκεκριμένα KPI ή στόχοι πωλήσεων και brand awareness;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 2. Στόχος", "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ]
+    },
+    {
+      "field": "objectives",
+      "gap": "The primary objective was spoken as «μπραντ αγουέρνες», a token that looks like a garbled rendering of a glossary term (proposed match \"brand awareness\", unconfirmed).",
+      "why_it_matters": "The lead objective must be exactly what the client meant, not a guess at a garbled word.",
+      "suggested_question_for_client": "Όταν είπατε ότι το βασικό ζητούμενο είναι το «μπραντ αγουέρνες», εννοείτε brand awareness για τη νέα κατηγορία;",
+      "linked_evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:02:18]", "anchor": "Το βασικό ζητούμενο είναι το μπραντ αγουέρνες", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "objectives",
+      "gap": "The second objective, «δοκιμή, να μπει το προϊόν σε ντουλάπες», has no definition and no success measure.",
+      "why_it_matters": "Without a defined outcome the agency cannot size the work or show later that it succeeded.",
+      "suggested_question_for_client": "Με το «δοκιμή, να μπει το προϊόν σε ντουλάπες» εννοείτε δοκιμή του προϊόντος από καταναλωτές ή sell-in στα καταστήματα; Και ποιο νούμερο θα θεωρούσατε επιτυχία;",
+      "linked_evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:02:18]", "anchor": "να μπει το προϊόν σε ντουλάπες", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "audiences",
+      "gap": "The RFP names women 30–45 in Athens and Thessaloniki; the CMO in the kickoff says the line is unisex with a real buyer of 25 to 55 and asks not to design only for women. It is unclear which audience the brief targets.",
+      "why_it_matters": "Audience drives casting, media planning, tone and messaging.",
+      "suggested_question_for_client": "Ποιο είναι το κοινό-στόχος της καμπάνιας: οι γυναίκες 30–45 του RFP ή το unisex κοινό 25–55; Ισχύει ακόμη ο περιορισμός σε Αθήνα και Θεσσαλονίκη;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 4. Κοινό-στόχος", "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "transcript_kickoff", "location": "[00:03:55]", "anchor": "our real buyer is 25 to 55", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "audiences",
+      "gap": "Geography is 'mainly Greece'; Cyprus (two points of sale) may be added but the board has not decided, and the client asked that it not go into the plan yet.",
+      "why_it_matters": "Market scope drives media planning, localisation and costing.",
+      "suggested_question_for_client": "Πότε αναμένετε απόφαση του board για την Κύπρο, και μέχρι τότε θέλετε να την αντιμετωπίσουμε ως εκτός πλάνου;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:10:02]", "anchor": "Κυρίως Ελλάδα", "speaker_or_author": "NIKOS (Voreas, CMO)"},
+        {"source_id": "transcript_followup", "location": "[00:10:02]", "anchor": "ίσως τρέξουμε και Κύπρο", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "The RFP positions the series as premium performance; the CMO believes the story is athleisure lifestyle and says it is not locked with the board. Which positioning applies is unknown.",
+      "why_it_matters": "The creative platform and every message depend on which positioning the board approves.",
+      "suggested_question_for_client": "Ποια τοποθέτηση ισχύει για την καμπάνια — premium performance ή athleisure lifestyle; Πότε περιμένετε να κλειδώσει με το board, και ποια είναι η θέση μέχρι τότε;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 3. Τοποθέτηση", "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "transcript_kickoff", "location": "[00:05:47]", "anchor": "το story είναι athleisure lifestyle", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "key_messages",
+      "gap": "The RFP positioning refers to technical fabrics of racing specification and technical superiority over the category, while the brand guidelines say no connection with competitive athletics of records/performance, no measurable performance claims without laboratory substantiation, and no comparison naming a competitor. It is unclear how these apply together.",
+      "why_it_matters": "Message development could breach the brand rules or the approved positioning if the two are not reconciled by the client.",
+      "suggested_question_for_client": "Πώς συνδυάζονται η τοποθέτηση του RFP (τεχνική υπεροχή, αγωνιστικές προδιαγραφές) με τους κανόνες των guidelines για μη σύνδεση με αγωνιστικό πρωταθλητισμό και για ισχυρισμούς απόδοσης; Ποια διατύπωση είναι εγκεκριμένη;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 3. Τοποθέτηση", "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "background_brand_guidelines", "location": "## Category no-gos", "anchor": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Requirements are listed by type only: no quantities, formats, durations, social platforms beyond Instagram and YouTube, or number of store locations are given; social formats and durations are left to the agency.",
+      "why_it_matters": "Scope, cost and production planning depend on how many assets, in which formats and on which channels and stores.",
+      "suggested_question_for_client": "Πόσα βίντεο και key visuals περιμένετε, με ποιες διάρκειες και formats για τα social (cutdowns, stories), και για πόσα σημεία πώλησης χρειάζεται υλικό βιτρίνας; Θέλετε να σας προτείνουμε εμείς;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 5. Απαιτήσεις καμπάνιας", "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "rfp_voreas", "location": "## 5. Απαιτήσεις καμπάνιας", "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "transcript_kickoff", "location": "[00:09:04]", "anchor": "cutdowns, stories, τέτοια", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "The hero video was spoken as «χίρο βίντεο», a token that looks like a garbled rendering of a glossary term (proposed match \"hero video\", unconfirmed).",
+      "why_it_matters": "The hero video is the anchor deliverable, so its name must be confirmed rather than assumed.",
+      "suggested_question_for_client": "Όταν είπατε «χίρο βίντεο» για το λανσάρισμα, εννοείτε hero video;",
+      "linked_evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:09:04]", "anchor": "Σίγουρα ένα χίρο βίντεο", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Shoppable posts were described as something to 'try' (heard as «σόσιαλ κόμερς», proposed match \"social commerce\", unconfirmed). Platforms, scale and whether it is in the first wave are not stated.",
+      "why_it_matters": "Shoppable formats need e-commerce set-up and change the costing.",
+      "suggested_question_for_client": "Όταν είπατε «σόσιαλ κόμερς», εννοείτε social commerce με shoppable posts; Θα είναι μέρος του πρώτου κύματος και σε ποιες πλατφόρμες θέλετε να το δοκιμάσετε;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:02:14]", "anchor": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "The activation in stores was called 'half the campaign' (heard as «ρίτεϊλ ακτιβέισον», proposed match \"retail activation\", unconfirmed), but the number and types of stores and the material list (window displays, stands) are not specified.",
+      "why_it_matters": "This activation could be half the budget, and its scope is unknown.",
+      "suggested_question_for_client": "Όταν είπατε «ρίτεϊλ ακτιβέισον», εννοείτε retail activation; Σε πόσα και ποια καταστήματα θέλετε παρουσία, και ποιο υλικό (βιτρίνες, stands) περιλαμβάνεται;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:03:47]", "anchor": "Το ρίτεϊλ ακτιβέισον", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "The CMO wants three micro-influencers, while brand guidelines v2.0 (stated to apply) say the brand communicates without influencers and the Brand Director pointed to the guidelines; the CMO said the matter would be solved without stating what the guidelines say. The CMO also said he had informally discussed it with two influencers already.",
+      "why_it_matters": "A guideline conflict could rule out the influencer plan or require approvals, and informal approaches may have created expectations.",
+      "suggested_question_for_client": "Τι ισχύει τελικά για τη συνεργασία με micro-influencers, δεδομένου ότι τα guidelines v2.0 προβλέπουν επικοινωνία χωρίς influencers; Σε ποιο στάδιο βρίσκονται οι ανεπίσημες συζητήσεις με τους δύο;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:05:05]", "anchor": "τρεις micro-influencers για το πρώτο κύμα", "speaker_or_author": "NIKOS (Voreas, CMO)"},
+        {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "**χωρίς influencers** — η πολιτική της εταιρείας από το 2024", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"},
+        {"source_id": "transcript_followup", "location": "[00:06:29]", "anchor": "ξέρεις τι λένε τα guidelines", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "An AR filter on Instagram was offered as a thought only, not discussed with the board and explicitly 'don't hold me to it'.",
+      "why_it_matters": "It should not be costed or promised unless the client commits to it.",
+      "suggested_question_for_client": "Το AR filter στο Instagram να το κρατήσουμε μόνο ως ιδέα εκτός κοστολογίου, ή θέλετε να το συμπεριλάβουμε ως προαιρετική επιλογή;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:08:10]", "anchor": "Just thinking out loud, don't hold me to it", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "deliverables",
+      "gap": "A May photo shoot for the e-shop exists, but it is unknown whether the rights cover advertising use; the Brand Director will check.",
+      "why_it_matters": "If the rights do not cover advertising, a new shoot must be costed.",
+      "suggested_question_for_client": "Μπορείτε να μας επιβεβαιώσετε αν τα δικαιώματα της φωτογράφισης του Μαΐου καλύπτουν διαφημιστική χρήση, και να μας δώσετε πρόσβαση στο υλικό;",
+      "linked_evidence": [
+        {"source_id": "transcript_followup", "location": "[00:12:15]", "anchor": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "The latest email locks the launch at 14 February (year not stated) as final, while the RFP and both transcripts give mid-March (2027 in the RFP), officially confirmed but under board review. No dates are given for the proposal, approvals, production milestones, or the store refresh.",
+      "why_it_matters": "The whole plan and costing are anchored to the launch date, and the production and retail-material schedule must be worked back from it.",
+      "suggested_question_for_client": "Ποια είναι η οριστική ημερομηνία launch: η 14 Φεβρουαρίου (ποιου έτους;) ή το «μέσα Μαρτίου 2027»; Ποια είναι η ημερομηνία ανανέωσης των καταστημάτων και η προθεσμία υποβολής της πρότασης;",
+      "linked_evidence": [
+        {"source_id": "emails_thread", "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02", "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**", "speaker_or_author": "Nikos (Voreas), 2026-07-23"},
+        {"source_id": "rfp_voreas", "location": "## 6. Χρονοδιάγραμμα", "anchor": "Launch **μέσα Μαρτίου 2027**, ώστε να συμπέσει", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "transcript_followup", "location": "[00:14:07]", "anchor": "Ανεπίσημα, το board το ξανακοιτάει", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "timeline",
+      "gap": "The board's decision date was given only as «μέσα στον μήνα», relative to the kickoff call, and the written confirmation promised in the follow-up call has no date.",
+      "why_it_matters": "The launch date stays unconfirmed until this decision, so the agency needs a firm date to plan around.",
+      "suggested_question_for_client": "Ποια ημερομηνία πήρε το board την απόφασή του για το χρονοδιάγραμμα, και υπάρχει γραπτή επιβεβαίωση που μπορείτε να μας στείλετε;",
+      "linked_evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:16:05]", "anchor": "Θα ξέρουμε μέσα στον μήνα", "speaker_or_author": "NIKOS (Voreas, CMO)"},
+        {"source_id": "transcript_followup", "location": "[00:14:07]", "anchor": "Επίσημα ναι", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+      ]
+    },
+    {
+      "field": "budget",
+      "gap": "The RFP gives a total of €140.000 including media, whereas the CFO's hedged figure (a hundred and twenty, maybe a hundred and twenty-five) is described as production and fees only, with media held separately by the management; the CFO figure has no stated currency, units or VAT treatment. The split between media, production and agency fees is not stated.",
+      "why_it_matters": "The scope and scale of the work depend on which figure is the working budget and what it covers.",
+      "suggested_question_for_client": "Το ποσό των €140.000 του RFP περιλαμβάνει media, ενώ η οικονομική διευθύντρια μίλησε για «εκατόν είκοσι» (ή «εκατόν είκοσι πέντε») μόνο για production και αμοιβές. Ποιο ισχύει; Το «εκατόν είκοσι» αφορά χιλιάδες ευρώ, με ή χωρίς ΦΠΑ; Ποιο είναι το ανώτατο όριο;",
+      "linked_evidence": [
+        {"source_id": "rfp_voreas", "location": "## 7. Προϋπολογισμός", "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**", "speaker_or_author": "Voreas Athletics S.A. (client)"},
+        {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε", "speaker_or_author": "MARIA (Voreas, CFO)"}
+      ]
+    },
+    {
+      "field": "budget",
+      "gap": "The media spend is held by the management and their media company, and the CFO did not give an order of magnitude. The market research gives a category benchmark for international launches, not a Voreas budget; it is unclear whether it applies.",
+      "why_it_matters": "Channel mix and reach targets cannot be planned without the media spend, which is a separate budget from production; the benchmark must not be mistaken for the project budget.",
+      "suggested_question_for_client": "Ποιος στη διοίκηση κρατάει το media spend, και μπορούμε να μας δώσει μια τάξη μεγέθους ή να μιλήσουμε με τη media εταιρεία; Το benchmark των €300–500 χιλ. αφορά launches διεθνών brands — ισχύει με οποιονδήποτε τρόπο για το launch του Voreas Move;",
+      "linked_evidence": [
+        {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "Το media spend δεν περνάει από εμένα", "speaker_or_author": "MARIA (Voreas, CFO)"},
+        {"source_id": "background_market_research", "location": "## Benchmark επένδυσης επικοινωνίας", "anchor": "κινούνται σε **€300–500 χιλ. media spend** ανά καμπάνια λανσαρίσματος", "speaker_or_author": "Agora Insights (commissioned research for Voreas Athletics)"}
+      ]
+    },
+    {
+      "field": "mandatories",
+      "gap": "The tone section of the guidelines is labelled 'guidance' rather than a firm rule; it is unclear whether the tone points are binding on this project, and which guideline rules the client treats as non-negotiable for this campaign.",
+      "why_it_matters": "Determines whether copy and scripts can be rejected for tone, or whether tone is left to agency judgement.",
+      "suggested_question_for_client": "Οι οδηγίες για το ύφος (ζεστό, όχι διδακτικό, χιούμορ ναι, ειρωνεία για τον ανταγωνισμό όχι) είναι δεσμευτικές για αυτό το project ή ενδεικτικές; Ποιοι κανόνες των guidelines είναι απαράβατοι για αυτή την καμπάνια;",
+      "linked_evidence": [
+        {"source_id": "background_brand_guidelines", "location": "## Tone (guidance)", "anchor": "Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"},
+        {"source_id": "rfp_voreas", "location": "## 8. Λοιπά", "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "field": "timeline",
+      "positions": [
+        {
+          "statement": "Launch date locked at 14 February, described by the CMO as final (οριστικό); the year is not stated.",
+          "evidence": {"source_id": "emails_thread", "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02", "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**", "speaker_or_author": "Nikos (Voreas), 2026-07-23"}
+        },
+        {
+          "statement": "Launch in mid-March 2027, to coincide with the spring refresh of the stores and the start of the outdoor season.",
+          "evidence": {"source_id": "rfp_voreas", "location": "## 6. Χρονοδιάγραμμα", "anchor": "Launch **μέσα Μαρτίου 2027**, ώστε να συμπέσει", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+        },
+        {
+          "statement": "Mid-March timeline officially confirmed (\"officially yes\"), while unofficially the board is looking at it again.",
+          "evidence": {"source_id": "transcript_followup", "location": "[00:14:07]", "anchor": "Επίσημα ναι", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+        },
+        {
+          "statement": "Mid-March for now, but the board is discussing the season and it may move.",
+          "evidence": {"source_id": "transcript_kickoff", "location": "[00:16:05]", "anchor": "Προς το παρόν ναι", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "budget",
+      "positions": [
+        {
+          "statement": "Total budget €140.000, including media.",
+          "evidence": {"source_id": "rfp_voreas", "location": "## 7. Προϋπολογισμός", "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+        },
+        {
+          "statement": "CFO: somewhere around a hundred and twenty, maybe a hundred and twenty-five if money is tightened elsewhere, purely production and fees; currency, units and VAT not stated.",
+          "evidence": {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε", "speaker_or_author": "MARIA (Voreas, CFO)"}
+        },
+        {
+          "statement": "CFO: the media spend does not pass through her; it is held by the management with their media company.",
+          "evidence": {"source_id": "transcript_kickoff", "location": "[00:12:41]", "anchor": "Το media spend δεν περνάει από εμένα", "speaker_or_author": "MARIA (Voreas, CFO)"}
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "audiences",
+      "positions": [
+        {
+          "statement": "Women 30–45 with an active lifestyle, in Athens and Thessaloniki.",
+          "evidence": {"source_id": "rfp_voreas", "location": "## 4. Κοινό-στόχος", "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+        },
+        {
+          "statement": "The line is unisex and the real buyer is 25 to 55.",
+          "evidence": {"source_id": "transcript_kickoff", "location": "[00:03:55]", "anchor": "our real buyer is 25 to 55", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "key_messages",
+      "positions": [
+        {
+          "statement": "Series positioned as premium performance: technical fabrics of racing specification, designed in Greece; emphasise technical superiority over the category.",
+          "evidence": {"source_id": "rfp_voreas", "location": "## 3. Τοποθέτηση", "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών", "speaker_or_author": "Voreas Athletics S.A. (client)"}
+        },
+        {
+          "statement": "CMO's belief (conditional, not locked with the board): the story is athleisure lifestyle; a purely performance approach would invite comparison with technical players.",
+          "evidence": {"source_id": "transcript_kickoff", "location": "[00:05:47]", "anchor": "το story είναι athleisure lifestyle", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+        }
+      ],
+      "status": "open"
+    },
+    {
+      "field": "deliverables",
+      "positions": [
+        {
+          "statement": "The brand communicates without influencers — company policy since 2024 is exclusively owned and paid channels; brand guidelines v2.0 are stated to apply.",
+          "evidence": {"source_id": "background_brand_guidelines", "location": "## Επικοινωνία — αυστηροί κανόνες", "anchor": "**χωρίς influencers** — η πολιτική της εταιρείας από το 2024", "speaker_or_author": "Voreas Athletics — Brand Guidelines v2.0"}
+        },
+        {
+          "statement": "CMO wants three micro-influencers for the first wave, fitness and lifestyle profiles, to show the garment on a real day.",
+          "evidence": {"source_id": "transcript_followup", "location": "[00:05:05]", "anchor": "τρεις micro-influencers για το πρώτο κύμα", "speaker_or_author": "NIKOS (Voreas, CMO)"}
+        },
+        {
+          "statement": "The Brand Director refers to what the guidelines say during that discussion (implied objection, not spelled out).",
+          "evidence": {"source_id": "transcript_followup", "location": "[00:06:29]", "anchor": "ξέρεις τι λένε τα guidelines", "speaker_or_author": "STELLA (Voreas, Brand Director)"}
+        }
+      ],
+      "status": "open"
+    }
+  ],
+  "signoff": {"status": "draft"}
+}

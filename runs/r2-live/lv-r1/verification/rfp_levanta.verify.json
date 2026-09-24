@@ -1,0 +1,11 @@
+{
+  "source_id": "rfp_levanta",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "missing:mandatories",
+      "problem": "The RFP states that the current plastic-card loyalty programme is discontinued and Levanta Club moves entirely into the app; this constraint on campaign content and messaging appears in no extract field, conflict or open question.",
+      "evidence": "Το σημερινό πρόγραμμα με πλαστικές κάρτες καταργείται."
+    }
+  ]
+}

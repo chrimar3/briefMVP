@@ -1,0 +1,19 @@
+{
+  "client_id": "voreas_athletics",
+  "sensitivity_tier": "S0",
+  "terms": [
+    { "term": "Voreas Move", "rule": "keep_latin", "note": "Product line name — never transliterate, never translate, never abbreviate to 'Move'." },
+    { "term": "Voreas Athletics", "rule": "keep_latin", "note": "Company name." },
+    { "term": "Move Like the Wind", "rule": "keep_latin", "note": "Mandatory campaign tagline — character-exact in every render." },
+    { "term": "athleisure", "rule": "keep_latin", "note": "Category term; no Greek equivalent in agency register." },
+    { "term": "brand awareness", "rule": "keep_latin", "note": "Standard EN marketing term in agency Greek." },
+    { "term": "hero video", "rule": "keep_latin", "note": "Standard EN deliverable term." },
+    { "term": "key visual", "rule": "keep_latin", "note": "Standard EN creative term." },
+    { "term": "retail activation", "rule": "keep_latin", "note": "Standard EN trade-marketing term." },
+    { "term": "social commerce", "rule": "keep_latin", "note": "Standard EN channel term." },
+    { "term": "launch", "rule": "keep_latin", "note": "Used untranslated in agency register." },
+    { "term": "KPI", "rule": "keep_latin", "note": "Acronym stays Latin." },
+    { "term": "media spend", "rule": "keep_latin", "note": "Budget term; distinct from production budget — never merge the two." },
+    { "term": "AR filter", "rule": "keep_latin", "note": "Platform feature term; acronym stays Latin." }
+  ]
+}

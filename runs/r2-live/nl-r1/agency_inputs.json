@@ -1,0 +1,50 @@
+{
+  "campaign_profile": "paid_campaign",
+  "initialized_by": "Christos Maragkoudakis",
+  "baseline_origin": "runner snapshot",
+  "checklist": {
+    "business_objective": {
+      "prompt": "What business outcome does this campaign support?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "conversion_and_kpi": {
+      "prompt": "What conversion and KPI will define success, and over what period?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "audience_and_offer": {
+      "prompt": "Who is the audience, and what offer or message is approved?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "landing_page": {
+      "prompt": "Which landing page is required and who owns its readiness?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "tracking_owner": {
+      "prompt": "Who owns measurement and verifies tracking before launch?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "budget_and_dates": {
+      "prompt": "What budget and dates have been agreed or remain unresolved?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    },
+    "assets_and_approvals": {
+      "prompt": "Which assets, rights and approvals are required?",
+      "value": "",
+      "owner": "",
+      "evidence": []
+    }
+  },
+  "deliverables": []
+}

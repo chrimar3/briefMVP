@@ -1,0 +1,82 @@
+{
+  "campaign_profiles": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/config/campaign_profiles.json",
+    "sha256": "491a174761c10861dd98ec27f4a625c9648f6ee7540f355053146c8f86b3ba6c"
+  },
+  "channel_specs": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/config/channel_specs.json",
+    "sha256": "5bae3a70f3b9ca99f4eef258536ff1250a1aea8a3da9dff55983981efe3760a3"
+  },
+  "data_declaration": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/data_declaration.json",
+    "sha256": "0bceafa62484534a8c9ff4ff19974397b356464e496f30e4be12a8a61088acd8"
+  },
+  "glossary": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/client_levanta.json",
+    "sha256": "2cc55c1e4d3269ed0c76e65b5bf0c0a2866df12ef6af22ef3cdadbbeba84fc36"
+  },
+  "greek_style": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/config/greek_style.json",
+    "sha256": "7cf8688a7a20de046e32b5bb62ef51c698388a08ee56a3d39778b59b02a2f62c"
+  },
+  "model_routing": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/config/model_routing.json",
+    "sha256": "0890639f86046f770da8dce92fe51ef64d5fd37d5cf76ccfaba9b7dcc5d1c0a4"
+  },
+  "readiness_policy": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/config/readiness_policy.json",
+    "sha256": "1479c49ca9d22b734980f024eb6d2668aaf9e3aaed7261808b39bf0f9c1cb529"
+  },
+  "schema:brief_schema.json": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/schema/brief_schema.json",
+    "sha256": "7b2157dc5a043b90096c3d888f63c5b6df1d5c5726779fff5a60c45751da0948"
+  },
+  "schema:extract_schema.json": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/schema/extract_schema.json",
+    "sha256": "d9a6adc3175eb9393ed9606cefedcd04189d1a97030376c4fbe213731913d1d6"
+  },
+  "skill:SOURCES.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/skills/SOURCES.md",
+    "sha256": "b5d73e4d77be256d8968e08fe0b15700de3d1d138b55190f1e6f5d4b18ea3962"
+  },
+  "skill:SYNTHESIS.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/skills/SYNTHESIS.md",
+    "sha256": "cff6a2419371df3510cc98eebabfb05b7375d313db8e326c90c6babb78cb58e9"
+  },
+  "skill:TRANSCRIPTS.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/skills/TRANSCRIPTS.md",
+    "sha256": "83e0846a9ae56e8332b73c3e4edd636088008828eacb5caaaf450bfb5c704db8"
+  },
+  "skill:TRANSLATION.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/skills/TRANSLATION.md",
+    "sha256": "8362bbacaa52f40abdb4ef717df5707832dfb46815523bfe1b016c2c1e0c32b6"
+  },
+  "source:background_brand_guidelines": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/background_brand_guidelines.md",
+    "sha256": "86ea9ccce398a97ea990c9aa22ca18bd1d9bfaefc67f5aef3124ef81969ad485"
+  },
+  "source:emails_thread": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/emails_thread.md",
+    "sha256": "a7e1acf8acc6cfd620524eb58077ff4d4ac7f7df27260ff000a3a10a7e5435aa"
+  },
+  "source:rfp_levanta": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/rfp_levanta.md",
+    "sha256": "ccb33214edd60176b3b3ee1ff598ebc0dd0bd3a893f39ab08728e8eedc6ac6e7"
+  },
+  "source:transcript_kickoff": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/levanta_03/transcript_kickoff.md",
+    "sha256": "d84d21bc1d3c41305e01908f0199f2883b4c41fbb4607cb69e4d9d0da361c02a"
+  },
+  "template:northlight_client_brief.el.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/templates/northlight_client_brief.el.md",
+    "sha256": "07f60e7978e7c630827ef6c4532c64855bf75a4e0880782fff277efed68e978f"
+  },
+  "template:northlight_client_brief.labels.json": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/templates/northlight_client_brief.labels.json",
+    "sha256": "b96f3a178cc70fc7396e4fbf029115f7c06e0a915aebad48d88842d26e23facf"
+  },
+  "template:northlight_client_brief.md": {
+    "path": "/Users/chrism/AI-transformation-assignment/brief-builder/templates/northlight_client_brief.md",
+    "sha256": "c7f0c413d077c6198f42f6906387c55c6e75f50c385c448cd75656ce721d8768"
+  }
+}
