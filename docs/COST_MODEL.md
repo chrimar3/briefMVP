@@ -1,12 +1,13 @@
 # Usage model — tokens by model, re-derived from measured runs
 
-> **Era banner — read this first.** Every *complete* brief measured so far ran on the
-> **Haiku-era routing**: haiku extraction and no verifier. That includes the graded evidence run
-> `runs/tier3`. The **current routing** (human decision 2026-07-30: sonnet extraction plus a
-> risk-routed `verify-extract` second check per source) has been measured on **one source only**
-> (§3). It is **unmeasured end to end** until the owner-authorised live re-baseline:
-> 3 rolls × `northlight_01` + `voreas_02`, round 2 (`docs/OPERATING_DECISIONS.md` § 2026-09-22,
-> decision 1; protocol in `docs/EVAL_RECORD.md` §7). Every figure below carries its era.
+> **Era banner — read this first.** §1 and §2 are the **current routing**
+> (sonnet extraction + sonnet verify-extract, owner decision 2026-09-23 #5; classify and
+> fidelity check on haiku; synthesis and render on sonnet), measured in the round-2 live
+> re-baseline on 2026-09-23/24:
+> six complete briefs on three synthetic fixtures, committed under `runs/r2-live/`. §3 is the
+> **Haiku-era routing** of July (haiku extraction, no verifier), kept as history: it is what the
+> graded run `runs/tier3` used, and it is **not** a planning figure any more. Every figure below
+> carries its era.
 
 **Unit.** The client is expected to run on a subscription, so usage is reported in **tokens by
 model**: fresh input, output, cache read and cache write. Dollars appear only in the labelled
@@ -15,95 +16,116 @@ footnote at the end. Whether the value unit should be *share of a subscription u
 
 **Ruler.** `python3 eval/cost_report.py <runs dir | one run>` is the measuring tool. Its default
 output is tokens by model per stage and in total. It counts every attempt, including repairs,
-failed attempts and the per-source `verify-extract` call. Attempts copied into resumed runs are
-counted once. Per-brief figures list every complete run as clean, repaired or resumed, and print
-the all-runs mean next to the clean-only mean. `--tokens` gives the per-stage category view;
-`--usd` gives the dollar footnote. Before round 1 the ruler dropped the verifier and silently kept
-only clean runs; both faults are fixed and tested in `tests/test_cost_report.py`.
+failed attempts and the per-source `verify-extract` call; attempts copied into resumed runs are
+counted once, and symlinked run directories (`runs/latest`, `runs/r2-live/latest`) are skipped
+so no run is counted twice. Per-brief figures list every complete run as clean, repaired or
+resumed, and print the all-runs mean next to the clean-only mean (rounded to the token). `--tokens`
+gives the per-stage category view, `--verifier` what happened to each verifier finding, and
+`--usd` the dollar footnote. Faults fixed and tested in `tests/test_cost_report.py`: the ruler
+once dropped the verifier, once kept only clean runs, and until round 2 counted a `latest`
+symlink as a second brief.
 
 **Where the numbers come from.** Figures marked **[committed]** come from run directories
-committed to this repo (`runs/tier3`, `runs/voreas-prep-02`, `runs/voreas-prep-03`, and the
-current-routing transcript leg `runs/routing-validate-01`, committed at the round-1 integration),
-so any clone reproduces them. Figures marked **[local store]** come from gitignored run directories on the
-operator's machine (the checkout's `runs/`), measured with the same command on 2026-09-23. They are
-reproducible there but not on a fresh clone.
+committed to this repo (`runs/r2-live/*`, `runs/tier3`, `runs/voreas-prep-02`,
+`runs/voreas-prep-03`, `runs/routing-validate-01`), so any clone reproduces them. Figures marked
+**[local store]** come from gitignored run directories on the operator's machine, measured with
+the same command on 2026-09-23; they cannot be re-derived from a clone.
 
-## 1. The graded run — one client brief, Haiku-era routing [committed]
+## 1. The current routing — tokens by model per brief (round 2, measured) [committed]
 
-`python3 eval/cost_report.py runs/tier3`. The run was assembled from resumed legs (steps 1–7
-carried from earlier runs) and includes one extraction repair, so it is neither a clean run nor a
-single roll.
+`python3 eval/cost_report.py runs/r2-live`. Round-2 prompts, CLI 2.1.280 with `--restricted`,
+`--no-session-persistence` and per-stage deny rules; resolved models `claude-haiku-4-5-20251001`
+and `claude-sonnet-5` (from the manifests). Every roll ran the whole pipeline from the readiness
+gate; no run resumed another. **No run was clean**: each needed at least one repair, so the
+clean-only mean has n = 0 on every fixture, and the all-runs mean is the figure.
 
-| stage | model | calls | fresh input | output | cache read | cache write | total |
-|---|---|---:|---:|---:|---:|---:|---:|
-| classification | haiku | 1 | 25 | 2,571 | 14,642 | 11,439 | 28,677 |
-| fidelity check | haiku | 1 | 25 | 3,943 | 12,339 | 10,604 | 26,911 |
-| extraction (4 sources + 1 repair) | haiku | 5 | 2,429 | 72,751 | 296,455 | 106,418 | 478,053 |
-| synthesis | sonnet | 1 | 10 | 30,871 | 74,364 | 60,575 | 165,820 |
-| bilingual render | sonnet | 1 | 10 | 49,760 | 155,278 | 80,311 | 285,359 |
-| **Stage 1 / brief** | haiku 533,641 · sonnet 451,179 | 9 | | | | | **984,820** |
-| creative A/B (Stage 2) | opus | 1 | 1,354 | 7,724 | 28,829 | 25,566 | 63,473 |
-| creative A/B (Stage 2) | sonnet | 1 | 1,356 | 7,800 | 55,610 | 21,675 | 86,441 |
-| **all stages** | | 11 | 5,209 | 175,420 | 637,517 | 316,588 | **1,134,734** |
+| run | fixture (sources) | frozen harness | wall time | haiku | sonnet | **total** |
+|---|---|---|---:|---:|---:|---:|
+| nl-r1 | northlight_01 (4) | 17/17 | 11.2 min | 54,715 | 541,984 | **596,699** |
+| nl-r2 | northlight_01 (4) | 17/17 | 13.6 min | 96,701 | 625,643 | **722,344** |
+| nl-r3 | northlight_01 (4) | 16/17 | 13.1 min | 66,920 | 702,009 | **768,929** |
+| vo-r2 | voreas_02 (6) | 17/17 | 21.8 min | 107,357 | 1,207,277 | **1,314,634** |
+| vo-r3 | voreas_02 (6) | 17/17 | 23.1 min | 128,876 | 1,140,156 | **1,269,032** |
+| lv-r1 | levanta_03 (4, blind) | 17/17 | 18.1 min | 77,647 | 809,858 | **887,505** |
 
-About **0.98 M tokens for one Stage-1 brief** (54% haiku, 46% sonnet). At ~15 briefs a month
-(PRD A2) that is ~15 M tokens a month, **at Haiku-era routing**.
-
-## 2. Haiku-era spread across every complete northlight brief [local store]
-
-`python3 eval/cost_report.py runs` over the local run store finds 10 complete Stage-1 briefs on
-`northlight_01`, all Haiku-era:
-
-| selection | n | mean tokens / brief | haiku | sonnet |
+| per-brief mean (all complete runs) | n independent | haiku | sonnet | **total** |
 |---|---:|---:|---:|---:|
-| all complete runs (clean + repaired + resumed) | 10 | 848,845 | 342,718 | 506,127 |
-| clean runs only (every stage one attempt) | 7 | 754,764 | 276,181 | 478,583 |
+| northlight_01 | 3 | 72,779 | 623,212 | **695,991** |
+| voreas_02 | 2 | 118,116 | 1,173,716 | **1,291,833** |
+| levanta_03 | 1 | 77,647 | 809,858 | **887,505** |
+| pooled, all six briefs (three fixtures) | 6 | 88,703 | 837,821 | **926,524** |
 
-The individual runs range from **556,121** (`tier3-confirm2`, clean) to **1,218,632**
-(`evidence-20260729`, repaired and resumed). The graded run (984,820) sits above the clean mean
-because it carries an extraction repair. Repairs are part of real usage: the all-runs mean is the
-planning figure, and the clean-only mean is a floor. On `voreas_02` (6 sources), the two complete
-Haiku-era briefs used **1,309,915** and **1,792,417** tokens [committed]. Both needed repairs, and
-the second is a synthesis/render re-roll on the first's extracts.
+About **90%** of the tokens are sonnet (5,026,927 of 5,559,143 over the six briefs). The spread is
+driven by the fixture more than by the roll: the six-source voreas briefs use about 1.9× the
+four-source northlight briefs. The pooled mean is a planning convenience across three different
+synthetic projects, not a property of any one of them; `eval/cost_report.py` prints only the
+per-fixture means.
 
-## 3. The current routing — measured on one source [committed]
+**What the six briefs do not include.** The refused run `vo-r1` stopped at synthesis after two
+attempts (the conflict-consistency gate; `docs/EVAL_RECORD.md` §10) and used **649,965** tokens
+(haiku 97,278 · sonnet 552,687) without producing a brief. The injection canary
+(`runs/r2-live/canary-injection`, extraction only, two sources) used 111,486. The whole
+round-2 ledger, every attempt of all eight manifests, is 6,320,594 tokens (haiku 629,494 ·
+sonnet 5,691,100).
 
-`python3 eval/cost_report.py runs/routing-validate-01`. This is an extraction-only run on the
-northlight transcript made on 2026-07-29 under the routing adopted on 2026-07-30.
+**By stage, every attempt of the eight manifests** (`--tokens`): extraction 50 calls (sonnet),
+verification 36 (sonnet), fidelity check 10 and classification 7 (haiku), synthesis 8 and render
+8 (sonnet). Output tokens are 58% and cache writes 37% of list-rate-attributed spend; cache reads
+5%; fresh input under 1%.
 
-| stage | model | calls | fresh input | output | cache read | cache write | total |
-|---|---|---:|---:|---:|---:|---:|---:|
-| extraction (transcript) | sonnet | 2 | 40 | 39,621 | 424,321 | 90,066 | 554,048 |
-| verify-extract | sonnet | 1 | 6 | 6,587 | 20,413 | 17,689 | 44,695 |
-| **transcript leg** | sonnet | 3 | 46 | 46,208 | 444,734 | 107,755 | **598,743** |
+**Against the July figures.** The northlight mean under the current routing (695,991) is *lower*
+than the Haiku-era all-runs mean (848,845, n = 10 [local store]) and the graded run (984,820),
+while its sonnet share rose from about 60% to 90%. Round 2 changed the prompts, the repair orders
+and the model seam at the same time as it measured the routing, so the drop cannot be attributed
+to any one change. On a subscription, sonnet tokens draw more of the usage window than haiku
+tokens, so the model split matters as much as the total.
 
-The old ruler reported 554,048 for this run. It missed the verifier's 44,695 tokens (7.5% of the
-leg).
+## 2. Monthly usage — an estimate from PRD A2, not a measurement
 
-For comparison, the same transcript leg in the Haiku era [local store]:
+PRD §4 assumption A2 is ~15 briefs a month. At the pooled current-routing mean:
 
-| run | extraction attempts | tokens |
-|---|---:|---:|
-| `tier3-confirm2` | 1 | 56,965 |
-| `cost-c1` | 1 | 61,734 |
-| `tier3-confirm` | 1 | 65,689 |
-| `tier3` (graded) | 2 | 295,774 |
+**15 × 926,524 ≈ ~13.9 M tokens a month** (about 90% sonnet). **Estimate**, with these bounds:
 
-- **First sonnet attempt:** 91,918 tokens, against 56,965–65,689 for a clean haiku attempt.
-- **Second sonnet attempt:** 20 turns and 462,130 tokens, 86% of them cache reads.
-- **Where the leg goes:** 462,130 of the 598,743 tokens (77%) are the second attempt. The leg
-  is 2.0× the graded run's transcript leg, which also needed two attempts.
+| assumption | tokens / month |
+|---|---:|
+| every brief like northlight_01 (695,991) | ~10.4 M |
+| pooled mean of the six briefs (926,524) | **~13.9 M** |
+| every brief like voreas_02 (1,291,833) | ~19.4 M |
+| pooled mean plus one refused run per six briefs (like vo-r1) | ~15.5 M |
 
-This is one source and one roll. It says nothing reliable about a full brief under the current
-routing.
+The real mix of project sizes, the repair rate on real inputs and the refusal rate are unknown
+until the pilot (go-live T-02 measures them). Creative drafting (Stage 2) is not in these figures:
+no creative has been generated under the current routing yet (pending: owner sign-off on
+`runs/r2-live/nl-r1`, then the creative A/B); the July A/B used 149,914 tokens for two drafts (§3).
+The July planning figure (~15 M tokens a month at 0.98 M per brief) is superseded by this section.
 
-**Verifier routing.** The verifier runs on sonnet whenever an extract carries any risk class,
-otherwise on the base (haiku) model. `python3 eval/cost_report.py runs --risk-replay` replays
-`pipeline/extraction.py:risk_classes` over every stored extract, counting byte-identical copies
-once. Result: **66 of 66** unique extracts [local store] and **10 of 10** [committed] route to
-sonnet. Removing `figures`, the broadest class, would move only 2 of the 66 to haiku. So on the
-evidence so far, **every per-source verification runs on sonnet**. That is the planning assumption
-until the owner decides otherwise (`docs/EVAL_RECORD.md` §6).
+## 3. The Haiku-era routing — historical [committed and local store]
+
+These figures describe the July routing (haiku extraction, no verifier). They are kept because
+the graded evidence and the tier reports quote them; they are not a planning figure.
+
+**The graded run** (`python3 eval/cost_report.py runs/tier3`) [committed], assembled from resumed
+legs with one extraction repair:
+
+| stage | model | calls | total tokens |
+|---|---|---:|---:|
+| classification | haiku | 1 | 28,677 |
+| fidelity check | haiku | 1 | 26,911 |
+| extraction (4 sources + 1 repair) | haiku | 5 | 478,053 |
+| synthesis | sonnet | 1 | 165,820 |
+| bilingual render | sonnet | 1 | 285,359 |
+| **Stage 1 / brief** | haiku 533,641 · sonnet 451,179 | 9 | **984,820** |
+| creative A/B (Stage 2) | opus 63,473 · sonnet 86,441 | 2 | 149,914 |
+| **all stages** | | 11 | **1,134,734** |
+
+**The spread** [local store]: 10 complete Haiku-era northlight briefs, all-runs mean 848,845
+(haiku 342,718 · sonnet 506,127), clean-only mean 754,764 (n = 7), range 556,121–1,218,632. On
+voreas_02 the two Haiku-era briefs used 1,309,915 and 1,792,417 tokens [committed].
+
+**The first current-routing leg** (`runs/routing-validate-01`) [committed]: one transcript
+extraction leg on 2026-07-29, 598,743 tokens (extraction 554,048 in two attempts + verifier
+44,695), against 295,774 for the graded run's transcript leg. It was the only current-routing
+measurement until round 2; §1 replaces it as the planning basis.
 
 ## 4. Capacity returned — reconciled to the PRD's own assumptions
 
@@ -137,7 +159,8 @@ the pilot costs:
   remove 30 h a year (10 × 180 ÷ 60), about €570–600 at A4.
 - **The cost side.** The pilot's people hours are a planning range of 68.8–116.2 h over four
   weeks across all roles (`docs/pilot/PILOT_INVESTMENT.md` §1); rates other than A4, seats and
-  usage are owner inputs, and usage under the current routing waits for the re-baseline (§3).
+  usage are owner inputs. Usage under the current routing is now measured per brief (§1) and
+  estimated per month (§2); its price depends on the value-unit decision (§5).
   Net value per year = returned hours × rate − running cost (seats or usage, upkeep of glossaries
   and the spec catalog). Break-even of the pilot's hours at the 70-minute floor is 59–100 briefs,
   3.9–6.6 months at A2 (`PILOT_INVESTMENT.md` §4). Go-live decision D-27 turns this into a
@@ -154,8 +177,8 @@ The ratio "model usage vs labour" needs usage and labour in the same unit. There
 and the owner has not yet chosen between them:
 
 - **Subscription window.** Usage is a share of a plan's usage allowance per period. Tokens by
-  model are the direct measure. The relevant question becomes "how many briefs a month fit in the
-  window, at current routing", and that needs the round-2 re-baseline.
+  model are the direct measure (§1), and the question becomes "how many briefs a month fit in the
+  window at the current routing": §2's ~13.9 M tokens a month, about 90% sonnet, is the input.
 - **Metered API.** Usage is priced per token at list or contract rates (PRD DR-1's production
   shape: prompt caching on the static skeleton). This is the only form in which a euro ratio
   against €38–40 of labour is meaningful. The measured API path (`eval/substrate_spike.py
@@ -164,12 +187,15 @@ and the owner has not yet chosen between them:
 Until the decision is made, stakeholder material leads with tokens by model and era. Dollar
 figures stay footnotes.
 
-## 6. Where the tokens go — measured decomposition, graded run (Haiku-era) [committed]
+## 6. Where the tokens go — measured decomposition
 
-`python3 eval/cost_report.py runs/tier3 --tokens`. Two categories dominate. Output tokens are
-**64%** of list-rate-attributed spend and cache writes **31%**. Cache reads are 5% and fresh input
-1%, because work orders pass paths rather than content. Output tokens far exceed the artifact each
-stage produces:
+**Current routing** (`python3 eval/cost_report.py runs/r2-live --tokens`) [committed]: output
+tokens are 58% of list-rate-attributed spend and cache writes 37%; cache reads 5%; fresh input
+under 1%, because work orders pass paths rather than content. Synthesis averaged 8.0 turns and
+render 7.6; extraction and verification 5.0 each.
+
+**Haiku era, the graded run** (`python3 eval/cost_report.py runs/tier3 --tokens`) [committed]:
+output 64%, cache writes 31%. Output tokens far exceeded the artifact each stage produced:
 
 | stage | output tokens | deliverable ≈ | inflation |
 |---|---:|---:|---:|
@@ -186,13 +212,14 @@ second (C4).
 ## 7. Levers already in the architecture
 
 - **Model tiering per stage (DR-3).** Haiku for schema-following stages, sonnet for judgment. The
-  2026-07-30 routing moved extraction to sonnet and added a verifier. §3 shows the first
-  measurement, and the re-baseline will show the rest.
+  2026-07-30 routing moved extraction to sonnet and added a verifier; §1 measures the result.
 - **Prompt caching on the static skeleton.** The skeleton files and the schema are identical on
   every call. On the production API substrate that is a large discount on cached input; on the
   demo substrate it shows up as the cache-write share in §6.
 - **Extract-then-synthesize (DR-2).** Synthesis runs over compact extracts rather than raw
   sources, so usage and traceability improve together.
+- **Fewer repairs.** Every §1 run needed at least one repair; repairs are a direct usage lever
+  (`python3 eval/repair_analysis.py runs/r2-live` lists the recurring gate violations).
 - **Batch where latency permits.** This applies to non-interactive stages on the API substrate.
 
 ## 8. Substrate spike (cost-audit C4) — a measured negative result
@@ -209,21 +236,22 @@ non-subagent path, CLAUDE.md rule 4) can remove that overhead, and it has not ru
 
 ### Footnote — dollars (demo substrate, CLI-reported `cost_usd`, list price; not the stakeholder unit)
 
-`python3 eval/cost_report.py <path> --usd`. All figures are **Haiku-era** unless stated.
+`python3 eval/cost_report.py <path> --usd`.
 
-| figure | value | source |
+| figure | value | era · source |
 |---|---|---|
-| Stage-1 per brief, the two clean full runs `tier3-confirm` / `tier3-confirm2` | $2.44 / $2.07, mean **$2.25** | [local store] |
-| Stage-1 per brief, northlight, clean runs only (n=7) | mean $2.53 (range $2.07–3.20) | [local store] |
-| Stage-1 per brief, northlight, all complete runs (n=10) | mean $2.60 (range $2.07–3.20) | [local store] |
-| graded run `tier3`, Stage 1 / Stage 1 + creative A/B | $2.81 / **$3.55** | [committed] |
-| creative A/B, both drafts (`tier3`) | $0.74 | [committed] |
-| current routing, transcript leg only (`routing-validate-01`) | $1.47 (extraction $1.26 + verifier $0.21) | [committed] |
+| Stage-1 per brief, northlight_01, all complete runs (n=3) | mean $1.78 (range $1.54–1.92) | current · [committed] `runs/r2-live` |
+| Stage-1 per brief, voreas_02, all complete runs (n=2) | mean $3.55 ($3.55–3.55) | current · [committed] |
+| Stage-1 per brief, levanta_03 (n=1) | $2.70 | current · [committed] |
+| Stage-1 per brief, the two clean July runs `tier3-confirm` / `tier3-confirm2` | $2.44 / $2.07, mean $2.25 | Haiku-era · [local store] |
+| Stage-1 per brief, northlight, all complete July runs (n=10) | mean $2.60 (range $2.07–3.20) | Haiku-era · [local store] |
+| graded run `tier3`, Stage 1 / Stage 1 + creative A/B | $2.81 / $3.55 | Haiku-era · [committed] |
+| creative A/B, both drafts (`tier3`) | $0.74 | Haiku-era · [committed] |
 
-**Previously published ratio.** Against ~€38 of labour per brief (PRD A1 × A4, an assumption), the
-earlier headline of $2.25/brief on the two clean runs gave **~17:1**. On the fixed ruler's clean
-mean over all 7 clean northlight runs ($2.53), the ratio is ~15:1. Both are Haiku-era and both
-use the demo substrate. PRD §10 projected <€0.50/brief (~76–80:1) for the production API
-substrate. That is a projection: nothing in this repo has run on that substrate. The PRD's point
-still holds: model usage is the smallest line in the business case, and management attention
-belongs on review time, adoption and glossary/template upkeep.
+**Previously published ratio.** Against ~€38 of labour per brief (PRD A1 × A4, an assumption),
+the July headline of $2.25/brief gave **~17:1** (Haiku-era). On the current routing's northlight
+mean ($1.78) the same arithmetic gives ~21:1. Both use the demo substrate. PRD §10 projected
+<€0.50/brief (~76–80:1) for the production API substrate. That is a projection: nothing in this
+repo has run on that substrate. The PRD's point still holds: model usage is the smallest line in
+the business case, and management attention belongs on review time, adoption and
+glossary/template upkeep.

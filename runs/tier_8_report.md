@@ -3,6 +3,10 @@
 Date: 2026-09-23 · Branch: `round1-integration` · Status: **green, awaiting human review**
 (not committed by the integrator; the orchestrator commits).
 
+> **Correction (2026-09-24, round 2 W-D):** this report was committed to `main` as `1aaa560`
+> (`tier-8: …`) after the round-1 integration; the branch and "not committed" line above describe
+> the state when it was written. The rest of the report is unchanged.
+
 ## 1. Why these ten moves
 
 The owner asked for independent judge panels to rate every aspect of the project, a baseline,

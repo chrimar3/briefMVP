@@ -1,6 +1,6 @@
 # Brief Builder
 
-**From a messy pile of client inputs to a client-ready brief — in two languages, with receipts.**
+**From a messy pile of client inputs to a review-ready draft brief — in two languages, with receipts.**
 
 > **Just cloned? Double-click [START_HERE.html](START_HERE.html)** (Finder/Explorer → it
 > opens in your browser — no server, no install). It's the visual front door: a finished
@@ -30,7 +30,10 @@ to send the client. Three rules run through everything:
   and no creative leaves the building without a named creative lead's approval.
 
 Built as a working demo for a hiring case study (the PRD's case: a ~40-person PR/ad agency in
-Athens). It runs end to end on realistic synthetic projects with deliberately seeded traps,
+Athens). **The case-study deliverable is Tiers 0–4**, committed on 24 July 2026 (`af1527d` …
+`fe2707e`, `runs/tier_4_report.md`); Tiers 5–9 are later work the owner authorised in September
+and are not part of the submission ([`docs/TIER_SUMMARIES.md`](docs/TIER_SUMMARIES.md) says what
+each tier delivered, in plain words). It runs end to end on realistic synthetic projects with deliberately seeded traps,
 graded by a frozen harness against an answer key that the pipeline does not use: the key is
 excluded from source discovery, so it is never staged into the run's `inputs/` copies that
 runtime agents read, and every runtime agent carries a permission deny rule for it. That is
@@ -42,17 +45,19 @@ exactly what protects it).
 
 | Claim | Status | Source |
 |---|---|---|
-| **17/17** frozen-harness checks on `northlight_01` | Measured, 2026-07-24, one synthetic project | [`runs/tier3/harness_report.json`](runs/tier3/harness_report.json) |
-| **15/17**, then **16/17** after a synthesis re-roll, on the harder second fixture `voreas_02`; content-integrity failures the harness does not see are documented | Measured, 2026-07-26 | [`runs/voreas_prep_report.md`](runs/voreas_prep_report.md) · `runs/voreas-prep-02/`, `-03/` |
-| **984 820 tokens** for one Stage-1 brief (Haiku 4.5 533 641 · Sonnet 5 451 179); 1 134 734 with the two-model creative A/B (Sonnet 5 86 441 · Opus 4.8 63 473) | Measured on the graded run, **Haiku-era routing** (extraction on Haiku) | `runs/tier3/run_manifest.json` · `python3 eval/cost_report.py runs/tier3 --tokens` |
-| Whole-brief usage under the **current routing** (since 2026-07-30: extraction on Sonnet plus an independent `verify-extract` reader per source) | **Not yet measured.** The owner has authorised a live re-baseline (3 graded rolls each on `northlight_01` and `voreas_02`). The only measurement so far is one transcript extraction leg: 598 743 tokens against 295 774 on the graded run (`runs/routing-validate-01`, committed) | [`docs/OPERATING_DECISIONS.md`](docs/OPERATING_DECISIONS.md) § 2026-09-22 |
+| Current routing (sonnet extraction + sonnet verify-extract, owner decision 2026-09-23 #5), prompts free of graded-fixture text: **17/17 in 5 of 7 graded runs** — northlight_01 17/17, 17/17, 16/17; voreas_02 refused once at synthesis by a deterministic gate, then 17/17, 17/17; the blind third fixture levanta_03 17/17 | **Measured**, 2026-09-23/24, round-2 live re-baseline; n = 3, 3, 1, so every rate has a wide interval (3/3: Wilson 0.44–1.00) | [`docs/EVAL_RECORD.md`](docs/EVAL_RECORD.md) §1, §10 · `runs/r2-live/` |
+| Blind fixture: an author who never saw the prompts wrote levanta_03 with new trap kinds (a prompt injection in a forwarded email, a misattributed target, a superseding email, a currency-conversion bait) and sealed its answer key and extra checks by hash before any run; the run passes the harness 17/17 and the sealed extra checks **21/21** | **Measured**, one run; hashes re-verified | [`docs/EVAL_RECORD.md`](docs/EVAL_RECORD.md) §8 · `python3 eval/sealed_extras.py` |
+| Injection canary: both instructions planted in the sources were recorded as "embedded instruction not followed", with no side effects | **Measured**, one extraction run | `runs/r2-live/canary-injection/` · [`docs/EVAL_RECORD.md`](docs/EVAL_RECORD.md) §9 |
+| **Tokens per brief, current routing** (every attempt, repairs included): northlight_01 **695,991** (n = 3), voreas_02 **1,291,833** (n = 2), levanta_03 887,505 (n = 1); pooled **926,524**, about 90% Sonnet 5 | **Measured**, round 2; no run was clean (each needed a repair); a refused run used 649,965 tokens and produced no brief | [`docs/COST_MODEL.md`](docs/COST_MODEL.md) §1 · `python3 eval/cost_report.py runs/r2-live` |
+| Usage per month at PRD A2 (~15 briefs): **~13.9 M tokens a month** (range 10.4–19.4 M by project size) | **Estimate** from the measured per-brief mean; the pilot measures the real mix (go-live T-02) | [`docs/COST_MODEL.md`](docs/COST_MODEL.md) §2 |
+| Historical, July: 17/17 on `northlight_01` (the graded run); 15/17 then 16/17 on `voreas_02`; 984 820 tokens for one Stage-1 brief (Haiku 4.5 533 641 · Sonnet 5 451 179), 1 134 734 with the two-model creative A/B | Measured, **Haiku-era routing** (extraction on Haiku) with runtime prompts that then quoted the graded fixture (`docs/EVAL_RECORD.md` §3) — not comparable with the rows above, not a planning figure | [`runs/tier3/harness_report.json`](runs/tier3/harness_report.json) · [`runs/voreas_prep_report.md`](runs/voreas_prep_report.md) · [`docs/COST_MODEL.md`](docs/COST_MODEL.md) §3 |
 | ~€38–40 of account-lead time per brief today | **Assumption**: PRD A1 (2 h) × A4 (€19–20/h), validated in pilot week 1 | `docs/PRD.md` §4 |
 | Target: ~50 min of account-lead attention per brief, a saving of ~70 min | **Target**, PRD §2; the graded run's review was not timed | `docs/PRD.md` §2 |
 | ~210 account-lead hours a year returned, ≈ €3 990–4 200 | **Arithmetic on assumptions**: (120 − 50) min × 180 briefs (A2) ÷ 60 × €19–20 (A4). PRD §10's "~€5–6k/yr" is not what its own assumptions give. Account-lead minutes only: the minutes the agency layer adds for other roles are netted out in the pilot (`net_team_minutes`) | `docs/PRD.md` §2, §4, §10 · WALKTHROUGH sheet 10 · [`docs/COST_MODEL.md`](docs/COST_MODEL.md) §4 |
 | ~69–116 people hours for the four-week pilot, all roles; break-even of those hours after ~59–100 briefs at the 70-minute floor | **Planning range**, not measured; rates other than A4, seats and usage are owner inputs, and the running cost is not yet estimated. No start until the sponsor records a spending ceiling (go-live decision D-27) | [`docs/pilot/PILOT_INVESTMENT.md`](docs/pilot/PILOT_INVESTMENT.md) |
-| Output readiness: the graded, signed-off brief is a **review-ready draft**, not sendable without human edits | **Measured** on `runs/tier3`: content defects the harness does not grade, among them budget and audiences printing "No confirmed entries" under a SIGNED OFF banner, resolved questions still put to the client, a clause cited to the wrong source, internal pipeline metadata in the client document, and nine Greek grammar errors, several inside the suggested client questions (32 pinned as strict-xfail tests). On `voreas_02`, defects of the critical-error classes CE1–CE4 (16 pinned) | [`runs/tier3/KNOWN_DEFECTS.md`](runs/tier3/KNOWN_DEFECTS.md) · `runs/voreas_prep_report.md` |
+| Output readiness: every brief is a **review-ready draft**, not sendable without human edits | **Measured.** Round 2 (`runs/r2-live`): garbled words now stay visible next to their proposed match, and several July defects are gone, but every brief still re-asks open conflicts as client questions, a spoken budget becomes "80–85" in a question, some entries sit in the wrong field, and three Greek grammar slips remain (15 defects, 11 pinned by 24 strict-xfail tests). July (`runs/tier3`): "No confirmed entries" under a SIGNED OFF banner, resolved questions still put to the client, nine Greek grammar errors (32 pinned). Creative under the current routing: pending the owner's sign-off on `runs/r2-live/nl-r1` | [`runs/r2-live/KNOWN_DEFECTS.md`](runs/r2-live/KNOWN_DEFECTS.md) · [`runs/tier3/KNOWN_DEFECTS.md`](runs/tier3/KNOWN_DEFECTS.md) · `runs/voreas_prep_report.md` |
 | Brief quality varies by author (the premise of the "variance floor") | **Assumption**: PRD §1, not among the named assumptions A1–A5; the pilot counts it with a retro side-by-side against the briefs the agency actually wrote | [`docs/pilot/SCORECARD.md`](docs/pilot/SCORECARD.md) §2, §5a |
-| 948 deterministic tests pass (7 skipped, 48 expected failures), frozen evidence 17/17, synthetic agency benchmark 12/12 | Measured at the round-1 integration (Tier 8, 2026-09-23); a **software rehearsal** — no model calls, not evidence of generative quality or time saved. The 48 expected failures are strict-xfail regression tests pinning documented defects in committed evidence ([`runs/tier3/KNOWN_DEFECTS.md`](runs/tier3/KNOWN_DEFECTS.md), `runs/voreas_prep_report.md`) | [`runs/tier_8_report.md`](runs/tier_8_report.md) · `scripts/check.sh` |
+| The deterministic suite passes (counts per tier in [`runs/tier_9_report.md`](runs/tier_9_report.md)), with a coverage floor of 89 %; frozen evidence 17/17; synthetic agency benchmark 12/12 | Measured at Tier 9 (round 2, 2026-09-24); a **software rehearsal** — no model calls, not evidence of generative quality or time saved. The expected failures are strict-xfail regression tests pinning documented defects in committed evidence ([`runs/r2-live/KNOWN_DEFECTS.md`](runs/r2-live/KNOWN_DEFECTS.md), [`runs/tier3/KNOWN_DEFECTS.md`](runs/tier3/KNOWN_DEFECTS.md), `runs/voreas_prep_report.md`) | [`runs/tier_9_report.md`](runs/tier_9_report.md) · `scripts/check.sh` |
 
 Usage is reported in tokens by model because the client is most likely to run on a
 subscription, where the constraint is a usage window; whether the value claim is expressed as
@@ -62,9 +67,9 @@ API terms, are a footnote.¹
 
 Full artifact-backed proof — what ran, every check, every trap caught: **[docs/EVIDENCE.md](docs/EVIDENCE.md)**.
 
-¹ On the developer-subscription substrate the graded run cost **$3.55** de-duplicated ($2.81
-for Stage 1, including one extraction repair); the two clean Haiku-era Stage-1 runs cost
-$2.07–2.44. These are Haiku-era figures and are not a price under the current routing.
+¹ On the developer-subscription substrate a current-routing Stage-1 brief cost $1.78 on
+northlight_01 (mean of 3) and $3.55 on voreas_02 (mean of 2), CLI-reported list price; the
+July graded run cost $2.81 for Stage 1 (Haiku-era). Neither is an API price.
 [`docs/COST_MODEL.md`](docs/COST_MODEL.md) has the method.
 
 ## Where the project stands
@@ -88,13 +93,21 @@ $2.07–2.44. These are Haiku-era figures and are not a price under the current 
   ([`docs/EVAL_RECORD.md`](docs/EVAL_RECORD.md)); fixed bilingual templates and creative fact
   checks; offline replay and one check script; a data-declaration gate, retention tooling and
   the pilot operating pack. Record: [`runs/tier_8_report.md`](runs/tier_8_report.md).
+- **Round 2 of the review (Tier 9, 2026-09-23/24)**: a behaviour-preserving refactor, a blind
+  third keyed fixture sealed by hash, model-seam hardening (`--restricted`,
+  `--no-session-persistence`, per-stage write scope, live calls opt-in with `--live`), an audit
+  log that vouches every human decision with coding agents blocked from decision commands, the
+  garble carry-through rule, lint/type/coverage gates, and then the **live re-baseline** under the
+  current routing with an injection canary (results above; `runs/r2-live/`). Record:
+  [`runs/tier_9_report.md`](runs/tier_9_report.md). Still pending: the owner's recorded decisions
+  on `runs/r2-live/nl-r1` (prepared, not run), then the creative A/B on it.
 - **Data**: synthetic fixtures only. Every project folder must carry `data_declaration.json`
   (`synthetic`, or `approved` with a reference, approver and date); the runner refuses a folder
   without one (exit 6). Real client data needs the agency's data-policy approval
   ([`docs/pilot/DATA_PROTECTION.md`](docs/pilot/DATA_PROTECTION.md)).
-- **Open**: the current-routing re-baseline, the pilot's commercial and data terms, and the
-  sponsor's decisions on WALKTHROUGH sheet 10. The whole-project review loop and its scores
-  live in [`tools/project_review/`](tools/project_review/).
+- **Open**: the owner's decisions on the regenerated graded brief and the creative A/B after them,
+  the pilot's commercial and data terms, and the sponsor's decisions on WALKTHROUGH sheet 10. The
+  whole-project review loop and its scores live in [`tools/project_review/`](tools/project_review/).
 
 ## How it works
 
@@ -166,9 +179,9 @@ the skeleton, the schema or the frozen gates.
 | `pipeline/` (Tiers 5–7) | Agency operations: `agency`, `agency_edit`, `quality`, `clarifications`, `client_pack`, `revisions`, `handover`, `spec_catalog`, `delivery`, `release_control` (incl. `verify-log`), `operations`, `question_exchange`, `effort` | Yes |
 | `pipeline/` (Tier 8) | `data_policy` (data declaration gate, exit 6), `retention` (inventory and purge with tombstones), `replay` (offline stand-in for the `claude` CLI) | Yes |
 | `docs/pilot/` | Pilot operating pack: one-page pilot runbook, roles (RACI), go-live decisions, data protection, incident recovery, champion runbook, creative delivery, coordination, question exchange, effort recording, scorecard, operating terms | Yes |
-| `fixtures/` (+ `answer_key.json`) | The exam: synthetic projects with seeded conflicts, gaps and garbling (`northlight_01`, `voreas_02`) plus three agency-benchmark fixtures | **No — test apparatus** |
+| `fixtures/` (+ `answer_key.json`) | The exam: synthetic projects with seeded conflicts, gaps and garbling (`northlight_01`, `voreas_02`, and the blind `levanta_03` sealed in `SEALED_KEYS.json`) plus three agency-benchmark fixtures | **No — test apparatus** |
 | `eval/harness.py` | The grader — frozen after Tier 1; criteria fixed; the only code that reads the answer key² | **No — test apparatus** |
-| `eval/` (rest) | Dev tooling: recurring violations, token ruler (`cost_report.py`, dollars only with `--usd`), pass rates, supplementary scorer, read-only frozen grader, substrate spike, agency benchmark, pilot scorecard, rework report | No |
+| `eval/` (rest) | Dev tooling: recurring violations, token ruler (`cost_report.py`, dollars only with `--usd`, verifier outcomes with `--verifier`), pass rates, supplementary scorer, sealed extra checks for the blind fixture (`sealed_extras.py`), read-only frozen grader, substrate spike, agency benchmark, pilot scorecard, rework report | No |
 | `docs/` · `CLAUDE.md` | Build governance and the engineering record — index and status in [docs/README.md](docs/README.md); security model in [docs/SECURITY.md](docs/SECURITY.md), evaluation record in [docs/EVAL_RECORD.md](docs/EVAL_RECORD.md) | No |
 | `scripts/check.sh` · `tools/replay/` | The one deterministic check (lint, tests, frozen grade, benchmark); offline replay of a wiring-fixture recording with zero model calls | No |
 | `.claude/agents/` | Demo substrate (Claude Code subagents); production swaps in metered API calls — same skeleton | Depends |
@@ -190,26 +203,29 @@ supported).
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate   # system pip is locked on modern macOS
-python3 -m pip install -r requirements.txt           # jsonschema, pytest, PyYAML — nothing else
-bash scripts/check.sh                                # the one check CI runs: lint (if ruff), tests,
-                                                     #   frozen grade 17/17 (read-only), agency benchmark
-python3 -m pytest -q                                 # just the tests: no model calls, a few seconds
-                                                     #   (Tier 8: 948 passed, 7 skipped, 48 xfailed)
+python3 -m pip install -r requirements.lock          # the locked runtime + test set
+python3 -m pip install -r requirements-dev.lock      # + ruff, mypy, pytest-cov: what check.sh and CI run
+bash scripts/check.sh                                # the one check CI runs: lint, mypy, tests with the
+                                                     #   89 % coverage floor, frozen grade 17/17 (read-only),
+                                                     #   agency benchmark, decision-paper gate
+                                                     #   (--no-lint / --no-typecheck / --no-cov skip a tool, loudly)
+python3 -m pytest -q                                 # just the tests: no model calls, under a minute
 
 # Offline: the whole Stage-1 run with zero model calls, replaying a wiring-fixture recording
 BRIEF_BUILDER_CLAUDE_BIN="$PWD/tools/replay/claude" \
   python3 pipeline/runner.py --project fixtures/northlight_01 --out /tmp/bb-replay
 
-# Model stages run as Claude Code subagents (install + authenticate the `claude` CLI).
-# A Stage-1 run makes classify ×1, fidelity-check ×1 per transcript, extract + verify-extract
-# per source, synthesize ×1 and render ×1: at least 12 model calls on northlight_01
-# (4 sources, 1 transcript), more when a gate sends an output back for repair.
-# Routing: .claude/agents/*.md frontmatter + config/model_routing.json. Usage under this
-# routing is being re-baselined; the graded figures above are Haiku-era.
-python3 pipeline/runner.py --project fixtures/northlight_01   # full run → runs/<ts>/
-python3 eval/harness.py runs/latest                           # grade against the answer key
-python3 eval/cost_report.py runs/<ts> --tokens                # where the tokens go, per stage
-                                                              #   (--usd adds the labelled dollar footnote)
+# Model stages run as Claude Code subagents (install + authenticate the `claude` CLI ≥ 2.1.280).
+# Live model calls are opt-in: without --live (or BRIEF_BUILDER_LIVE=1) the runner refuses a real
+# CLI (exit 7). A Stage-1 run makes classify ×1, fidelity-check ×1 per transcript, extract +
+# verify-extract per source, synthesize ×1 and render ×1: at least 12 model calls on
+# northlight_01 (4 sources, 1 transcript), more when a gate sends an output back for repair —
+# every round-2 run needed at least one repair. Routing: .claude/agents/*.md frontmatter +
+# config/model_routing.json; measured usage per brief is in docs/COST_MODEL.md §1.
+python3 pipeline/runner.py --project fixtures/northlight_01 --live   # full run → runs/<ts>/
+python3 eval/harness.py runs/latest                                  # grade against the answer key
+python3 eval/cost_report.py runs/<ts> --tokens                       # where the tokens go, per stage
+                                                                     #   (--usd adds the labelled dollar footnote)
 ```
 
 Every project folder needs a `data_declaration.json` at its root (`{"data_class": "synthetic"}`
@@ -221,14 +237,16 @@ committed evidence graded 17/17 without rewriting it (`eval/grade_frozen.py`), a
 `python3 eval/agency_benchmark.py`.
 
 **Live demo** — one document in, verified facts out (classify → extract → gates, no synthesis):
-`python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md` (or pipe any ≤800-word
-text via `-`). Prints the facts table with exact quotes, gate results, and the open questions
-it creates instead of guessing. Haiku-era timing: [docs/demo_timing.md](docs/demo_timing.md).
+`python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md --live` (or pipe any
+≤800-word text via `-`). Prints the facts table with exact quotes, gate results, and the open
+questions it creates instead of guessing. Haiku-era timing: [docs/demo_timing.md](docs/demo_timing.md).
 
-No CLI or budget? The graded run is committed at **`runs/tier3/`** — signed brief, both
-renders, all extracts, fidelity report, harness verdict (17/17), and the two Tier-4 creative
-drafts (a sonnet/opus A/B produced in the then shadow-only mode). Every claim in the tier
-reports is inspectable there without running anything.
+No CLI or budget? The round-2 runs are committed at **`runs/r2-live/`** — seven graded
+current-routing runs with their manifests, extracts, verifier reports, briefs, renders, harness
+logs and a known-defects record, plus the injection canary. The July graded run is at
+**`runs/tier3/`** — signed brief, both renders, all extracts, fidelity report, harness verdict
+(17/17), and the two Tier-4 creative drafts (a sonnet/opus A/B produced in the then shadow-only
+mode). Every claim in the tier reports is inspectable there without running anything.
 
 ### Two stages, one gate between them
 

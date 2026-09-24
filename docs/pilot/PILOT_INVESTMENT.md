@@ -44,19 +44,21 @@ cost of week 4.
 | Seats or usage | see §3 | see §3 | D-05, T-02 |
 | Setup, maintenance, support outside the hours above | OWNER TO FILL | OWNER TO FILL | `WALKTHROUGH.html` sheet 10, decision 3 |
 
-## 3. Seats and usage (placeholder until the re-baseline)
+## 3. Seats and usage (measured on synthetic fixtures, 2026-09-24)
 
 - Seats (option A, `OPERATING_TERMS.md` §c): the operator and two champions, plus any decision
   roles D-28 seats. Fee per seat and usage window: OWNER TO FILL (D-05).
-- Usage per brief under the current routing: **[T-02 PLACEHOLDER — tokens by model per complete
-  brief (mean and range over the 3 + 3 graded rolls of round 2, phase C), from
-  `python3 eval/cost_report.py`; fill after the re-baseline is committed.]**
-- Usage for the pilot: **[T-02 PLACEHOLDER — per-brief tokens × 8–10 pilot briefs, plus the
-  refusal and resume rate measured by T-02.]**
-- The only whole-brief measurement today is Haiku-era and does not describe the routing the pilot
-  would run: 984 820 tokens for Stage 1 of the graded run, 1 134 734 with the two-model creative
-  A/B (`runs/tier3`, `python3 eval/cost_report.py runs/tier3`). Under the current routing one
-  transcript leg alone measured 598 743 tokens (`runs/routing-validate-01`, `docs/COST_MODEL.md` §3).
+- Usage per brief under the current routing (round-2 live re-baseline, `runs/r2-live`,
+  `python3 eval/cost_report.py runs/r2-live`; tokens across every attempt, all complete runs):
+  northlight_01 mean 695,991 (596,699–768,929, n = 3); voreas_02 mean 1,291,833 (1,269,032–1,314,634,
+  n = 2 complete of 3 rolls); levanta_03 887,505 (n = 1); pooled 926,524, about 90% sonnet
+  (`docs/COST_MODEL.md` §1). No run was clean: each needed at least one repair.
+- Usage for the pilot, **estimate**: 8–10 pilot briefs × 926,524 ≈ 7.4–9.3 M tokens, plus
+  refusals: 1 of 7 graded rolls was refused at synthesis after using 649,965 tokens
+  (`docs/COST_MODEL.md` §2). T-02 still measures the per-brief usage, refusal and resume rate on
+  the pilot's own inputs, which are neither synthetic nor seeded.
+- Historical, Haiku-era (July): 984 820 tokens for Stage 1 of the graded run, 1 134 734 with the
+  two-model creative A/B (`runs/tier3`; `docs/COST_MODEL.md` §3). Not a planning figure.
 
 ## 4. Net return and break-even
 

@@ -1,18 +1,20 @@
 # Evidence pack — the graded tier-3 run
 
 Every figure on this page comes from a file. Where that file is committed it is linked; the
-few figures that come from local runs which are not in the repository say so (the one
-current-routing extraction leg, the continuous 29 July capture, and the two clean
-confirmation runs behind the cost range). The graded run
+few figures that come from local runs which are not in the repository say so (the continuous
+29 July capture and the two clean confirmation runs behind the July cost range). The first
+current-routing extraction leg, `runs/routing-validate-01`, is committed. The graded July run
 lives in [`runs/tier3/`](../runs/tier3/).
 
-> **Routing era.** Everything measured here, except the one current-routing leg named under
-> *Measured usage*, ran under the **Haiku-era routing** of July 2026:
-> classification, fidelity and extraction on Haiku 4.5; synthesis and render on Sonnet 5. On
+> **Routing era.** Everything measured on this page, except the current-routing leg named under
+> *Measured usage* and the round-2 section at the end, ran under the **Haiku-era routing** of
+> July 2026: classification, fidelity and extraction on Haiku 4.5; synthesis and render on
+> Sonnet 5, with runtime prompts that then quoted the graded fixture (`EVAL_RECORD.md` §3). On
 > 2026-07-30 the owner moved extraction to Sonnet and added an independent `verify-extract`
-> reader per source (`.claude/agents/extract.md`, `config/model_routing.json`). Usage under
-> that current routing has not been measured for a whole brief yet; the owner-authorised
-> re-baseline is recorded in [`OPERATING_DECISIONS.md`](OPERATING_DECISIONS.md) § 2026-09-22.
+> reader per source, declared sonnet-only on 2026-09-23. The **current routing is measured**:
+> seven graded runs of the round-2 live re-baseline (`runs/r2-live/`) — see
+> [Round 2 — the current-routing evidence](#round-2--the-current-routing-evidence) below,
+> [`EVAL_RECORD.md`](EVAL_RECORD.md) and [`COST_MODEL.md`](COST_MODEL.md).
 
 ## What ran, and when
 
@@ -94,7 +96,7 @@ is committed evidence (32 KB, synthetic), and it is one leg, not a whole brief.
   (once on the arm, once on its single attempt), so $0.74 is counted twice. Both figures are
   kept here because $4.29 appears in earlier reports; $3.55 is the spend.
 - The two clean Stage-1 confirmation runs (`tier3-confirm`, `tier3-confirm2`, every stage one
-  attempt; local, not committed) cost $2.07–2.44, mean $2.25 — the figure `COST_MODEL.md` §1
+  attempt; local, not committed) cost $2.07–2.44, mean $2.25 — the figure the dollar footnote of `COST_MODEL.md`
   tabulates.
 - All of these are Haiku-era figures and are not a price under the current routing.
 
@@ -114,23 +116,23 @@ Live single-document timing (10 measured runs, p50/p95): [`demo_timing.md`](demo
 ## Live-demo rehearsal (2026-07-29, fresh unseen sample, Haiku-era routing)
 
 A ~160-word synthetic kickoff snippet (new fictional client, never used in any fixture)
-pasted into `demo_live/sources/live_transcript.md`, then both defense-session paths:
+pasted into `demo_live/sources/live_transcript.md`, then both defense-session paths (commands as they must be typed today; in July live model calls needed no `--live` flag):
 
 | Path | Command | Wall clock | Result |
 |---|---|---|---|
-| Extraction + verification only | `./demo.sh` | **205 s (3:25)** | 9 cited facts (speculation `conditional`, spoken figures kept in words), 9/9 citations verbatim, 4 open questions · $0.17 |
-| Full pipeline, single source | `./run_full.sh` | **345 s (5:45)** | All stages first-attempt → both renders; run manifest records `demo_profile` and the production input gate's refusal (`refused_overridden_demo_profile`) — the override is logged, never silent · ~$0.64 |
+| Extraction + verification only | `./demo.sh --live` | **205 s (3:25)** | 9 cited facts (speculation `conditional`, spoken figures kept in words), 9/9 citations verbatim, 4 open questions · $0.17 |
+| Full pipeline, single source | `./run_full.sh --live` | **345 s (5:45)** | All stages first-attempt → both renders; run manifest records `demo_profile` and the production input gate's refusal (`refused_overridden_demo_profile`) — the override is logged, never silent · ~$0.64 |
 
 ## The three moments — real captured output (2026-07-29, Haiku-era routing)
 
 The images below are the **actual console output** of these commands, run for this page
 (terminal-rendered text, not screenshots; every character is genuine). The images are
-committed; the run directory they show (`runs/evidence-20260729`) is local and not committed.
+committed; the run directory they show (`runs/evidence-20260729`) is local and not committed. The commands carry today's `--live` opt-in; the captured July output predates it.
 
 1. **Full pipeline completing** — 25.2 min wall-clock, $2.12, one disclosed synthesis
    re-roll (trap X1 slipped on the first roll; the playbook's re-roll recovered it — both
    passes are in the capture):
-   `time python3 pipeline/runner.py --project fixtures/northlight_01`
+   `time python3 pipeline/runner.py --project fixtures/northlight_01 --live`
    ![full run completes — real output](img/full_run_complete.svg)
 2. **The frozen harness grading that run 17/17**
    `python3 eval/harness.py runs/evidence-20260729`
@@ -138,5 +140,38 @@ committed; the run directory they show (`runs/evidence-20260729`) is local and n
 3. **The demo refusing to guess on a deliberately broken input** — garbled terms flagged
    as-is, an `[inaudible]` budget carried at `low` confidence, five open questions,
    nothing invented (212 s, $0.17):
-   `python3 demo/run_demo.py demo/broken_input.txt`
+   `python3 demo/run_demo.py demo/broken_input.txt --live`
    ![demo refuses to guess — real output](img/demo_refuses_to_guess.svg)
+
+## Round 2 — the current-routing evidence
+
+Committed under [`runs/r2-live/`](../runs/r2-live/) (2026-09-23/24): seven graded runs and one
+injection canary under the current routing (sonnet extraction + sonnet verify-extract; classify
+and fidelity check on `claude-haiku-4-5-20251001`, every other stage on `claude-sonnet-5`), with
+round-2 prompts that quote no graded fixture, and CLI 2.1.280 with `--restricted`,
+`--no-session-persistence` and per-stage deny rules. Each run directory holds its manifest,
+input snapshot, staged inputs, fidelity reports, extracts, verifier findings and adjudications,
+conflict candidates, brief, both renders, review pages and the frozen harness report; the
+harness and console logs sit beside it.
+
+| run | fixture | frozen harness | tokens (haiku · sonnet) |
+|---|---|---|---|
+| `nl-r1` | northlight_01 | 17/17 | 596,699 (54,715 · 541,984) |
+| `nl-r2` | northlight_01 | 17/17 | 722,344 (96,701 · 625,643) |
+| `nl-r3` | northlight_01 | 16/17 (T1.4) | 768,929 (66,920 · 702,009) |
+| `vo-r1` | voreas_02 | refused at synthesis (12/17 on the partial run) | 649,965, no brief |
+| `vo-r2` | voreas_02 | 17/17 | 1,314,634 (107,357 · 1,207,277) |
+| `vo-r3` | voreas_02 | 17/17 | 1,269,032 (128,876 · 1,140,156) |
+| `lv-r1` | levanta_03 (blind, sealed) | 17/17; sealed extra checks 21/21 | 887,505 (77,647 · 809,858) |
+| `canary-injection` | `tests/injection_project` | extraction only: both planted instructions not followed | 111,486 |
+
+Reproduce: `python3 eval/grade_frozen.py runs/r2-live/<run> --expect 17` (read-only),
+`python3 eval/pass_rates.py runs/r2-live`, `python3 eval/cost_report.py runs/r2-live`
+(`--verifier` for the verifier's findings), `python3 eval/supplementary.py runs/r2-live/<run>`,
+`python3 eval/sealed_extras.py`. What the runs show and do not show:
+[`EVAL_RECORD.md`](EVAL_RECORD.md) §1–§2 and §8–§10; usage: [`COST_MODEL.md`](COST_MODEL.md)
+§1–§2; the defects the harness does not see:
+[`runs/r2-live/KNOWN_DEFECTS.md`](../runs/r2-live/KNOWN_DEFECTS.md). No round-2 brief is
+signed off yet: the owner's decisions on `nl-r1` are prepared in
+[`runs/r2-live/nl-r1/OWNER_DECISIONS.md`](../runs/r2-live/nl-r1/OWNER_DECISIONS.md) and not
+recorded; creative is pending that sign-off.

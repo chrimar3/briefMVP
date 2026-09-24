@@ -52,9 +52,18 @@ def _ngrams(text, n=NGRAM):
 
 def quarantined_paths(repo_root):
     """Sealed blind-fixture paths (fixtures/SEALED_KEYS.json): no test reads their content before
-    the fixture's first graded run is committed (round-2 rule 8) — not even to guard a prompt."""
+    the fixture's first graded run is committed (round-2 rule 8) — not even to guard a prompt.
+    Once SEALED_KEYS.json records `quarantine_lifted` (the committed graded run), the fixture's
+    sources join the n-gram guard like every other fixture."""
     sealed = json.loads((repo_root / "fixtures" / "SEALED_KEYS.json").read_text(encoding="utf-8"))
+    if sealed.get("quarantine_lifted"):
+        return ()
     return tuple(repo_root / q for q in sealed.get("quarantined_paths") or [])
+
+
+def test_the_lifted_blind_fixture_is_guarded_too(repo_root):
+    """levanta_03's first graded run is committed (runs/r2-live/lv-r1), so its sources are guarded."""
+    assert any("levanta_03" in str(p) for p in fixture_sources(repo_root))
 
 
 def fixture_sources(repo_root):

@@ -4,7 +4,11 @@
     python3 eval/cost_report.py [path] --tokens              # per-stage token categories + turns (C0 view)
     python3 eval/cost_report.py [path] --usd                 # dollar footnote (CLI-reported cost_usd)
     python3 eval/cost_report.py [path] --risk-replay         # replay verify-extract risk routing on stored extracts
+    python3 eval/cost_report.py [path] --verifier            # verify-extract findings: forwarded/dropped/applied/...
     add --json to any of the above for machine-readable output
+
+Symlinked run directories (`runs/latest`, `runs/r2-live/latest`) are skipped: they point at a
+run that is already listed.
 
 Unit. The client runs on a subscription, so the stakeholder unit is TOKENS BY MODEL (fresh
 input, output, cache read, cache write), not dollars. Dollars are available behind `--usd`
@@ -69,11 +73,19 @@ TOKEN_CATEGORIES = (
 )
 
 #: Routing eras. The 2026-07-30 routing (commit 6d77ae7, 2026-07-29 21:51 +0300) moved
-#: extraction to sonnet and added the risk-routed verify-extract stage.
+#: extraction to sonnet and added the verify-extract stage. Its risk classes routed every
+#: stored extract to sonnet, and owner decision 2026-09-23 #5 declared the verifier
+#: sonnet-only, so the model routing is the same from 2026-07-30 on. Round 2 is a separate
+#: era because the prompts (decontaminated) and the model seam (CLI >= 2.1.280 with
+#: --restricted, --no-session-persistence, per-stage deny rules) changed; a round-2 manifest
+#: is recognised by the `cli.min_version` record the round-2 runner writes.
 CURRENT_ROUTING_SINCE = "2026-07-29T21:51"
+CURRENT_ROUTING_LABEL = "sonnet extraction + sonnet verify-extract (owner decision 2026-09-23 #5)"
 ERA_LABELS = {
     "haiku-era": "Haiku-era routing (haiku extraction, no verifier) — the graded evidence",
-    "current": "Current routing (sonnet extraction + risk-routed verify-extract, 2026-07-30)",
+    "current": "Sonnet routing before round 2 (sonnet extraction + verify-extract that routed every "
+               "extract to sonnet; round-1 prompts, 2026-07-30 to 2026-09-22)",
+    "r2": f"Current routing: {CURRENT_ROUTING_LABEL} — round-2 prompts and model seam",
     "unknown": "Routing unknown (no extraction record and no usable date)",
 }
 
@@ -138,10 +150,17 @@ def _add_tokens(row: dict, sub: dict) -> None:
 
 
 def load_runs(path: Path) -> list[tuple[str, dict[str, Any]]]:
-    """(run id, manifest) for one run directory or every run under a runs/ directory; unreadable ones skipped."""
+    """(run id, manifest) for one run directory or every run under a runs/ directory.
+
+    Unreadable manifests are skipped, and so is every symlinked run directory under a runs/
+    directory (`runs/latest`, `runs/r2-live/latest`): it points at a run that is already listed,
+    and counting it would list the same brief twice.
+    """
     path = Path(path)
-    files = [path / "run_manifest.json"] if (path / "run_manifest.json").is_file() \
-        else sorted(path.glob("*/run_manifest.json"))
+    if (path / "run_manifest.json").is_file():
+        files = [path / "run_manifest.json"]
+    else:
+        files = sorted(f for f in path.glob("*/run_manifest.json") if not f.parent.is_symlink())
     runs = []
     for f in files:
         try:
@@ -164,14 +183,85 @@ def routing_era(manifest: dict) -> tuple:
                 verified = True
             for a in e.get("attempts") or []:
                 ext_models.update(_short_model(m) for m in (a.get("subagent") or {}).get("model_ids") or [])
+    round2 = bool((manifest.get("cli") or {}).get("min_version"))
     if verified or "sonnet" in ext_models:
-        return "current", "extraction models"
+        return ("r2", "extraction models + round-2 seam") if round2 else ("current", "extraction models")
     if "haiku" in ext_models:
         return "haiku-era", "extraction models"
     started = manifest.get("started_ts") or ""
     if started:
-        return ("haiku-era" if started < CURRENT_ROUTING_SINCE else "current"), "run date"
+        if started < CURRENT_ROUTING_SINCE:
+            return "haiku-era", "run date"
+        return ("r2" if round2 else "current"), "run date"
     return "unknown", "no extraction record"
+
+
+# --------------------------------------------------------------------------------------
+# Verifier effectiveness: what happened to each verify-extract finding
+# --------------------------------------------------------------------------------------
+
+
+def verifier_effectiveness(runs: list) -> dict:
+    """Per run and in total: verify-extract checks, findings raised, forwarded to the extractor,
+    dropped by the deterministic filter, and — for forwarded findings — applied or rejected in
+    the extractor's adjudication. Read from the `verification` block of each extract.
+
+    A forwarded finding with no adjudication record is counted as `unadjudicated`, never
+    guessed. Runs are listed as recorded; a resumed run that copied an earlier leg repeats
+    that leg's verification (the same caveat as the token ledger's session dedupe).
+    """
+    keys = ("checks", "issues", "forwarded", "dropped", "applied", "rejected", "unadjudicated")
+    per_run = []
+    total = {k: 0 for k in keys}
+    for run_id, m in runs:
+        row = {"run": run_id, "project": _project_label(m), "era": routing_era(m)[0],
+               **{k: 0 for k in keys}, "rejections": []}
+        for step in m.get("steps") or []:
+            if step.get("name") != "extraction":
+                continue
+            for e in step.get("extracts") or []:
+                v = e.get("verification")
+                if not v:
+                    continue
+                row["checks"] += 1
+                row["issues"] += int(v.get("issue_count") or 0)
+                forwarded = int(v.get("forwarded_count") or 0)
+                row["forwarded"] += forwarded
+                row["dropped"] += len(v.get("dropped") or [])
+                adj = v.get("adjudication") or {}
+                applied = int(adj.get("applied") or 0)
+                rejected = adj.get("rejected") or []
+                row["applied"] += applied
+                row["rejected"] += len(rejected)
+                row["unadjudicated"] += max(0, forwarded - applied - len(rejected))
+                for r in rejected:
+                    row["rejections"].append({"source_id": e.get("source_id"), "finding": r.get("finding"),
+                                              "where": r.get("where"), "problem": r.get("problem")})
+        if row["checks"]:
+            per_run.append(row)
+            for k in keys:
+                total[k] += row[k]
+    return {"runs": per_run, "total": total}
+
+
+def report_verifier(result: dict, as_json: bool) -> None:
+    """Print the verifier-effectiveness view (or JSON)."""
+    if as_json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return
+    cols = ("checks", "issues", "forwarded", "dropped", "applied", "rejected", "unadjudicated")
+    print("\nverify-extract effectiveness — what happened to each finding (read from run manifests)\n")
+    print(f"  {'run':<20}{'project':<25}{'era':<6}" + "".join(f"{c:>14}" for c in cols))
+    for r in result["runs"]:
+        print(f"  {r['run']:<20}{r['project']:<25}{r['era']:<6}" + "".join(f"{r[c]:>14}" for c in cols))
+    t = result["total"]
+    print(f"  {'TOTAL':<51}" + "".join(f"{t[c]:>14}" for c in cols))
+    rejections = [(r["run"], x) for r in result["runs"] for x in r["rejections"]]
+    if rejections:
+        print("\n  Rejected findings (the extractor kept its extract):")
+        for run_id, x in rejections:
+            print(f"    {run_id} · {x['source_id']} · {x['finding']} at {x['where']}: {str(x['problem'])[:140]}")
+    print()
 
 
 # --------------------------------------------------------------------------------------
@@ -282,8 +372,8 @@ def report_ledger(ledger: dict, briefs: list, as_json: bool, path: str = "") -> 
                            ("clean", "clean runs only (every stage one attempt)")):
             mean = means[key]
             if mean["n"]:
-                by = ", ".join(f"{mo} {_fmt(int(v))}" for mo, v in sorted(mean["by_model"].items()))
-                print(f"      mean, {label}: n={mean['n']}  {_fmt(int(mean['stage1_total']))} tokens  ({by})")
+                by = ", ".join(f"{mo} {_fmt(round(v))}" for mo, v in sorted(mean["by_model"].items()))
+                print(f"      mean, {label}: n={mean['n']}  {_fmt(round(mean['stage1_total']))} tokens  ({by})")
             else:
                 print(f"      mean, {label}: n=0")
     print("\n  Dollars are not the stakeholder unit here; `--usd` prints the CLI-reported cost_usd "
@@ -601,7 +691,7 @@ def report_risk_replay(result: dict, as_json: bool) -> None:
           f"unreadable: {result['unreadable']})")
     if not n:
         return
-    print(f"  base (haiku) branch: {result['base_branch']}/{n} = {result['base_branch'] / n:.0%}")
+    print(f"  base branch ({pol['base_model']}): {result['base_branch']}/{n} = {result['base_branch'] / n:.0%}")
     print(f"  strong branch:       {result['strong_branch']}/{n} = {result['strong_branch'] / n:.0%}\n")
     print(f"  {'risk class':<16}{'present':>9}{'sole trigger':>14}")
     for c in pol["risk_classes"]:
@@ -622,6 +712,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--usd", action="store_true", help="dollar footnote: CLI-reported cost_usd per brief")
     p.add_argument("--risk-replay", action="store_true",
                    help="replay verify-extract risk routing over every stored extract under path")
+    p.add_argument("--verifier", action="store_true",
+                   help="verify-extract effectiveness: findings forwarded / dropped / applied / rejected per run")
     p.add_argument("--labour-eur", type=float, default=38.0,
                    help="with --usd: account-lead labour €/brief (PRD A1×A4 ≈ 38–40, an assumption)")
     p.add_argument("--no-dedupe", action="store_true",
@@ -637,7 +729,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     if not runs:
         print(f"[cost] no run manifests under {args.path}", file=sys.stderr)
         return 2
-    if args.tokens:
+    if args.verifier:
+        report_verifier(verifier_effectiveness(runs), args.json)
+    elif args.tokens:
         report_tokens(token_breakdown(runs), args.json)
     elif args.usd:
         report(analyse(runs), args.labour_eur, args.json)

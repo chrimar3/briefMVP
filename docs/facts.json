@@ -1,0 +1,80 @@
+{
+  "_about": "Shared headline figures, one source of truth. Every entry's `text` must appear verbatim in each file listed in `appears_in`, and `tests/test_docs_consistency.py` re-derives each `value` that carries a `derive` rule from the committed evidence (runs/r2-live) so a figure cannot drift from its run. Update this file first, then the documents. Measured 2026-09-24 with `python3 eval/cost_report.py runs/r2-live`, `python3 eval/pass_rates.py runs/r2-live`, `python3 eval/cost_report.py runs/r2-live --verifier` and `python3 eval/sealed_extras.py`.",
+  "as_of": "2026-09-24",
+  "facts": {
+    "routing_label": {
+      "value": "sonnet extraction + sonnet verify-extract",
+      "text": "sonnet extraction + sonnet verify-extract",
+      "appears_in": ["README.md", "docs/EVAL_RECORD.md", "docs/COST_MODEL.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "graded_runs_full_pass": {
+      "value": {"full_17": 5, "graded": 7},
+      "text": "17/17 in 5 of 7 graded runs",
+      "derive": "harness_full_passes",
+      "appears_in": ["README.md", "docs/EVAL_RECORD.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "northlight_mean_tokens": {
+      "value": 695991,
+      "text": "695,991",
+      "derive": "brief_mean:northlight_01",
+      "appears_in": ["README.md", "docs/EVAL_RECORD.md", "docs/COST_MODEL.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "voreas_mean_tokens": {
+      "value": 1291833,
+      "text": "1,291,833",
+      "derive": "brief_mean:voreas_02",
+      "appears_in": ["README.md", "docs/COST_MODEL.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "levanta_tokens": {
+      "value": 887505,
+      "text": "887,505",
+      "derive": "brief_mean:levanta_03",
+      "appears_in": ["docs/COST_MODEL.md", "docs/EVAL_RECORD.md", "runs/tier_9_report.md"]
+    },
+    "pooled_mean_tokens": {
+      "value": 926524,
+      "text": "926,524",
+      "derive": "brief_mean:*",
+      "appears_in": ["README.md", "docs/COST_MODEL.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "monthly_estimate": {
+      "value": {"briefs_per_month": 15, "tokens_millions": 13.9},
+      "text": "~13.9 M tokens a month",
+      "appears_in": ["README.md", "docs/COST_MODEL.md", "WALKTHROUGH.html"]
+    },
+    "sonnet_share": {
+      "value": 0.904,
+      "text": "90%",
+      "derive": "sonnet_share",
+      "appears_in": ["docs/COST_MODEL.md"]
+    },
+    "refused_run_tokens": {
+      "value": 649965,
+      "text": "649,965",
+      "derive": "run_tokens:vo-r1",
+      "appears_in": ["docs/COST_MODEL.md", "docs/EVAL_RECORD.md"]
+    },
+    "sealed_extras": {
+      "value": {"passed": 21, "required": 21},
+      "text": "21/21",
+      "derive": "sealed_extras",
+      "appears_in": ["README.md", "docs/EVAL_RECORD.md", "WALKTHROUGH.html", "runs/tier_9_report.md"]
+    },
+    "verifier_findings": {
+      "value": {"checks": 36, "issues": 13, "forwarded": 13, "dropped": 0, "applied": 10, "rejected": 3},
+      "text": "13 findings, 10 applied, 3 rejected",
+      "derive": "verifier",
+      "appears_in": ["docs/EVAL_RECORD.md", "runs/tier_9_report.md"]
+    },
+    "haiku_era_graded_tokens": {
+      "value": 984820,
+      "text": "984,820",
+      "appears_in": ["docs/COST_MODEL.md"]
+    },
+    "coverage_floor": {
+      "value": 89,
+      "text": "89 %",
+      "appears_in": ["runs/tier_9_report.md", "docs/EVAL_RECORD.md"]
+    }
+  }
+}

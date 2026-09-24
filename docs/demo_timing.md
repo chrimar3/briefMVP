@@ -10,7 +10,7 @@ All numbers from `demo/run_demo.py` on `fixtures/northlight_01/transcript_kickof
 `claude-haiku-4-5-20251001`, run sequentially on one machine. Reproduce any single run with:
 
 ```bash
-python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md
+python3 demo/run_demo.py fixtures/northlight_01/transcript_kickoff.md --live
 ```
 
 ## Ten supervised runs (2026-07-28, machine sleep disabled)
@@ -58,7 +58,7 @@ console capture committed at [`full_run_console.log`](full_run_console.log).
 Full disclosure of the same day's runs, because the failures teach as much as the number:
 
 - A first attempt died mid-extraction after two "no file written" transport failures
-  (preserved at `runs/case-full-20260728/`) — the same degraded-transport day the demo
+  (preserved at `runs/case-full-20260728/`, local store, gitignored) — the same degraded-transport day the demo
   loop measured.
 - The 21.7-minute run's *first synthesis roll* graded 16/17: it committed a retracted idea
   (trap X1) — traced to a one-sentence spec addition made the day before, which the model

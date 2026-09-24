@@ -3,17 +3,24 @@
 Governing rules live in `CLAUDE.md` (one tier at a time · commit · STOP for human review · never relax a criterion · 3 fails → `runs/BLOCKED.md`).
 Every DoD below is **machine-checkable** — the run proves completion, it does not declare it.
 
-> **Status (2026-09-23):** Tiers 0–7 are complete and green (`runs/tier_0_report.md` … `runs/tier_7_report.md`).
-> No Tier 8 is authorised; the owner's whole-project review loop (`tools/project_review/`, decisions in
-> `docs/OPERATING_DECISIONS.md` § 2026-09-22) is not a tier. The Tier 0–4 sections below are the
+> **Status (2026-09-24):** Tiers 0–9 are complete (`runs/tier_0_report.md` … `runs/tier_9_report.md`).
+> Tiers 8 and 9 are rounds 1 and 2 of the owner's whole-project review loop (`tools/project_review/`,
+> decisions in `docs/OPERATING_DECISIONS.md` § 2026-09-22 and § 2026-09-23); each round is recorded as a
+> tier so that it has a DoD, a report and a stop for human review. The Tier 0–4 sections below are the
 > original build plan and keep their July wording, including the shadow-only creative stage, which the
 > owner superseded on 2026-09-20.
+>
+> **Timebox.** The hiring case study's deliverable is **Tiers 0–4**, committed on 24 July 2026 (`af1527d`
+> human-authored scaffold … `fe2707e` tier-4) against the "Saturday noon" cutoff below
+> (`runs/tier_4_report.md`). Tiers 5–9 are later work,
+> authorised by the owner in September 2026, and are not part of the case-study submission. Plain-language
+> summaries of every tier: `docs/TIER_SUMMARIES.md`.
 
 ## Models
 - Subagent frontmatter uses **aliases** (`haiku`, `sonnet`) so they resolve to the latest generation automatically. At kickoff, verify with `/model` and record: current generation expected = Haiku 4.5, Sonnet 5, orchestrator Fable 5 (fall back to Opus 4.8 if Fable usage draw on the Max plan proves too heavy).
 - Every `tier_N_report.md` logs resolved model IDs. Never upgrade a stage's model to pass a gate (CLAUDE.md).
 - Tier-4 A/B only: creative-shadow runs twice (sonnet vs opus) on identical input.
-- *Routing note (2026-07-30, human decision):* extraction moved from haiku to **sonnet**, plus an independent `verify-extract` reader per source (sonnet when the extract carries risk classes, else haiku; `config/model_routing.json`). The Tier 0 line below ("extract … → haiku") and every graded Tier 1–4 figure are from the earlier routing.
+- *Routing note (2026-07-30, human decision):* extraction moved from haiku to **sonnet**, plus an independent `verify-extract` reader per source. Owner decision 2026-09-23 #5 declared that reader sonnet-only (the risk classes had routed every stored extract to sonnet; `config/model_routing.json`). The Tier 0 line below ("extract … → haiku") and every graded Tier 1–4 figure are from the earlier routing.
 
 ## Tier 0 — Scaffold & wiring
 Build: `.claude/agents/` definitions (extract, classify, fidelity-check → haiku; synthesize, render, creative-shadow → sonnet; injecting skills verbatim: extract←SOURCES.md, synthesize←SYNTHESIS.md, render←TRANSLATION.md, fidelity-check←TRANSCRIPTS.md; classify & creative-shadow inline), `pipeline/gates.py` + `pipeline/runner.py` skeletons, pytest scaffolding.
@@ -141,3 +148,34 @@ workstreams in isolated worktrees, then one integration pass. No runtime model c
 
 Stop at this tier for review. The current-routing live re-baseline (owner decision 1) is the
 next round; it is not implied by these checks, nor are Greek quality, review time or adoption.
+
+## Tier 9 — Round 2 of the whole-project review: ten moves and the live re-baseline (2026-09-23/24)
+
+Authorized by the owner's review-loop instruction and the six decisions of 2026-09-23
+(`docs/OPERATING_DECISIONS.md`). Scores and moves: `tools/project_review/rounds/r1/scores.md`;
+plan: `tools/project_review/rounds/r2/PLAN.md`; record: `runs/tier_9_report.md`. Four phases:
+A and B in isolated worktrees, C the live runs (the only model calls), D the evidence documents.
+
+- [x] Phase A — behaviour-preserving refactor (stage modules, `approval.py`, `records.py`,
+  `clock.py`); blind third keyed fixture `fixtures/levanta_03` with its answer-key hash sealed in
+  `fixtures/SEALED_KEYS.json` before any run; pilot investment, decision capture and advisory
+  personal-data pre-screen.
+- [x] Phase B — model-seam hardening (per-stage write scope, `--restricted`,
+  `--no-session-persistence`, CLI ≥ 2.1.280, live calls opt-in with `--live`); audit log vouches
+  every human decision and coding agents are blocked from decision commands; prompt-contract
+  fixes incl. the garble carry-through rule; ruff/mypy/coverage gates (coverage floor 89 %).
+- [x] Phase C — live re-baseline under the current routing: northlight_01 17/17, 17/17, 16/17;
+  voreas_02 refused at synthesis (conflict-consistency gate), 17/17, 17/17; blind levanta_03
+  17/17 with the sealed extra checks 21/21; injection canary: both planted instructions not
+  followed. Committed under `runs/r2-live/`; the render per-question citation gate added after
+  the first run.
+- [x] Phase D — `runs/r2-live/KNOWN_DEFECTS.md` with strict-xfail regressions, `eval/sealed_extras.py`,
+  verifier effectiveness in `eval/cost_report.py`, the evaluation record and usage model on the
+  measured figures, and a docs-consistency test over `docs/facts.json`. 1601 passed, 72 xfailed,
+  coverage 91.1 %; frozen evidence 17/17; agency benchmark 12/12; decision-paper gate 0 failures.
+- [ ] Pending, human: the owner's resolve/attest/approve decisions on `runs/r2-live/nl-r1`
+  (prepared, not recorded), then the creative A/B on it.
+
+Stop at this tier for review. Six graded rolls on two fixtures and one on a blind fixture show the
+pipeline recovers seeded items under the current routing; they do not show a rate with a narrow
+interval, Greek quality, review time, adoption or any result on real client data.

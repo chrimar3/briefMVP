@@ -110,7 +110,7 @@ Concrete seeds, found by inspection (verify before acting):
    - `python eval/harness.py runs/tier3` still **17/17** — the committed evidence must grade
      identically after any gate change; a flipped check means a relaxation slipped in.
    - Optional end-to-end proof (~$2.25, 6 model calls): one fresh
-     `python pipeline/runner.py --project fixtures/northlight_01` + harness + `eval/repair_analysis.py`
+     `python pipeline/runner.py --project fixtures/northlight_01 --live` + harness + `eval/repair_analysis.py`
      (expect clean first attempts).
 5. **Report:** `runs/design_audit_report.md` — findings (including rejected/false ones), fixes,
    verification output, resolved model IDs, cost. Commit `audit: …`; push only if asked.

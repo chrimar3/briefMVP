@@ -39,7 +39,7 @@ python3 pipeline/intake.py raw_docs/ --out fixtures/exam_01 --client examclient 
   Types are inferred only from strong signals (3+ `[hh:mm:ss]` timestamps → transcript,
   From:/To:/Date: lines → email_thread); anything ambiguous is **refused** with an exact
   `--type notes.txt=background` instruction to copy-paste. Ask-don't-guess, demonstrated live.
-- It scaffolds `fixtures/exam_01/client_examclient.json` (starter glossary) **inside the
+- It scaffolds `fixtures/exam_01/client_examclient.json` (created at demo time, not committed; starter glossary) **inside the
   project folder** — `glossary/` deliberately keeps one file so the documented
   northlight command keeps working. Skim the starter terms; add client-specific
   names (product, tagline) with `rule: keep_latin` — 30 seconds that visibly improve renders.
@@ -52,7 +52,7 @@ insufficient input, and show what it asked for.
 ## 2. Run
 
 ```bash
-python3 pipeline/runner.py --project fixtures/exam_01 --glossary fixtures/exam_01/client_examclient.json
+python3 pipeline/runner.py --project fixtures/exam_01 --glossary fixtures/exam_01/client_examclient.json --live
 ```
 
 While it runs, narrate the step sequence (PRD §5): readiness gate → classify → transcript

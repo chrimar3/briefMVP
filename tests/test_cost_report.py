@@ -307,3 +307,98 @@ def test_risk_replay_counts_the_base_branch_and_skips_copies(tmp_path):
     assert result["unique_extracts"] == 2 and result["duplicate_copies_skipped"] == 1
     assert result["base_branch"] == 1 and result["per_class"]["figures"] == 1
     assert result["sole_trigger"]["figures"] == 1
+
+
+# ---- round 2 (W-D): symlinks, the round-2 era, verifier effectiveness ---------------------
+
+
+def _write_run(root, name, manifest):
+    run = root / name
+    run.mkdir(parents=True)
+    (run / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return run
+
+
+def test_load_runs_skips_a_symlinked_latest_dir(tmp_path):
+    """runs/r2-live/latest -> vo-r3 used to list vo-r3 twice (once as `latest`)."""
+    _write_run(tmp_path, "vo-r3", _routing_validate_shape()[1])
+    (tmp_path / "latest").symlink_to("vo-r3", target_is_directory=True)
+    assert [run_id for run_id, _m in cost.load_runs(tmp_path)] == ["vo-r3"]
+
+
+def test_symlinked_latest_is_not_a_second_brief(tmp_path):
+    rid, m = _full_run("vo-r3", 0.70)
+    _write_run(tmp_path, rid, m)
+    (tmp_path / "latest").symlink_to(rid, target_is_directory=True)
+    briefs = cost.complete_briefs(cost.load_runs(tmp_path))
+    assert [b["run"] for b in briefs] == ["vo-r3"]
+
+
+def test_a_single_run_path_through_a_symlink_still_loads(tmp_path):
+    """Pointing the ruler AT a symlinked run (runs/latest) is an explicit choice and still works."""
+    _write_run(tmp_path, "real", _routing_validate_shape()[1])
+    (tmp_path / "latest").symlink_to("real", target_is_directory=True)
+    assert len(cost.load_runs(tmp_path / "latest")) == 1
+
+
+def _round2(manifest):
+    return {**manifest, "cli": {"version": "2.1.280 (Claude Code)", "min_version": "2.1.280", "live": True}}
+
+
+def test_round2_manifests_form_their_own_era_with_the_owner_decision_label():
+    assert cost.routing_era(_round2(_routing_validate_shape()[1])) == ("r2", "extraction models + round-2 seam")
+    assert cost.routing_era(_routing_validate_shape()[1])[0] == "current"
+    label = cost.ERA_LABELS["r2"]
+    assert "sonnet extraction + sonnet verify-extract (owner decision 2026-09-23 #5)" in label
+    assert "risk-routed" not in label
+
+
+def test_round2_date_fallback_needs_the_seam_record():
+    assert cost.routing_era(_round2({"started_ts": "2026-09-23T21:00:00", "steps": []}))[0] == "r2"
+    assert cost.routing_era({"started_ts": "2026-09-23T21:00:00", "steps": []})[0] == "current"
+
+
+def _verified_extract(source_id, issues, forwarded, dropped=0, applied=0, rejected=0):
+    adjudication = None
+    if forwarded:
+        adjudication = {"file": "x", "applied": applied,
+                        "rejected": [{"finding": f"F{i + 1}", "where": "budget[0]", "problem": "p"}
+                                     for i in range(rejected)]}
+    return {"source_id": source_id, "attempts": [_usage_sub(f"e-{source_id}", "claude-sonnet-5", 1, 1, 1, 1)],
+            "verification": {"model": "sonnet", "issue_count": issues, "forwarded_count": forwarded,
+                             "dropped": [{"index": i} for i in range(dropped)], "adjudication": adjudication,
+                             "attempts": [_usage_sub(f"v-{source_id}", "claude-sonnet-5", 1, 1, 1, 1)]}}
+
+
+def test_verifier_effectiveness_counts_every_outcome():
+    m = {"project_dir": "fixtures/northlight_01", "steps": [{"name": "extraction", "kind": "model", "extracts": [
+        _verified_extract("a", 0, 0),
+        _verified_extract("b", 3, 2, dropped=1, applied=1, rejected=1),
+        _verified_extract("c", 1, 1, applied=1),
+        {"source_id": "d", "attempts": []},  # no verifier (Haiku-era shape): not a check
+    ]}]}
+    result = cost.verifier_effectiveness([("nl-r9", m)])
+    row = result["runs"][0]
+    assert (row["checks"], row["issues"], row["forwarded"], row["dropped"]) == (3, 4, 3, 1)
+    assert (row["applied"], row["rejected"], row["unadjudicated"]) == (2, 1, 0)
+    assert row["rejections"][0]["source_id"] == "b"
+    assert result["total"]["applied"] == 2
+
+
+def test_verifier_effectiveness_never_guesses_a_missing_adjudication():
+    ext = _verified_extract("a", 2, 2)
+    ext["verification"]["adjudication"] = None
+    m = {"steps": [{"name": "extraction", "kind": "model", "extracts": [ext]}]}
+    row = cost.verifier_effectiveness([("r", m)])["runs"][0]
+    assert row["unadjudicated"] == 2 and row["applied"] == 0 and row["rejected"] == 0
+
+
+def test_verifier_view_prints_totals_and_rejections(tmp_path, capsys):
+    m = {"steps": [{"name": "extraction", "kind": "model", "extracts": [
+        _verified_extract("t", 1, 1, rejected=1)]}]}
+    _write_run(tmp_path, "nl-r3", m)
+    assert cost.main([str(tmp_path), "--verifier"]) == 0
+    out = capsys.readouterr().out
+    assert "TOTAL" in out and "Rejected findings" in out and "nl-r3" in out
+    assert cost.main([str(tmp_path), "--verifier", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)["total"]["rejected"] == 1

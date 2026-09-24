@@ -6,6 +6,7 @@ example pages, so a stale front door can never ship silently.
 
 from __future__ import annotations
 
+import html
 import json
 import re
 from pathlib import Path
@@ -84,6 +85,72 @@ def test_builder_is_deterministic(tmp_path):
     b = share.build_share(out_path=tmp_path / "b.html").read_text(encoding="utf-8")
     assert a == b
     assert a == PAGE.read_text(encoding="utf-8")
+
+
+def _pitch_text() -> str:
+    """SHARE_ME's own visible text (the pitch before the embedded carriers), entities decoded."""
+    text = PAGE.read_text(encoding="utf-8")
+    body = text.split('<script type="application/json"', 1)[0]
+    return html.unescape(re.sub(r"<[^>]+>", " ", body))
+
+
+def _plain(path: Path) -> str:
+    """A repo page's text with tags removed and entities decoded, whitespace collapsed."""
+    raw = html.unescape(re.sub(r"<[^>]+>", " ", path.read_text(encoding="utf-8")))
+    return " ".join(raw.split())
+
+
+def test_share_file_carries_the_three_decisions_with_owners_and_deadlines():
+    """A forwarded sponsor must see the decision itself, not a pointer to it: the answer
+    first, the three decisions, each owner and needed-by date, and the go-live mapping."""
+    pitch = " ".join(_pitch_text().split())
+    assert share.ANSWER in pitch
+    assert len(share.DECISIONS) == 3
+    for decision in share.DECISIONS:
+        assert decision["ask"].rstrip(".") in pitch
+        assert f"Owner: {decision['owner']} · needed {decision['needed_by']}" in pitch
+        assert decision["items"] in pitch
+    assert "What you are signing" in pitch
+    assert share.SIGNING_RULE in pitch
+    for gid in ("D-01", "D-16", "D-13", "D-14", "D-17", "T-02", "T-03", "D-27"):
+        assert gid in pitch, gid
+
+
+def test_share_file_carries_the_proven_and_not_proven_lists_and_the_risks():
+    pitch = " ".join(_pitch_text().split())
+    assert "Not proven" in pitch and "Proven" in pitch and "Risks" in pitch
+    for item in (*share.PROVEN, *share.NOT_PROVEN, *share.RISKS):
+        assert " ".join(item.split()) in pitch, item[:60]
+    assert "0.44–1.00" in pitch  # the small-n caveat travels with the numbers
+    assert "Synthetic fixtures only" in pitch
+
+
+def test_share_headline_tiles_are_era_labelled():
+    """Every headline tile says which routing era its number belongs to."""
+    pitch = " ".join(_pitch_text().split())
+    for big, _unit, text in share.TILES:
+        assert big in pitch
+        assert "September" in text or "July" in text, big
+    usage = next(text for big, _unit, text in share.TILES if big == "926,524")
+    assert "estimate" in usage and "Haiku-era (July, historical)" in usage
+    assert "client-ready" not in pitch and "review-ready draft" in pitch
+
+
+def test_step_count_sentence_is_the_same_on_all_three_front_doors():
+    """WALKTHROUGH sheet 02, START_HERE and SHARE_ME describe the flow in one sentence."""
+    assert share.STEP_SENTENCE in " ".join(_pitch_text().split())
+    for name in ("START_HERE.html", "WALKTHROUGH.html"):
+        assert share.STEP_SENTENCE in _plain(REPO / name), name
+    assert "Nine steps" not in _plain(REPO / "WALKTHROUGH.html")
+
+
+def test_decision_texts_and_owners_match_the_decision_paper():
+    """SHARE_ME's decisions are the decision paper's, word for word, with the same owners."""
+    paper = _plain(REPO / "WALKTHROUGH.html")
+    for decision in share.DECISIONS:
+        assert decision["ask"].rstrip(".") in paper, decision["ask"][:60]
+        assert f"owner: {decision['owner']}" in paper, decision["owner"]
+    assert "What you are signing" in paper
 
 
 def test_no_script_close_can_break_the_carrier():

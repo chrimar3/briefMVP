@@ -59,7 +59,7 @@ Symptom: exit 4, `outcome: stage_failed`, the failed step's `error` names the su
    `CLAUDE.md`); do not start a new run ID for unchanged input.
 2. Restore access (wait for the window, sign the CLI back into the agency account).
 3. Resume the failed leg on the same run directory; completed legs are reused:
-   - extraction: `python3 pipeline/runner.py --project P --glossary G --out $PILOT/runs --run-id RUN --stage extraction --source SOURCE_ID`
+   - extraction: `python3 pipeline/runner.py --project P --glossary G --out $PILOT/runs --run-id RUN --stage extraction --source SOURCE_ID --live`
      (one source; the other extracts stay), then `--stage synthesis`;
    - synthesis or render: `--stage synthesis` or `--stage render` with the same `--run-id`.
    If any input changed in between, the runner refuses the resume: start a new run ID.

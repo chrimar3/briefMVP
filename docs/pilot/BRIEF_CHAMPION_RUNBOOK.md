@@ -54,7 +54,7 @@ of a signature or truth of the supplied source reference.
 For an authorized synthetic model run, the existing command is:
 
 ```sh
-python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01
+python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01 --live
 python3 -m pipeline.agency init $RUNS/rehearsal-01 --project fixtures/northlight_01 --glossary glossary/meltemi.json --profile creative_production --actor "Your name"
 python3 -m pipeline.agency audit $RUNS/rehearsal-01
 ```
@@ -109,7 +109,7 @@ Human content amendments use a copied, schema-valid canonical JSON with `apply` 
 ```sh
 python3 -m pipeline.agency resolve $RUNS/rehearsal-01 --index 0 --actor "Your name" --text "Your decision and its rationale"
 python3 -m pipeline.agency apply $RUNS/rehearsal-01 --candidate $WORK/reviewed-brief.json --actor "Your name" --reason "What was corrected and why"
-python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01 --stage render
+python3 pipeline/runner.py --project fixtures/northlight_01 --glossary glossary/meltemi.json --out $RUNS --run-id rehearsal-01 --stage render --live
 ```
 
 Conflict indexes are zero-based as printed by audit. Resolve records the human resolution in

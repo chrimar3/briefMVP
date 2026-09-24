@@ -323,6 +323,10 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 .contents .n { font: 400 13px/20px var(--ledger); color: var(--pencil); }
 .contents .roles { display: flex; gap: 8px; align-items: center; }
 .contents .what { display: block; font-size: 15px; line-height: 22px; color: var(--pencil); }
+.contents .key-h { margin: 32px 0 8px; font: 700 11px/16px var(--label); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pencil); }
+.contents .key { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; gap: 6px 16px; margin: 0; padding: 12px; border-top: 1px solid var(--rule); font-size: 15px; line-height: 22px; }
+.contents .key dt { font: 400 13px/22px var(--ledger); color: var(--ink); }
+.contents .key dd { margin: 0; color: var(--pencil); }
 
 /* ---------- consulting anatomy: slide head, takeaways, tiles, columns ---------- */
 .slide-head { grid-column: 1 / -1; padding-bottom: 22px; border-bottom: 1px solid var(--rule); margin-bottom: 28px; }
@@ -518,6 +522,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <p class="marginalia"><span class="lbl">What this is</span>One finished run of the pipeline on a synthetic project, shown in ten sheets. Every quote is clipped verbatim from the four source documents; every number carries the file it came from.</p>
       <p class="marginalia"><span class="lbl">The answer first</span>This sheet is the summary. Sheet 02 is the product; sheets 03&ndash;09 the evidence; sheet 10 the decisions.</p>
       <p class="marginalia"><span class="lbl">Since this run</span>Tiers 5&ndash;7 added sign-off by command and creative release after a named creative lead approves the exact files; sheet 10 says what that does and does not prove.</p>
+      <p class="marginalia"><span class="lbl">Two eras</span>Sheets 03&ndash;09 narrate the July graded run (Haiku-era extraction). The headline usage and pass rates come from the September round-2 runs under the current routing (runs/r2-live). Every figure says which.</p>
     </aside>
     <div class="body">
       
@@ -529,10 +534,10 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 
 
 <div class="tiles">
-        <div class="tile"><div class="big">17<small>/ 17</small></div><p>Passes the 17 defined checks on one synthetic project. <span class="cite"><button type="button" class="jump" data-go="8">sheet 08</button></span></p></div>
-        <div class="tile"><div class="big">0.98<small>M tokens</small></div><p>One brief used about a million tokens; a token is roughly three-quarters of a word the model reads or writes. At 15 briefs a month that is about 15 million, the figure to hold against a plan&rsquo;s usage window. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
-        <div class="tile"><div class="big">33<small>min</small></div><p>The graded run&rsquo;s stages, including the repair and the creative A/B; a continuous capture on 29 July ran the same pipeline in 25.2, with one pass re-rolled. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
-        <div class="tile"><div class="big">3<small>conflicts</small></div><p>All three shown with both sides cited; none decided by the machine. <span class="cite"><button type="button" class="jump" data-go="5">sheet 05</button> &middot; <button type="button" class="jump" data-go="7">07</button></span></p></div>
+        <div class="tile"><div class="big">17<small>/ 17</small></div><p>July graded run: passes the 17 defined checks on one synthetic project. Current routing, September: 17/17 in 5 of 7 graded runs, three synthetic projects. <span class="cite"><button type="button" class="jump" data-go="8">sheet 08</button> &middot; <button type="button" class="jump" data-go="10">10</button></span></p></div>
+        <div class="tile"><div class="big">0.93<small>M tokens</small></div><p>Current routing, September: 926,524 tokens per brief, mean of six complete briefs; a token is roughly three-quarters of a word. At 15 briefs a month, ~13.9 M tokens a month (estimate). Haiku-era (July, historical): 0.98 M. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
+        <div class="tile"><div class="big">11&ndash;14<small>min</small></div><p>Current routing, September: stage-one wall clock per northlight brief (voreas 22&ndash;23). Haiku-era (July, historical): the graded run&rsquo;s stages summed to 33 min; a continuous capture ran in 25.2. <span class="cite"><button type="button" class="jump" data-go="10">sheet 10</button></span></p></div>
+        <div class="tile"><div class="big">3<small>conflicts</small></div><p>July graded run: all three shown with both sides cited; none decided by the machine. <span class="cite"><button type="button" class="jump" data-go="5">sheet 05</button> &middot; <button type="button" class="jump" data-go="7">07</button></span></p></div>
       </div>
 <ul class="legend">
         <li><svg class="g" aria-hidden="true"><use href="#g-pencil" xlink:href="#g-pencil"/></svg><span>Pencil = AI drafts</span></li>
@@ -560,9 +565,12 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       </div>
         <div class="ledger-wrap"><table class="ledger-table">
           <tr><th>figure</th><th>source</th></tr>
-          <tr><td>17 / 17 checks</td><td>runs/tier3/harness_report.json &middot; verdict PASS</td></tr>
-          <tr><td>0.98 M tokens, stage one</td><td>runs/tier3/run_manifest.json usage fields (cache reads 56% &middot; cache writes 27% &middot; output 16% &middot; fresh input 0.3%) &middot; docs/COST_MODEL.md (PRD assumptions A1, A4)</td></tr>
-          <tr><td>33 min of stage time &middot; 25.2 min continuous capture</td><td>docs/EVIDENCE.md &middot; 2026-07-29 capture, 25.2 min wall clock</td></tr>
+          <tr><td>17 / 17 checks (July graded run)</td><td>runs/tier3/harness_report.json &middot; verdict PASS</td></tr>
+          <tr><td>17/17 in 5 of 7 graded runs (current routing, September)</td><td>runs/r2-live/*.harness.log &middot; 17/17: nl-r1, nl-r2, vo-r2, vo-r3, lv-r1 &middot; 16/17: nl-r3 (a garbled term kept without its glossary proposal) &middot; vo-r1 refused at synthesis, no brief (the partial run scores 12/17) &middot; docs/EVAL_RECORD.md</td></tr>
+          <tr><td>926,524 tokens per brief (current routing, September)</td><td>python3 eval/cost_report.py runs/r2-live &middot; every attempt counted &middot; mean of the six complete briefs, about 90% Sonnet &middot; docs/COST_MODEL.md &sect;1; the monthly estimate &sect;2</td></tr>
+          <tr><td>0.98 M tokens, stage one (Haiku-era, July, historical)</td><td>runs/tier3/run_manifest.json usage fields (cache reads 56% &middot; cache writes 27% &middot; output 16% &middot; fresh input 0.3%) &middot; docs/COST_MODEL.md &sect;3</td></tr>
+          <tr><td>11&ndash;14 min stage one (current routing, September)</td><td>runs/r2-live/nl-r1, nl-r2, nl-r3 run_manifest.json &middot; started_ts to finished_ts (11.2, 13.6, 13.1 min) &middot; voreas vo-r2, vo-r3: 21.8, 23.1 min</td></tr>
+          <tr><td>33 min of stage time &middot; 25.2 min continuous capture (Haiku-era, July, historical)</td><td>docs/EVIDENCE.md &middot; 2026-07-29 capture, 25.2 min wall clock</td></tr>
           <tr><td>3 contradictions, 0 machine-resolved</td><td>runs/tier3/brief.json &rsaquo; conflicts[3], each status resolved_by_human</td></tr>
         </table></div>
       </details>
@@ -572,7 +580,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
   <section class="sheet" id="ch02" data-n="2" aria-labelledby="t02">
     <header class="slide-head">
       <p class="kicker"><span class="num">02</span><span>The product</span><span class="el" lang="el">Το προϊόν</span></p>
-      <h1 class="title action" id="t02" tabindex="-1">Nine steps, three roles: six are AI, two are plain code, one is a person&rsquo;s sign-off; creative release needs a second person.</h1>
+      <h1 class="title action" id="t02" tabindex="-1">Ten steps, two of them people: the account lead&rsquo;s sign-off and the creative lead&rsquo;s approval; six are AI, two plain code.</h1>
       
       
     </header>
@@ -583,7 +591,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span>
         <span class="stamp people"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide</span>
       </div>
-      <p class="marginalia"><span class="lbl">The thin layer</span>Four plain-text rule files (a few pages of plain English handed to the model unchanged every run), seven agents and about 2&thinsp;500 non-blank lines, counted across the eight pipeline modules in the ledger below; the Tier 5&ndash;7 agency commands add about 2&thinsp;100 more across thirteen modules. The rules are the proprietary part; the models can change.</p>
+      <p class="marginalia"><span class="lbl">The thin layer</span>Four plain-text rule files (a few pages of plain English handed to the model unchanged every run), seven agents, and deterministic Python in pipeline/ that sequences the steps, runs the gates and carries the agency commands (modules listed in the ledger below). The rules are the proprietary part; the models can change.</p>
     </aside>
     <div class="body">
       <ul class="takeaways"><li>AI reads each source, extracts evidence and drafts both documents from one master record.</li><li>Code checks citations and gates the run; static review pages support command-line operation.</li><li>The account lead resolves and signs by command; a separate creative lead approves any creative release.</li></ul>
@@ -619,7 +627,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 <p class="principles">Ask, don&rsquo;t guess &middot; Surface, don&rsquo;t resolve &middot; Flag, don&rsquo;t correct &middot; Look up, don&rsquo;t invent &middot; Sign, don&rsquo;t send</p>
 <p class="narr promise"><b>v1.0, pilot.</b> Promise: a client brief in Greek and English, every claim with its receipt, every gap a question, nothing sent without a signature.</p>
 <p class="note">v1 uses static review pages and command-line operation; no mail, calendar or drive integration. The PRD kept creative in shadow until the pilot targets were met; the owner superseded that on 2026-09-20: a creative draft is released only after a named creative lead approves the exact files, as a local package that nothing sends automatically, and the pilot includes creative delivery from week 1 under separation of duties. v2 replaces the folder drop with integrations. <span class="cite">docs/PRD.md &sect;3, &sect;5, &sect;8 &middot; docs/OPERATING_DECISIONS.md</span></p>
-<p class="note">As it runs today (routing changed 30 July); sheets 03&ndash;09 narrate the 24 July run. One folder, one command: about 25 minutes of machine time (measured before the 30 July routing change; re-baseline pending), about 50 of account-lead attention as the target (20 assembling, 30 reviewing) against a two-hour baseline. <span class="cite">docs/PRD.md &sect;2</span></p>
+<p class="note">As it runs today (routing changed 30 July: sonnet extraction + sonnet verify-extract); sheets 03&ndash;09 narrate the 24 July run. One folder, one command: 11&ndash;14 minutes of machine time per northlight brief, 22&ndash;23 on the harder voreas project (current routing, September round 2), about 50 of account-lead attention as the target (20 assembling, 30 reviewing) against a two-hour baseline. <span class="cite">runs/r2-live &middot; docs/PRD.md &sect;2</span></p>
 <div class="cols3">
         <div class="col">
           <h3>What you get</h3>
@@ -651,7 +659,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><th>part</th><th>location</th></tr>
           <tr><td>rule files</td><td>skills/SOURCES.md &middot; SYNTHESIS.md &middot; TRANSLATION.md &middot; TRANSCRIPTS.md</td></tr>
           <tr><td>agents (one per AI step)</td><td>.claude/agents/ &middot; classify, fidelity-check, extract, verify-extract, synthesize, render, creative-shadow</td></tr>
-          <tr><td>orchestration and gates</td><td>pipeline/ &middot; runner.py, gates.py, extraction.py, conflicts.py, stages.py, creative.py, agents.py, diagnostics.py</td></tr>
+          <tr><td>orchestration and gates</td><td>pipeline/ &middot; runner.py, gates.py, extraction.py, conflicts.py, stage_*.py (behind the stages.py re-export), render_checks.py, creative.py, agents.py, diagnostics.py, data_policy.py</td></tr>
           <tr><td>agency operations (Tiers 5&ndash;7)</td><td>pipeline/ &middot; agency.py (audit, resolve, attest, approve), delivery.py (register, approve, release), release_control.py (verify, withdraw), operations.py, question_exchange.py, effort.py and six supporting modules &middot; guides in docs/pilot/</td></tr>
           <tr><td>data model</td><td>schema/brief_schema.json &middot; schema/extract_schema.json</td></tr>
           <tr><td>policy tables</td><td>config/readiness_policy.json &middot; channel_specs.json &middot; model_routing.json &middot; glossary/&lt;client&gt;.json</td></tr>
@@ -730,7 +738,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>emails_thread</td><td>email_thread</td><td>2026-07-15 (latest message)</td><td>el</td><td class="r">1 726</td></tr>
           <tr><td>background_brand_guidelines</td><td>background</td><td>2026-03-02</td><td>en</td><td class="r">1 045</td></tr>
         </table></div>
-        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header is the input contract the runner reads. The fixture also holds an answer key reserved for the harness by policy and excluded from automatic source discovery; runtime agents retain Read access to its containing directory.</p>
+        <p class="foot">fixtures/northlight_01/ &middot; every file carries a header line naming its source_id, source_type and source_date; that header, together with a data_declaration.json in the project folder (the runner refuses a folder without one, exit 6), is the input contract the runner reads. The fixture also holds an answer key reserved for the harness by policy and excluded from automatic source discovery. In this July run agents could still read its folder; since round 1 they read staged copies of the sources that exclude it, under a deny rule for any answer_key.json (docs/SECURITY.md &sect;3.2). Not cryptographic.</p>
       
         <div class="ledger-wrap"><table class="ledger-table">
           <tr><th>step</th><th>kind</th><th>model</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
@@ -775,7 +783,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       <ul class="takeaways">
         <li>Each document is read on its own by a model allowed to record evidence and nothing else.</li>
         <li>Every fact quotes the exact words and code checks the quote exists; one document was sent back once.</li>
-        <li>Two garbled English terms were flagged with proposals; the finished documents print the glossary term without the flag.</li>
+        <li>Two garbled English terms were flagged with proposals; the July documents dropped the flag, fixed in September.</li>
       </ul>
       <h2 class="sub">Listening without correcting</h2>
 <div class="hero clips">
@@ -841,7 +849,8 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <div class="attempt"><div class="n">8<small>facts</small></div><div class="d">rfp_meltemi &middot; 1 attempt</div></div>
         <div class="attempt"><div class="n">10<small>facts</small></div><div class="d">transcript_kickoff &middot; 2 attempts &mdash; sent back once for two non-verbatim quotes and one silent garble repair</div></div>
       </div>
-      <p class="foot">The repair removed a merged metro idea/retraction quote and a silent garble correction. Graded extraction used Haiku, without a second reader. Since 30 July, Sonnet extracts; an independent verifier reports omissions without editing (Sonnet for risky extracts, Haiku otherwise). It found the audience correction missing as a contradiction. Rules: skills/SOURCES.md; schema and citation gates: pipeline/gates.py.</p>
+      <p class="foot">The repair removed a merged metro idea/retraction quote and a silent garble correction. Graded extraction used Haiku, without a second reader. Since 30 July, Sonnet extracts; an independent verifier reports omissions without editing (always Sonnet: owner decision 5, 2026-09-23, after every stored extract had routed to it). It found the audience correction missing as a contradiction. Rules: skills/SOURCES.md; schema and citation gates: pipeline/gates.py.</p>
+      <p class="foot">September (current routing, runs/r2-live): garbled terms now stay visible next to their proposed match in the finished documents (the July render defect B3 is fixed). One northlight run (nl-r3) kept the garbled &laquo;μπραντ αγουέρνες&raquo; but made no glossary proposal, because the Haiku fidelity check marked it no-glossary-match; the Sonnet verifier flagged it and the extractor rejected the finding. That run scored 16/17.</p>
       </details>
     </div>
   </section>
@@ -966,6 +975,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <li><span class="field">Objectives &mdash; no KPIs defined</span><span class="why">Objectives are stated, nothing measurable is written down; the CMO confirmed it at kickoff: &ldquo;Όχι ακόμα κάτι γραμμένο&rdquo; (&ldquo;nothing written down yet&rdquo;) [00:18:52].</span><span class="q">What are the main KPIs for the launch? What is the target reach, impressions, engagement rate, or conversion target? Are there any sales or brand-awareness-shift goals you expect?</span></li>
       </ol>
 <p class="note">The other eight are in the rendered brief: approver, audience definition, proposition, video and key-visual specs, the scope of &ldquo;TikTok-first&rdquo;, launch milestones, ingredient list.</p>
+<p class="foot">Known defect, still present in September: the budget question turns the spoken hedge into &ldquo;80&ndash;85&rdquo;, in this run and in all three current-routing northlight runs; the questions also re-ask open conflicts. The September defect list is runs/r2-live/KNOWN_DEFECTS.md.</p>
 <div class="hero">
         <ul class="toc">
           <li><span class="n">1</span><span>Objectives</span><span class="c">3 entries</span></li>
@@ -1045,6 +1055,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>8 human sign-off</td><td>human action &middot; not a pipeline step</td><td>none</td><td class="r">0</td><td>brief.json &rsaquo; signoff {status: signed_off, signed_by, signed_ts, edits_summary} &middot; conflicts[n].status: resolved_by_human</td></tr>
         </table></div>
               <p class="foot">On provenance: in the synthetic project the account lead on the call is &ldquo;Eleni&rdquo;, a fictional persona. The graded run was signed off by the repository&rsquo;s author acting as account lead; the record above is quoted from the run.</p>
+              <p class="foot">The September current-routing briefs are still drafts: the owner&rsquo;s resolutions for run nl-r1 are prepared (runs/r2-live/nl-r1/OWNER_DECISIONS.md) but not yet recorded, and no model records them.</p>
         <p class="foot">The creative stage refuses to start unless signoff.status equals signed_off (pipeline/creative.py gate). A model can only write draft; signed_off is recorded by a person (since Tier 5 through python3 -m pipeline.agency approve, which refuses while the agency audit reports blockers). Creative release needs a further, separate approval (sheet 09).</p>
       </details>
     </div>
@@ -1057,17 +1068,17 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
     <aside class="margin">
       <div class="folio"><button type="button" class="open-contents" aria-label="Open contents">08 / 10 &middot; Contents</button></div>
       <div class="stamps"><span class="stamp code"><svg class="g" aria-hidden="true"><use href="#g-rule" xlink:href="#g-rule"/></svg>Code &middot; checks</span></div>
-      <p class="marginalia"><span class="lbl">Frozen</span>Answer key committed on 24 July 2026 at 00:27:26, sixteen hours before the run started; the grader was frozen after the first tier. Harness-only use is a policy restriction.</p>
+      <p class="marginalia"><span class="lbl">Frozen</span>Answer key committed on 24 July 2026 at 00:27:26, sixteen hours before the run started; the grader was frozen after the first tier. In July harness-only use was a policy restriction; since round 1 a deny rule backs it.</p>
     </aside>
     <div class="body">
-      <p class="verdict">17/17: passes the 17 defined checks on one synthetic project.</p>
+      <p class="verdict">17/17: passes the 17 defined checks on one synthetic project (July graded run).</p>
       <ul class="takeaways">
-        <li>The grader was frozen early; harness-only answer-key use is policy, not enforced file isolation.</li>
+        <li>The grader was frozen early; in July, harness-only answer-key use was policy, not enforced file isolation.</li>
         <li>Every trap seeded in this project was caught: contradictions, gaps, garbles, a retraction, a speculation, a forbidden total.</li>
         <li>Every check is a yes or a no; none is an opinion.</li>
       </ul>
-      <p class="note">The answer key is excluded from source discovery. In this July run agents could still read its folder; nothing shows one did. Since round 1 agents read staged copies that exclude it, under a deny rule. Not cryptographic.</p>
-      <p class="note">T1 = the evidence layer, T2 = the brief and both documents, T3 = the seeded traps, X = traps that must stay out.</p>
+      <p class="note">The answer key is reserved for the grader by policy and excluded from source discovery. In this July run agents could still read its folder; nothing shows one did. Since round 1 agents read staged copies that exclude it, under a deny rule (docs/SECURITY.md &sect;3.2). Not cryptographic, not physically unopenable.</p>
+      <p class="note">How to read the check names: T1 = the evidence layer, T2 = the brief and both documents, T3 = the seeded traps, X = traps that must stay out. Under the current routing (September) the same exam gave 17/17 in 5 of 7 graded runs on three projects (sheet 10).</p>
       
       <div class="hero"><ul class="exam">
         <li><svg class="mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5l4 4 8-9"/></svg><span class="id">T1</span><span>Evidence layer, 4 checks: shape, exact citations and two flagged garbles.</span><span class="res">pass</span></li>
@@ -1106,6 +1117,28 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><td>eval/harness.py</td><td>deterministic &middot; frozen after Tier 1</td><td>runs/tier3 against fixtures/northlight_01/answer_key.json</td><td>harness_report.json &middot; verdict PASS &middot; passed 17, failed 0, skipped 0</td></tr>
         </table></div>
         <p class="foot">Second fixture: runs/voreas_prep_report.md. Live rehearsal: docs/EVIDENCE.md.</p>
+        <div class="ledger-wrap"><table class="ledger-table">
+          <tr><th>September run (current routing)</th><th>project</th><th>frozen grade</th><th>note</th></tr>
+          <tr><td>nl-r1 &middot; nl-r2</td><td>northlight_01</td><td>17/17 &middot; 17/17</td><td>nl-r1 still a draft: owner decisions prepared, not recorded</td></tr>
+          <tr><td>nl-r3</td><td>northlight_01</td><td>16/17</td><td>T1.4: a garbled term kept, no glossary proposal</td></tr>
+          <tr><td>vo-r1</td><td>voreas_02</td><td>refused</td><td>stopped at synthesis after 2 attempts: a competing position left only inside a conflict (resolution by omission); no brief; the partial run scores 12/17</td></tr>
+          <tr><td>vo-r2 &middot; vo-r3</td><td>voreas_02</td><td>17/17 &middot; 17/17</td><td>&nbsp;</td></tr>
+          <tr><td>lv-r1</td><td>levanta_03, written blind, key hash sealed before the run</td><td>17/17</td><td>seven sealed extra checks: 21/21 required sub-checks; one desired item partly met (the injected line is flagged in the extract and the audit, not in the brief)</td></tr>
+        </table></div>
+        <p class="foot">Source: runs/r2-live/*.harness.log, graded read-only by eval/grade_frozen.py; per-check pass rates in docs/EVAL_RECORD.md.</p>
+      </details>
+      <details class="ledger">
+        <summary><span>Key &mdash; check names and terms in plain words</span></summary>
+        <dl class="kv">
+          <dt>T1.1&ndash;T1.4</dt><dd>the evidence layer: every extract well formed, every fact quoted word for word from its source, garbled terms kept as spoken with a glossary proposal</dd>
+          <dt>T2.1&ndash;T2.6</dt><dd>the brief and both documents: well formed, sensitivity tier allowed, both languages present, every claim line names its source, protected terms intact, readiness recomputed by code</dd>
+          <dt>T3.1&ndash;T3.4</dt><dd>the seeded traps found: contradictions with both sides cited, gaps turned into questions, garbles carried with their flag, no uncited value</dd>
+          <dt>X1&ndash;X3</dt><dd>traps that must stay out: the withdrawn idea, the speculation as a firm deliverable, an invented or resolved budget total</dd>
+          <dt>S0&ndash;S3</dt><dd>client sensitivity tiers set at onboarding; the pilot allows only the two lowest</dd>
+          <dt>xfail</dt><dd>a test that pins a known defect: it is expected to fail until the defect is fixed</dd>
+          <dt>token</dt><dd>roughly three-quarters of a word a model reads or writes; cached context is text re-read from an earlier turn</dd>
+          <dt>Haiku-era, current routing</dt><dd>July: Haiku extracted (the graded run). Since 30 July: Sonnet extracts and a Sonnet verifier re-reads each extract; the September runs measure this routing</dd>
+        </dl>
       </details>
     </div>
   </section>
@@ -1121,7 +1154,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         <span class="stamp people pending"><svg class="g" aria-hidden="true"><use href="#g-nib" xlink:href="#g-nib"/></svg>People &middot; decide &mdash; awaiting creative lead</span>
       </div>
       <p class="marginalia"><span class="lbl">Three strikes, one call</span>Draft B&rsquo;s &ldquo;Greek-made&rdquo; is an origin claim no source supports; Draft A&rsquo;s budget line, &ldquo;Production budget: &lsquo;in the eighties&rsquo; <mark class="flag">(&euro;80&ndash;85k)</mark>&rdquo;, turns the words into a total the brief never states (creative_brief_sonnet.md, line 64). Draft B also calls the TikTok dance &ldquo;floated speculatively and retracted&rdquo;; it was speculative, while metro posters were retracted. Draft B&rsquo;s &ldquo;nothing to feel guilty about&rdquo; runs close to the ban on health claims: the creative lead&rsquo;s call.</p>
-      <p class="marginalia"><span class="lbl">Not released</span>Signed-off input; these drafts were never approved.</p>
+      <p class="marginalia"><span class="lbl">Not released</span>July drafts, never approved; September creative awaits sign-off.</p>
       
     </aside>
     <div class="body">
@@ -1238,7 +1271,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
 
       <details class="ledger">
         <summary><span>Ledger &mdash; what ran</span></summary>
-<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; references indicate claimed provenance, not verified support</p><p class="pencil">Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.</p><p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
+<p class="marginalia mono">condensed from creative_brief_opus.md &middot; 8 525 chars &middot; references indicate claimed provenance, not verified support</p><p class="pencil">Historical: this A/B is the July graded run&rsquo;s (Haiku-era extraction). No creative exists yet for the September current-routing runs: the owner first records the decisions on run nl-r1 (prepared in runs/r2-live/nl-r1/OWNER_DECISIONS.md), then the A/B is regenerated.</p><p class="pencil">Bracketed tags indicate claimed provenance. The creative lead must verify support and correct the origin claim, budget conversion and mistaken dance retraction.</p><p class="pencil">Sections 3&ndash;6 in full, and the further spec rows: <a class="repo" href="runs/tier3/creative/creative_brief_opus.md" target="_blank" rel="noopener">runs/tier3/creative/creative_brief_opus.md</a>.</p><p class="pencil">Audience per the resolved conflict; the proposed psychology is a creative hypothesis, not audience research. The health-claim ban is a constraint. <span class="cite">[conflicts/audiences; mandatories]</span></p>
         <div class="ledger-wrap"><table class="ledger-table">
           <tr><th>step</th><th>agent</th><th>model id as recorded</th><th class="r">tokens</th><th class="r">time</th><th>record</th></tr>
           <tr><td>9 creative_shadow &middot; arm A</td><td>creative-shadow</td><td>claude-sonnet-5</td><td class="r">86 441</td><td class="r">90 s</td><td>creative/creative_brief_sonnet.md &middot; 6 994 chars</td></tr>
@@ -1275,48 +1308,65 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
       
     </aside>
     <div class="body">
-      <ul class="takeaways"><li>Approve a conditional pilot; measure quality, review time and adoption.</li><li>Re-baseline the changed routing before week 1.</li><li>Validate subscription capacity against measured usage.</li></ul>
+      <ul class="takeaways"><li>Approve a conditional pilot; measure quality, review time and adoption.</li><li>Plan capacity on the September measurement, not the July figure.</li><li>Every before-week-1 item closed means start; one open means no start.</li></ul>
             <h2 class="sub">Decisions needed</h2>
       <ol class="decisions">
         <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results.
-          <ul class="sub-list"><li>Weeks 2&ndash;3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained without edits; under 30 minutes reviewing each draft. Greek naturalness rated 1&ndash;5, with EL/EN edits compared; the sponsor must confirm a release threshold before week 1 (docs/pilot/SCORECARD.md leaves it unset). Both pilot leads must choose voluntary reuse. Proposed mandatory gate: missed targets block week-4 live use; the named sponsor records the release decision. Month-2 adoption is tracked separately.</li><li>Creative is in the pilot from week 1: a draft is released only after a named creative lead, not the brief signer or the draft&rsquo;s registrant, approves the exact files.</li></ul>
+          <ul class="sub-list"><li>Weeks 2&ndash;3: two leads review three past projects each. Targets: over 80% of flagged questions judged useful; over 70% of draft text retained; under 30 minutes reviewing each draft; Greek naturalness rated 1&ndash;5 against a threshold the sponsor confirms before week 1. Both leads must choose voluntary reuse. Missed targets block week-4 live use.</li><li>Creative is in the pilot from week 1: a draft is released only after a named creative lead, not the brief signer or the draft&rsquo;s registrant, approves the exact files.</li></ul>
           <span class="cite">Sponsor &middot; PRD &sect;7&ndash;8 &middot; docs/OPERATING_DECISIONS.md; protocol in ledger.</span></li>
-        <li>Re-baseline usage and time under the 30 July routing before week 1: larger extraction model plus second reader. The owner authorised three graded runs per fixture on 22 September. <span class="cite">Operator &middot; docs/OPERATING_DECISIONS.md.</span></li>
-        <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved. <span class="cite">Management + operator &middot; PRD &sect;8.</span></li>
+        <li>Accept the September re-baseline as the planning basis: measured under the current routing, it replaces the July Haiku-era figures. Then set the refusal-rate target and the voreas regression precondition. <span class="cite">Operator &middot; runs/r2-live &middot; docs/OPERATING_DECISIONS.md.</span></li>
+        <li>Proposed approval condition: before week 1, management and the operator estimate pilot costs and confirm capacity and workspace terms; the sponsor records a spending ceiling before any spending or client data, and an unset ceiling means no start. Plan capacity from ~13.9 M tokens a month, an estimate. <span class="cite">Management + operator &middot; PRD &sect;8 &middot; docs/COST_MODEL.md &sect;2.</span></li>
       </ol>
-      
-      <h2 class="sub">Why: the measured numbers behind decisions 2 and 3</h2>
+      <h2 class="sub">What you are signing</h2>
+      <div class="ledger-wrap"><table class="ledger-table">
+        <tr><th>decision</th><th>go-live items (docs/pilot/GO_LIVE_DECISIONS.md)</th><th>owner</th><th>needed by</th></tr>
+        <tr><td>1 &middot; pilot</td><td>D-01 team, kickoff &middot; D-16 Greek floor &middot; D-13 review time &middot; D-18 critical errors &middot; D-20 creative measures &middot; D-14, D-15 survival, conflict catch</td><td>sponsor</td><td>D-01, D-16 before week 1 &middot; D-13 end of week 1 &middot; D-18, D-20 before week 2 &middot; D-14, D-15 end of week 3</td></tr>
+        <tr><td>2 &middot; re-baseline</td><td>R-3 authorised &middot; T-02 measured (September) &middot; D-17 refusal-rate target &middot; T-03 voreas regression</td><td>operator; D-17 sponsor</td><td>D-17 after T-02 &middot; T-03 before week 2</td></tr>
+        <tr><td>3 &middot; costs, terms</td><td>D-02&ndash;D-07 account, data terms, location, usage window, retention &middot; D-09, D-11, D-24, D-25, D-28 &middot; D-27 spending ceiling</td><td>management + operator; sponsor records the ceiling</td><td>before week 1</td></tr>
+      </table></div>
+      <h2 class="sub">Why: the numbers</h2>
 
       <div class="hero">
         <ul class="numbers">
-          <li><span class="big">0.98<small>M tokens</small></span><p class="what">Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried). 1.13 M with creative A/B.</p></li>
-          <li><span class="big">598&#8201;743<small>tokens</small></span><p class="what">Transcript extraction under the current routing, one local run not committed, versus 295&#8201;774 graded: re-baseline before planning capacity.</p></li>
-          <li><span class="big">210<small>hours/year target</small></span><p class="what">The assumed baseline is two hours per brief (PRD A1); fifty minutes is an unvalidated attention target (&sect;2): twenty assembling and thirty reviewing. The graded review was not timed; the pilot must measure both tasks. Across 180 briefs a year (A2) that is about 210 hours, worth &euro;4.0&ndash;4.2k at &euro;19&ndash;20 an hour (A4), before running and support costs, which are not yet estimated; all three inputs are validated in week 1.</p></li>
+          <li><span class="big">926,524<small>tokens a brief</small></span><p class="what">Current routing, September: mean of six complete briefs, about 90% Sonnet. Northlight 695,991 (n = 3), voreas 1,291,833 (n = 2), levanta 887,505 (n = 1).</p></li>
+          <li><span class="big">~13.9<small>M a month</small></span><p class="what">Estimate, not a measurement: 15 briefs a month (PRD A2) &times; 926,524; 10.4&ndash;19.4 M across the project means. Haiku-era (July, historical): ~15 M.</p></li>
+          <li><span class="big">210<small>hours/year target</small></span><p class="what">Two hours per brief today (PRD A1) against a fifty-minute target, over 180 briefs a year (A2): about 210 hours, worth &euro;4.0&ndash;4.2k at &euro;19&ndash;20 an hour (A4). Inputs validated in week 1.</p></li>
         </ul>
       </div>
-      <h2 class="sub">Since the graded run: Tiers 5&ndash;8</h2>
+      <h2 class="sub">Proven, and not proven</h2>
       <ul class="limits">
-        <li>Added: evidence-coverage audit and question triage; resolution, bilingual attestation and sign-off by command, bound to the exact revision; creative register, approve, release, verify and withdraw; clarification packs; effort and rework records. All are local commands run by people. <span class="cite">runs/tier_5&ndash;7_report.md &middot; docs/pilot/</span></li>
-        <li>Round 1 (Tier 8): least-privilege agents, separation of duties with a hash-chained audit log, a data declaration on every project, retention tooling, offline replay. <span class="cite">docs/SECURITY.md &middot; docs/pilot/ &middot; runs/tier_8_report.md</span></li>
-        <li>Proven at Tier 8: the software behaves as specified; 948 deterministic tests pass, the frozen evidence still grades 17/17, a synthetic benchmark passes 12/12. <span class="cite">scripts/check.sh &middot; runs/tier_8_report.md</span></li>
-        <li>Not proven: generative quality under the current routing, Greek register, review time, adoption or any time saved; the extra review steps must fit the 30-minute target. <span class="cite">decision 1 &middot; decision 2</span></li>
+        <li>Proven on synthetic projects, current routing: 17/17 in 5 of 7 graded runs; a blind third project, key sealed before the run, 17/17 plus 21/21 sealed extra checks; planted instructions not followed; a failing run stops. <span class="cite">runs/r2-live &middot; docs/EVAL_RECORD.md</span></li>
+        <li>Not proven: n is small (3, 3 and 1 graded runs; 3 of 3 has a 95% Wilson interval of 0.44&ndash;1.00); no real-client data; Greek register, review time, adoption, time saved; September creative, pending sign-off. <span class="cite">decision 1</span></li>
       </ul>
       <h2 class="sub">Limits</h2>
       <ul class="limits">
-        <li>On a subscription the constraint is the plan&rsquo;s usage window, not a price per brief. <span class="cite">docs/COST_MODEL.md &sect;2, &sect;6</span></li>
-        <li>Refusals: three of ten supervised single-document runs produced nothing after two attempts. <span class="cite">docs/demo_timing.md</span></li>
-        <li>Second fixture: 15/17, then 16/17 after a re-roll; exam-green is not lead-ready. <span class="cite">runs/voreas_prep_report.md</span></li>
+        <li>On a subscription the constraint is the plan&rsquo;s usage window, not a price per brief. <span class="cite">docs/COST_MODEL.md &sect;2, &sect;5</span></li>
+        <li>Refusals: three of ten supervised single-document runs produced nothing (July); one of seven graded runs in September. <span class="cite">docs/demo_timing.md &middot; runs/r2-live/vo-r1</span></li>
+        <li>Second fixture: 15/17, then 16/17 after a re-roll (July); 17/17 twice in September. Exam-green is not lead-ready: every September brief has known defects. <span class="cite">runs/voreas_prep_report.md &middot; runs/r2-live/KNOWN_DEFECTS.md</span></li>
       </ul>
-      <p class="note">The budget stays &laquo;κάπου στα ογδόντα&raquo;: no invented or resolved total in the brief or either render. Creative Draft A invented one; the creative lead strikes it. <span class="cite">transcript_kickoff 00:14:32 &middot; check X3</span></p>
+      <p class="note">The budget stays &laquo;κάπου στα ογδόντα&raquo;: no invented or resolved total in the brief or either render; creative Draft A invented one, struck by the creative lead. <span class="cite">transcript_kickoff 00:14:32 &middot; the no-invented-total check</span></p>
       <p class="lastline">People decide. <button type="button" class="jump" data-go="1">Back to the summary</button></p>
       <details class="ledger">
         <summary><span>Ledger &mdash; the whole run</span></summary>
 <h2 class="sub">Measured usage and assumed labour</h2><ul class="numbers">
-          <li><span class="big">0.98<small>M tokens, stage one</small></span><p class="what">Nine model-agent attempts, each potentially containing multiple turns (four documents, one retried): 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields</span></p></li>
-          <li><span class="big">~15<small>M tokens a month</small></span><p class="what">0.98 M per brief at about 15 briefs a month (PRD A2); about 16 M with one creative draft each. The figure to hold against a plan&rsquo;s usage window.<span class="cite">docs/PRD.md &sect;4 A2</span></p></li>
-          <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today. Target: about 210 account-lead hours a year, worth &euro;4.0&ndash;4.2k before operating costs &mdash; (120 &minus; 50) minutes saved per brief &times; 180 briefs a year &divide; 60 = 210 hours, &times; &euro;19&ndash;20 an hour; baseline, volume and rate are PRD assumptions A1, A2, A4, validated in week 1. Pilot effort and operating costs remain unestimated; the proposed pre-week-1 financial gate is decision 3.<span class="cite">docs/COST_MODEL.md &sect;3 &middot; PRD A1, A2, A4</span></p></li>
-          <li><span class="big">25.2<small>min</small></span><p class="what">The continuous 29 July capture, one pass re-rolled; the graded run&rsquo;s stages sum to 33 minutes. One document: about 4 minutes to classify and extract; 5:45 for a full run under a demo profile with the production input gate overridden.<span class="cite">docs/EVIDENCE.md &middot; docs/demo_timing.md</span></p></li>
+          <li><span class="big">926,524<small>tokens per brief, current routing</small></span><p class="what">September, round 2, sonnet extraction + sonnet verify-extract; classify and fidelity check on claude-haiku-4-5-20251001, everything else claude-sonnet-5. Mean over the six complete briefs, every attempt counted (no run was clean: each had at least one repair). Northlight 695,991 (n = 3; Haiku 72,779 &middot; Sonnet 623,212); voreas 1,291,833 (n = 2; Haiku 118,116 &middot; Sonnet 1,173,716); levanta 887,505 (n = 1; Haiku 77,647 &middot; Sonnet 809,858). The refused vo-r1 used 649,965 tokens and produced no brief.<span class="cite">python3 eval/cost_report.py runs/r2-live &middot; docs/COST_MODEL.md &sect;1</span></p></li>
+          <li><span class="big">~13.9<small>M tokens a month, estimate</small></span><p class="what">15 briefs a month (PRD A2) &times; 926,524 = ~13.9 M tokens a month; 10.4 M at the northlight mean, 19.4 M at the voreas mean; about 15.5 M if one run in six is refused like vo-r1. An estimate from six synthetic briefs, not a measured month.<span class="cite">docs/COST_MODEL.md &sect;2 &middot; docs/PRD.md &sect;4 A2</span></p></li>
+          <li><span class="big">0.98<small>M tokens, stage one &middot; Haiku-era (July, historical)</small></span><p class="what">The graded run: nine model-agent attempts, each potentially containing multiple turns (four documents, one retried): 0.53 M on Haiku 4.5, 0.45 M on Sonnet 5; 56% context read from cache, 27% written to it, 16% fresh output. 1.13 M with the two-model creative A/B (86 441 Sonnet 5, 63 473 Opus 4.8).<span class="cite">runs/tier3/run_manifest.json &middot; usage fields &middot; docs/COST_MODEL.md &sect;3</span></p></li>
+          <li><span class="big">~15<small>M tokens a month &middot; Haiku-era (July, historical)</small></span><p class="what">0.98 M per brief at about 15 briefs a month (PRD A2); about 16 M with one creative draft each. Superseded for planning by the current-routing estimate above.<span class="cite">docs/PRD.md &sect;4 A2 &middot; docs/COST_MODEL.md &sect;3</span></p></li>
+          <li><span class="big">&euro;38&ndash;40<small>of account-lead time</small></span><p class="what">Two hours of an account lead at &euro;19&ndash;20 an hour, the labour the same brief costs today. Target: about 210 account-lead hours a year, worth &euro;4.0&ndash;4.2k before operating costs &mdash; (120 &minus; 50) minutes saved per brief &times; 180 briefs a year &divide; 60 = 210 hours, &times; &euro;19&ndash;20 an hour; baseline, volume and rate are PRD assumptions A1, A2, A4, validated in week 1. Pilot effort and operating costs remain unestimated; the proposed pre-week-1 financial gate is decision 3.<span class="cite">docs/COST_MODEL.md &sect;4 &middot; PRD A1, A2, A4</span></p></li>
+          <li><span class="big">11&ndash;14<small>min, current routing</small></span><p class="what">Stage-one wall clock of the three September northlight runs (11.2, 13.6, 13.1 min); voreas 21.8 and 23.1; levanta 18.1.<span class="cite">runs/r2-live/*/run_manifest.json &middot; started_ts to finished_ts</span></p></li>
+          <li><span class="big">25.2<small>min &middot; Haiku-era (July, historical)</small></span><p class="what">The continuous 29 July capture, one pass re-rolled; the graded run&rsquo;s stages sum to 33 minutes. One document: about 4 minutes to classify and extract; 5:45 for a full run under a demo profile with the production input gate overridden.<span class="cite">docs/EVIDENCE.md &middot; docs/demo_timing.md</span></p></li>
         </ul>
+<h2 class="sub">Since the graded run: Tiers 5&ndash;8 and round 2</h2>
+      <ul class="limits">
+        <li>Added: evidence-coverage audit and question triage; resolution, bilingual attestation and sign-off by command, bound to the exact revision; creative register, approve, release, verify and withdraw; clarification packs; effort and rework records. All are local commands run by people. <span class="cite">runs/tier_5_report.md, tier_6_report.md, tier_7_report.md &middot; docs/pilot/</span></li>
+        <li>Round 1 (Tier 8): least-privilege agents, separation of duties with a hash-chained audit log, a data declaration on every project, retention tooling, offline replay. <span class="cite">docs/SECURITY.md &middot; docs/pilot/ &middot; runs/tier_8_report.md</span></li>
+        <li>Proven at Tier 8: the software behaves as specified; the deterministic suite passes, the frozen evidence still grades 17/17, a synthetic benchmark passes 12/12. A software rehearsal, with no model calls. <span class="cite">scripts/check.sh &middot; runs/tier_8_report.md</span></li>
+        <li>Round 2 (September): graded-fixture text removed from the runtime prompts; CLI 2.1.280 with --restricted, --no-session-persistence and per-stage deny rules; then seven graded live runs, a blind third fixture and an injection canary. The canary&rsquo;s two planted instructions were both recorded as &ldquo;embedded instruction not followed&rdquo;, with no side effects. <span class="cite">runs/r2-live &middot; tests/injection_project &middot; docs/EVAL_RECORD.md</span></li>
+        <li>The blind fixture (levanta_03) was written by an author who never saw the prompts; its answer-key hash was sealed before the run. 17/17, and 21/21 required sub-checks on seven sealed extras: prompt injection not obeyed, a misattributed claim, a superseded date, a currency-conversion trap, a retraction, scope and language, undecided benefits. One desired item partly met: the injected line is flagged in the extract and the agency audit, not in the brief. <span class="cite">fixtures/SEALED_KEYS.json &middot; docs/EVAL_RECORD.md</span></li>
+        <li>A refusal working as designed: vo-r1 stopped at synthesis after two attempts, because a competing position survived only inside a conflict (&ldquo;resolution by omission&rdquo;); no brief was written. <span class="cite">runs/r2-live/vo-r1</span></li>
+        <li>Not proven: generative quality beyond 3, 3 and 1 graded runs per synthetic project (3 of 3 gives a 95% Wilson interval of 0.44&ndash;1.00); anything on real-client data; Greek register, review time, adoption or any time saved; creative for the September runs, which waits for the owner&rsquo;s sign-off of nl-r1. The extra review steps must fit the 30-minute target. <span class="cite">decision 1 &middot; decision 2</span></li>
+      </ul>
 <h2 class="sub">Pilot protocol and decision owners</h2><ol class="decision-record">
         <li>Approve a four-week pilot, with live use in week 4 conditional on the retrospective results. Two account leads, three past projects each; weeks 2&ndash;3 retrospective, creative in the pilot from week 1 under separation of duties (draft, then a named creative lead&rsquo;s approval of the exact files, then a local release package, withdrawable), S0&ndash;S1 clients, agency workspace.
           <ul class="sub-list">
@@ -1324,16 +1374,18 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
             <li>Proposed binding pilot condition: if weeks 2&ndash;3 miss any release target, week 4 does not go live. The executive sponsor named at kickoff records the week-4 release decision. Default use from month 2 requires a successful pilot report and separate sponsor approval; month-2 onboarding requests are an adoption measure, not a week-4 release criterion.</li>
           </ul>
           <span class="cite">docs/PRD.md &sect;7&ndash;8 &middot; owner: the executive sponsor named at kickoff &middot; needed before week 1</span></li>
-        <li>Re-baseline usage and time: rerun and re-measure under the 30 July routing (a larger extraction model plus a second reader), which on the transcript alone measured 598 743 tokens against 295 774. Authorised by the owner on 2026-09-22: three graded runs each on northlight_01 and voreas_02, recording per-check pass rates and tokens by model. <span class="cite">config/model_routing.json &middot; runs/routing-validate-01 (committed) &middot; docs/OPERATING_DECISIONS.md &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
-        <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from roughly 15 M tokens monthly under graded routing and must use the new measurement. Subscription terms remain unresolved. <span class="cite">docs/PRD.md &sect;8 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
+        <li>Re-baseline usage and time: done. Authorised by the owner on 2026-09-22 (three graded runs each on northlight_01 and voreas_02, recording per-check pass rates and tokens by model) and measured on 2026-09-24 under the current routing, sonnet extraction + sonnet verify-extract, with the round-2 prompts: 17/17 in 5 of 7 graded runs, 926,524 tokens per brief (Haiku 4.5 for classify and fidelity, Sonnet 5 for the rest). The first sign came in July from one committed leg (runs/routing-validate-01): transcript extraction measured 598 743 tokens against 295 774 on the graded run. What remains: accept the measurement as the planning basis, then set the refusal-rate target (D-17) and decide the voreas regression precondition (T-03). <span class="cite">config/model_routing.json &middot; runs/r2-live (committed) &middot; runs/routing-validate-01 (committed) &middot; docs/OPERATING_DECISIONS.md &middot; owner: the operator (AI specialist) &middot; needed before week 1</span></li>
+        <li>Proposed approval condition: before week 1, management and the operator estimate setup, training, subscription, maintenance and support costs; confirm subscription capacity and workspace processing, retention and contractual terms. The sponsor must approve the estimate and record a spending ceiling before spending or client-data processing begins; an unset ceiling means no start. Capacity planning starts from the current-routing estimate, ~13.9 M tokens a month at 15 briefs (range 10.4&ndash;19.4 M), not the Haiku-era ~15 M. Subscription terms remain unresolved. <span class="cite">docs/PRD.md &sect;8 &middot; docs/COST_MODEL.md &sect;2 &middot; runs/cost_c4_report.md &middot; owner: agency management with the operator &middot; needed before week 1</span></li>
       </ol>
 <p class="foot">PRD &sect;10 quotes ~&euro;5&ndash;6k a year; the PRD&rsquo;s own assumptions give ~&euro;4.0&ndash;4.2k, the figure used here. Conversion: (120 &minus; 50) &times; 180 / 60 = 210 hours; 210 &times; &euro;19&ndash;20 = &euro;3&#8201;990&ndash;4&#8201;200.</p>
-<p class="marginalia"><span class="lbl">Measured, not estimated</span>A token is roughly three-quarters of a word a model reads or writes; cached context is text it was already sent and re-reads. Counts are what the runs recorded; times are wall clock. Usage, not a price: the client will most likely run this on a subscription.</p>
+<p class="marginalia"><span class="lbl">Measured, unless marked estimate</span>A token is roughly three-quarters of a word a model reads or writes; cached context is text it was already sent and re-reads. Counts are what the runs recorded; times are wall clock. Usage, not a price: the client will most likely run this on a subscription.</p>
 <h2 class="sub">Limits and risks</h2>
       <ul class="limits">
-        <li>On a subscription the constraint is the plan&rsquo;s usage window, not a price per brief; the demo ran on a developer subscription. The PRD&rsquo;s per-brief price applies only on API terms. <span class="cite">docs/COST_MODEL.md &sect;2, &sect;6</span></li>
-        <li>Refusals: three of ten supervised single-document runs were refused on both attempts and produced nothing; the demo retries a refused leg twice by default. <span class="cite">docs/demo_timing.md</span></li>
-        <li>Second fixture: 15/17 first, 16/17 after a re-roll; its audit found questions duplicating open conflicts and rendered without citations, which no check sees. Exam-green is not lead-ready. <span class="cite">runs/voreas_prep_report.md and addendum</span></li>
+        <li>On a subscription the constraint is the plan&rsquo;s usage window, not a price per brief; the demo ran on a developer subscription. The PRD&rsquo;s per-brief price applies only on API terms. <span class="cite">docs/COST_MODEL.md &sect;2, &sect;5</span></li>
+        <li>Refusals: three of ten supervised single-document runs were refused on both attempts and produced nothing (July, Haiku-era); the demo retries a refused leg twice by default. September, current routing: one of seven graded runs refused at synthesis (vo-r1, 649,965 tokens, no brief). <span class="cite">docs/demo_timing.md &middot; runs/r2-live/vo-r1</span></li>
+        <li>Second fixture: 15/17 first, 16/17 after a re-roll (July, Haiku-era); its audit found questions duplicating open conflicts and rendered without citations, which no check sees. September: 17/17 on vo-r2 and vo-r3, vo-r1 refused. Exam-green is not lead-ready. <span class="cite">runs/voreas_prep_report.md and addendum &middot; runs/r2-live</span></li>
+        <li>Known defects in every September brief, none scored by the exam: renders written before the per-question citation gate merged fail that gate in 5 of 6 runs; open questions re-ask open conflicts; the spoken hedge &laquo;κάπου στα ογδόντα, μπορεί ογδόντα πέντε&raquo; becomes &ldquo;80&ndash;85&rdquo; in a suggested question in all three northlight runs; Greek grammar slips (article gender, a wrong word for &ldquo;inaudible&rdquo;); voreas briefs duplicate a competing position into a second field after the conflict-consistency repair. Fixed since July: garbled terms stay visible next to their proposed match, no process steps filed as deliverables, no decade-range hedge drift, no &ldquo;today&rdquo; deixis, internal metadata in an &ldquo;Internal &mdash; not for the client&rdquo; block. <span class="cite">runs/r2-live/KNOWN_DEFECTS.md</span></li>
+        <li>One regression: nl-r3 kept the garbled &laquo;μπραντ αγουέρνες&raquo; without a glossary proposal (16/17 on the garble check); the Haiku fidelity check marked it no-glossary-match, and the extractor rejected the Sonnet verifier&rsquo;s finding. <span class="cite">runs/r2-live/nl-r3.harness.log</span></li>
 
       </ul>
 <p class="foot">The PRD&rsquo;s two named risks: confidentiality of regulated clients (per-client tiers, S0&ndash;S1 in the pilot) and a confident citation to garbage (fidelity gate, word-for-word citation checks). <span class="cite">docs/PRD.md &sect;9</span></p>
@@ -1341,7 +1393,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
           <tr><th>stage</th><th>model id as recorded</th><th class="r">time</th><th>record</th></tr>
           <tr><td>classification</td><td>claude-haiku-4-5-20251001</td><td class="r">34 s</td><td>classification.json</td></tr>
           <tr><td>transcript fidelity</td><td>claude-haiku-4-5-20251001</td><td class="r">52 s</td><td>fidelity/</td></tr>
-          <tr><td>extraction, 4 sources incl. one repair</td><td>claude-haiku-4-5-20251001 (graded run) &middot; claude-sonnet-5 + verifier since 2026-07-30</td><td class="r">13.6 min</td><td>extracts/ &middot; diagnostics/repair_log.jsonl</td></tr>
+          <tr><td>extraction, 4 sources incl. one repair</td><td>claude-haiku-4-5-20251001 (graded run) &middot; claude-sonnet-5 + a claude-sonnet-5 verifier since 2026-07-30 (sonnet-only by owner decision 5, 2026-09-23)</td><td class="r">13.6 min</td><td>extracts/ &middot; diagnostics/repair_log.jsonl</td></tr>
           <tr><td>synthesis</td><td>claude-sonnet-5</td><td class="r">5.1 min</td><td>brief.json</td></tr>
           <tr><td>bilingual render</td><td>claude-sonnet-5</td><td class="r">9.2 min</td><td>brief_el.md &middot; brief_en.md</td></tr>
           <tr><td>creative A/B (Tier-4 shadow mode)</td><td>claude-sonnet-5 &middot; claude-opus-4-8</td><td class="r">3.3 min</td><td>creative/</td></tr>
@@ -1349,7 +1401,7 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
         </table></div>
         <p class="foot"><b>Dollars, for readers on API terms:</b> de-duplicated, the graded run cost $3.55 ($2.81 stage one); <a class="repo" href="docs/EVIDENCE.md" target="_blank" rel="noopener">docs/EVIDENCE.md</a> quotes the raw $4.29 because the manifest records each creative arm twice.</p>
         <p class="foot"><b>Why 33 min and 25.2 min:</b> the graded pack was assembled across resumed legs (run_manifest.json marks every stage-one step from_earlier_run); the 29 July capture ran continuously. Render effort was capped on 25 July and a within-source retraction check added on 29 July; neither is in the graded numbers.</p>
-        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, <a class="repo" href="runs/routing-validate-01/" target="_blank" rel="noopener">runs/routing-validate-01</a> (the one current-routing leg), docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
+        <p class="foot"><b>Links and sources:</b> repository links resolve when this file sits in the repository root; to forward the example pages alone, send SHARE_ME.html. Everything here reads from <a class="repo" href="runs/tier3/" target="_blank" rel="noopener">runs/tier3</a>, <a class="repo" href="runs/tier3/harness_report.json" target="_blank" rel="noopener">harness_report.json</a>, <a class="repo" href="docs/COST_MODEL.md" target="_blank" rel="noopener">docs/COST_MODEL.md</a>, <a class="repo" href="runs/routing-validate-01/" target="_blank" rel="noopener">runs/routing-validate-01</a> (the July current-routing leg, committed), <a class="repo" href="runs/r2-live/" target="_blank" rel="noopener">runs/r2-live</a> (the September round-2 runs, committed evidence), docs/EVIDENCE.md and fixtures/northlight_01. Synthetic data throughout.</p>
       </details>
     </div>
   </section>
@@ -1362,6 +1414,17 @@ mark.flag { background: none; color: inherit; text-decoration: underline; text-d
     <h2 id="contents-h">Contents</h2>
     <p class="howto">Ten sheets in three parts. Pick one, or press Escape to return. Keys: &larr; &rarr; turn &middot; Home / End &middot; C contents &middot; Esc close. Marks: pencil = AI drafts &middot; rule = code checks &middot; red pen = people decide.</p>
     <ol id="contents-list"></ol>
+    <h3 class="key-h">Key &mdash; check names and terms in plain words</h3>
+    <dl class="key">
+      <dt>T1.x</dt><dd>evidence checks: every fact quoted word for word from its source; garbled terms kept as spoken, with a glossary proposal</dd>
+      <dt>T2.x</dt><dd>brief checks: well formed, allowed sensitivity tier, both languages, every claim line names its source, protected terms intact, readiness recomputed by code</dd>
+      <dt>T3.x</dt><dd>seeded traps found: contradictions with both sides cited, gaps turned into questions, garbles carried with their flag</dd>
+      <dt>X1&ndash;X3</dt><dd>traps that must stay out: a withdrawn idea, a speculation as a firm deliverable, an invented or resolved budget total</dd>
+      <dt>S0&ndash;S3</dt><dd>client sensitivity tiers; the pilot allows only S0 and S1</dd>
+      <dt>xfail</dt><dd>a test that pins a known defect and is expected to fail until it is fixed</dd>
+      <dt>token</dt><dd>roughly three-quarters of a word a model reads or writes</dd>
+      <dt>Haiku-era / current routing</dt><dd>July: Haiku extracted (the graded run, historical). Since 30 July: Sonnet extracts and a Sonnet verifier re-reads; the September runs measure it</dd>
+    </dl>
   </div>
 </div>
 

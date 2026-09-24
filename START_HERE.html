@@ -93,7 +93,7 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
   <p class="mast-sub">From a messy pile of client inputs to a review-ready draft brief — in two
   languages, with receipts. AI writes, code checks, humans decide.</p>
   <div class="chips">
-    <span class="chip ok">17/17 on the graded synthetic project</span>
+    <span class="chip ok">17/17 in 5 of 7 graded runs · current routing · synthetic projects</span>
     <span class="chip">every claim carries a citation</span>
     <span class="chip">gaps become questions, never guesses</span>
     <span class="chip">Greek + English from one object</span>
@@ -103,7 +103,7 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
 
 <section id="see-it">
   <h2>See it before you run anything</h2>
-  <p class="lede">The graded run ships in this repo. The first two pages are the product's
+  <p class="lede">The July graded run ships in this repo. The first two pages are the product's
   account-team surface; the third is the decision paper for whoever approves a pilot —
   double-click, no install, works offline:</p>
   <div class="card-row">
@@ -131,10 +131,11 @@ footer p { max-width: 66rem; margin: 0 auto; padding: 1rem 1.5rem; color: var(--
 
 <section id="how">
   <h2>How it works</h2>
-  <p class="lede">Ten steps, two of them people. Seven build the client brief; the account
-  lead signs it before any creative work starts; the creative draft follows; and a named
-  creative lead approves the exact files before any creative leaves as a package. The runner
-  owns sequence and refusal; deterministic gates verify every model output.</p>
+  <p class="lede">Ten steps, two of them people: the account lead&rsquo;s sign-off and the creative lead&rsquo;s approval; six are AI, two plain code.
+  Seven build the client brief; the account lead signs it before any creative work starts;
+  the creative draft follows; and a named creative lead approves the exact files before any
+  creative leaves as a package. The runner owns sequence and refusal; deterministic gates
+  verify every model output.</p>
   <ol class="journey">
     <li class="jstep"><span class="jstep-no">1</span><span class="jstep-body">
       <span class="jstep-name">Readiness gate</span>
@@ -183,17 +184,20 @@ python3 -m pytest -q                            <span class="c"># or: bash scrip
 BRIEF_BUILDER_CLAUDE_BIN="$PWD/tools/replay/claude" python3 pipeline/runner.py --project fixtures/northlight_01 --out /tmp/bb-replay
 
 <span class="c"># model stages run as Claude Code subagents — install + authenticate the claude CLI, then:</span>
-./demo.sh                                       <span class="c"># one document in, verified facts out,</span>
+./demo.sh --live                                <span class="c"># one document in, verified facts out,</span>
                                                 <span class="c">#   ends by opening its run view</span>
-python3 pipeline/runner.py --project fixtures/northlight_01   <span class="c"># full Stage-1 run → runs/&lt;ts&gt;/</span>
+python3 pipeline/runner.py --project fixtures/northlight_01 --live   <span class="c"># full Stage-1 run → runs/&lt;ts&gt;/ (model calls)</span>
 python3 eval/harness.py runs/latest             <span class="c"># grade against the answer key</span>
-./run_full.sh                                   <span class="c"># background demo run — opens the finished brief</span></pre>
+./run_full.sh --live                            <span class="c"># background demo run — opens the finished brief</span></pre>
   <p class="lede">Every project folder carries a <span class="mono">data_declaration.json</span>
   (the fixtures declare <span class="mono">synthetic</span>); the runner refuses a folder without
   one (exit 6).</p>
   <p class="lede">Python 3.9 or newer on macOS or Linux. The tests make no model calls; the
-  model stages run on the owner's Claude account and their usage under the current routing is
-  still being re-measured (the graded figures are from the earlier, Haiku-era routing).</p>
+  model stages run on the owner's Claude account. Usage under the current routing (sonnet
+  extraction + sonnet verify-extract) was measured in September: 926,524 tokens per brief,
+  the mean of six complete synthetic briefs (northlight 695,991, voreas 1,291,833), so
+  ~13.9 M tokens a month at 15 briefs &mdash; an estimate, not a measured month. The July graded
+  run's 984,820 is the Haiku-era figure, now historical.</p>
   <p class="lede">Completed runs also copy their pages to <span class="mono">reviews/</span>
   under recognisable names — that folder is the account team's shelf
   (see <span class="mono">reviews/README.md</span> for the sharing channels).</p>
@@ -207,8 +211,9 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
     <div class="g-card"><h3>Resolve conflicts</h3><p>When sources disagree, both quotes
       are shown with citations. Resolution belongs to the account lead, by design.</p></div>
     <div class="g-card"><h3>Silently fix garbles</h3><p>A mangled term is extracted
-      as written and flagged for a person to confirm. (The graded run's renders dropped
-      that flag — a documented defect, runs/tier3/KNOWN_DEFECTS.md B3.)</p></div>
+      as written and flagged for a person to confirm. (The July graded run's renders dropped
+      that flag — runs/tier3/KNOWN_DEFECTS.md B3; the September runs keep it visible next to
+      the proposed match.)</p></div>
     <div class="g-card"><h3>Invent figures</h3><p>"Around eighty" stays that way until
       the client says eighty <em>what</em>. No number appears that no source stated.</p></div>
     <div class="g-card"><h3>Editorialise in views</h3><p>The review pages are
@@ -222,7 +227,7 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
 </section>
 
 <section id="since">
-  <h2>Since the graded run: the agency layer (Tiers 5–8)</h2>
+  <h2>Since the graded run: the agency layer (Tiers 5–8) and the round-2 re-baseline</h2>
   <p class="lede">The graded run is from July 2026. In September the pipeline gained the
   operating layer an agency needs around it — all local commands, run by people, with no
   model calls.</p>
@@ -238,33 +243,43 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
       refused without one (exit 6); retention inventory and purge; an evaluation record with
       known defects (<a href="docs/EVAL_RECORD.md">EVAL_RECORD.md</a>); offline replay
       (<code>tools/replay</code>) and one check script (<code>scripts/check.sh</code>).</p></div>
-    <div class="g-card"><h3>What it proves</h3><p>The software behaves as specified: at
-      Tier 8, 948 deterministic tests pass, the frozen evidence still grades 17/17 and a
-      synthetic fault-injection benchmark passes 12/12. This is a software rehearsal.</p></div>
-    <div class="g-card"><h3>What it does not prove</h3><p>Generative quality under the
-      current routing, Greek register, review time, adoption or any time saved. Those need
-      the re-baseline and the pilot.</p></div>
+    <div class="g-card"><h3>What it proves</h3><p>The software behaves as specified: the
+      deterministic suite passes, the frozen evidence still grades 17/17 and a synthetic
+      fault-injection benchmark passes 12/12. This is a software rehearsal, with no model calls.</p></div>
+    <div class="g-card"><h3>Round 2: the live re-baseline (September)</h3><p>Under the
+      current routing, 17/17 in 5 of 7 graded runs on three synthetic projects (one 16/17,
+      one refused at synthesis with no brief). A blind third project, its answer key sealed
+      before the run, scored 17/17 and 21/21 on seven sealed extra checks; an injection canary's
+      planted instructions were not followed. Evidence: <span class="mono">runs/r2-live/</span>;
+      its known defects: <span class="mono">runs/r2-live/KNOWN_DEFECTS.md</span>.</p></div>
+    <div class="g-card"><h3>What it does not prove</h3><p>n is small (3, 3 and 1 graded runs
+      per project); synthetic data only, no real client; Greek register, review time, adoption
+      or any time saved; creative for the September runs, which waits for the owner's sign-off.
+      Those need the pilot.</p></div>
   </div>
 </section>
 
 <section id="decision">
   <h2>The decision asked, and the risks</h2>
   <p class="lede">The decision paper (<a href="WALKTHROUGH.html">WALKTHROUGH.html</a>, sheet
-  10) asks the sponsor for three things: approve a four-week pilot with live use in week 4
-  conditional on the retrospective results; re-measure usage and time under the current
-  routing before week 1; and estimate costs, confirm capacity and terms, and record a
-  spending ceiling before week 1. Creative delivery is in the pilot from week 1, under
-  separation of duties.</p>
+  10) asks for three decisions: the sponsor approves a four-week pilot with live use in
+  week 4 conditional on the retrospective results; the operator's September re-baseline is
+  accepted as the planning basis; and management with the operator estimate costs, confirm
+  capacity and terms, and the sponsor records a spending ceiling &mdash; all before week 1.
+  Each maps to go-live items in <span class="mono">docs/pilot/GO_LIVE_DECISIONS.md</span>;
+  every before-week-1 item closed means start. Creative delivery is in the pilot from week 1,
+  under separation of duties.</p>
   <div class="g-grid">
-    <div class="g-card"><h3>Usage is not yet measured</h3><p>Extraction moved to a larger
-      model plus a second reader on 30 July; one leg measured about twice the graded tokens.
-      The whole-brief figure awaits the re-baseline.</p></div>
-    <div class="g-card"><h3>Exam-green is not lead-ready</h3><p>The harder second fixture
-      scored 15/17, then 16/17 after a re-roll, with errors no check sees. A person reviews
-      every brief.</p></div>
-    <div class="g-card"><h3>Refusals happen</h3><p>Three of ten supervised single-document
-      runs were refused on both attempts (Haiku-era). A refusal stops the run; it never
-      ships a guess.</p></div>
+    <div class="g-card"><h3>Usage is measured, on small n</h3><p>926,524 tokens per brief under
+      the current routing (six complete synthetic briefs); the monthly ~13.9 M is an estimate.
+      The July Haiku-era 984,820 is historical.</p></div>
+    <div class="g-card"><h3>Exam-green is not lead-ready</h3><p>Every September brief carries
+      known defects no check scores (<span class="mono">runs/r2-live/KNOWN_DEFECTS.md</span>);
+      the harder second fixture scored 15/17, then 16/17, in July. A person reviews every
+      brief.</p></div>
+    <div class="g-card"><h3>Refusals happen</h3><p>One of seven graded September runs was
+      refused at synthesis; three of ten supervised single-document runs in July (Haiku-era).
+      A refusal stops the run; it never ships a guess.</p></div>
     <div class="g-card"><h3>Terms and data</h3><p>Commercial and data-processing terms are
       unresolved, and only synthetic data is permitted until the agency approves a data
       policy.</p></div>
@@ -280,7 +295,8 @@ python3 eval/harness.py runs/latest             <span class="c"># grade against 
     <div class="map-row"><span class="mono">docs/EVIDENCE.md</span><span>artifact-backed proof of every claim: what ran, every check, every trap caught</span></div>
     <div class="map-row"><span class="mono">docs/EVAL_RECORD.md</span><span>pass rates with n per check and routing era, harness blind spots, known defects, the re-baseline protocol</span></div>
     <div class="map-row"><span class="mono">docs/SECURITY.md</span><span>threat model and controls: untrusted-content rule, staged inputs and deny rules, separation of duties, audit log</span></div>
-    <div class="map-row"><span class="mono">runs/tier3/</span><span>the committed graded run — signed brief, renders, extracts, both review pages</span></div>
+    <div class="map-row"><span class="mono">runs/tier3/</span><span>the committed July graded run (Haiku-era) — signed brief, renders, extracts, both review pages</span></div>
+    <div class="map-row"><span class="mono">runs/r2-live/</span><span>the committed September round-2 runs under the current routing: seven graded runs, the blind fixture, the injection canary; review-ready drafts, not yet signed; known defects in runs/r2-live/KNOWN_DEFECTS.md</span></div>
     <div class="map-row"><span class="mono">docs/pilot/</span><span>the pilot operating pack — pilot runbook, roles, go-live decisions, data protection, incident recovery, champion runbook, creative delivery, scorecard, operating terms</span></div>
     <div class="map-row"><span class="mono">reviews/</span><span>the shareable shelf — completed runs publish both pages here automatically</span></div>
     <div class="map-row"><span class="mono">pipeline/</span><span>deterministic orchestration: runner, gates, extraction, conflicts, review pages, and the agency commands (review, approval, delivery, coordination)</span></div>
