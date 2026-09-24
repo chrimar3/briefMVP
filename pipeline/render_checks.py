@@ -3,13 +3,21 @@
 `check_render` runs over every render — new ones inside the render stage's repair loop, and
 historical ones in the agency audit — so it checks only what any faithful render must satisfy.
 The template contract for new renders is `pipeline.render_template.check_render_template`.
+
+`render_coverage` is the agency audit's structural coverage check (statement counts, cited
+sources, each open question's linked-evidence citation). The audit applies it to every render
+before approval; `check_render_coverage` applies the same function to NEW renders inside the
+render stage's repair loop, so a render the approval path can never accept fails at render
+time, where the model can still fix it.
 """
 
 from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 from pipeline import gates
 from pipeline.money import money_figures
@@ -207,4 +215,86 @@ def check_render(out_el: Path, out_en: Path, brief: dict, glossary: dict) -> lis
         violations.extend(_glossary_presence_violations(lang, render, protected, brief_blob))
         violations.extend(_no_invention_violations(lang, render, brief, known, protected))
         violations.extend(_warning_section_violations(lang, render, brief))
+    return violations
+
+
+def tag_location(location: Any) -> str:
+    """The location as it sits inside a `[source_id location]` citation tag.
+
+    A transcript location is itself bracketed (`[00:03:41]`); a tag cannot contain `]`, so the
+    render writes it without its own brackets (`[kickoff 00:03:41]`, the render order's form).
+    One enclosing pair is dropped; every other location is matched exactly as stored.
+    """
+    location = str(location or "").strip()
+    if len(location) > 2 and location.startswith("[") and location.endswith("]"):
+        return location[1:-1].strip()
+    return location
+
+
+def _coverage_findings(brief: Mapping[str, Any], text: str, lang: str) -> list[tuple[str, str]]:
+    """(problem, repair hint) pairs behind `render_coverage`; the hint is empty where none helps."""
+    findings: list[tuple[str, str]] = []
+    sections: dict[str, list[str]] = {}
+    current: Any = None
+    for line in text.splitlines():
+        match = re.match(r"^##\s+([1-7])[.)]?\s", line)
+        if match:
+            current = gates.BRIEF_FIELDS[int(match.group(1)) - 1]
+            sections[current] = []
+        elif line.startswith("##"):
+            current = None
+        elif current and re.match(r"^\s*(?:[-*]|\d+[.)])\s+", line):
+            sections[current].append(line)
+    for field in gates.BRIEF_FIELDS:
+        entries = brief.get(field) or []
+        lines = sections.get(field, [])
+        if entries and len(lines) < len(entries):
+            findings.append((f"{lang}: {field} has {len(entries)} entries but only {len(lines)} statement lines", ""))
+        for entry in entries:
+            for ref in entry.get("evidence") or []:
+                if ref.get("source_id") and not any(ref["source_id"] in line for line in lines):
+                    findings.append((f"{lang}: {field} lacks cited source {ref['source_id']}", ""))
+    # Question blocks have a numbered, language-independent template contract. A
+    # citation elsewhere in the brief does not establish a question's evidence.
+    warning_sections = re.split(r"(?m)^##\s+", text)
+    blocks: list[str] = []
+    for section in warning_sections:
+        if section.startswith("⚠"):
+            numbered = re.findall(r"(?ms)^\s*\d+[.)]\s+.*?(?=^\s*\d+[.)]\s+|\Z)", section)
+            if numbered:
+                blocks = numbered
+                break
+    for i, question in enumerate(brief.get("open_questions") or []):
+        block = blocks[i] if i < len(blocks) else ""
+        for ref in question.get("linked_evidence") or []:
+            tags = re.findall(r"\[([^]]+)\]", block)
+            location = tag_location(ref.get("location", ""))
+            if not any(ref.get("source_id", "") in tag and location in tag for tag in tags):
+                findings.append((
+                    f"{lang}: question {i} lacks its linked evidence citation",
+                    f"open question {i + 1} (open_questions[{i}]) must carry, inside its own numbered "
+                    f"⚠ item, the tag [{ref.get('source_id', '')} {location}] — the source id and the "
+                    f"full location exactly as the brief stores them, never shortened",
+                ))
+    return findings
+
+
+def render_coverage(brief: Mapping[str, Any], text: str, lang: str) -> list[str]:
+    """Check field-level statement counts and sources. Meaning still needs a reviewer."""
+    return [problem for problem, _hint in _coverage_findings(brief, text, lang)]
+
+
+def check_render_coverage(out_el: Path, out_en: Path, brief: Mapping[str, Any]) -> list[str]:
+    """New renders only: exactly `render_coverage`'s failures, each with its repair hint.
+
+    Historical renders are not re-gated here; the agency audit still applies
+    `render_coverage` to them before approval.
+    """
+    violations: list[str] = []
+    for lang, path in (("el", out_el), ("en", out_en)):
+        if not Path(path).is_file():
+            violations.append(f"no {lang} render at {path}")
+            continue
+        for problem, hint in _coverage_findings(brief, Path(path).read_text(encoding="utf-8"), lang):
+            violations.append(f"{problem} — {hint}" if hint else problem)
     return violations

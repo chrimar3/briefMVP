@@ -8,7 +8,10 @@ the same commands are refused however they are spelled: `cd … &&` and other co
 environment assignments, `env`/`uv run`/`poetry run` wrappers, `bash -c "…"`, `python`/`python3`/
 `python3.x`, `-m pipeline.agency` or a path to `pipeline/agency.py`, interpreter flags before the
 module, and the subcommand anywhere after it. `python -c` code and stdin/heredoc scripts that call
-the decision functions in-process are refused too.
+the decision functions in-process are refused too. The one exception is a pure help invocation —
+the subcommand followed only by `-h`/`--help` (`python3 -m pipeline.agency approve --help`) — which
+prints argparse help and records nothing. (The plain-spelling `permissions.deny` rules in
+`.claude/settings.json` are prefix matches and still refuse that spelling at the permission layer.)
 
 A decision — resolving a conflict, attesting the Greek, triaging a question, excluding a fact,
 amending or approving a brief, registering, approving or releasing creative, withdrawing an
@@ -94,8 +97,27 @@ def _module_of(token: str) -> Optional[str]:
     return name if name in DECISION_COMMANDS else None
 
 
+#: Help flags. A decision subcommand followed by nothing but these prints argparse help and exits
+#: before any record is read or written, so it is allowed.
+_HELP_FLAGS = {"-h", "--help"}
+
+
+def _pure_help(module: str, args: List[str]) -> bool:
+    """True when `args` are exactly one decision subcommand plus help flags (`approve --help`).
+
+    Anything else on the line — a run path, `--actor`, a redirection, a second subcommand —
+    makes it an ordinary invocation, judged as before.
+    """
+    verbs = [a for a in args if a in DECISION_COMMANDS[module]]
+    rest = [a for a in args if a not in DECISION_COMMANDS[module]]
+    return len(verbs) == 1 and bool(rest) and all(a in _HELP_FLAGS for a in rest)
+
+
 def _decision_in(module: str, args: List[str]) -> Optional[str]:
+    """The decision subcommand `args` would run under `module`, else None (incl. pure `--help`)."""
     blocked = DECISION_COMMANDS[module]
+    if _pure_help(module, args):
+        return None
     for arg in args:
         if arg in blocked:
             if module == "pipeline.retention" and arg == "purge" and "--dry-run" in args:

@@ -346,3 +346,80 @@ def test_render_and_creative_prompts_quote_no_fixture_source(prompt):
     assert not leaked, f"{prompt} repeats fixture wording: {[' '.join(g) for g in sorted(leaked)[:3]]}"
     for token in ("Meltemi", "Voreas", "transcript_kickoff", "rfp_meltemi", "00:14:32"):
         assert token not in text, f"{prompt} carries fixture token {token!r}"
+
+
+# -- per-question citations: the render stage requires exactly what the audit requires ----------
+
+from pipeline import quality  # noqa: E402  (the agency audit's coverage check)
+
+
+def _audit_problems(el, en, brief):
+    return (quality.render_coverage(brief, el.read_text(encoding="utf-8"), "el")
+            + quality.render_coverage(brief, en.read_text(encoding="utf-8"), "en"))
+
+
+def _stripped(violations):
+    """The stage's violations without their repair hints: the audit's own wording."""
+    return [v.split(" — ", 1)[0] for v in violations]
+
+
+def test_a_render_the_audit_accepts_passes_the_render_coverage_gate(tmp_path):
+    brief = _brief()
+    el, en = _write(tmp_path, brief)
+    assert _audit_problems(el, en, brief) == []
+    assert stages.check_render_coverage(el, en, brief) == []
+
+
+def test_a_shortened_question_citation_fails_at_render_time_with_a_repair_hint(tmp_path):
+    """The nl-r1 failure shape: the question cites its source but not the stored location."""
+    brief = _brief()
+    el, en = _write(tmp_path, brief, en_swap={"No KPI [call 00:01:00]": "No KPI [call 00:01]"})
+    violations = stages.check_render_coverage(el, en, brief)
+    assert _stripped(violations) == ["en: question 1 lacks its linked evidence citation"]
+    assert "[call 00:01:00]" in violations[0] and "open question 2" in violations[0]
+    assert _stripped(violations) == _audit_problems(el, en, brief)
+
+
+MUTATIONS = [
+    {},
+    {"No KPI [call 00:01:00]": "No KPI"},
+    {"No KPI [call 00:01:00]": "No KPI [rfp 00:01:00]"},
+    {"Two audience definitions [rfp §3] [call 00:02:00]": "Two audience definitions [call 00:02:00]"},
+    {"- Everyday refreshment [call 00:01:00]\n": ""},
+    {"- Grow trial of the new range [call 00:01:00]": "- Grow trial of the new range"},
+]
+
+
+@pytest.mark.parametrize("swap", MUTATIONS)
+def test_the_render_gate_and_the_audit_agree_on_every_coverage_finding(tmp_path, swap):
+    """Exactly the audit's findings, no more and no fewer, in both languages."""
+    brief = _brief()
+    el, en = _write(tmp_path, brief, el_swap=swap, en_swap=swap)
+    assert _stripped(stages.check_render_coverage(el, en, brief)) == _audit_problems(el, en, brief)
+    if swap:
+        assert _audit_problems(el, en, brief), "mutation should be a real coverage finding"
+
+
+def test_the_render_coverage_gate_reports_a_missing_render(tmp_path):
+    brief = _brief()
+    el, _en = _write(tmp_path, brief)
+    assert stages.check_render_coverage(el, tmp_path / "missing_en.md", brief) == [
+        f"no en render at {tmp_path / 'missing_en.md'}"]
+
+
+def test_the_render_stage_repair_loop_runs_the_audit_coverage_check(tmp_path, monkeypatch):
+    brief = _brief()
+    captured = {}
+
+    def fake_run_gated(agent, order, check, repair, access_dirs, **kw):
+        _write(tmp_path, brief, el_swap={"No KPI [call 00:01:00]": "No KPI"})
+        captured["violations"] = check()
+        captured["repair"] = repair(captured["violations"])
+        return [{"attempt": 1, "subagent": {}, "violations": []}], None
+
+    from pipeline import agents as agents_mod
+    monkeypatch.setattr(agents_mod, "run_gated", fake_run_gated)
+    (tmp_path / "g.json").write_text(json.dumps(CLIENT), encoding="utf-8")
+    stages.render(tmp_path, brief, tmp_path / "g.json", [])
+    assert "el: question 1 lacks its linked evidence citation" in _stripped(captured["violations"])
+    assert "el: question 1 lacks its linked evidence citation" in captured["repair"]

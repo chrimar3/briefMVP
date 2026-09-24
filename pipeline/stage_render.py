@@ -1,9 +1,11 @@
 """Pipeline step 7 — bilingual render.
 
-`render` produces both languages from one object, and neither from the other (DR-6). Two
+`render` produces both languages from one object, and neither from the other (DR-6). Three
 gates run inside the repair loop — `render_checks.check_render` (citations, coverage,
-no-invention; shared with the agency audit) and `render_template.check_render_template`
-(fixed boilerplate and truthful resolved state; new renders only). The language lint
+no-invention; shared with the agency audit), `render_checks.check_render_coverage` (exactly the
+agency audit's `render_coverage`, so approval never meets a render the stage passed but the
+audit refuses; new renders only) and `render_template.check_render_template` (fixed
+boilerplate and truthful resolved state; new renders only). The language lint
 (`greek_lint`) runs once on the accepted renders and is recorded, not enforced.
 """
 
@@ -15,7 +17,7 @@ from typing import Optional
 
 from pipeline import agents
 from pipeline.greek_lint import GREEK_STYLE_PATH, render_language_warnings
-from pipeline.render_checks import check_render
+from pipeline.render_checks import check_render, check_render_coverage
 from pipeline.render_template import (
     check_render_template,
     load_template_labels,
@@ -91,9 +93,11 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
     adopting a different one is a human routing decision (CLAUDE.md).
 
     The template set comes from the client config (`brief_template`, default the agency house
-    template). Two gates run inside the repair loop: `check_render` (citations, coverage,
-    no-invention — shared with the agency audit) and `check_render_template` (fixed
-    boilerplate and truthful resolved state — new renders only). The Greek/English language
+    template). Three gates run inside the repair loop: `check_render` (citations, coverage,
+    no-invention — shared with the agency audit), `check_render_coverage` (the audit's
+    `render_coverage`, incl. each open question's linked-evidence citation — new renders
+    only) and `check_render_template` (fixed boilerplate and truthful resolved state — new
+    renders only). The Greek/English language
     lint runs once on the accepted renders and is recorded, not enforced."""
     out_el = Path(run_dir) / "brief_el.md"
     out_en = Path(run_dir) / "brief_en.md"
@@ -109,6 +113,7 @@ def render(run_dir: Path, brief: dict, glossary_path: Path, access_dirs,
     attempts, failed = agents.run_gated(
         "render", order,
         lambda: (check_render(out_el, out_en, brief, glossary)
+                 + check_render_coverage(out_el, out_en, brief)
                  + check_render_template(out_el, out_en, brief, labels)),
         lambda v: build_render_repair_order(out_el, out_en, v, order),
         access_dirs, stage="render", site="render", run_dir=Path(run_dir),
