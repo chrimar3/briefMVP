@@ -56,3 +56,5 @@ tools/walkthrough/archive/redesign/*.log
 tools/walkthrough/archive/redesign/chrome/
 !runs/r2-live
 runs/r2-live/latest
+runs/r2-live/_quota_aborted/*
+!runs/r2-live/_quota_aborted/README.md
