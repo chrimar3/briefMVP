@@ -1,0 +1,14 @@
+{"stage": "classify", "site": "classify", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.0326573}
+{"stage": "fidelity-check", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.1278638}
+{"stage": "extraction", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0783832}
+{"stage": "verification", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0328556}
+{"stage": "extraction", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.07197920000000001}
+{"stage": "verification", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.031566800000000006}
+{"stage": "extraction", "site": "rfp_meltemi", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.1103438}
+{"stage": "verification", "site": "rfp_meltemi", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0432762}
+{"stage": "extraction", "site": "rfp_meltemi:verified-repair", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.10645360000000001}
+{"stage": "extraction", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.167855}
+{"stage": "verification", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.06707640000000001}
+{"stage": "extraction", "site": "transcript_kickoff:verified-repair", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.14135540000000002}
+{"stage": "synthesize", "site": "synthesize", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.4579622}
+{"stage": "render", "site": "render", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.4064818}

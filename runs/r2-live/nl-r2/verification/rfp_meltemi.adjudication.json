@@ -1,0 +1,1 @@
+{"decisions": [{"finding": "F1", "decision": "applied", "reason": "The product facts and new-category entry are stated in ## 1. Πλαίσιο but were missing from every field. They are now recorded under key_messages as implied/low, because the RFP states them as context and not as messages to communicate. A linked open_question asks which of them are the key messages."}]}

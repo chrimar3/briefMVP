@@ -1,0 +1,11 @@
+{
+  "source_id": "transcript_kickoff",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "budget[0]",
+      "problem": "The figure is hedged (\"somewhere around 120\", 125 only if savings are found elsewhere) but is carried with qualifier \"stated\" instead of conditional.",
+      "evidence": "ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού"
+    }
+  ]
+}

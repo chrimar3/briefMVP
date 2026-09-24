@@ -1,0 +1,11 @@
+{
+  "source_id": "rfp_meltemi",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "missing:key_messages",
+      "problem": "Product facts stated in the RFP context (sparkling tea, zero sugar, three flavours, entry into a new category) appear in no extract field, conflict or open question; key_messages is empty.",
+      "evidence": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις. Πρόκειται για την είσοδό μας σε νέα κατηγορία."
+    }
+  ]
+}

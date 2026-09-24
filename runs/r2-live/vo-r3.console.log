@@ -1,0 +1,55 @@
+Brief Builder 1.4.0 · run vo-r3
+  input : /Users/chrism/AI-transformation-assignment/brief-builder/fixtures/voreas_02
+  output: /Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/vo-r3
+  model : LIVE model calls · 2.1.280 (Claude Code)
+
+  data  : synthetic
+
+  · background_brand_guidelines (background, 2026-01-15)
+  · background_market_research (background, 2026-05-30)
+  · emails_thread (email_thread, 2026-07-24 (latest message))
+  · rfp_voreas (rfp, 2026-07-05)
+  · transcript_followup (transcript, 2026-07-18)
+  · transcript_kickoff (transcript, 2026-07-12)
+
+  client: voreas_athletics · tier S0
+
+[1] readiness_gate: input sufficient — 6 source(s), 4 substantive: background, email_thread, rfp, transcript
+[2] classification: dispatching 'classify'…
+        advertising_creative (high confidence) · tier S0 · 1 attempt(s) · 44,166 tokens · claude-haiku-4-5-20251001
+[2] classification: ok
+[3] fidelity_check: dispatching 'fidelity-check'…
+      · scoring transcript_followup…
+        verdict=pass_with_flags · score=high · 2 token(s) flagged · 1 attempt(s) · 27,571 tokens · claude-haiku-4-5-20251001
+      · scoring transcript_kickoff…
+        verdict=pass_with_flags · score=high · 2 token(s) flagged · 1 attempt(s) · 57,139 tokens · claude-haiku-4-5-20251001
+[3] fidelity_check: ok
+[4] extraction: dispatching 'extract'…
+      · extracting background_brand_guidelines (background)…
+        14 items · 1 open questions · 1 attempt(s) · 47,241 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, low_confidence) · 0 issue(s) · 1 attempt(s) · 24,543 tokens · claude-sonnet-5
+      · extracting background_market_research (background)…
+        1 items · 1 open questions · 1 attempt(s) · 38,818 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: figures, low_confidence) · 0 issue(s) · 1 attempt(s) · 19,114 tokens · claude-sonnet-5
+      · extracting emails_thread (email_thread)…
+        2 items · 1 open questions · 1 attempt(s) · 45,076 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, garbling) · 0 issue(s) · 1 attempt(s) · 21,727 tokens · claude-sonnet-5
+      · extracting rfp_voreas (rfp)…
+        11 items · 5 open questions · 1 attempt(s) · 48,285 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures) · 0 issue(s) · 1 attempt(s) · 24,920 tokens · claude-sonnet-5
+      · extracting transcript_followup (transcript) (fidelity-annotated)…
+        13 items · 9 open questions · 2 attempt(s) · 111,039 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, garbling, low_confidence) · 1 issue(s) · 1 attempt(s) · 30,183 tokens · claude-sonnet-5
+      · extracting transcript_kickoff (transcript) (fidelity-annotated)…
+        10 items · 9 open questions · 2 attempt(s) · 115,316 tokens · claude-sonnet-5
+        verified independently (sonnet, risk: mandatories, figures, garbling, low_confidence) · 1 issue(s) · 1 attempt(s) · 31,017 tokens · claude-sonnet-5
+[4] extraction: ok
+[5] conflict_pass: 7 candidate field(s) ['objectives', 'audiences', 'key_messages', 'deliverables', 'timeline', 'budget', 'mandatories'] · 2 internal
+[6] synthesis: dispatching 'synthesize'…
+        50 entries · 6 conflicts · 22 open questions · 2 attempt(s) · 270,233 tokens · claude-sonnet-5
+        readiness: 7/7 fields evidenced · 0.26 low-confidence share → ready_for_review
+[6] synthesis: ok
+[7] render: dispatching 'render'…
+        el=27473 chars · en=25734 chars · 2 attempt(s) · 312,644 tokens · claude-sonnet-5
+        review page → /Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/vo-r3/brief_review.html
+[7] render: ok

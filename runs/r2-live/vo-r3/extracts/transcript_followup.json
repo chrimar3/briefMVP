@@ -1,0 +1,210 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "transcript_followup",
+    "source_type": "transcript",
+    "source_date": "2026-07-18",
+    "extraction_ts": "2026-09-24T07:35:06+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [
+    {
+      "value": "Κυρίως Ελλάδα",
+      "lang": "el",
+      "location": "[00:10:02]",
+      "anchor": "Κυρίως Ελλάδα",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "ίσως τρέξουμε και Κύπρο — έχουμε δύο σημεία πώλησης εκεί — αλλά δεν έχει αποφασιστεί από το board. Μην το βάλετε ακόμα στο πλάνο",
+      "lang": "el",
+      "location": "[00:10:02]",
+      "anchor": "ίσως τρέξουμε και Κύπρο",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "conditional",
+      "confidence": "low"
+    }
+  ],
+  "key_messages": [],
+  "deliverables": [
+    {
+      "value": "Instagram και YouTube σίγουρα",
+      "lang": "mixed",
+      "location": "[00:02:14]",
+      "anchor": "Instagram και YouTube σίγουρα",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς — shoppable posts, να αγοράζεις μέσα από το feed",
+      "lang": "mixed",
+      "location": "[00:02:14]",
+      "anchor": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "low"
+    },
+    {
+      "value": "Στα καταστήματα θέλουμε δυνατή παρουσία. Το ρίτεϊλ ακτιβέισον είναι για εμάς μισή καμπάνια — βιτρίνες, stands, ό,τι κάνει τον περαστικό να σταματήσει",
+      "lang": "mixed",
+      "location": "[00:03:47]",
+      "anchor": "Το ρίτεϊλ ακτιβέισον",
+      "speaker_or_author": "STELLA (Voreas, Brand Director)",
+      "qualifier": "stated",
+      "confidence": "low"
+    },
+    {
+      "value": "θέλουμε τρεις micro-influencers για το πρώτο κύμα, fitness και lifestyle profiles, να δείξουν το ρούχο σε πραγματική μέρα",
+      "lang": "mixed",
+      "location": "[00:05:05]",
+      "anchor": "θέλουμε τρεις micro-influencers για το πρώτο κύμα",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Maybe και ένα AR filter στο Instagram — να «δοκιμάζεις» χρώματα της συλλογής. Just thinking out loud, don't hold me to it, δεν έχει μπει καν σε συζήτηση με το board",
+      "lang": "mixed",
+      "location": "[00:08:10]",
+      "anchor": "Just thinking out loud, don't hold me to it",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "conditional",
+      "confidence": "low"
+    },
+    {
+      "value": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop",
+      "lang": "el",
+      "location": "[00:12:15]",
+      "anchor": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop",
+      "speaker_or_author": "STELLA (Voreas, Brand Director)",
+      "qualifier": "implied",
+      "confidence": "low"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "«μέσα Μαρτίου» — Επίσημα ναι",
+      "lang": "el",
+      "location": "[00:14:07]",
+      "anchor": "Επίσημα ναι",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    },
+    {
+      "value": "Ανεπίσημα, το board το ξανακοιτάει — θα σας πούμε γραπτώς μόλις κλείσει",
+      "lang": "el",
+      "location": "[00:14:07]",
+      "anchor": "Ανεπίσημα, το board το ξανακοιτάει",
+      "speaker_or_author": "NIKOS (Voreas, CMO)",
+      "qualifier": "conditional",
+      "confidence": "low"
+    },
+    {
+      "value": "Recap και λίστα εκκρεμοτήτων μέχρι αύριο το πρωί",
+      "lang": "el",
+      "location": "[00:15:20]",
+      "anchor": "Recap και λίστα εκκρεμοτήτων μέχρι αύριο το πρωί.",
+      "speaker_or_author": "ELENI (Northlight, account lead)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "ξέρεις τι λένε τα guidelines",
+      "lang": "mixed",
+      "location": "[00:06:29]",
+      "anchor": "ξέρεις τι λένε τα guidelines",
+      "speaker_or_author": "STELLA (Voreas, Brand Director)",
+      "qualifier": "implied",
+      "confidence": "low"
+    },
+    {
+      "value": "δεν ξέρω αν τα δικαιώματα καλύπτουν διαφημιστική χρήση",
+      "lang": "el",
+      "location": "[00:12:15]",
+      "anchor": "δεν ξέρω αν τα δικαιώματα καλύπτουν διαφημιστική χρήση",
+      "speaker_or_author": "STELLA (Voreas, Brand Director)",
+      "qualifier": "implied",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "deliverables",
+      "gap": "The social commerce item was spoken in Greek script (garbled token) and only as something to 'try'; the sentence that follows about a next channel is cut off by an inaudible passage.",
+      "why_it_matters": "Whether shoppable posts are in scope changes channel setup and costing.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε: θέλετε να δοκιμάσετε social commerce με shoppable posts στο Instagram; Και ποιο ήταν το επόμενο κανάλι που αναφέρατε και δεν ακούστηκε καθαρά στην ηχογράφηση;",
+      "linked_items": ["deliverables[1]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Retail activation (spoken as a garbled Greek-script token) is described as 'half the campaign' but with no quantities, store list or formats beyond window displays and stands.",
+      "why_it_matters": "It is described as half the campaign, so its scope drives a large share of the cost.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε ότι εννοείτε retail activation· σε πόσα και ποια καταστήματα, και με ποια υλικά (βιτρίνες, stands, άλλο);",
+      "linked_items": ["deliverables[2]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "Three micro-influencers are requested for the first wave, but Stella pushed back by pointing to the guidelines and Nikos answered only 'θα το λύσουμε'. Nikos also said he has already discussed it informally with two of them. The content of the guidelines is not stated.",
+      "why_it_matters": "If the guidelines restrict influencer use, the deliverable may not be allowed, and informal contacts with talent could create commitments.",
+      "suggested_question_for_client": "Τι ακριβώς προβλέπουν τα guidelines για συνεργασίες με micro-influencers, και έχει δοθεί οποιαδήποτε δέσμευση στους δύο influencers με τους οποίους μιλήσατε ανεπίσημα;",
+      "linked_items": ["deliverables[3]", "mandatories[0]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "AR filter on Instagram was raised as a passing idea ('thinking out loud, don't hold me to it') and has not been discussed with the board.",
+      "why_it_matters": "It must not be costed or promised as a deliverable unless the client commits to it.",
+      "suggested_question_for_client": "Το AR filter στο Instagram είναι απλώς ιδέα προς το παρόν· θέλετε να το συμπεριλάβουμε ως προαιρετική επιλογή στην πρόταση ή να το αφήσουμε εκτός;",
+      "linked_items": ["deliverables[4]"]
+    },
+    {
+      "field": "audiences",
+      "gap": "Geography is 'mostly Greece'; Cyprus (two points of sale) is possible but undecided by the board, and the client asked not to include it in the plan yet.",
+      "why_it_matters": "Market scope affects media planning, retail activation and costing.",
+      "suggested_question_for_client": "Να το κλείσουμε: η καμπάνια αφορά μόνο Ελλάδα; Πότε περιμένετε απόφαση από το board για την Κύπρο;",
+      "linked_items": ["audiences[0]", "audiences[1]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "Timeline 'μέσα Μαρτίου' is confirmed 'officially', but the board is unofficially reconsidering it and will inform in writing once decided. The year is not stated.",
+      "why_it_matters": "The whole production and media schedule is built back from this date.",
+      "suggested_question_for_client": "Με το «μέσα Μαρτίου» εννοείτε μέσα Μαρτίου 2027; Και πότε περιμένετε να μας ενημερώσετε γραπτώς για την απόφαση του board;",
+      "linked_items": ["timeline[0]", "timeline[1]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "Northlight's commitment to send a recap and open-items list is given as a relative deadline ('μέχρι αύριο το πρωί'), which depends on the call date.",
+      "why_it_matters": "The client's replies on the open items (rights, guidelines, board decision) are sequenced from this hand-off.",
+      "suggested_question_for_client": "Με το «μέχρι αύριο το πρωί» εννοούμε το πρωί της 19 Ιουλίου 2026· να σας στείλουμε το recap και τη λίστα εκκρεμοτήτων τότε;",
+      "linked_items": ["timeline[2]"]
+    },
+    {
+      "field": "deliverables",
+      "gap": "A photo shoot was done in May for the e-shop, but Stella does not know whether the rights cover advertising use; she will check and report back.",
+      "why_it_matters": "If the rights do not cover advertising, the agency must cost its own photo shoot.",
+      "suggested_question_for_client": "Καλύπτουν τα δικαιώματα της φωτογράφισης του Μαΐου τη διαφημιστική χρήση; Αν ναι, μπορείτε να μας στείλετε τα υλικά και τους όρους χρήσης;",
+      "linked_items": ["deliverables[5]", "mandatories[1]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "No business objective or KPI was stated in this call; only channels and materials were discussed.",
+      "why_it_matters": "Channel choices and costing cannot be justified without the outcome they serve.",
+      "suggested_question_for_client": "Ποιο είναι το βασικό αποτέλεσμα που θέλετε να πετύχει η καμπάνια, και με ποιο KPI θα το μετράμε;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "garble: «σόσιαλ κόμερς» at [00:02:14] — proposed match \"social commerce\"",
+    "garble: «ρίτεϊλ ακτιβέισον» at [00:03:47] — proposed match \"retail activation\"",
+    "inaudible passage at [00:02:14]: «Ο επόμενος… [inaudible] …το συζητάμε καιρό μέσα» — content not extracted",
+    "no budget figures were stated in this transcript; Eleni only notes at [00:13:40] that costing changes if the agency shoots its own photography"
+  ]
+}

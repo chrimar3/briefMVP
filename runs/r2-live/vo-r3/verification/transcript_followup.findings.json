@@ -1,0 +1,11 @@
+{
+  "forwarded": [
+    {
+      "index": 0,
+      "where": "missing:timeline",
+      "problem": "Eleni's dated commitment to deliver a recap and open-items list by the next morning appears in no extract field or open question.",
+      "evidence": "Recap και λίστα εκκρεμοτήτων μέχρι αύριο το πρωί."
+    }
+  ],
+  "dropped": []
+}

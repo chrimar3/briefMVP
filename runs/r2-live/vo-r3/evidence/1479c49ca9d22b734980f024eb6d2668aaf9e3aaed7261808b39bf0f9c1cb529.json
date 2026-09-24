@@ -1,0 +1,12 @@
+{
+  "_what_this_is": "Agency policy for the readiness verdict. Ships with the skeleton, like the glossary and the template — changing it is a config decision, not a code change.",
+  "_calibration_rule": "Calibrate against account-lead judgment during the pilot (PRD §7, open-question precision). NEVER tune these against fixtures/northlight_01/answer_key.json — tuning against the exam makes the Tier-3 score meaningless.",
+  "_verdict_rule": "ready_for_review requires BOTH conditions to hold; otherwise thin_input_return_to_client.",
+
+  "min_fields_with_evidence": 5,
+  "max_low_confidence_share": 0.4,
+
+  "_min_fields_with_evidence": "Of the 7 briefable fields (objectives, audiences, key_messages, deliverables, timeline, budget, mandatories), how many must carry at least one evidenced entry. Range 0-7.",
+  "_max_low_confidence_share": "Maximum share of entries at confidence 'low' before the draft counts as thin. Full field coverage is not readiness if the coverage is mostly inference. Range 0-1.",
+  "_provenance": "Set at Tier 0 as defensible defaults, not measured values. Reviewed by the account lead at Tier-0 sign-off; unmeasured until pilot weeks 2-4."
+}

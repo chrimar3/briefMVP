@@ -1,0 +1,11 @@
+{
+  "source_id": "rfp_meltemi",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "missing:key_messages",
+      "problem": "The product facts (sparkling tea, zero sugar, three flavours, entry into a new category) are stated in the source but appear in no extract field. key_messages is empty and the only trace is a passing mention of the zero-sugar claim in a question.",
+      "evidence": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις. Πρόκειται για την είσοδό μας σε νέα κατηγορία."
+    }
+  ]
+}

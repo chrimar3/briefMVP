@@ -1,0 +1,688 @@
+{
+  "run_id": "nl-r3",
+  "pipeline_version": "1.4.0",
+  "project_dir": "fixtures/northlight_01",
+  "started_ts": "2026-09-24T07:15:06+00:00",
+  "finished_ts": "2026-09-24T07:28:11+00:00",
+  "outcome": "complete",
+  "exit_code": 0,
+  "stage": "full",
+  "demo_profile": null,
+  "data_declaration": {
+    "data_class": "synthetic",
+    "file": "/Users/chrism/AI-transformation-assignment/brief-builder/fixtures/northlight_01/data_declaration.json",
+    "sha256": "0bceafa62484534a8c9ff4ff19974397b356464e496f30e4be12a8a61088acd8"
+  },
+  "live": true,
+  "cli": {
+    "binary": "claude",
+    "found": true,
+    "replay": false,
+    "live": true,
+    "version": "2.1.280 (Claude Code)",
+    "min_version": "2.1.280"
+  },
+  "prescreen": {
+    "advisory": true,
+    "blocking": false,
+    "mode": "given_files",
+    "scanned_files": 4,
+    "sources_with_findings": 0,
+    "totals": {},
+    "sources": [
+      {
+        "file": "background_brand_guidelines.md",
+        "findings": {}
+      },
+      {
+        "file": "emails_thread.md",
+        "findings": {}
+      },
+      {
+        "file": "rfp_meltemi.md",
+        "findings": {}
+      },
+      {
+        "file": "transcript_kickoff.md",
+        "findings": {}
+      }
+    ],
+    "unreadable": [],
+    "categories": [
+      "email_address",
+      "phone_number",
+      "iban_like",
+      "health",
+      "racial_or_ethnic_origin",
+      "political_opinions",
+      "religious_or_philosophical_beliefs",
+      "trade_union_membership",
+      "genetic_or_biometric_data",
+      "sex_life_or_sexual_orientation",
+      "criminal_offences",
+      "children"
+    ],
+    "terms_file": "config/prescreen_terms.json",
+    "boundary": "Advisory pre-screen: counts and line numbers only, matched values are never recorded. A hit asks a person to look; a clean result proves nothing. The human screening step (docs/pilot/DATA_PROTECTION.md section 10) remains the control."
+  },
+  "sources": [
+    {
+      "source_id": "background_brand_guidelines",
+      "source_type": "background",
+      "source_date": "2026-03-02"
+    },
+    {
+      "source_id": "emails_thread",
+      "source_type": "email_thread",
+      "source_date": "2026-07-15 (latest message)"
+    },
+    {
+      "source_id": "rfp_meltemi",
+      "source_type": "rfp",
+      "source_date": "2026-06-28"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "source_type": "transcript",
+      "source_date": "2026-07-10"
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "readiness_gate",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Refuse to draft on insufficient input",
+      "status": "pass",
+      "verdict": {
+        "ok": true,
+        "present_types": [
+          "background",
+          "email_thread",
+          "rfp",
+          "transcript"
+        ],
+        "substantive_count": 3,
+        "missing_required": [],
+        "missing_signals": [],
+        "message": "input sufficient — 4 source(s), 3 substantive: background, email_thread, rfp, transcript"
+      }
+    },
+    {
+      "number": 2,
+      "name": "classification",
+      "kind": "model",
+      "agent": "classify",
+      "description": "Project type + onboarding sensitivity tier",
+      "status": "pass",
+      "classification": {
+        "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/classification.json",
+        "project_type": "advertising_creative",
+        "classification_confidence": "high",
+        "sensitivity_tier": "S1",
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "classify",
+              "ok": true,
+              "session_id": "8f1022f6-3ff4-4fa6-a4d1-1a5267c69c8b",
+              "model_ids": [
+                "claude-haiku-4-5-20251001"
+              ],
+              "cost_usd": 0.034104499999999996,
+              "duration_ms": 30942,
+              "num_turns": 7,
+              "usage": {
+                "input_tokens": 25,
+                "output_tokens": 2523,
+                "cache_read_input_tokens": 12585,
+                "cache_creation_input_tokens": 10103
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "name": "fidelity_check",
+      "kind": "model",
+      "agent": "fidelity-check",
+      "description": "Transcript fidelity gate + annotation",
+      "status": "pass",
+      "fidelity": [
+        {
+          "source_id": "transcript_kickoff",
+          "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/fidelity/transcript_kickoff.report.json",
+          "annotated_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/fidelity/transcript_kickoff.annotated.md",
+          "verdict": "pass_with_flags",
+          "fidelity_score": "medium",
+          "tokens_flagged": 2,
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "fidelity-check",
+                "ok": true,
+                "session_id": "c75d6299-34ee-4789-ad09-8c3251115146",
+                "model_ids": [
+                  "claude-haiku-4-5-20251001"
+                ],
+                "cost_usd": 0.09724479999999999,
+                "duration_ms": 125507,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 25,
+                  "output_tokens": 11992,
+                  "cache_read_input_tokens": 11618,
+                  "cache_creation_input_tokens": 18049
+                }
+              },
+              "violations": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "extraction",
+      "kind": "model",
+      "agent": "extract",
+      "description": "Per-source citation-bearing extracts",
+      "status": "pass",
+      "extracts": [
+        {
+          "source_id": "background_brand_guidelines",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/extracts/background_brand_guidelines.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "1f8c18e0-0448-4773-96af-bb257f2712d6",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.0777532,
+                "duration_ms": 28851,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 3730,
+                  "cache_read_input_tokens": 29246,
+                  "cache_creation_input_tokens": 8648
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/background_brand_guidelines.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "low_confidence"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/background_brand_guidelines.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "e1c53a5f-f83e-4a5e-9a48-dedcd3a0466c",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0332156,
+                  "duration_ms": 7943,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 727,
+                    "cache_read_input_tokens": 14188,
+                    "cache_creation_input_tokens": 5774
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 10,
+          "open_question_count": 2,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "emails_thread",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/extracts/emails_thread.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "03990a31-fd3e-41da-b754-3b04662e39a4",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.0779196,
+                "duration_ms": 33207,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 3657,
+                  "cache_read_input_tokens": 29528,
+                  "cache_creation_input_tokens": 8858
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/emails_thread.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "garbling",
+              "low_confidence"
+            ],
+            "issue_count": 0,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/emails_thread.findings.json",
+            "forwarded_count": 0,
+            "dropped": [],
+            "adjudication": null,
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "bc91c128-4aa2-477a-b859-c75460793256",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0325562,
+                  "duration_ms": 8721,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 749,
+                    "cache_read_input_tokens": 13931,
+                    "cache_creation_input_tokens": 5567
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 2,
+          "open_question_count": 4,
+          "extraction_note_count": 3
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/extracts/rfp_meltemi.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "f70c73cf-443e-43f8-9a7f-a7ff01e8ed65",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.108779,
+                "duration_ms": 47919,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 5868,
+                  "cache_read_input_tokens": 29495,
+                  "cache_creation_input_tokens": 11047
+                }
+              },
+              "violations": []
+            },
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "6b0abca8-9b8f-4098-804a-0ca5447da07e",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.0477674,
+                "duration_ms": 11090,
+                "num_turns": 4,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 921,
+                  "cache_read_input_tokens": 32287,
+                  "cache_creation_input_tokens": 8022
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/rfp_meltemi.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures"
+            ],
+            "issue_count": 1,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/rfp_meltemi.findings.json",
+            "forwarded_count": 1,
+            "dropped": [],
+            "adjudication": {
+              "file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/rfp_meltemi.adjudication.json",
+              "applied": 0,
+              "rejected": [
+                {
+                  "finding": "F1",
+                  "where": "missing:key_messages",
+                  "problem": "The product facts (sparkling tea, zero sugar, three flavours, entry into a new category) are stated in the source but appear in no extract field. key_messages is empty and the only trace is a passing mention of the zero-sugar claim in a question.",
+                  "reason": "Section '## 1. Πλαίσιο' only describes the product (sparkling tea, μηδέν ζάχαρη, τρεις γεύσεις, νέα κατηγορία) as context; the RFP states no message the client wants communicated, and SOURCES.md §6 limits key_messages to client-stated messages, so promoting these facts would infer a message; the existing key_messages open question already records the gap."
+                }
+              ]
+            },
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "29ee9872-3959-4d0f-867b-0a22c7afa618",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.043606400000000003,
+                  "duration_ms": 11531,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 1104,
+                    "cache_read_input_tokens": 15392,
+                    "cache_creation_input_tokens": 7369
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 8,
+          "open_question_count": 7,
+          "extraction_note_count": 0
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/extracts/transcript_kickoff.json",
+          "attempts": [
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "88fa85de-1685-43ab-bf42-abae5cbd6789",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.1618984,
+                "duration_ms": 74355,
+                "num_turns": 5,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 9303,
+                  "cache_read_input_tokens": 30922,
+                  "cache_creation_input_tokens": 15668
+                }
+              },
+              "violations": [
+                "objectives[0]: anchor 'το βασικό για μας είναι το μπραντ αγουέρνες' does not occur in the source — citations are copied from the document, never constructed",
+                "the fidelity gate flagged a token with no glossary match but no extraction note carries it — write: garble: «<token as written>» at <location> — proposed match \"no-glossary-match\" (SOURCES.md §7 rule G)"
+              ]
+            },
+            {
+              "attempt": 2,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "14b9296d-18ff-4fb8-81f4-f8e91564b6c5",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.1196124,
+                "duration_ms": 33628,
+                "num_turns": 4,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 5403,
+                  "cache_read_input_tokens": 34372,
+                  "cache_creation_input_tokens": 14674
+                }
+              },
+              "violations": []
+            },
+            {
+              "attempt": 1,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "0433b813-a6a3-4c88-8e5d-030301ed2843",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.12294559999999999,
+                "duration_ms": 32306,
+                "num_turns": 6,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 5317,
+                  "cache_read_input_tokens": 35658,
+                  "cache_creation_input_tokens": 15658
+                }
+              },
+              "violations": [
+                "the fidelity gate flagged a token with no glossary match but no extraction note carries it — write: garble: «<token as written>» at <location> — proposed match \"no-glossary-match\" (SOURCES.md §7 rule G)"
+              ]
+            },
+            {
+              "attempt": 2,
+              "subagent": {
+                "agent": "extract",
+                "ok": true,
+                "session_id": "80a549b7-c462-4553-9baf-0d44801c4ddb",
+                "model_ids": [
+                  "claude-sonnet-5"
+                ],
+                "cost_usd": 0.1328364,
+                "duration_ms": 39545,
+                "num_turns": 6,
+                "usage": {
+                  "input_tokens": 6,
+                  "output_tokens": 5898,
+                  "cache_read_input_tokens": 36562,
+                  "cache_creation_input_tokens": 16633
+                }
+              },
+              "violations": []
+            }
+          ],
+          "verification": {
+            "report_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/transcript_kickoff.verify.json",
+            "model": "sonnet",
+            "risk_classes": [
+              "mandatories",
+              "figures",
+              "garbling",
+              "low_confidence"
+            ],
+            "issue_count": 1,
+            "findings_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/transcript_kickoff.findings.json",
+            "forwarded_count": 1,
+            "dropped": [],
+            "adjudication": {
+              "file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/verification/transcript_kickoff.adjudication.json",
+              "applied": 0,
+              "rejected": [
+                {
+                  "finding": "F1",
+                  "where": "extraction_notes[0]",
+                  "problem": "The garble note gives the fidelity gate's 'no-glossary-match' marker as the proposed match, which is not a proposed term. The glossary has a plausible candidate, 'brand awareness', so the note should propose it.",
+                  "reason": "The source annotates «μπραντ αγουέρνες» with [FIDELITY: no-glossary-match], i.e. the fidelity gate proposed no glossary term; rule G requires the note to carry the gate's outcome (proposed match \"no-glossary-match\") rather than a term the extractor guesses."
+                }
+              ]
+            },
+            "attempts": [
+              {
+                "attempt": 1,
+                "subagent": {
+                  "agent": "verify-extract",
+                  "ok": true,
+                  "session_id": "2276b2f4-4d23-41e7-91dd-f1ba971e9ded",
+                  "model_ids": [
+                    "claude-sonnet-5"
+                  ],
+                  "cost_usd": 0.0648174,
+                  "duration_ms": 18425,
+                  "num_turns": 5,
+                  "usage": {
+                    "input_tokens": 6,
+                    "output_tokens": 1856,
+                    "cache_read_input_tokens": 18027,
+                    "cache_creation_input_tokens": 10660
+                  }
+                },
+                "violations": []
+              }
+            ]
+          },
+          "item_count": 11,
+          "open_question_count": 8,
+          "extraction_note_count": 4
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "conflict_pass",
+      "kind": "deterministic",
+      "agent": null,
+      "description": "Cross-source contradictions — surfaced, never resolved",
+      "status": "pass",
+      "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/conflict_candidates.json",
+      "candidate_count": 6,
+      "candidate_fields": [
+        "objectives",
+        "audiences",
+        "deliverables",
+        "timeline",
+        "budget",
+        "mandatories"
+      ],
+      "internal_conflict_count": 1
+    },
+    {
+      "number": 6,
+      "name": "synthesis",
+      "kind": "model",
+      "agent": "synthesize",
+      "description": "Assemble the canonical brief object",
+      "status": "pass",
+      "synthesis": {
+        "output_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief.json",
+        "entry_count": 30,
+        "conflict_count": 3,
+        "open_question_count": 15,
+        "readiness": {
+          "fields_with_evidence": 7,
+          "low_confidence_share": 0.1667,
+          "open_question_count": 15,
+          "verdict": "ready_for_review"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "synthesize",
+              "ok": true,
+              "session_id": "68462880-3a82-48f8-bb78-8cb20688af93",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.39806400000000003,
+              "duration_ms": 146960,
+              "num_turns": 9,
+              "usage": {
+                "input_tokens": 6,
+                "output_tokens": 20525,
+                "cache_read_input_tokens": 40430,
+                "cache_creation_input_tokens": 46179
+              }
+            },
+            "violations": []
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "name": "render",
+      "kind": "model",
+      "agent": "render",
+      "description": "GR + EN documents from the same object",
+      "status": "pass",
+      "render": {
+        "el_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief_el.md",
+        "en_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief_en.md",
+        "el_chars": 16978,
+        "en_chars": 15395,
+        "template": "northlight_client_brief",
+        "answered_questions": [],
+        "language_warnings": [],
+        "attempts": [
+          {
+            "attempt": 1,
+            "subagent": {
+              "agent": "render",
+              "ok": true,
+              "session_id": "fe613376-d622-47c5-b28b-19cbccda887f",
+              "model_ids": [
+                "claude-sonnet-5"
+              ],
+              "cost_usd": 0.36191260000000003,
+              "duration_ms": 117704,
+              "num_turns": 8,
+              "usage": {
+                "input_tokens": 6,
+                "output_tokens": 18535,
+                "cache_read_input_tokens": 41473,
+                "cache_creation_input_tokens": 42064
+              }
+            },
+            "violations": []
+          }
+        ],
+        "review_file": "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief_review.html",
+        "document_views": [
+          "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief_el.html",
+          "/Users/chrism/AI-transformation-assignment/brief-builder/runs/r2-live/nl-r3/brief_en.html"
+        ]
+      }
+    }
+  ]
+}

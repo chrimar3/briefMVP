@@ -1,0 +1,36 @@
+
+Brief Builder harness · run vo-r3 · fixture voreas_02
+
+  ✅ T1.1  Every extract validates against extract_schema.json
+         6 extract(s) valid
+  ✅ T1.2  Zero items with empty location or anchor
+         51 item(s), all cited
+  ✅ T1.3  Every location and anchor occurs verbatim in its source
+         all citations resolve
+  ✅ T1.4  Seeded garbled terms present as-is with glossary-match proposals
+         4/4 flagged, none fixed
+  ✅ T2.1  Draft validates against brief_schema.json
+  ✅ T2.2  sensitivity_tier is within S0–S1
+         tier S0
+  ✅ T2.3  Both GR and EN renders exist
+         el=27473 chars · en=25734 chars
+  ✅ T2.4  Every rendered claim carries a resolvable citation tag
+         all claim lines cited
+  ✅ T2.5  Glossary terms character-exact in both renders
+         protected terms intact in both renders
+  ✅ T2.6  Readiness block recomputes deterministically to the same values
+         {"fields_with_evidence": 7, "low_confidence_share": 0.26, "open_question_count": 22, "verdict": "ready_for_review"}
+  ✅ T3.1  Seeded conflicts detected with citations to both sources
+         4/4 required (C1, C2, C3, C4)
+  ✅ T3.2  Seeded gaps present as open questions
+         6/6 found, 5 required (G1, G2, G3, G4, G5, G6)
+  ✅ T3.3  Garbled terms still flagged (not fixed) in the brief and renders
+         4/4 carried through
+  ✅ T3.4  Zero uncited values anywhere in the draft
+  ✅ X1    Retracted idea is not a committed deliverable
+  ✅ X2    Speculative remark carries the conditional qualifier
+         1 matching entr(ies), all conditional
+  ✅ X3    No resolved numeric budget total in the draft or renders
+
+  17 passed · 0 failed · 0 skipped   →  PASS
+

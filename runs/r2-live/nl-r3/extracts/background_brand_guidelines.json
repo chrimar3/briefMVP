@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "background_brand_guidelines",
+    "source_type": "background",
+    "source_date": "2026-03-02",
+    "extraction_ts": "2026-09-24T07:17:45+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "The product name **Meltemi Fizz** is always written in Latin script, in full. Never transliterated, never abbreviated to \"Fizz\".",
+      "lang": "en",
+      "location": "## Brand name usage",
+      "anchor": "is always written in Latin script, in full",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+      "lang": "en",
+      "location": "## Brand name usage",
+      "anchor": "minimum 1× the height of the wordmark on all sides",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.",
+      "lang": "en",
+      "location": "## Color & visual",
+      "anchor": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Backgrounds must not use gradients over photography.",
+      "lang": "en",
+      "location": "## Color & visual",
+      "anchor": "Backgrounds must not use gradients over photography",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+      "lang": "mixed",
+      "location": "## Claims — hard rules",
+      "anchor": "Permitted: \"zero sugar\", \"φυσικά συστατικά\"",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "**Not permitted:** any health or weight-loss claim",
+      "lang": "en",
+      "location": "## Claims — hard rules",
+      "anchor": "**Not permitted:** any health or weight-loss claim",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "**Not permitted:** any comparison naming a competitor brand",
+      "lang": "en",
+      "location": "## Claims — hard rules",
+      "anchor": "any comparison naming a competitor brand",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "No alcohol association of any kind (imagery, occasions, co-branding).",
+      "lang": "en",
+      "location": "## Category no-gos",
+      "anchor": "No alcohol association of any kind (imagery, occasions, co-branding)",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+      "lang": "en",
+      "location": "## Category no-gos",
+      "anchor": "Avoid generic \"beach party\" clichés",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "low"
+    },
+    {
+      "value": "Confident, modern Greek with natural use of English category terms. Humor allowed; sarcasm about competitors is not.",
+      "lang": "en",
+      "location": "## Tone (guidance)",
+      "anchor": "Humor allowed; sarcasm about competitors is not",
+      "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The guidelines say to 'avoid' generic beach-party clichés, which reads as guidance rather than a firm prohibition.",
+      "why_it_matters": "Creative routes may be ruled in or out depending on whether this is a hard no-go or a preference.",
+      "suggested_question_for_client": "Το «avoid» για τα generic \"beach party\" clichés είναι απόλυτος περιορισμός ή κατευθυντήρια γραμμή; Υπάρχουν παραδείγματα που θα θεωρούσατε αποδεκτά ή απαράδεκτα;",
+      "linked_items": ["mandatories[8]"]
+    },
+    {
+      "field": "mandatories",
+      "gap": "Tone rules are listed under 'guidance', so it is unclear whether the sarcasm limit and the Greek/English mix are binding.",
+      "why_it_matters": "Copy and scripts need to know which tone rules the client will enforce at approval.",
+      "suggested_question_for_client": "Οι οδηγίες για το tone, όπως το ότι δεν επιτρέπεται σαρκασμός για ανταγωνιστές, είναι δεσμευτικές ή ενδεικτικές;",
+      "linked_items": ["mandatories[9]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

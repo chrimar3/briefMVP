@@ -1,0 +1,28 @@
+{
+  "project_id": "voreas_02",
+  "client_id": "voreas_athletics",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S0",
+  "tier_source": "client_config",
+  "rationale": "The RFP and both transcripts explicitly define this as a product launch campaign requiring creative assets (hero video, key visuals, social content, retail activation materials). The work is audience-facing marketing for the Voreas Move athleisure line, with multi-channel strategy across social, retail, and influencer touchpoints.",
+  "evidence": [
+    {
+      "source_id": "rfp_voreas",
+      "location": "Section 5 (Απαιτήσεις καμπάνιας)",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals). Παρουσία σε social media και ψηφιακά κανάλια. Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)."
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "00:09:04",
+      "anchor": "Σίγουρα ένα χίρο βίντεο για το λανσάρισμα, και μετά social stuff — cutdowns, stories, τέτοια."
+    },
+    {
+      "source_id": "transcript_followup",
+      "location": "00:02:14–00:09:33",
+      "anchor": "Instagram και YouTube σίγουρα. Λοιπόν... θέλουμε να δοκιμάσουμε σόσιαλ κόμερς. Στα καταστήματα θέλουμε δυνατή παρουσία. Και κάτι ακόμα: θέλουμε τρεις micro-influencers. Maybe και ένα AR filter."
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

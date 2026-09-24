@@ -1,0 +1,470 @@
+{
+  "cross_source_candidates": [
+    {
+      "field": "objectives",
+      "sources": [
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά.",
+          "location": "## 2. Στόχος",
+          "anchor": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Το βασικό για μας είναι το μπραντ αγουέρνες",
+          "location": "[00:02:05]",
+          "anchor": "το μπραντ αγουέρνες",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "low"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί. Θέλουμε να μπούμε δυνατά.",
+          "location": "[00:02:05]",
+          "anchor": "είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "field": "audiences",
+      "sources": [
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα.",
+          "location": "## 3. Κοινό-στόχος",
+          "anchor": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "honestly, our buyer is 25 to 40, urban professionals",
+          "location": "[00:03:41]",
+          "anchor": "our buyer is 25 to 40, urban professionals",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea",
+          "location": "[00:03:41]",
+          "anchor": "Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "field": "key_messages",
+      "sources": [
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "rfp_meltemi",
+          "value": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις",
+          "location": "## 1. Πλαίσιο",
+          "anchor": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "implied",
+          "confidence": "low"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Πρόκειται για την είσοδό μας σε νέα κατηγορία.",
+          "location": "## 1. Πλαίσιο",
+          "anchor": "Πρόκειται για την είσοδό μας σε νέα κατηγορία",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "implied",
+          "confidence": "low"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+          "location": "[00:06:02]",
+          "anchor": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+          "location": "[00:06:02]",
+          "anchor": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "field": "deliverables",
+      "sources": [
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Στρατηγική TikTok-first: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok.",
+          "location": "## 4. Απαιτήσεις καμπάνιας",
+          "anchor": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Παρουσία σε social media και ψηφιακά κανάλια.",
+          "location": "## 4. Απαιτήσεις καμπάνιας",
+          "anchor": "Παρουσία σε social media και ψηφιακά κανάλια",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+          "location": "## 4. Απαιτήσεις καμπάνιας",
+          "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς.",
+          "location": "[00:10:22]",
+          "anchor": "Some videos and social stuff",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+          "location": "[00:11:47]",
+          "anchor": "maybe a TikTok dance thing?",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "conditional",
+          "confidence": "low"
+        }
+      ]
+    },
+    {
+      "field": "timeline",
+      "sources": [
+        "emails_thread",
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "emails_thread",
+          "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+          "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "emails_thread",
+          "value": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+          "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Launch την πρώτη εβδομάδα του Οκτωβρίου 2026, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.",
+          "location": "## 5. Χρονοδιάγραμμα",
+          "anchor": "Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο",
+          "location": "[00:17:03]",
+          "anchor": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα",
+          "location": "[00:17:03]",
+          "anchor": "έχουν συνεδρίαση τέλη του μήνα",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "field": "budget",
+      "sources": [
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media.",
+          "location": "## 6. Προϋπολογισμός",
+          "anchor": "**€90.000, συμπεριλαμβανομένου του media**",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend",
+          "location": "[00:14:32]",
+          "anchor": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε",
+          "speaker_or_author": "Anna, Meltemi CFO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Το media το βλέπουμε ξεχωριστά με τον media shop μας",
+          "location": "[00:14:32]",
+          "anchor": "Το media το βλέπουμε ξεχωριστά με τον media shop μας",
+          "speaker_or_author": "Anna, Meltemi CFO (client)",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Ναι, δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα",
+          "location": "[00:15:26]",
+          "anchor": "δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα",
+          "speaker_or_author": "Anna, Meltemi CFO (client)",
+          "qualifier": "stated",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "field": "mandatories",
+      "sources": [
+        "background_brand_guidelines",
+        "emails_thread",
+        "rfp_meltemi",
+        "transcript_kickoff"
+      ],
+      "positions": [
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "The product name **Meltemi Fizz** is always written in Latin script, in full. Never transliterated, never abbreviated to \"Fizz\".",
+          "location": "## Brand name usage",
+          "anchor": "is always written in Latin script, in full",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+          "location": "## Brand name usage",
+          "anchor": "minimum 1× the height of the wordmark on all sides",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.",
+          "location": "## Color & visual",
+          "anchor": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Backgrounds must not use gradients over photography.",
+          "location": "## Color & visual",
+          "anchor": "Backgrounds must not use gradients over photography",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+          "location": "## Claims — hard rules",
+          "anchor": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list)",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Not permitted: any health or weight-loss claim.",
+          "location": "## Claims — hard rules",
+          "anchor": "any health or weight-loss claim",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Not permitted: any comparison naming a competitor brand.",
+          "location": "## Claims — hard rules",
+          "anchor": "any comparison naming a competitor brand",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "No alcohol association of any kind (imagery, occasions, co-branding).",
+          "location": "## Category no-gos",
+          "anchor": "No alcohol association of any kind (imagery, occasions, co-branding)",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+          "location": "## Category no-gos",
+          "anchor": "Avoid generic \"beach party\" clichés",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "low"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Confident, modern Greek with natural use of English category terms.",
+          "location": "## Tone (guidance)",
+          "anchor": "Confident, modern Greek with natural use of English category terms",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "low"
+        },
+        {
+          "source_id": "background_brand_guidelines",
+          "value": "Humor allowed; sarcasm about competitors is not.",
+          "location": "## Tone (guidance)",
+          "anchor": "Humor allowed; sarcasm about competitors is not",
+          "speaker_or_author": "Meltemi Beverages Brand Guidelines v3.1",
+          "qualifier": "stated",
+          "confidence": "low"
+        },
+        {
+          "source_id": "emails_thread",
+          "value": "ισχύει η έκδοση 3.1",
+          "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+          "anchor": "ισχύει η έκδοση 3.1",
+          "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+          "qualifier": "stated",
+          "confidence": "high"
+        },
+        {
+          "source_id": "rfp_meltemi",
+          "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+          "location": "## 7. Λοιπά",
+          "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+          "speaker_or_author": "Meltemi Beverages S.A.",
+          "qualifier": "stated",
+          "confidence": "medium"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
+          "location": "[00:06:02]",
+          "anchor": "κι βίζουαλ",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "low"
+        },
+        {
+          "source_id": "transcript_kickoff",
+          "value": "zero sugar, φυσικά υλικά",
+          "location": "[00:06:02]",
+          "anchor": "zero sugar, φυσικά υλικά",
+          "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+          "qualifier": "stated",
+          "confidence": "low"
+        }
+      ]
+    }
+  ],
+  "internal_conflicts": [
+    {
+      "field": "audiences",
+      "value_a": {
+        "value": "το RFP που σας στείλαμε λέει Gen Z",
+        "lang": "mixed",
+        "location": "[00:03:41]",
+        "anchor": "λέει Gen Z",
+        "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+        "qualifier": "conditional",
+        "confidence": "low"
+      },
+      "value_b": {
+        "value": "honestly, our buyer is 25 to 40, urban professionals",
+        "lang": "en",
+        "location": "[00:03:41]",
+        "anchor": "our buyer is 25 to 40, urban professionals",
+        "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "The same speaker explicitly corrects the RFP's Gen Z audience in the same turn, saying the previous agency wrote it and it stayed. Eleni acknowledged the correction at [00:05:20]. Explicit correction by the client, so no open question is raised; the trail is kept for downstream.",
+      "source_id": "transcript_kickoff"
+    },
+    {
+      "field": "deliverables",
+      "value_a": {
+        "value": "ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές…",
+        "lang": "mixed",
+        "location": "[00:08:15]",
+        "anchor": "ίσως κάνουμε OOH στις στάσεις του μετρό",
+        "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+        "qualifier": "conditional",
+        "confidence": "low"
+      },
+      "value_b": {
+        "value": "…actually scratch that, το μετρό είναι πανάκριβο φέτος, το κοίταξα τον Μάιο. Ξεχάστε το.",
+        "lang": "mixed",
+        "location": "[00:08:34]",
+        "anchor": "actually scratch that",
+        "speaker_or_author": "Dimitris, Meltemi CMO (client)",
+        "qualifier": "stated",
+        "confidence": "high"
+      },
+      "note": "The same speaker explicitly retracts his own metro OOH idea about 20 seconds later ('Ξεχάστε το'), citing cost. Explicit reversal, so no open question is raised; the OOH idea is not carried into deliverables.",
+      "source_id": "transcript_kickoff"
+    }
+  ],
+  "note": "Candidates are fields where 2+ sources contributed evidence. They are NOT conflicts. Synthesis decides which are genuine contradictions and emits conflicts[] with both positions and status 'open'. No stage may resolve a conflict (PRD DR-10)."
+}

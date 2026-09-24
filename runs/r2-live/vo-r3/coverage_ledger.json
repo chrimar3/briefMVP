@@ -1,0 +1,759 @@
+{
+  "boundary": "Evidence-link accounting; human review must confirm meaning and source completeness",
+  "records": [
+    {
+      "field": "mandatories",
+      "value": "Το όνομα σειράς Voreas Move γράφεται πάντα σε λατινικούς χαρακτήρες, πλήρες. Ποτέ μεταγραμμένο, ποτέ σκέτο «Move».",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Brand name usage",
+        "anchor": "γράφεται πάντα σε λατινικούς χαρακτήρες, πλήρες"
+      },
+      "id": "c672501b54ae16544032",
+      "destinations": [
+        "mandatories[0]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το tagline Move Like the Wind χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Brand name usage",
+        "anchor": "χρησιμοποιείται αυτούσιο, χωρίς μετάφραση ή παράφραση"
+      },
+      "id": "6e650944b5a465de750d",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Logo clear space: τουλάχιστον 1× το ύψος του wordmark σε όλες τις πλευρές.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Brand name usage",
+        "anchor": "τουλάχιστον 1× το ύψος του wordmark σε όλες τις πλευρές"
+      },
+      "id": "f844cccc0877e28d4115",
+      "destinations": [
+        "mandatories[2]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Color & visual",
+        "anchor": "Primary palette: Thracian Grey #3A3F45, Boreal Teal #0E7C7B"
+      },
+      "id": "1859b2f34350b95fea08",
+      "destinations": [
+        "mandatories[3]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Δευτερεύον accent: Signal Coral #FF6B57, μόνο σε CTA στοιχεία.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Color & visual",
+        "anchor": "Signal Coral #FF6B57, μόνο σε CTA στοιχεία"
+      },
+      "id": "69085f863a998315258e",
+      "destinations": [
+        "mandatories[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Η φωτογραφία δείχνει πραγματική κίνηση — όχι στημένες πόζες γυμναστηρίου με στατικό φωτισμό.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Color & visual",
+        "anchor": "όχι στημένες πόζες γυμναστηρίου με στατικό φωτισμό"
+      },
+      "id": "e81125229865e83a8a1a",
+      "destinations": [
+        "mandatories[5]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Επιτρέπεται: «τεχνικά υφάσματα», «σχεδιασμένο στην Ελλάδα» (βάσει εγκεκριμένου φακέλου προέλευσης).",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Επικοινωνία — αυστηροί κανόνες",
+        "anchor": "«σχεδιασμένο στην Ελλάδα» (βάσει εγκεκριμένου φακέλου προέλευσης)"
+      },
+      "id": "3d72e7a1f40e03b5c0b6",
+      "destinations": [
+        "mandatories[6]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Δεν επιτρέπεται: οποιοσδήποτε ισχυρισμός απόδοσης με μετρήσιμο όφελος χωρίς εργαστηριακή τεκμηρίωση (π.χ. «βελτιώνει τον χρόνο σου»).",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Επικοινωνία — αυστηροί κανόνες",
+        "anchor": "οποιοσδήποτε ισχυρισμός απόδοσης με μετρήσιμο όφελος χωρίς εργαστηριακή τεκμηρίωση"
+      },
+      "id": "bb8296ed9c699f2862e1",
+      "destinations": [
+        "mandatories[7]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Δεν επιτρέπεται: καμία σύγκριση που κατονομάζει ανταγωνιστή.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Επικοινωνία — αυστηροί κανόνες",
+        "anchor": "καμία σύγκριση που κατονομάζει ανταγωνιστή"
+      },
+      "id": "595f21da7a4dfeddaa1c",
+      "destinations": [
+        "mandatories[8]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Η μάρκα επικοινωνεί χωρίς influencers — η πολιτική της εταιρείας από το 2024 είναι αποκλειστικά owned & paid κανάλια, μετά το περιστατικό με τη χορηγία του 2023.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Επικοινωνία — αυστηροί κανόνες",
+        "anchor": "Η μάρκα επικοινωνεί **χωρίς influencers**"
+      },
+      "id": "1f8fc4c54114fa8a4990",
+      "destinations": [
+        "mandatories[9]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων — η σειρά είναι καθημερινή, όχι αγωνιστική.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Category no-gos",
+        "anchor": "Καμία σύνδεση με αγωνιστικό πρωταθλητισμό ρεκόρ/επιδόσεων"
+      },
+      "id": "3eba6854ea0df9a564e5",
+      "destinations": [
+        "mandatories[10]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Αποφυγή κλισέ «fitness transformation» (πριν/μετά).",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Category no-gos",
+        "anchor": "Αποφυγή κλισέ «fitness transformation» (πριν/μετά)"
+      },
+      "id": "307c5b9c7d5758abc5b9",
+      "destinations": [
+        "mandatories[11]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Tone (guidance)",
+        "anchor": "Ζεστό, όχι διδακτικό· χιούμορ επιτρέπεται, ειρωνεία για τον ανταγωνισμό όχι"
+      },
+      "id": "5eb8a3db2e0d32bdb3d1",
+      "destinations": [
+        "mandatories[12]",
+        "open_questions[20]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Σύγχρονα ελληνικά με φυσική χρήση αγγλικών όρων κατηγορίας.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Tone (guidance)",
+        "anchor": "Σύγχρονα ελληνικά με φυσική χρήση αγγλικών όρων κατηγορίας"
+      },
+      "id": "a1238710c5ba6a9ccbae",
+      "destinations": [
+        "mandatories[13]",
+        "open_questions[20]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "τα launches διεθνών brands της κατηγορίας στην ελληνική αγορά κινούνται σε €300–500 χιλ. media spend ανά καμπάνια λανσαρίσματος",
+      "evidence": {
+        "source_id": "background_market_research",
+        "location": "## Benchmark επένδυσης επικοινωνίας",
+        "anchor": "τα launches διεθνών brands της κατηγορίας στην ελληνική αγορά κινούνται σε"
+      },
+      "id": "ac926909a4f358fc0976",
+      "destinations": [
+        "budget[3]",
+        "open_questions[19]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "κλείδωσε τελικά 14 Φεβρουαρίου — μέση λύση ανάμεσα στο αρχικό πλάνο και στο αίτημα για Ιανουάριο. Αυτό είναι οριστικό, προχωρήστε με αυτή την ημερομηνία",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02",
+        "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**"
+      },
+      "id": "45004b546d364b391827",
+      "destinations": [
+        "timeline[0]",
+        "open_questions[15]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "brand guidelines (ισχύει η έκδοση 2.0)",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-19 17:48",
+        "anchor": "ισχύει η έκδοση 2.0"
+      },
+      "id": "0e58f7ade2a36d2ef40e",
+      "destinations": [
+        "mandatories[14]",
+        "open_questions[21]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "το board θέλει να φέρουμε το launch στις 31 Ιανουαρίου",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-19 17:48",
+        "anchor": "**το board θέλει να φέρουμε το launch στις 31 Ιανουαρίου**"
+      },
+      "id": "8a85f54aa2bc1a266f06",
+      "destinations": []
+    },
+    {
+      "field": "timeline",
+      "value": "κλείδωσε τελικά 14 Φεβρουαρίου — μέση λύση ανάμεσα στο αρχικό πλάνο και στο αίτημα για Ιανουάριο. Αυτό είναι οριστικό, προχωρήστε με αυτή την ημερομηνία",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 4** · From: Nikos (Voreas) · To: Eleni (Northlight) · Date: 2026-07-23 19:02",
+        "anchor": "**κλείδωσε τελικά 14 Φεβρουαρίου**"
+      },
+      "id": "45004b546d364b391827",
+      "destinations": [
+        "timeline[0]",
+        "open_questions[15]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Επιτυχημένο launch της σειράς στην ελληνική αγορά, με έμφαση στην καθιέρωση της Voreas Athletics ως premium επιλογής στη νέα κατηγορία.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 2. Στόχος",
+        "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά"
+      },
+      "id": "d6c5cb817c1b87d5c13f",
+      "destinations": [
+        "objectives[0]",
+        "open_questions[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Γυναίκες 30–45, με ενεργό lifestyle, στα δύο μεγάλα αστικά κέντρα (Αθήνα, Θεσσαλονίκη).",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 4. Κοινό-στόχος",
+        "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle"
+      },
+      "id": "ab3b0d183973c9aebbab",
+      "destinations": [
+        "audiences[0]",
+        "open_questions[4]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Η σειρά τοποθετείται στο premium performance: τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 3. Τοποθέτηση",
+        "anchor": "Η σειρά τοποθετείται στο **premium performance**"
+      },
+      "id": "87052f30bff6eda9f462",
+      "destinations": [
+        "key_messages[0]",
+        "open_questions[6]",
+        "open_questions[7]",
+        "conflicts[1]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Η επικοινωνία να αναδεικνύει την τεχνική υπεροχή έναντι της κατηγορίας.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 3. Τοποθέτηση",
+        "anchor": "Η επικοινωνία να αναδεικνύει την τεχνική υπεροχή έναντι της κατηγορίας"
+      },
+      "id": "cf193344f47214952671",
+      "destinations": [
+        "key_messages[2]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 5. Απαιτήσεις καμπάνιας",
+        "anchor": "Παρουσία σε social media και ψηφιακά κανάλια"
+      },
+      "id": "872acd42823a829d62df",
+      "destinations": [
+        "deliverables[0]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 5. Απαιτήσεις καμπάνιας",
+        "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)"
+      },
+      "id": "ae51c7b6976c36367987",
+      "destinations": [
+        "deliverables[1]",
+        "open_questions[8]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 5. Απαιτήσεις καμπάνιας",
+        "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)"
+      },
+      "id": "b1acb84b63576d48c07e",
+      "destinations": [
+        "deliverables[2]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Launch μέσα Μαρτίου 2027, ώστε να συμπέσει με την ανοιξιάτικη ανανέωση των καταστημάτων και την έναρξη της σεζόν outdoor.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 6. Χρονοδιάγραμμα",
+        "anchor": "Launch **μέσα Μαρτίου 2027**"
+      },
+      "id": "b0c440655900fc0b2b6d",
+      "destinations": [
+        "timeline[1]",
+        "open_questions[15]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Συνολικός προϋπολογισμός €140.000, συμπεριλαμβανομένου του media.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 7. Προϋπολογισμός",
+        "anchor": "Συνολικός προϋπολογισμός **€140.000, συμπεριλαμβανομένου του media**"
+      },
+      "id": "0330c873a44fa7e51315",
+      "destinations": [
+        "budget[0]",
+        "open_questions[16]",
+        "conflicts[5]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το tagline Move Like the Wind είναι εγκεκριμένο από το ΔΣ και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 8. Λοιπά",
+        "anchor": "η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας"
+      },
+      "id": "93596169d3f0c6efafba",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+      "evidence": {
+        "source_id": "rfp_voreas",
+        "location": "## 8. Λοιπά",
+        "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines"
+      },
+      "id": "3aecde748bcdfc34e72e",
+      "destinations": [
+        "mandatories[14]",
+        "open_questions[21]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Κυρίως Ελλάδα",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:10:02]",
+        "anchor": "Κυρίως Ελλάδα"
+      },
+      "id": "bfc7fa9f92a3d764714b",
+      "destinations": [
+        "audiences[2]",
+        "open_questions[5]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "ίσως τρέξουμε και Κύπρο — έχουμε δύο σημεία πώλησης εκεί — αλλά δεν έχει αποφασιστεί από το board. Μην το βάλετε ακόμα στο πλάνο",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:10:02]",
+        "anchor": "ίσως τρέξουμε και Κύπρο"
+      },
+      "id": "f061d7c5629631d25230",
+      "destinations": [
+        "audiences[3]",
+        "open_questions[5]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Instagram και YouTube σίγουρα",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:02:14]",
+        "anchor": "Instagram και YouTube σίγουρα"
+      },
+      "id": "0297d3b0ccf797152e1b",
+      "destinations": [
+        "deliverables[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς — shoppable posts, να αγοράζεις μέσα από το feed",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:02:14]",
+        "anchor": "θέλουμε να δοκιμάσουμε σόσιαλ κόμερς"
+      },
+      "id": "dcfea106832d9a972cba",
+      "destinations": [
+        "deliverables[4]",
+        "open_questions[10]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Στα καταστήματα θέλουμε δυνατή παρουσία. Το ρίτεϊλ ακτιβέισον είναι για εμάς μισή καμπάνια — βιτρίνες, stands, ό,τι κάνει τον περαστικό να σταματήσει",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:03:47]",
+        "anchor": "Το ρίτεϊλ ακτιβέισον"
+      },
+      "id": "085f2ae524f3ded8896e",
+      "destinations": [
+        "deliverables[5]",
+        "open_questions[11]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "θέλουμε τρεις micro-influencers για το πρώτο κύμα, fitness και lifestyle profiles, να δείξουν το ρούχο σε πραγματική μέρα",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:05:05]",
+        "anchor": "θέλουμε τρεις micro-influencers για το πρώτο κύμα"
+      },
+      "id": "47c7445e58bba6b8e467",
+      "destinations": [
+        "deliverables[6]",
+        "open_questions[12]",
+        "conflicts[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Maybe και ένα AR filter στο Instagram — να «δοκιμάζεις» χρώματα της συλλογής. Just thinking out loud, don't hold me to it, δεν έχει μπει καν σε συζήτηση με το board",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:08:10]",
+        "anchor": "Just thinking out loud, don't hold me to it"
+      },
+      "id": "c045d8a7a2a7354d0d71",
+      "destinations": [
+        "deliverables[8]",
+        "open_questions[13]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:12:15]",
+        "anchor": "Έγινε μια φωτογράφιση τον Μάιο για το e-shop"
+      },
+      "id": "3d55402690d47a45ef4f",
+      "destinations": [
+        "deliverables[9]",
+        "open_questions[14]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "«μέσα Μαρτίου» — Επίσημα ναι",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:14:07]",
+        "anchor": "Επίσημα ναι"
+      },
+      "id": "43663b267053d0828b29",
+      "destinations": [
+        "timeline[1]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Ανεπίσημα, το board το ξανακοιτάει — θα σας πούμε γραπτώς μόλις κλείσει",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:14:07]",
+        "anchor": "Ανεπίσημα, το board το ξανακοιτάει"
+      },
+      "id": "d12c4dc61cdb3ce2be19",
+      "destinations": [
+        "timeline[2]",
+        "open_questions[15]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Recap και λίστα εκκρεμοτήτων μέχρι αύριο το πρωί",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:15:20]",
+        "anchor": "Recap και λίστα εκκρεμοτήτων μέχρι αύριο το πρωί."
+      },
+      "id": "cc3f7c5b5b09f37c39ba",
+      "destinations": [
+        "timeline[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "ξέρεις τι λένε τα guidelines",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:06:29]",
+        "anchor": "ξέρεις τι λένε τα guidelines"
+      },
+      "id": "0ef47a97700fd5728eb5",
+      "destinations": [
+        "mandatories[15]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "δεν ξέρω αν τα δικαιώματα καλύπτουν διαφημιστική χρήση",
+      "evidence": {
+        "source_id": "transcript_followup",
+        "location": "[00:12:15]",
+        "anchor": "δεν ξέρω αν τα δικαιώματα καλύπτουν διαφημιστική χρήση"
+      },
+      "id": "72b3ca20bd949e131352",
+      "destinations": [
+        "mandatories[16]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "το μπραντ αγουέρνες — να μάθει ο κόσμος ότι υπάρχουμε στη νέα κατηγορία",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:02:18]",
+        "anchor": "ζητούμενο είναι το μπραντ αγουέρνες"
+      },
+      "id": "25e629c650581dedf20c",
+      "destinations": [
+        "objectives[1]",
+        "open_questions[2]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "δοκιμή, να μπει το προϊόν σε ντουλάπες",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:02:18]",
+        "anchor": "να μπει το προϊόν σε ντουλάπες"
+      },
+      "id": "db1648d31402eb22d1ac",
+      "destinations": [
+        "objectives[2]",
+        "open_questions[3]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "the line is unisex and our real buyer is 25 to 55",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:55]",
+        "anchor": "our real buyer is 25 to 55"
+      },
+      "id": "b189bc00262bf1cf2bb6",
+      "destinations": [
+        "audiences[1]",
+        "open_questions[4]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "πιστεύω το story είναι athleisure lifestyle — ρούχο που φοράς από το γυμναστήριο στο γραφείο. Αν το πάμε καθαρά performance θα μας συγκρίνουν με τους τεχνικούς παίκτες και θα χάσουμε. Δεν το έχουμε κλειδώσει με το board",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:05:47]",
+        "anchor": "το story είναι athleisure lifestyle"
+      },
+      "id": "00801363776b3d7fa30d",
+      "destinations": [
+        "key_messages[3]",
+        "open_questions[6]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Σίγουρα ένα χίρο βίντεο για το λανσάρισμα",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:09:04]",
+        "anchor": "Σίγουρα ένα χίρο βίντεο"
+      },
+      "id": "bfc43f145b2f6bb87a6c",
+      "destinations": [
+        "deliverables[10]",
+        "open_questions[9]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "social stuff — cutdowns, stories, τέτοια. Formats και διάρκειες δεν έχω καταλήξει, θα μας καθοδηγήσετε εσείς",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:09:04]",
+        "anchor": "social stuff — cutdowns, stories, τέτοια"
+      },
+      "id": "9965ea1cd0472446e4b5",
+      "destinations": [
+        "deliverables[11]",
+        "open_questions[8]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Προς το παρόν ναι, αλλά το board συζητάει τη σεζόν — μπορεί να κουνηθεί. Θα ξέρουμε μέσα στον μήνα",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:16:05]",
+        "anchor": "Προς το παρόν ναι, αλλά το board συζητάει τη σεζόν"
+      },
+      "id": "ad6af61a67e6486b9129",
+      "destinations": [
+        "timeline[3]",
+        "open_questions[15]",
+        "conflicts[4]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού — αλλά καθαρά production και αμοιβές",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:12:41]",
+        "anchor": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε"
+      },
+      "id": "eed47d35b0359ad32cec",
+      "destinations": [
+        "budget[1]",
+        "open_questions[16]",
+        "open_questions[17]",
+        "conflicts[5]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Το media spend δεν περνάει από εμένα, το κρατάει η διοίκηση με τη media εταιρεία τους",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:12:41]",
+        "anchor": "Το media spend δεν περνάει από εμένα"
+      },
+      "id": "3738bf1c565148c242b8",
+      "destinations": [
+        "budget[2]",
+        "open_questions[18]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Μη σχεδιάσετε μόνο για γυναικείο κοινό",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:55]",
+        "anchor": "Μη σχεδιάσετε μόνο για γυναικείο κοινό"
+      },
+      "id": "f3955dd26387ec6333ec",
+      "destinations": [
+        "mandatories[17]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "μια ιδέα που έπαιζε: pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:10:26]",
+        "anchor": "pop-up store στην Ερμού για το πρώτο δεκαπενθήμερο"
+      },
+      "id": "ae70cec75fc79a1f0400",
+      "destinations": []
+    },
+    {
+      "field": "deliverables",
+      "value": "ξεχάστε το που το είπα — ρώτησα τον Ιούνιο, το κόστος στην Ερμού είναι εξωφρενικό φέτος. Δεν προχωράει.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:10:48]",
+        "anchor": "ξεχάστε το που το είπα"
+      },
+      "id": "ae2c35d8ed9fd8cacd33",
+      "destinations": []
+    }
+  ]
+}

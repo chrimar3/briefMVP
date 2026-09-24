@@ -1,0 +1,1 @@
+{"decisions": [{"finding": "F1", "decision": "applied", "reason": "Source at [00:12:41] gives «κάπου στα εκατόν είκοσι» and makes the higher figure depend on «αν σφίξουμε αλλού», so budget[0] is now qualifier conditional (confidence medium, still linked from the budget question, whose gap now names the condition)."}]}

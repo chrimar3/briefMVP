@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-15 (latest message)",
+    "extraction_ts": "2026-09-24T06:43:36+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [
+    {
+      "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "lang": "el",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "ισχύει η έκδοση 3.1",
+      "lang": "el",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "ισχύει η έκδοση 3.1",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "timeline",
+      "gap": "The season-end reason for the new launch date is given without any date for when the soft-drink season ends or what the previous launch date was; the year of '15 Σεπτεμβρίου' is not written out.",
+      "why_it_matters": "The revised plan and its working-back milestones depend on how firm the 15 September date is and what it replaced.",
+      "suggested_question_for_client": "Το 15 Σεπτεμβρίου αφορά το 2026; Ποια ήταν η προηγούμενη ημερομηνία του launch και το τέλος της σεζόν αναψυκτικών είναι σταθερή προθεσμία ή στόχος;",
+      "linked_items": ["timeline[1]"]
+    },
+    {
+      "field": "approval",
+      "gap": "The final approver of the brief on the client side has not been named; Dimitris says it is between himself and the management, and the name is still pending.",
+      "why_it_matters": "Without a named approver the brief cannot be signed off and the revised plan has no decision-maker to run against.",
+      "suggested_question_for_client": "Ποιος θα κάνει το τελικό approval του brief από πλευράς σας: εσείς, κάποιο μέλος της διοίκησης ή και οι δύο; Μπορείτε να μας δώσετε το όνομα;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Message 2 states that no proprietary category research exists on the client side ('Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο'); recorded as context, no field item.",
+    "Message 3 (Eleni, Northlight, 2026-07-15 10:05) is agency-side: acknowledges the 15/9 date and commits to send a revised plan; not client brief content, no item created.",
+    "Message 2 attachments (brand guidelines v3.1) and the recap in Message 1 are referenced but not present in this source."
+  ]
+}

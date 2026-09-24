@@ -1,0 +1,1 @@
+{"decisions": [{"finding": "F1", "decision": "rejected", "reason": "The source annotates «μπραντ αγουέρνες» with [FIDELITY: no-glossary-match], i.e. the fidelity gate proposed no glossary term; rule G requires the note to carry the gate's outcome (proposed match \"no-glossary-match\") rather than a term the extractor guesses."}]}

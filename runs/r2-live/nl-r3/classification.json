@@ -1,0 +1,28 @@
+{
+  "project_id": "northlight_01",
+  "client_id": "meltemi_beverages",
+  "project_type": "advertising_creative",
+  "classification_confidence": "high",
+  "sensitivity_tier": "S1",
+  "tier_source": "client_config",
+  "rationale": "The RFP and kickoff transcript together establish this as a product launch campaign. Deliverables are explicitly creative (videos, key visuals, social content, TikTok-first strategy), and the kickoff discusses creative strategy (messaging, tone, visual direction). This is not a background brand document; it is a briefing for campaign creative work.",
+  "evidence": [
+    {
+      "source_id": "rfp_meltemi",
+      "location": "section 4, Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals). Στρατηγική TikTok-first"
+    },
+    {
+      "source_id": "transcript_kickoff",
+      "location": "[00:06:02]–[00:08:15], Dimitris",
+      "anchor": "το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι. Ένα: refreshment without the sugar guilt"
+    },
+    {
+      "source_id": "rfp_meltemi",
+      "location": "title",
+      "anchor": "RFP — Καμπάνια Λανσαρίσματος Meltemi Fizz"
+    }
+  ],
+  "question_for_human": "",
+  "halt_reason": ""
+}

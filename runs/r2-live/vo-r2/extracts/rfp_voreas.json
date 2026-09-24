@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "rfp_voreas",
+    "source_type": "rfp",
+    "source_date": "2026-07-05",
+    "extraction_ts": "2026-09-24T06:58:20+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [
+    {
+      "value": "Επιτυχημένο launch της σειράς στην ελληνική αγορά, με έμφαση στην καθιέρωση της Voreas Athletics ως premium επιλογής στη νέα κατηγορία.",
+      "lang": "mixed",
+      "location": "## 2. Στόχος",
+      "anchor": "Επιτυχημένο launch της σειράς στην ελληνική αγορά",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "audiences": [
+    {
+      "value": "Γυναίκες 30–45, με ενεργό lifestyle, στα δύο μεγάλα αστικά κέντρα (Αθήνα, Θεσσαλονίκη).",
+      "lang": "mixed",
+      "location": "## 4. Κοινό-στόχος",
+      "anchor": "Γυναίκες **30–45**, με ενεργό lifestyle",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "key_messages": [
+    {
+      "value": "Η επικοινωνία να αναδεικνύει την τεχνική υπεροχή έναντι της κατηγορίας.",
+      "lang": "el",
+      "location": "## 3. Τοποθέτηση",
+      "anchor": "Η επικοινωνία να αναδεικνύει την τεχνική υπεροχή έναντι της κατηγορίας",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Η σειρά τοποθετείται στο premium performance: τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα.",
+      "lang": "mixed",
+      "location": "## 3. Τοποθέτηση",
+      "anchor": "τοποθετείται στο **premium performance**: τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "deliverables": [
+    {
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια.",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Παρουσία σε social media και ψηφιακά κανάλια",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+      "lang": "mixed",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας).",
+      "lang": "el",
+      "location": "## 5. Απαιτήσεις καμπάνιας",
+      "anchor": "Υποστήριξη των σημείων πώλησης (υλικό βιτρίνας)",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "timeline": [
+    {
+      "value": "Launch μέσα Μαρτίου 2027, ώστε να συμπέσει με την ανοιξιάτικη ανανέωση των καταστημάτων και την έναρξη της σεζόν outdoor.",
+      "lang": "mixed",
+      "location": "## 6. Χρονοδιάγραμμα",
+      "anchor": "Launch **μέσα Μαρτίου 2027**",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "budget": [
+    {
+      "value": "Συνολικός προϋπολογισμός €140.000, συμπεριλαμβανομένου του media.",
+      "lang": "el",
+      "location": "## 7. Προϋπολογισμός",
+      "anchor": "**€140.000, συμπεριλαμβανομένου του media**",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "medium"
+    }
+  ],
+  "mandatories": [
+    {
+      "value": "Το tagline Move Like the Wind είναι εγκεκριμένο από το ΔΣ και η χρήση του είναι υποχρεωτική σε όλα τα υλικά της καμπάνιας.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "tagline **Move Like the Wind** είναι εγκεκριμένο από το ΔΣ",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    },
+    {
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+      "lang": "mixed",
+      "location": "## 8. Λοιπά",
+      "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines",
+      "speaker_or_author": "Voreas Athletics S.A. (client, RFP author)",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "timeline",
+      "gap": "Launch date is given only as 'μέσα Μαρτίου 2027' (mid-March 2027); no exact date or launch-week window is stated.",
+      "why_it_matters": "Production, media booking and the in-store refresh all have to be scheduled backwards from a concrete launch date.",
+      "suggested_question_for_client": "Υπάρχει συγκεκριμένη ημερομηνία ή εβδομάδα launch μέσα στον Μάρτιο 2027, και είναι δεσμευμένη με την ανανέωση των καταστημάτων;",
+      "linked_items": ["timeline[0]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "The RFP says 'Αναμένουμε την πρότασή σας' but gives no proposal submission deadline or other milestone dates.",
+      "why_it_matters": "The agency cannot plan the pitch work without a submission date.",
+      "suggested_question_for_client": "Ποια είναι η ημερομηνία παράδοσης της πρότασης και υπάρχουν ενδιάμεσα ορόσημα (π.χ. παρουσίαση, έγκριση);",
+      "linked_items": []
+    },
+    {
+      "field": "budget",
+      "gap": "Total of €140.000 is stated as including media, but it is not stated whether VAT, production and agency fees are inside the figure, nor how much is media spend versus production.",
+      "why_it_matters": "The split between media spend and production determines what creative scope and channel mix are affordable.",
+      "suggested_question_for_client": "Τα €140.000 περιλαμβάνουν ΦΠΑ; Καλύπτουν και την παραγωγή και τα agency fees, και ποιο ποσό προορίζεται για media spend;",
+      "linked_items": ["budget[0]"]
+    },
+    {
+      "field": "objectives",
+      "gap": "The objective is 'επιτυχημένο launch' with emphasis on premium positioning, but no success measures, KPIs or targets are stated.",
+      "why_it_matters": "Without defined measures of success, the agency cannot set targets or evaluate the campaign.",
+      "suggested_question_for_client": "Με ποια KPIs ή στόχους θα κρίνετε ότι το launch της Voreas Move ήταν επιτυχημένο;",
+      "linked_items": []
+    },
+    {
+      "field": "deliverables",
+      "gap": "Campaign requirements list types of output (social/digital presence, video, key visuals, window material) without quantities, formats, durations, channels or platforms.",
+      "why_it_matters": "Scope and cost of production cannot be estimated without volumes and formats, especially against a fixed total budget.",
+      "suggested_question_for_client": "Πόσα βίντεο και key visuals περιμένετε, σε ποιες διάρκειες και μορφές, σε ποια social και ψηφιακά κανάλια, και πόσα σημεία πώλησης αφορά το υλικό βιτρίνας;",
+      "linked_items": []
+    },
+    {
+      "field": "mandatories",
+      "gap": "The RFP says the brand rules of the attached guidelines apply, but the guidelines' contents are not part of this source.",
+      "why_it_matters": "Brand rules are binding on all materials, and a missed rule would mean rework or rejection.",
+      "suggested_question_for_client": "Μπορείτε να μας στείλετε τα συνημμένα brand guidelines, ώστε να τα λάβουμε υπόψη από την αρχή της πρότασης;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": []
+}

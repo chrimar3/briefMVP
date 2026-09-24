@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "project_id": "northlight_01",
+    "source_id": "emails_thread",
+    "source_type": "email_thread",
+    "source_date": "2026-07-15 (latest message)",
+    "extraction_ts": "2026-09-24T07:18:24+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [
+    {
+      "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "lang": "el",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "high"
+    }
+  ],
+  "budget": [],
+  "mandatories": [
+    {
+      "value": "brand guidelines: ισχύει η έκδοση 3.1",
+      "lang": "mixed",
+      "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+      "anchor": "brand guidelines (ισχύει η έκδοση 3.1)",
+      "speaker_or_author": "Dimitris (Meltemi), 2026-07-14",
+      "qualifier": "stated",
+      "confidence": "low"
+    }
+  ],
+  "open_questions": [
+    {
+      "field": "mandatories",
+      "gap": "The client says brand guidelines v3.1 are the current version, but the thread does not state which brand rules or no-gos from them bind this brief; the attachment content is not part of this source.",
+      "why_it_matters": "Brand rules are downstream-critical mandatories; a missed one would surface only at client review.",
+      "suggested_question_for_client": "Οι οδηγίες των brand guidelines έκδοσης 3.1 ισχύουν στο σύνολό τους για αυτό το έργο; Υπάρχουν σημεία που θέλετε να τονίσουμε ως απαράβατα;",
+      "linked_items": ["mandatories[0]"]
+    },
+    {
+      "field": "timeline",
+      "gap": "The thread states the launch was moved to 15 Σεπτεμβρίου (year not written) but gives neither the previous date nor any other milestone dates; Northlight has promised a revised plan.",
+      "why_it_matters": "The shorter runway drives the scope, production schedule and media phasing of the campaign.",
+      "suggested_question_for_client": "Να επιβεβαιώσουμε ότι το νέο launch είναι 15 Σεπτεμβρίου 2026; Ποια ήταν η προηγούμενη ημερομηνία, και υπάρχουν ενδιάμεσες προθεσμίες (π.χ. έγκριση brief, έγκριση υλικού) που πρέπει να τηρηθούν;",
+      "linked_items": []
+    },
+    {
+      "field": "mandatories",
+      "gap": "Final approver of the brief on the client side is not named; Dimitris says it is between himself and the management (διοίκηση) and that he will come back. Northlight is still awaiting the name.",
+      "why_it_matters": "Without a named approver the brief cannot be signed off and revisions may loop between two decision-makers.",
+      "suggested_question_for_client": "Ποιος θα κάνει το τελικό approval του brief από πλευράς Meltemi; Αν είναι κοινό μεταξύ εσάς και της διοίκησης, ποιο πρόσωπο έχει τον τελικό λόγο;",
+      "linked_items": []
+    },
+    {
+      "field": "objectives",
+      "gap": "The thread gives a rationale for the launch date (catching the end of the soft-drinks season) but no stated business objective, target audience, key message, deliverables or budget.",
+      "why_it_matters": "These are core brief fields; the thread alone cannot support them.",
+      "suggested_question_for_client": "Ποιος είναι ο βασικός επιχειρηματικός στόχος του launch μέχρι το τέλος της σεζόν αναψυκτικών και πώς θα τον μετρήσουμε;",
+      "linked_items": []
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Message 2 (Dimitris, 2026-07-14): no proprietary category research exists; client asks the agency to use whatever public research it finds (Έρευνα για την κατηγορία δεν έχουμε δική μας — ό,τι βρείτε δημόσιο).",
+    "Message 2 and Message 3: brief approval is open — Dimitris: 'παίζει ανάμεσα σε εμένα και τη διοίκηση'; Eleni (2026-07-15) is still awaiting the name.",
+    "Message 3 (Eleni, 2026-07-15): agency-side acknowledgement that 15/9 changes the planning and that a revised plan will be sent; not a client requirement."
+  ]
+}

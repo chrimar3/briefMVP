@@ -1,0 +1,593 @@
+{
+  "boundary": "Evidence-link accounting; human review must confirm meaning and source completeness",
+  "records": [
+    {
+      "field": "mandatories",
+      "value": "The product name **Meltemi Fizz** is always written in Latin script, in full. Never transliterated, never abbreviated to \"Fizz\".",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Brand name usage",
+        "anchor": "is always written in Latin script, in full"
+      },
+      "id": "186539ffe0a2a3736883",
+      "destinations": [
+        "mandatories[0]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Logo clear space: minimum 1× the height of the wordmark on all sides.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Brand name usage",
+        "anchor": "minimum 1× the height of the wordmark on all sides"
+      },
+      "id": "332fe1c1aec358f497ac",
+      "destinations": [
+        "mandatories[1]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Color & visual",
+        "anchor": "Primary palette: Aegean Blue #1B4F8A, Citrus Yellow #F5C518"
+      },
+      "id": "4beff12f7ce7b354fe42",
+      "destinations": [
+        "mandatories[2]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Backgrounds must not use gradients over photography.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Color & visual",
+        "anchor": "Backgrounds must not use gradients over photography"
+      },
+      "id": "3f9ed8a9015bd36fc5f0",
+      "destinations": [
+        "mandatories[3]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list).",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Claims — hard rules",
+        "anchor": "Permitted: \"zero sugar\", \"φυσικά συστατικά\" (per approved ingredient list)"
+      },
+      "id": "62bfae0fd095ea440648",
+      "destinations": [
+        "mandatories[4]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Not permitted: any health or weight-loss claim.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Claims — hard rules",
+        "anchor": "any health or weight-loss claim"
+      },
+      "id": "a04de7595a2180037201",
+      "destinations": [
+        "mandatories[5]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Not permitted: any comparison naming a competitor brand.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Claims — hard rules",
+        "anchor": "any comparison naming a competitor brand"
+      },
+      "id": "0eb306af135faeab7445",
+      "destinations": [
+        "mandatories[6]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "No alcohol association of any kind (imagery, occasions, co-branding).",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Category no-gos",
+        "anchor": "No alcohol association of any kind (imagery, occasions, co-branding)"
+      },
+      "id": "d827d1632abb83662e2c",
+      "destinations": [
+        "mandatories[7]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Avoid generic \"beach party\" clichés; the brand leans premium-everyday, not spring break.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Category no-gos",
+        "anchor": "Avoid generic \"beach party\" clichés"
+      },
+      "id": "1460ae5d4b5e853d5f24",
+      "destinations": [
+        "mandatories[8]",
+        "open_questions[12]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Confident, modern Greek with natural use of English category terms.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Tone (guidance)",
+        "anchor": "Confident, modern Greek with natural use of English category terms"
+      },
+      "id": "595949241c03b3bbe50d",
+      "destinations": [
+        "mandatories[9]",
+        "open_questions[13]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Humor allowed; sarcasm about competitors is not.",
+      "evidence": {
+        "source_id": "background_brand_guidelines",
+        "location": "## Tone (guidance)",
+        "anchor": "Humor allowed; sarcasm about competitors is not"
+      },
+      "id": "b51952e21de9ac3ebe2e",
+      "destinations": [
+        "mandatories[10]",
+        "open_questions[13]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "το board μετέθεσε το launch για 15 Σεπτεμβρίου",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+        "anchor": "το board μετέθεσε το launch για 15 Σεπτεμβρίου"
+      },
+      "id": "adda175a66619dccd35a",
+      "destinations": [
+        "timeline[1]",
+        "open_questions[7]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+        "anchor": "θέλουν να προλάβουμε το τέλος της σεζόν αναψυκτικών"
+      },
+      "id": "06d08c541556cc3c4db6",
+      "destinations": [
+        "timeline[2]",
+        "open_questions[7]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "ισχύει η έκδοση 3.1",
+      "evidence": {
+        "source_id": "emails_thread",
+        "location": "**Message 2** · From: Dimitris (Meltemi) · To: Eleni (Northlight) · Date: 2026-07-14 18:22",
+        "anchor": "ισχύει η έκδοση 3.1"
+      },
+      "id": "60cdc29745c2ecb67950",
+      "destinations": [
+        "mandatories[11]",
+        "open_questions[11]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 2. Στόχος",
+        "anchor": "Επιτυχημένο launch της νέας σειράς στην ελληνική αγορά"
+      },
+      "id": "05f49b6877bd867da48c",
+      "destinations": [
+        "objectives[0]",
+        "open_questions[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 3. Κοινό-στόχος",
+        "anchor": "Gen Z, ηλικίες 18–24, με έμφαση στα αστικά κέντρα"
+      },
+      "id": "88b29d15521c9ec6f578",
+      "destinations": [
+        "audiences[0]",
+        "open_questions[2]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 1. Πλαίσιο",
+        "anchor": "ένα sparkling tea με μηδέν ζάχαρη, σε τρεις γεύσεις"
+      },
+      "id": "765a79aa305fdea46f5e",
+      "destinations": [
+        "key_messages[0]",
+        "open_questions[3]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "Πρόκειται για την είσοδό μας σε νέα κατηγορία.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 1. Πλαίσιο",
+        "anchor": "Πρόκειται για την είσοδό μας σε νέα κατηγορία"
+      },
+      "id": "26a0c0f48eafe70b5992",
+      "destinations": [
+        "key_messages[1]",
+        "open_questions[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Στρατηγική TikTok-first: το σύνολο της δημιουργικής προσέγγισης να σχεδιαστεί πρωτίστως για TikTok.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 4. Απαιτήσεις καμπάνιας",
+        "anchor": "Στρατηγική **TikTok-first**: το σύνολο της δημιουργικής προσέγγισης"
+      },
+      "id": "5b9987d93ea072ee4d89",
+      "destinations": [
+        "deliverables[0]",
+        "open_questions[4]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Παρουσία σε social media και ψηφιακά κανάλια.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 4. Απαιτήσεις καμπάνιας",
+        "anchor": "Παρουσία σε social media και ψηφιακά κανάλια"
+      },
+      "id": "3d82184235018e7fb911",
+      "destinations": [
+        "deliverables[1]",
+        "open_questions[5]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Δημιουργικό υλικό για το launch (βίντεο, key visuals).",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 4. Απαιτήσεις καμπάνιας",
+        "anchor": "Δημιουργικό υλικό για το launch (βίντεο, key visuals)"
+      },
+      "id": "4e83c7377eefda9e1b14",
+      "destinations": [
+        "deliverables[2]",
+        "open_questions[6]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Launch την πρώτη εβδομάδα του Οκτωβρίου 2026, ώστε να προλάβουμε την τοποθέτηση στα σημεία πώλησης.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 5. Χρονοδιάγραμμα",
+        "anchor": "Launch την **πρώτη εβδομάδα του Οκτωβρίου 2026**"
+      },
+      "id": "d952563adc77fba30f4d",
+      "destinations": [
+        "timeline[0]",
+        "open_questions[7]",
+        "conflicts[1]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Συνολικός προϋπολογισμός €90.000, συμπεριλαμβανομένου του media.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 6. Προϋπολογισμός",
+        "anchor": "**€90.000, συμπεριλαμβανομένου του media**"
+      },
+      "id": "3c2d0719b21d04df220f",
+      "destinations": [
+        "budget[0]",
+        "open_questions[9]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines.",
+      "evidence": {
+        "source_id": "rfp_meltemi",
+        "location": "## 7. Λοιπά",
+        "anchor": "Ισχύουν οι οδηγίες brand των συνημμένων guidelines"
+      },
+      "id": "363cfb9259c3b7bdf552",
+      "destinations": [
+        "mandatories[12]",
+        "open_questions[11]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "Το βασικό για μας είναι το μπραντ αγουέρνες",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:02:05]",
+        "anchor": "το μπραντ αγουέρνες"
+      },
+      "id": "9385889f3f029731abb4",
+      "destinations": [
+        "objectives[1]",
+        "open_questions[0]"
+      ]
+    },
+    {
+      "field": "objectives",
+      "value": "είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί. Θέλουμε να μπούμε δυνατά.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:02:05]",
+        "anchor": "είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί"
+      },
+      "id": "7a1338b9599308ecfa32",
+      "destinations": [
+        "objectives[2]",
+        "open_questions[1]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "honestly, our buyer is 25 to 40, urban professionals",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:41]",
+        "anchor": "our buyer is 25 to 40, urban professionals"
+      },
+      "id": "efec97c84e079edca99e",
+      "destinations": [
+        "audiences[1]",
+        "open_questions[2]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:41]",
+        "anchor": "Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea"
+      },
+      "id": "52ffd9ee65d617532d6b",
+      "destinations": [
+        "audiences[2]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "refreshment without the sugar guilt — zero sugar, φυσικά υλικά"
+      },
+      "id": "83e391aa1742fb418610",
+      "destinations": [
+        "key_messages[2]"
+      ]
+    },
+    {
+      "field": "key_messages",
+      "value": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "ελληνικό brand που κάνει τη μοντέρνα κατηγορία δικιά του"
+      },
+      "id": "7ae5c60983983e20a1f2",
+      "destinations": [
+        "key_messages[3]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Some videos and social stuff, κυρίως. Δεν έχω καταλήξει σε formats, θα μας πείτε κι εσείς.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:10:22]",
+        "anchor": "Some videos and social stuff"
+      },
+      "id": "5c393f38b4fe4cba9439",
+      "destinations": [
+        "deliverables[3]",
+        "open_questions[6]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "Just thinking out loud — maybe a TikTok dance thing? Don't hold me to it, δεν το έχουμε συζητήσει καν μέσα.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:11:47]",
+        "anchor": "maybe a TikTok dance thing?"
+      },
+      "id": "9014d5b0a5a3007e4bca",
+      "destinations": [
+        "deliverables[4]",
+        "open_questions[4]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:17:03]",
+        "anchor": "Κάπου εκεί κινούμαστε, ναι — φθινόπωρο"
+      },
+      "id": "467b4019bea4106a1b34",
+      "destinations": [
+        "timeline[3]",
+        "open_questions[7]"
+      ]
+    },
+    {
+      "field": "timeline",
+      "value": "Θα οριστικοποιηθεί από το board, έχουν συνεδρίαση τέλη του μήνα",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:17:03]",
+        "anchor": "έχουν συνεδρίαση τέλη του μήνα"
+      },
+      "id": "5c212990d9cabcb12f7f",
+      "destinations": [
+        "timeline[4]",
+        "open_questions[8]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "είμαστε κάπου στα ογδόντα, μπορεί ογδόντα πέντε, αλλά χωρίς το media spend",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:32]",
+        "anchor": "κάπου στα ογδόντα, μπορεί ογδόντα πέντε"
+      },
+      "id": "5502174d58531e094bd9",
+      "destinations": [
+        "budget[1]",
+        "open_questions[9]",
+        "conflicts[2]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Το media το βλέπουμε ξεχωριστά με τον media shop μας",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:14:32]",
+        "anchor": "Το media το βλέπουμε ξεχωριστά με τον media shop μας"
+      },
+      "id": "fcbe8e75d9d6404b67e2",
+      "destinations": [
+        "budget[2]"
+      ]
+    },
+    {
+      "field": "budget",
+      "value": "Ναι, δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:15:26]",
+        "anchor": "δεν είναι δικό μου κομμάτι το νούμερο αυτό ακόμα"
+      },
+      "id": "627fabfff4f52fb96dfd",
+      "destinations": [
+        "budget[3]",
+        "open_questions[10]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "Το κι βίζουαλ πρέπει να φωνάζει καλοκαίρι, αλλά premium καλοκαίρι",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "κι βίζουαλ"
+      },
+      "id": "caa4476c359a082fc8d1",
+      "destinations": [
+        "mandatories[13]",
+        "open_questions[14]"
+      ]
+    },
+    {
+      "field": "mandatories",
+      "value": "zero sugar, φυσικά υλικά",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:06:02]",
+        "anchor": "zero sugar, φυσικά υλικά"
+      },
+      "id": "5c3ecb3909ea38f47190",
+      "destinations": [
+        "mandatories[14]",
+        "open_questions[14]"
+      ]
+    },
+    {
+      "field": "audiences",
+      "value": "το RFP που σας στείλαμε λέει Gen Z",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:41]",
+        "anchor": "λέει Gen Z"
+      },
+      "id": "41f9c8b9dc90591a6077",
+      "destinations": []
+    },
+    {
+      "field": "audiences",
+      "value": "honestly, our buyer is 25 to 40, urban professionals",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:03:41]",
+        "anchor": "our buyer is 25 to 40, urban professionals"
+      },
+      "id": "efec97c84e079edca99e",
+      "destinations": [
+        "audiences[1]",
+        "open_questions[2]",
+        "conflicts[0]"
+      ]
+    },
+    {
+      "field": "deliverables",
+      "value": "ίσως κάνουμε OOH στις στάσεις του μετρό, κεντρικές γραμμές…",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:08:15]",
+        "anchor": "ίσως κάνουμε OOH στις στάσεις του μετρό"
+      },
+      "id": "47f12d2c5650da284e05",
+      "destinations": []
+    },
+    {
+      "field": "deliverables",
+      "value": "…actually scratch that, το μετρό είναι πανάκριβο φέτος, το κοίταξα τον Μάιο. Ξεχάστε το.",
+      "evidence": {
+        "source_id": "transcript_kickoff",
+        "location": "[00:08:34]",
+        "anchor": "actually scratch that"
+      },
+      "id": "4d3145dafd0a5ae5fcb4",
+      "destinations": []
+    }
+  ]
+}

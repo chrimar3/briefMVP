@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "project_id": "voreas_02",
+    "source_id": "background_market_research",
+    "source_type": "background",
+    "source_date": "2026-05-30",
+    "extraction_ts": "2026-09-24T06:57:03+00:00",
+    "agent_version": "1.0"
+  },
+  "objectives": [],
+  "audiences": [],
+  "key_messages": [],
+  "deliverables": [],
+  "timeline": [],
+  "budget": [
+    {
+      "value": "τα launches διεθνών brands της κατηγορίας στην ελληνική αγορά κινούνται σε €300–500 χιλ. media spend ανά καμπάνια λανσαρίσματος",
+      "lang": "mixed",
+      "location": "## Benchmark επένδυσης επικοινωνίας",
+      "anchor": "**€300–500 χιλ. media spend** ανά καμπάνια λανσαρίσματος",
+      "speaker_or_author": "Agora Insights (commissioned research for Voreas Athletics)",
+      "qualifier": "implied",
+      "confidence": "low"
+    }
+  ],
+  "mandatories": [],
+  "open_questions": [
+    {
+      "field": "budget",
+      "gap": "The research gives an indicative media spend benchmark for international brands' launches in Greece; it is market context, not a Voreas budget. The source says domestic brands spend noticeably lower, with no published figures.",
+      "why_it_matters": "Channel mix and scale of the campaign depend on the actual media budget, which this benchmark does not set.",
+      "suggested_question_for_client": "Το benchmark των €300–500 χιλ. media spend αφορά διεθνή brands. Ισχύει ως σημείο αναφοράς για το δικό σας launch ή έχετε διαφορετικό budget media και ξεχωριστό budget παραγωγής;",
+      "linked_items": ["budget[0]"]
+    }
+  ],
+  "internal_conflicts": [],
+  "extraction_notes": [
+    "Market size, growth, competitor landscape and buyer-behaviour statistics in this background document are context and do not map to any brief field; not extracted as items."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "_what_this_is": "Fixed boilerplate of the Northlight client-brief template, per language. The render model copies these strings character-exact from templates/northlight_client_brief.md (EN) and templates/northlight_client_brief.el.md (EL) and renders only the brief's entries; pipeline/stages.py check_render_template verifies them, so headings and labels are never re-translated per run. tests/test_render_template.py keeps this file and the two Markdown templates in step.",
+  "_owner": "Agency brief template owner (proposed synthetic default; the bilingual reviewer approves any wording change).",
+  "en": {
+    "title": "# Northlight Communications — Client Brief",
+    "banner_draft": "> **DRAFT — pending account-lead sign-off**",
+    "banner_signed_prefix": "> **SIGNED OFF by ",
+    "header_client": "**Client:**",
+    "header_sources": "**Sources used:**",
+    "sections": {
+      "objectives": "## 1. Objectives",
+      "audiences": "## 2. Audiences",
+      "key_messages": "## 3. Key Messages",
+      "deliverables": "## 4. Deliverables",
+      "timeline": "## 5. Timeline",
+      "budget": "## 6. Budget",
+      "mandatories": "## 7. Mandatories & No-gos"
+    },
+    "open_questions": "## ⚠ Open Questions for the Client",
+    "conflicts_open": "## ⚠ Unresolved Source Conflicts (the account lead resolves these before sign-off)",
+    "conflicts_resolved": "## ⚠ Source Conflicts — Resolved by the Account Lead",
+    "signoff": "## Sign-off",
+    "internal": "## Internal — not for the client",
+    "empty_section": "> No confirmed entries — see Open Questions.",
+    "resolved_entry": "**Resolved by the account lead:**",
+    "question_answered": "✓ Answered by the account-lead resolution",
+    "internal_labels": ["**Project type:**", "**Sensitivity tier:**", "**Fields with evidence:**", "**Readiness:**", "**Generated:**", "**Pipeline:**"]
+  },
+  "el": {
+    "title": "# Northlight Communications — Brief πελάτη",
+    "banner_draft": "> **ΠΡΟΣΧΕΔΙΟ — εκκρεμεί η έγκριση του account lead**",
+    "banner_signed_prefix": "> **ΕΓΚΡΙΘΗΚΕ από ",
+    "header_client": "**Πελάτης:**",
+    "header_sources": "**Πηγές:**",
+    "sections": {
+      "objectives": "## 1. Στόχοι",
+      "audiences": "## 2. Κοινό-στόχος",
+      "key_messages": "## 3. Βασικά μηνύματα",
+      "deliverables": "## 4. Παραδοτέα",
+      "timeline": "## 5. Χρονοδιάγραμμα",
+      "budget": "## 6. Προϋπολογισμός",
+      "mandatories": "## 7. Υποχρεωτικά στοιχεία & απαγορεύσεις"
+    },
+    "open_questions": "## ⚠ Ανοιχτά ερωτήματα προς τον πελάτη",
+    "conflicts_open": "## ⚠ Ανεπίλυτες αντιφάσεις μεταξύ πηγών (τις επιλύει ο account lead πριν από την έγκριση)",
+    "conflicts_resolved": "## ⚠ Αντιφάσεις μεταξύ πηγών — επιλύθηκαν από τον account lead",
+    "signoff": "## Έγκριση",
+    "internal": "## Εσωτερικά στοιχεία — δεν αποστέλλονται στον πελάτη",
+    "empty_section": "> Δεν υπάρχουν επιβεβαιωμένα στοιχεία — βλ. Ανοιχτά ερωτήματα.",
+    "resolved_entry": "**Επίλυση από τον account lead:**",
+    "question_answered": "✓ Απαντήθηκε με την επίλυση του account lead",
+    "internal_labels": ["**Τύπος έργου:**", "**Επίπεδο ευαισθησίας:**", "**Πεδία με τεκμηρίωση:**", "**Ετοιμότητα:**", "**Δημιουργήθηκε:**", "**Pipeline:**"]
+  },
+  "internal_enum_tokens": ["[RENDER_LANG", "ready_for_review", "thin_input_return_to_client", "advertising_creative", "unclassified_ask_human", "resolved_by_human", "signed_off", "pass_with_flags", "escalate_to_human"]
+}

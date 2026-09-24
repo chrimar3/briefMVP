@@ -1,0 +1,17 @@
+{
+  "forwarded": [
+    {
+      "index": 0,
+      "where": "missing:audiences",
+      "problem": "The stated price point the target buyer pays (four and a half euros for premium tea) is a substantive figure supporting the audience/positioning and appears in no extract field, conflict, or open question.",
+      "evidence": "Αυτοί πληρώνουν τεσσεράμισι ευρώ για premium tea"
+    },
+    {
+      "index": 1,
+      "where": "missing:objectives",
+      "problem": "Context of the objective is not captured: the launch is into a new category (sparkling tea) where the brand is unknown, and the client wants a strong entry; nothing in the extract records this.",
+      "evidence": "είναι καινούργια κατηγορία για εμάς, sparkling tea, ο κόσμος δεν μας ξέρει εκεί. Θέλουμε να μπούμε δυνατά."
+    }
+  ],
+  "dropped": []
+}

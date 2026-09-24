@@ -1,0 +1,11 @@
+{
+  "forwarded": [
+    {
+      "index": 0,
+      "where": "missing:key_messages",
+      "problem": "The positioning claim (premium performance, technical fabrics of competition specs, designed in Greece) is absent from every extract field; key_messages[0] carries only the 'communication should highlight technical superiority' sentence.",
+      "evidence": "τεχνικά υφάσματα αγωνιστικών προδιαγραφών, σχεδιασμένα στην Ελλάδα"
+    }
+  ],
+  "dropped": []
+}

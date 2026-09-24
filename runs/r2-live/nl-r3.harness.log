@@ -1,0 +1,37 @@
+
+Brief Builder harness · run nl-r3 · fixture northlight_01
+
+  ✅ T1.1  Every extract validates against extract_schema.json
+         4 extract(s) valid
+  ✅ T1.2  Zero items with empty location or anchor
+         31 item(s), all cited
+  ✅ T1.3  Every location and anchor occurs verbatim in its source
+         all citations resolve
+  ❌ T1.4  Seeded garbled terms present as-is with glossary-match proposals
+         1/2 term(s) mishandled
+           · T1: 'μπραντ αγουέρνες' survives but no extraction_note proposes the glossary match 'brand awareness' — silent consumption
+  ✅ T2.1  Draft validates against brief_schema.json
+  ✅ T2.2  sensitivity_tier is within S0–S1
+         tier S1
+  ✅ T2.3  Both GR and EN renders exist
+         el=16978 chars · en=15395 chars
+  ✅ T2.4  Every rendered claim carries a resolvable citation tag
+         all claim lines cited
+  ✅ T2.5  Glossary terms character-exact in both renders
+         protected terms intact in both renders
+  ✅ T2.6  Readiness block recomputes deterministically to the same values
+         {"fields_with_evidence": 7, "low_confidence_share": 0.1667, "open_question_count": 15, "verdict": "ready_for_review"}
+  ✅ T3.1  Seeded conflicts detected with citations to both sources
+         3/3 required (C1, C2, C3)
+  ✅ T3.2  Seeded gaps present as open questions
+         4/4 found, 3 required (G1, G2, G3, G4)
+  ✅ T3.3  Garbled terms still flagged (not fixed) in the brief and renders
+         2/2 carried through
+  ✅ T3.4  Zero uncited values anywhere in the draft
+  ✅ X1    Retracted idea is not a committed deliverable
+  ✅ X2    Speculative remark carries the conditional qualifier
+         1 matching entr(ies), all conditional
+  ✅ X3    No resolved numeric budget total in the draft or renders
+
+  16 passed · 1 failed · 0 skipped   →  FAIL
+

@@ -1,0 +1,11 @@
+{
+  "source_id": "transcript_kickoff",
+  "verdict": "issues_found",
+  "issues": [
+    {
+      "where": "extraction_notes[0]",
+      "problem": "The garble note gives the fidelity gate's 'no-glossary-match' marker as the proposed match, which is not a proposed term. The glossary has a plausible candidate, 'brand awareness', so the note should propose it.",
+      "evidence": "το μπραντ αγουέρνες"
+    }
+  ]
+}

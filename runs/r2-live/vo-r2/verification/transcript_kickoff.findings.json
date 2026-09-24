@@ -1,0 +1,11 @@
+{
+  "forwarded": [
+    {
+      "index": 0,
+      "where": "budget[0]",
+      "problem": "The approved figure is hedged (approximate 'κάπου στα', and the higher amount only 'ίσως' and 'αν σφίξουμε αλλού') but is carried with qualifier 'stated' instead of a conditional/hedged qualifier.",
+      "evidence": "κάπου στα εκατόν είκοσι, ίσως εκατόν είκοσι πέντε αν σφίξουμε αλλού"
+    }
+  ],
+  "dropped": []
+}

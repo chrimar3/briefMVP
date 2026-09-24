@@ -1,0 +1,16 @@
+{"stage": "classify", "site": "classify", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.034104499999999996}
+{"stage": "fidelity-check", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-haiku-4-5-20251001"], "cost_usd": 0.09724479999999999}
+{"stage": "extraction", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0777532}
+{"stage": "verification", "site": "background_brand_guidelines", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0332156}
+{"stage": "extraction", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0779196}
+{"stage": "verification", "site": "emails_thread", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0325562}
+{"stage": "extraction", "site": "rfp_meltemi", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.108779}
+{"stage": "verification", "site": "rfp_meltemi", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.043606400000000003}
+{"stage": "extraction", "site": "rfp_meltemi:verified-repair", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0477674}
+{"stage": "extraction", "site": "transcript_kickoff", "attempt": 1, "violation_count": 2, "violations": ["objectives[0]: anchor 'το βασικό για μας είναι το μπραντ αγουέρνες' does not occur in the source — citations are copied from the document, never constructed", "the fidelity gate flagged a token with no glossary match but no extraction note carries it — write: garble: «<token as written>» at <location> — proposed match \"no-glossary-match\" (SOURCES.md §7 rule G)"], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.1618984}
+{"stage": "extraction", "site": "transcript_kickoff", "attempt": 2, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.1196124}
+{"stage": "verification", "site": "transcript_kickoff", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.0648174}
+{"stage": "extraction", "site": "transcript_kickoff:verified-repair", "attempt": 1, "violation_count": 1, "violations": ["the fidelity gate flagged a token with no glossary match but no extraction note carries it — write: garble: «<token as written>» at <location> — proposed match \"no-glossary-match\" (SOURCES.md §7 rule G)"], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.12294559999999999}
+{"stage": "extraction", "site": "transcript_kickoff:verified-repair", "attempt": 2, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.1328364}
+{"stage": "synthesize", "site": "synthesize", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.39806400000000003}
+{"stage": "render", "site": "render", "attempt": 1, "violation_count": 0, "violations": [], "model_ids": ["claude-sonnet-5"], "cost_usd": 0.36191260000000003}
