@@ -172,3 +172,81 @@ def test_settings_deny_every_decision_command_in_every_plain_spelling(guard, rep
 def test_the_settings_file_is_tracked_not_ignored(repo_root):
     result = subprocess.run(["git", "check-ignore", "-q", ".claude/settings.json"], cwd=repo_root, timeout=30)
     assert result.returncode == 1          # 1 = not ignored
+
+
+# -- pure help invocations ---------------------------------------------------------------------
+
+_SPELLINGS = ("python3 -m {m}", "python -m {m}", "python3 {p}", "cd /repo && python3 -m {m}",
+              "PYTHONPATH=. python3 -m {m}", "bash -c 'python3 -m {m}")
+
+
+def _help_lines():
+    lines = []
+    for module, commands in {"pipeline.agency": sorted(DECISIONS_AGENCY), **OTHER_DECISIONS}.items():
+        for command in sorted(commands):
+            for flag in ("--help", "-h"):
+                for spelling in _SPELLINGS:
+                    head = spelling.format(m=module, p=module.replace(".", "/") + ".py")
+                    line = f"{head} {command} {flag}"
+                    lines.append(line + "'" if spelling.startswith("bash -c") else line)
+    return lines
+
+
+DECISIONS_AGENCY = {"approve", "attest", "resolve", "apply", "answer", "exclude", "carry-decisions"}
+OTHER_DECISIONS = {"pipeline.delivery": {"register", "approve", "release"},
+                   "pipeline.release_control": {"withdraw"}, "pipeline.retention": {"purge"}}
+
+
+@pytest.mark.parametrize("command", _help_lines())
+def test_a_pure_help_invocation_of_a_decision_command_is_allowed(guard, command):
+    """`<decision> --help` prints argparse help and exits before any record is touched."""
+    assert guard.decision_in(command) is None, command
+
+
+HELP_NOT_PURE = [
+    # anything besides the help flag makes it an ordinary invocation
+    "python3 -m pipeline.agency approve --help runs/x --actor A --summary s",
+    "python3 -m pipeline.agency approve runs/x --actor A --summary s --help",
+    "python3 -m pipeline.agency approve runs/x -h",
+    "python3 -m pipeline.agency approve --help resolve",
+    "python3 -m pipeline.agency --actor A approve --help",
+    "python3 -m pipeline.agency approve --help > /tmp/out.txt",
+    "python3 -m pipeline.retention purge --help --run runs/x --actor O --reason r",
+    # a help line does not launder a real decision on the same line
+    "python3 -m pipeline.agency approve --help && python3 -m pipeline.agency approve runs/x --actor A --summary s",
+    "python3 -m pipeline.agency approve --help; python3 -m pipeline.delivery release runs/x --output o --actor T",
+    "bash -c 'python3 -m pipeline.agency attest -h; python3 -m pipeline.agency attest runs/x --actor B'",
+    # in-process calls are judged as code, never as help
+    "python3 -c \"from pipeline import agency; agency.main(['approve', '--help'])\"",
+]
+
+
+@pytest.mark.parametrize("command", HELP_NOT_PURE)
+def test_help_flags_mixed_with_anything_else_stay_blocked(guard, command):
+    assert guard.decision_in(command), command
+
+
+def test_the_hook_protocol_allows_a_pure_help_invocation(repo_root):
+    script = repo_root / "tools" / "hooks" / "guard_human_decisions.py"
+    payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": "python3 -m pipeline.agency approve --help"}})
+    result = subprocess.run([sys.executable, str(script)], input=payload, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0 and result.stderr == ""
+
+
+@pytest.mark.parametrize("name, module", [("pipeline.agency", agency), ("pipeline.delivery", delivery),
+                                          ("pipeline.release_control", release_control),
+                                          ("pipeline.retention", retention)])
+def test_help_of_every_decision_command_exits_cleanly_and_writes_nothing(guard, tmp_path, monkeypatch, capsys,
+                                                                         name, module):
+    """The premise of the exception, checked against the real CLIs in an empty temp dir."""
+    monkeypatch.chdir(tmp_path)
+    for command in sorted(guard.DECISION_COMMANDS[name]):
+        with pytest.raises(SystemExit) as exit_info:
+            module.main([command, "--help"])
+        assert exit_info.value.code == 0, (name, command)
+        assert "usage:" in capsys.readouterr().out
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_the_help_matrix_covers_every_guarded_command(guard):
+    assert {"pipeline.agency": DECISIONS_AGENCY, **OTHER_DECISIONS} == guard.DECISION_COMMANDS

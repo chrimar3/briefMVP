@@ -22,7 +22,7 @@ layer, the replay tooling and the tests import from `pipeline.stages`:
     stage_fidelity   step 3 — work order, gate, stage
     stage_synthesis  step 6 — work order, the named gate rules (SYNTHESIS_RULES), stage
     stage_render     step 7 — work order, stage
-    render_checks    check_render (shared with the agency audit) and its helpers
+    render_checks    check_render (shared with the agency audit), check_render_coverage and helpers
     render_template  template sets, resolution links, check_render_template
     greek_lint       the non-blocking language lint
     money            money_figures, the one currency normaliser
@@ -33,7 +33,14 @@ from __future__ import annotations
 from pipeline import PIPELINE_VERSION, agents, gates
 from pipeline.greek_lint import GREEK_STYLE_PATH, load_greek_style, render_language_warnings
 from pipeline.money import money_figures
-from pipeline.render_checks import CITATION_TAG_RE, CLAIM_SECTION_RE, STRUCTURAL_PREFIXES, check_render, claim_lines
+from pipeline.render_checks import (
+    CITATION_TAG_RE,
+    CLAIM_SECTION_RE,
+    STRUCTURAL_PREFIXES,
+    check_render,
+    check_render_coverage,
+    claim_lines,
+)
 from pipeline.render_template import (
     DEFAULT_BRIEF_TEMPLATE,
     TEMPLATES_DIR,
@@ -80,6 +87,7 @@ __all__ = [
     "CLAIM_SECTION_RE",
     "STRUCTURAL_PREFIXES",
     "check_render",
+    "check_render_coverage",
     "claim_lines",
     "DEFAULT_BRIEF_TEMPLATE",
     "TEMPLATES_DIR",
