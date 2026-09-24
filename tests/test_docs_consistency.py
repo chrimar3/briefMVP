@@ -76,7 +76,9 @@ def _briefs() -> list:
 
 def _derive(rule: str):
     if rule == "harness_full_passes":
-        reports = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(LIVE.glob("*/harness_report.json"))]
+        # Real run directories only: a local `latest` symlink (gitignored) must not count a run twice.
+        reports = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(LIVE.glob("*/harness_report.json"))
+                   if not p.parent.is_symlink()]
         full = sum(1 for r in reports if len(r.get("checks") or []) == 17
                    and all(c["status"] == "pass" for c in r["checks"]))
         return {"full_17": full, "graded": len(reports)}
